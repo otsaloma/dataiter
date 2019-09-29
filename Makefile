@@ -26,6 +26,6 @@ test:
 	py.test .
 
 test-installed:
-	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
+	cd && python3 -c "import dataiter; dataiter.ListOfDicts([])"
 
 .PHONY: check clean install push test test-installed
