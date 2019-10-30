@@ -42,8 +42,8 @@ class ListOfDicts(list):
 
     """Data as a list of dictionaries."""
 
-    def __init__(self, dicts, group_keys=None):
-        super().__init__(AttributeDict(x) for x in dicts)
+    def __init__(self, dicts, group_keys=None, shallow=False):
+        super().__init__(dicts if shallow else (AttributeDict(x) for x in dicts))
         self._group_keys = group_keys or []
 
     def __getitem__(self, key):
@@ -110,7 +110,7 @@ class ListOfDicts(list):
             yield item
 
     def _new(self, dicts):
-        return self.__class__(dicts, self._group_keys[:])
+        return self.__class__(dicts, self._group_keys[:], shallow=True)
 
     def pluck(self, key):
         return [x[key] for x in self]
