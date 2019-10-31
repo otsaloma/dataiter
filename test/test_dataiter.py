@@ -53,47 +53,61 @@ class TestListOfDicts:
             "date_max":  lambda x: max(x.pluck("date")),
             "downloads": lambda x: sum(x.pluck("downloads")),
         })
-        assert 0 < len(data) < len(self.data)
-        for i, item in enumerate(data):
-            assert "category"  in item
-            assert "date_min"  in item
-            assert "date_max"  in item
-            assert "downloads" in item
+        assert data == [{
+            "category": "Darwin",
+            "date_min": "2019-04-12",
+            "date_max": "2019-06-04",
+            "downloads": 4,
+        }, {
+            "category": "Linux",
+            "date_min": "2019-04-12",
+            "date_max": "2019-09-26",
+            "downloads": 102,
+        }, {
+            "category": "Windows",
+            "date_min": "2019-07-03",
+            "date_max": "2019-07-03",
+            "downloads": 1,
+        }, {
+            "category": "null",
+            "date_min": "2019-04-02",
+            "date_max": "2019-09-24",
+            "downloads": 328,
+        }]
 
     def test_deepcopy(self):
         data = self.data.deepcopy()
         assert data == self.data
         assert data is not self.data
-        for i, item in enumerate(data):
-            orig = self.data[i]
+        for item, orig in zip(data, self.data):
             assert item == orig
             assert item is not orig
 
     def test_filter__function(self):
         data = self.data.filter(lambda x: x.category == "Linux")
-        assert 0 < len(data) < len(self.data)
-        for i, item in enumerate(data):
+        assert len(data) == 38
+        for item in data:
             assert item.category == "Linux"
             assert item in self.data
 
     def test_filter__key_value_pairs(self):
         data = self.data.filter(category="Linux")
-        assert 0 < len(data) < len(self.data)
-        for i, item in enumerate(data):
+        assert len(data) == 38
+        for item in data:
             assert item.category == "Linux"
             assert item in self.data
 
     def test_filter_out__function(self):
         data = self.data.filter_out(lambda x: x.category == "Linux")
-        assert 0 < len(data) < len(self.data)
-        for i, item in enumerate(data):
+        assert len(data) == 99
+        for item in data:
             assert item.category != "Linux"
             assert item in self.data
 
     def test_filter_out__key_value_pairs(self):
         data = self.data.filter_out(category="Linux")
-        assert 0 < len(data) < len(self.data)
-        for i, item in enumerate(data):
+        assert len(data) == 99
+        for item in data:
             assert item.category != "Linux"
             assert item in self.data
 
@@ -110,42 +124,41 @@ class TestListOfDicts:
         ])
         data = self.data.join(other, "category")
         assert len(data) == len(self.data)
-        for i, item in enumerate(data):
-            orig = self.data[i]
-            assert (("path_separator" in item) ==
-                    (item.category in other.pluck("category")))
+        for item, orig in zip(data, self.data):
+            if item.category == "Darwin":
+                assert item.path_separator == "/"
+            if item.category == "Linux":
+                assert item.path_separator == "/"
+            if item.category == "Windows":
+                assert item.path_separator == "\\"
             self.assert_common_keys_match(item, orig)
 
     def test_modify(self):
         data = self.data.modify(year=lambda x: int(x.date[:4]))
         assert len(data) == len(self.data)
-        for i, item in enumerate(data):
-            orig = self.data[i]
+        for item, orig in zip(data, self.data):
             assert item.year == int(orig.date[:4])
             self.assert_common_keys_match(item, orig)
 
     def test_pluck(self):
         dates = self.data.pluck("date")
         assert len(dates) == len(self.data)
-        for i, date in enumerate(dates):
-            assert date == self.data[i].date
+        for date, orig in zip(dates, self.data):
+            assert date == orig.date
 
     def test_rename(self):
-        data = self.data.rename(mdy="date")
+        data = self.data.rename(ymd="date")
         assert len(data) == len(self.data)
-        for i, item in enumerate(data):
-            orig = self.data[i]
-            assert "mdy" in item
+        for item, orig in zip(data, self.data):
+            assert "ymd" in item
             assert "date" not in item
-            assert item.mdy == orig.date
             self.assert_common_keys_match(item, orig)
 
     def test_select(self):
         data = self.data.select("date", "downloads")
         assert len(data) == len(self.data)
-        for i, item in enumerate(data):
-            orig = self.data[i]
-            assert len(item.keys()) == 2
+        for item, orig in zip(data, self.data):
+            assert len(item) == 2
             assert "date" in item
             assert "downloads" in item
             self.assert_common_keys_match(item, orig)
@@ -153,7 +166,7 @@ class TestListOfDicts:
     def test_sort(self):
         data = self.data.sort("date", "category")
         assert len(data) == len(self.data)
-        for i, item in enumerate(data):
+        for item in data:
             assert item in self.data
 
     def test_to_json(self):
@@ -163,16 +176,14 @@ class TestListOfDicts:
 
     def test_unique(self):
         data = self.data.unique("date")
-        assert 0 < len(data) < len(self.data)
-        for i, item in enumerate(data):
+        assert len(data) == 114
+        for item in data:
             assert item in self.data
 
     def test_unselect(self):
         data = self.data.unselect("date", "downloads")
         assert len(data) == len(self.data)
-        for i, item in enumerate(data):
-            orig = self.data[i]
-            assert len(item.keys()) == len(orig.keys()) - 2
+        for item, orig in zip(data, self.data):
             assert "date" not in item
             assert "downloads" not in item
             self.assert_common_keys_match(item, orig)

@@ -25,6 +25,7 @@
 import copy
 import functools
 import json
+import operator
 
 from attd import AttributeDict
 
@@ -53,11 +54,12 @@ class ListOfDicts(list):
 
     @_new_from_generator
     def aggregate(self, **key_function_pairs):
-        groups = [{k: x[k] for k in self._group_keys} for x in self]
-        groups = self.__class__(groups).unique(*self._group_keys)
-        for group in groups.sort(*self._group_keys):
+        by = self._group_keys
+        groups = self.unique(*by).deepcopy().select(*by)
+        key_function_pairs = key_function_pairs.items()
+        for group in groups.sort(*by):
             items = self.filter(**group)
-            for key, function in key_function_pairs.items():
+            for key, function in key_function_pairs:
                 group[key] = function(items)
             yield group
 
@@ -66,21 +68,31 @@ class ListOfDicts(list):
 
     @_new_from_generator
     def filter(self, function=None, **key_value_pairs):
-        if function is None and key_value_pairs:
-            function = lambda x: all(
-                x[k] == v for k, v in key_value_pairs.items())
-        for item in self:
-            if function(item):
-                yield item
+        if callable(function):
+            for item in self:
+                if function(item):
+                    yield item
+        elif key_value_pairs:
+            extract = operator.itemgetter(*key_value_pairs.keys())
+            values = tuple(key_value_pairs.values())
+            values = values[0] if len(values) == 1 else values
+            for item in self:
+                if extract(item) == values:
+                    yield item
 
     @_new_from_generator
     def filter_out(self, function=None, **key_value_pairs):
-        if function is None and key_value_pairs:
-            function = lambda x: all(
-                x[k] == v for k, v in key_value_pairs.items())
-        for item in self:
-            if not function(item):
-                yield item
+        if callable(function):
+            for item in self:
+                if not function(item):
+                    yield item
+        elif key_value_pairs:
+            extract = operator.itemgetter(*key_value_pairs.keys())
+            values = tuple(key_value_pairs.values())
+            values = values[0] if len(values) == 1 else values
+            for item in self:
+                if extract(item) != values:
+                    yield item
 
     @classmethod
     def from_json(cls, string, **kwargs):
@@ -90,22 +102,22 @@ class ListOfDicts(list):
         return cls(obj)
 
     def group_by(self, *keys):
-        return self.__class__(self, keys[:])
+        self._group_keys = keys[:]
+        return self
 
     @_new_from_generator
     def join(self, other, *by):
-        other = {tuple(x[k] for k in by): x for x in other}
+        extract = operator.itemgetter(*by)
+        other = {extract(x): x for x in reversed(other)}
         for item in self:
-            item = item.copy()
-            id = tuple(item[k] for k in by)
-            item.update(other.get(id, {}))
+            item.update(other.get(extract(item), {}))
             yield item
 
     @_new_from_generator
     def modify(self, **key_function_pairs):
+        key_function_pairs = key_function_pairs.items()
         for item in self:
-            item = item.copy()
-            for key, function in key_function_pairs.items():
+            for key, function in key_function_pairs:
                 item[key] = function(item)
             yield item
 
@@ -117,23 +129,23 @@ class ListOfDicts(list):
 
     @_new_from_generator
     def rename(self, **to_from_pairs):
+        to_from_pairs = to_from_pairs.items()
         for item in self:
-            item = item.copy()
-            for to, fm in to_from_pairs.items():
+            for to, fm in to_from_pairs:
                 item[to] = item.pop(fm)
             yield item
 
     @_new_from_generator
     def select(self, *keys):
+        keys = set(keys)
         for item in self:
-            item = item.copy()
-            for key in set(item) - set(keys):
+            for key in set(item) - keys:
                 del item[key]
             yield item
 
     def sort(self, *keys, reverse=False):
-        function = lambda x: tuple(x[k] for k in keys)
-        return self._new(sorted(self, key=function, reverse=reverse))
+        extract = operator.itemgetter(*keys)
+        return self._new(sorted(self, key=extract, reverse=reverse))
 
     def to_json(self, **kwargs):
         kwargs.setdefault("ensure_ascii", False)
@@ -143,8 +155,9 @@ class ListOfDicts(list):
     @_new_from_generator
     def unique(self, *keys):
         found_ids = set()
+        extract = operator.itemgetter(*keys)
         for item in self:
-            id = tuple(item[k] for k in keys)
+            id = extract(item)
             if id not in found_ids:
                 found_ids.add(id)
                 yield item
@@ -152,7 +165,7 @@ class ListOfDicts(list):
     @_new_from_generator
     def unselect(self, *keys):
         for item in self:
-            item = item.copy()
-            for key in set(item) & set(keys):
-                del item[key]
+            for key in keys:
+                if key in item:
+                    del item[key]
             yield item
