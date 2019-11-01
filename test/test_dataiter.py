@@ -161,6 +161,17 @@ class TestListOfDicts:
             self.assert_common_keys_match(item, orig)
         self.assert_original_data_obsolete()
 
+    def test_modify_if(self):
+        predicate = lambda x: x.category == "Linux"
+        data = self.data.modify_if(predicate, year=lambda x: int(x.date[:4]))
+        assert len(data) == len(self.data)
+        for item, orig in zip(data, self.data):
+            assert (item.category == "Linux") == ("year" in item)
+            if item.category == "Linux":
+                assert item.year == int(orig.date[:4])
+            self.assert_common_keys_match(item, orig)
+        self.assert_original_data_obsolete()
+
     def test_pluck(self):
         dates = self.data.pluck("date")
         assert len(dates) == len(self.data)

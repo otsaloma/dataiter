@@ -140,6 +140,16 @@ class ListOfDicts(list):
                 item[key] = function(item)
             yield item
 
+    @_modifies_dicts
+    @_new_from_generator
+    def modify_if(self, predicate, **key_function_pairs):
+        key_function_pairs = key_function_pairs.items()
+        for item in self:
+            if predicate(item):
+                for key, function in key_function_pairs:
+                    item[key] = function(item)
+            yield item
+
     def _new(self, dicts):
         return self.__class__(dicts,
                               group_keys=self._group_keys[:],
