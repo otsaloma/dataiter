@@ -32,6 +32,14 @@ from attd import AttributeDict
 __version__ = "0.2"
 
 
+def _modifies_dicts(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        value = function(*args, **kwargs)
+        args[0]._mark_obsolete()
+        return value
+    return wrapper
+
 def _new_from_generator(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
@@ -43,9 +51,10 @@ class ListOfDicts(list):
 
     """Data as a list of dictionaries."""
 
-    def __init__(self, dicts, group_keys=None, shallow=False):
+    def __init__(self, dicts, group_keys=None, shallow=False, predecessor=None):
         super().__init__(dicts if shallow else (AttributeDict(x) for x in dicts))
         self._group_keys = group_keys or []
+        self._predecessor = predecessor
 
     def __getitem__(self, key):
         # Needed so that slicing gives a ListOfDicts, not a list.
@@ -64,7 +73,10 @@ class ListOfDicts(list):
             yield group
 
     def deepcopy(self):
-        return self._new(copy.deepcopy(self))
+        return self.__class__(copy.deepcopy(self),
+                              group_keys=self._group_keys[:],
+                              shallow=True,
+                              predecessor=None)
 
     @_new_from_generator
     def filter(self, function=None, **key_value_pairs):
@@ -105,6 +117,7 @@ class ListOfDicts(list):
         self._group_keys = keys[:]
         return self
 
+    @_modifies_dicts
     @_new_from_generator
     def join(self, other, *by):
         extract = operator.itemgetter(*by)
@@ -113,6 +126,12 @@ class ListOfDicts(list):
             item.update(other.get(extract(item), {}))
             yield item
 
+    def _mark_obsolete(self):
+        if self._predecessor is not None:
+            self._predecessor._mark_obsolete()
+        self.__class__ = ObsoleteListOfDicts
+
+    @_modifies_dicts
     @_new_from_generator
     def modify(self, **key_function_pairs):
         key_function_pairs = key_function_pairs.items()
@@ -122,11 +141,15 @@ class ListOfDicts(list):
             yield item
 
     def _new(self, dicts):
-        return self.__class__(dicts, self._group_keys[:], shallow=True)
+        return self.__class__(dicts,
+                              group_keys=self._group_keys[:],
+                              shallow=True,
+                              predecessor=self)
 
     def pluck(self, key):
         return [x[key] for x in self]
 
+    @_modifies_dicts
     @_new_from_generator
     def rename(self, **to_from_pairs):
         to_from_pairs = to_from_pairs.items()
@@ -135,6 +158,7 @@ class ListOfDicts(list):
                 item[to] = item.pop(fm)
             yield item
 
+    @_modifies_dicts
     @_new_from_generator
     def select(self, *keys):
         keys = set(keys)
@@ -162,6 +186,7 @@ class ListOfDicts(list):
                 found_ids.add(id)
                 yield item
 
+    @_modifies_dicts
     @_new_from_generator
     def unselect(self, *keys):
         for item in self:
@@ -169,3 +194,14 @@ class ListOfDicts(list):
                 if key in item:
                     del item[key]
             yield item
+
+
+class ObsoleteError(Exception):
+
+    pass
+
+
+class ObsoleteListOfDicts(list):
+
+    def __getattr__(self, name):
+        raise ObsoleteError("Cannot act on a ListOfDicts object whose successor has modified the shared dicts")
