@@ -1,3 +1,10 @@
+2019-11-01: dataiter 0.3
+========================
+
+* Mark ListOfDicts object obsolete thus preventing (accidental) use if a
+  chained successor has modified the shared dicts
+* Add modify_if
+
 2019-10-31: dataiter 0.2
 ========================
 

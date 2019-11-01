@@ -29,7 +29,7 @@ import operator
 
 from attd import AttributeDict
 
-__version__ = "0.2"
+__version__ = "0.3"
 
 
 def _modifies_dicts(function):
