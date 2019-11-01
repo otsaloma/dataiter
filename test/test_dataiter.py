@@ -85,6 +85,22 @@ class TestListOfDicts:
         }]
         self.assert_original_data_unchanged()
 
+    def test_copy(self):
+        data = self.data.copy()
+        assert data == self.data
+        assert data is not self.data
+        for item, orig in zip(data, self.data):
+            assert item == orig
+            assert item is orig
+
+    def test_copy__predecessor(self):
+        a = self.data
+        b = a.select("date")
+        c = b.copy()
+        assert a._predecessor is None
+        assert b._predecessor is a
+        assert c._predecessor is b
+
     def test_deepcopy(self):
         data = self.data.deepcopy()
         assert data == self.data
@@ -92,6 +108,14 @@ class TestListOfDicts:
         for item, orig in zip(data, self.data):
             assert item == orig
             assert item is not orig
+
+    def test_deepcopy__predecessor(self):
+        a = self.data
+        b = a.select("date")
+        c = b.deepcopy()
+        assert a._predecessor is None
+        assert b._predecessor is a
+        assert c._predecessor is None
 
     def test_filter__function(self):
         data = self.data.filter(lambda x: x.category == "Linux")

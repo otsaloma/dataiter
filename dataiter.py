@@ -56,6 +56,18 @@ class ListOfDicts(list):
         self._group_keys = group_keys or []
         self._predecessor = predecessor
 
+    def __copy__(self):
+        return self.__class__(self,
+                              group_keys=self._group_keys[:],
+                              shallow=True,
+                              predecessor=self)
+
+    def __deepcopy__(self, memo=None):
+        return self.__class__(map(copy.deepcopy, self),
+                              group_keys=self._group_keys[:],
+                              shallow=True,
+                              predecessor=None)
+
     def __getitem__(self, key):
         # Needed so that slicing gives a ListOfDicts, not a list.
         value = super().__getitem__(key)
@@ -72,11 +84,11 @@ class ListOfDicts(list):
                 group[key] = function(items)
             yield group
 
+    def copy(self):
+        return self.__copy__()
+
     def deepcopy(self):
-        return self.__class__(copy.deepcopy(self),
-                              group_keys=self._group_keys[:],
-                              shallow=True,
-                              predecessor=None)
+        return self.__deepcopy__()
 
     @_new_from_generator
     def filter(self, function=None, **key_value_pairs):
