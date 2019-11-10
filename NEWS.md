@@ -1,3 +1,11 @@
+2019-11-10: dataiter 0.5
+========================
+
+* Add `read_csv`
+* Add `read_json`
+* Add `write_csv`
+* Add `write_json`
+
 2019-11-01: dataiter 0.4
 ========================
 
