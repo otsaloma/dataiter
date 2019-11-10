@@ -23,9 +23,11 @@
 """Classes for data manipulation."""
 
 import copy
+import csv
 import functools
 import json
 import operator
+import os
 
 from attd import AttributeDict
 
@@ -171,6 +173,17 @@ class ListOfDicts(list):
     def pluck(self, key):
         return [x[key] for x in self]
 
+    @classmethod
+    def read_csv(cls, fname, encoding="utf_8", **kwargs):
+        kwargs.setdefault("dialect", "unix")
+        with open(fname, "r", encoding=encoding) as f:
+            return cls(csv.DictReader(f, **kwargs))
+
+    @classmethod
+    def read_json(cls, fname, encoding="utf_8"):
+        with open(fname, "r", encoding=encoding) as f:
+            return cls.from_json(f.read())
+
     @_modifies_dicts
     @_new_from_generator
     def rename(self, **to_from_pairs):
@@ -216,6 +229,31 @@ class ListOfDicts(list):
                 if key in item:
                     del item[key]
             yield item
+
+    def write_csv(self, fname, encoding="utf_8", **kwargs):
+        if not self:
+            raise Exception("Cannot write empty CSV file")
+        kwargs.setdefault("dialect", "unix")
+        keys = list(self[0].keys())
+        for item in self:
+            if set(item.keys()) != set(keys):
+                raise Exception("Keys differ between dicts")
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        with open(fname, "w", encoding=encoding) as f:
+            writer = csv.DictWriter(f, keys, **kwargs)
+            writer.writeheader()
+            for item in self:
+                writer.writerow(item)
+
+    def write_json(self, fname, encoding="utf_8", **kwargs):
+        kwargs.setdefault("ensure_ascii", False)
+        kwargs.setdefault("indent", 2)
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        with open(fname, "w", encoding=encoding) as f:
+            encoder = json.JSONEncoder(**kwargs)
+            for chunk in encoder.iterencode(self):
+                f.write(chunk)
+            f.write("\n")
 
 
 class ObsoleteError(Exception):

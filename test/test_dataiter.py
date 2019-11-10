@@ -22,6 +22,7 @@
 
 import json
 import os
+import tempfile
 
 from dataiter import ListOfDicts
 from dataiter import ObsoleteError
@@ -43,9 +44,7 @@ class TestListOfDicts:
     def setup_method(self, method):
         # https://pypistats.org/api/packages/attd/system
         fname = os.path.splitext(__file__)[0] + ".json"
-        with open(fname, "r") as f:
-            data = json.load(f)["data"]
-        self.data = ListOfDicts(data)
+        self.data = ListOfDicts.read_json(fname)
         self.data_backup = self.data.deepcopy()
 
     def test___getitem____dict(self):
@@ -203,6 +202,17 @@ class TestListOfDicts:
             assert date == orig.date
         self.assert_original_data_unchanged()
 
+    def test_read_csv(self):
+        fname = os.path.splitext(__file__)[0] + ".csv"
+        data = ListOfDicts.read_csv(fname)
+        data = data.modify(downloads=lambda x: int(x.downloads))
+        assert data == self.data
+
+    def test_read_json(self):
+        fname = os.path.splitext(__file__)[0] + ".json"
+        data = ListOfDicts.read_json(fname)
+        assert data == self.data
+
     def test_rename(self):
         data = self.data.rename(ymd="date")
         assert len(data) == len(self.data)
@@ -251,15 +261,26 @@ class TestListOfDicts:
             self.assert_common_keys_match(item, orig)
         self.assert_original_data_obsolete()
 
+    def test_write_csv(self):
+        handle, fname = tempfile.mkstemp(".csv")
+        self.data.write_csv(fname)
+        data = ListOfDicts.read_csv(fname)
+        data = data.modify(downloads=lambda x: int(x.downloads))
+        assert data == self.data
+
+    def test_write_json(self):
+        handle, fname = tempfile.mkstemp(".json")
+        self.data.write_json(fname)
+        data = ListOfDicts.read_json(fname)
+        assert data == self.data
+
 
 class TestObsoleteListOfDicts:
 
     def setup_method(self, method):
         # https://pypistats.org/api/packages/attd/system
         fname = os.path.splitext(__file__)[0] + ".json"
-        with open(fname, "r") as f:
-            data = json.load(f)["data"]
-        self.data = ListOfDicts(data)
+        self.data = ListOfDicts.read_json(fname)
 
     def test___getattr__(self):
         data = self.data.select("date") # noqa
