@@ -1,3 +1,8 @@
+2019-11-29: dataiter 0.6
+========================
+
+* Fix `ObsoleteError` after multiple modifying actions
+
 2019-11-10: dataiter 0.5
 ========================
 
