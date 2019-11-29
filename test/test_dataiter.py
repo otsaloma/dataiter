@@ -176,6 +176,12 @@ class TestListOfDicts:
             self.assert_common_keys_match(item, orig)
         self.assert_original_data_obsolete()
 
+    def test__mark_obsolete__multiple_modify(self):
+        data = self.data
+        data = data.modify(a=lambda x: 1)
+        data = data.modify(b=lambda x: 2)
+        data = data.modify(c=lambda x: 3)
+
     def test_modify(self):
         data = self.data.modify(year=lambda x: int(x.date[:4]))
         assert len(data) == len(self.data)

@@ -141,7 +141,7 @@ class ListOfDicts(list):
             yield item
 
     def _mark_obsolete(self):
-        if self._predecessor is not None:
+        if isinstance(self._predecessor, ListOfDicts):
             self._predecessor._mark_obsolete()
         self.__class__ = ObsoleteListOfDicts
 
