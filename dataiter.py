@@ -24,6 +24,7 @@
 
 import copy
 import csv
+import datetime
 import functools
 import json
 import operator
@@ -33,6 +34,38 @@ from attd import AttributeDict
 
 __version__ = "0.6"
 
+
+class Parser:
+
+    def __init__(self, missing_values, function):
+        self.function = function
+        self.missing_values = set(missing_values)
+
+    def check(self, value):
+        try:
+            self.parse(value)
+            return True
+        except Exception:
+            return False
+
+    def parse(self, value):
+        if value in self.missing_values: return None
+        return self.function(value)
+
+
+def _guess_type(values, missing_values, date_format, datetime_format, max_items):
+    _bool = lambda x: {"true": True, "false": False}[x.lower()]
+    _date = lambda x: datetime.datetime.strptime(x, date_format).date()
+    _datetime = lambda x: datetime.datetime.strptime(value, datetime_format)
+    parsers = [_bool, int, float, _date, _datetime, str]
+    parsers = [Parser(missing_values, x) for x in parsers]
+    for value in values[:max_items]:
+        for parser in parsers[:]:
+            if not parser.check(value):
+                parsers.remove(parser)
+    # If all else fails, the string parser should always be left.
+    parse = parsers[0].parse
+    return [parse(x) for x in values]
 
 def _modifies_dicts(function):
     @functools.wraps(function)
@@ -130,6 +163,29 @@ class ListOfDicts(list):
     def group_by(self, *keys):
         self._group_keys = keys[:]
         return self
+
+    @_modifies_dicts
+    @_new_from_generator
+    def guess_types(self,
+                    missing_values=["", "NA", "na", "NaN", "nan"],
+                    date_format="%Y-%m-%d",
+                    datetime_format="%Y-%m-%dT%H:%M:%S",
+                    max_items=1000):
+        new_values = {}
+        print("Guessing types...")
+        for key in self[0].keys():
+            new_values[key] = _guess_type(self.pluck(key),
+                                          missing_values=missing_values,
+                                          date_format=date_format,
+                                          datetime_format=datetime_format,
+                                          max_items=max_items)
+
+            type = new_values[key][0].__class__.__name__
+            print("... {}: {}".format(key, type))
+        for i, item in enumerate(self):
+            for key in item.keys():
+                item[key] = new_values[key][i]
+            yield item
 
     @_modifies_dicts
     @_new_from_generator

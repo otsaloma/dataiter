@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import datetime
 import json
 import os
 import tempfile
@@ -156,6 +157,15 @@ class TestListOfDicts:
     def test_group_by(self):
         self.data.group_by("category")
         self.assert_original_data_unchanged()
+
+    def test_guess_types(self):
+        fname = os.path.splitext(__file__)[0] + ".csv"
+        data = ListOfDicts.read_csv(fname)
+        data = data.guess_types()
+        for item in data:
+            assert isinstance(item.category, str)
+            assert isinstance(item.date, datetime.date)
+            assert isinstance(item.downloads, int)
 
     def test_join(self):
         other = ListOfDicts([{
