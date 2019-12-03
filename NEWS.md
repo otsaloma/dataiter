@@ -1,3 +1,8 @@
+2019-12-03: dataiter 0.7
+========================
+
+* Make `sort` handle `None` values, sorted last
+
 2019-11-29: dataiter 0.6
 ========================
 
