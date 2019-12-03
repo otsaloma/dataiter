@@ -31,7 +31,7 @@ import os
 
 from attd import AttributeDict
 
-__version__ = "0.5"
+__version__ = "0.6"
 
 
 def _modifies_dicts(function):
