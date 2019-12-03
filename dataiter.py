@@ -203,8 +203,9 @@ class ListOfDicts(list):
             yield item
 
     def sort(self, *keys, reverse=False):
-        extract = operator.itemgetter(*keys)
-        return self._new(sorted(self, key=extract, reverse=reverse))
+        def sort_key(item):
+            return tuple((item[x] is None, item[x]) for x in keys)
+        return self._new(sorted(self, key=sort_key, reverse=reverse))
 
     def to_json(self, **kwargs):
         kwargs.setdefault("ensure_ascii", False)

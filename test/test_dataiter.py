@@ -245,6 +245,23 @@ class TestListOfDicts:
             assert item in self.data
         self.assert_original_data_unchanged()
 
+    def test_sort__none_single(self):
+        # Nones should be sorted last.
+        self.data[0].category = None
+        data = self.data.sort("category")
+        assert data[-1] == self.data[0]
+
+    def test_sort__none_multiple(self):
+        # Nones should be sorted group-wise last.
+        self.data[0].category = None
+        self.data[1].date = None
+        self.data[2].category = None
+        self.data[2].date = None
+        data = self.data.sort("date", "category")
+        assert data[ 7] == self.data[0]
+        assert data[-2] == self.data[1]
+        assert data[-1] == self.data[2]
+
     def test_to_json(self):
         string = self.data.to_json()
         data = ListOfDicts.from_json(string)
