@@ -1,5 +1,7 @@
 # -*- coding: utf-8-unix -*-
 
+# EDITOR must wait!
+EDITOR = nano
 PREFIX = /usr/local
 
 check:
@@ -17,10 +19,31 @@ clean:
 install:
 	./setup.py install --prefix=$(PREFIX)
 
-push:
-	$(MAKE) clean
+# Interactive!
+publish:
+	$(MAKE) check test clean
 	./setup.py sdist bdist_wheel
+	test -s dist/dataiter-*-py3-none-any.whl
+	test -s dist/dataiter-*.tar.gz
+	ls -l dist
+	@printf "Press Enter to upload or Ctrl+C to abort: "; read _
 	twine upload dist/*
+	sudo pip3 uninstall dataiter || true
+	sudo pip3 uninstall dataiter || true
+	sudo pip3 install dataiter
+	$(MAKE) test-installed
+
+# Interactive!
+release:
+	$(MAKE) check test clean
+	@echo "BUMP VERSION NUMBERS"
+	$(EDITOR) dataiter.py
+	$(EDITOR) setup.py
+	@echo "ADD RELEASE NOTES"
+	$(EDITOR) NEWS.md
+	sudo $(MAKE) install clean
+	$(MAKE) test-installed
+	tools/release
 
 test:
 	py.test .
@@ -28,4 +51,4 @@ test:
 test-installed:
 	cd && python3 -c "import dataiter; dataiter.ListOfDicts([])"
 
-.PHONY: check clean install push test test-installed
+.PHONY: check clean install publish release test test-installed
