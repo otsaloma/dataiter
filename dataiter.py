@@ -26,12 +26,15 @@ import copy
 import csv
 import functools
 import json
+import numpy as np
 import operator
 import os
 
 from attd import AttributeDict
 
 __version__ = "0.7"
+
+DATA_FRAME_PRINT_MAX_ROWS = 10
 
 
 def _modifies_dicts(function):
@@ -48,10 +51,177 @@ def _new_from_generator(function):
         return args[0]._new(function(*args, **kwargs))
     return wrapper
 
+def _translate_error(fm, to):
+    def outer_wrapper(function):
+        @functools.wraps(function)
+        def inner_wrapper(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            except fm as error:
+                raise to(str(error))
+        return inner_wrapper
+    return outer_wrapper
+
+
+class DataFrame(dict):
+
+    """A table (dictionary of :class:`DataFrameColumn`s)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for key, value in self.items():
+            if not isinstance(value, DataFrameColumn):
+                super().__setitem__(key, DataFrameColumn(value))
+
+    def __copy__(self):
+        return self.__class__(self)
+
+    def __deepcopy__(self, memo=None):
+        return self.__class__({k: v.copy() for k, v in self.items()})
+
+    @_translate_error(KeyError, AttributeError)
+    def __delattr__(self, name):
+        return self.__delitem__(name)
+
+    @_translate_error(KeyError, AttributeError)
+    def __getattr__(self, name):
+        return self.__getitem__(name)
+
+    def __setattr__(self, name, value):
+        return self.__setitem__(name, value)
+
+    def __setitem__(self, key, value):
+        nrow = self.nrow if self else None
+        value = DataFrameColumn(value, nrow=nrow)
+        return super().__setitem__(key, value)
+
+    def __str__(self):
+        # TODO: Wrap columns like R's print.data.frame.
+        # TODO: Use better type-specific formatting.
+        rows = []
+        rows.append(self.colnames)
+        rows.append([str(x.dtype) for x in self.columns])
+        for i in range(min(self.nrow, DATA_FRAME_PRINT_MAX_ROWS)):
+            rows.append([str(x[i]) for x in self.columns])
+        for i in range(len(rows[0])):
+            width = max(len(x[i]) for x in rows)
+            for row in rows:
+                padding = width - len(row[i])
+                row[i] = " " * padding + row[i]
+        rows = [" ".join(x) for x in rows]
+        return "\n" + "\n".join(rows)
+
+    def aggregate(self, **name_function_pairs):
+        raise NotImplementedError
+
+    @property
+    def colnames(self):
+        return list(self)
+
+    @property
+    def columns(self):
+        return list(self.values())
+
+    def copy(self):
+        return self.__copy__()
+
+    def deepcopy(self):
+        return self.__deepcopy__()
+
+    def filter(self, function=None, **name_value_pairs):
+        raise NotImplementedError
+
+    def filter_out(self, function=None, **name_value_pairs):
+        raise NotImplementedError
+
+    @classmethod
+    def from_json(cls, string, **kwargs):
+        obj = json.loads(string, **kwargs)
+        if not isinstance(obj, list):
+            raise TypeError("Not a list")
+        columns = {}
+        for item in obj:
+            for key, value in item.items():
+                columns.setdefault(key, []).append(value)
+        return cls(**columns)
+
+    def group_by(self, *names):
+        raise NotImplementedError
+
+    def join(self, other, *by):
+        raise NotImplementedError
+
+    @property
+    def ncol(self):
+        return len(self)
+
+    @property
+    def nrow(self):
+        if not self: return 0
+        return self[next(iter(self))].nrow
+
+    @classmethod
+    def read_csv(cls, fname, encoding="utf_8", **kwargs):
+        raise NotImplementedError
+
+    @classmethod
+    def read_json(cls, fname, encoding="utf_8"):
+        with open(fname, "r", encoding=encoding) as f:
+            return cls.from_json(f.read())
+
+    def rename(self, **to_from_pairs):
+        raise NotImplementedError
+
+    def select(self, *names):
+        raise NotImplementedError
+
+    def sort(self, *names, reverse=False):
+        raise NotImplementedError
+
+    def to_json(self, **kwargs):
+        raise NotImplementedError
+
+    def unique(self, *names):
+        raise NotImplementedError
+
+    def unselect(self, *names):
+        raise NotImplementedError
+
+    def write_csv(self, fname, encoding="utf_8", **kwargs):
+        raise NotImplementedError
+
+    def write_json(self, fname, encoding="utf_8", **kwargs):
+        raise NotImplementedError
+
+
+class DataFrameColumn(np.ndarray):
+
+    """A vector (one-dimensional Numpy array)."""
+
+    def __new__(cls, object, dtype=None, nrow=None):
+        column = np.array(object, dtype)
+        if nrow is not None and nrow != column.size:
+            if not (column.size == 1 and nrow > 1):
+                raise ValueError("Incompatible object and nrow for broadcast")
+            column = column.repeat(nrow)
+        return column.view(cls)
+
+    def __init__(self, object, dtype=None, nrow=None):
+        self.__check_dimensions()
+
+    def __check_dimensions(self):
+        if self.ndim == 1: return
+        raise ValueError("Bad dimensions: {!r}".format(self.ndim))
+
+    @property
+    def nrow(self):
+        self.__check_dimensions()
+        return self.size
+
 
 class ListOfDicts(list):
 
-    """Data as a list of dictionaries."""
+    """A list of dictionaries."""
 
     def __init__(self, dicts, group_keys=None, shallow=False, predecessor=None):
         super().__init__(dicts if shallow else (AttributeDict(x) for x in dicts))

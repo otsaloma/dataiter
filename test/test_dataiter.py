@@ -21,12 +21,163 @@
 # THE SOFTWARE.
 
 import json
+import numpy as np
 import os
 import tempfile
 
+from dataiter import DataFrame
+from dataiter import DataFrameColumn
 from dataiter import ListOfDicts
 from dataiter import ObsoleteError
 from dataiter import ObsoleteListOfDicts
+
+
+class TestDataFrame:
+
+    def setup_method(self, method):
+        # https://pypistats.org/api/packages/attd/system
+        fname = os.path.splitext(__file__)[0] + ".json"
+        self.data = DataFrame.read_json(fname)
+        self.data_backup = self.data.deepcopy()
+
+    def test___init__(self):
+        # TODO:
+        pass
+
+    def test___copy__(self):
+        # TODO:
+        pass
+
+    def test___deepcopy__(self):
+        # TODO:
+        pass
+
+    def test___delattr__(self):
+        # TODO:
+        pass
+
+    def test___getattr__(self):
+        # TODO:
+        pass
+
+    def test___setattr__(self):
+        # TODO:
+        pass
+
+    def test___setitem__(self):
+        # TODO:
+        pass
+
+    def test___str__(self):
+        print(self.data)
+
+    def test_aggregate(self):
+        # TODO:
+        pass
+
+    def test_colnames(self):
+        # TODO:
+        pass
+
+    def test_columns(self):
+        # TODO:
+        pass
+
+    def test_copy(self):
+        # TODO:
+        pass
+
+    def test_deepcopy(self):
+        # TODO:
+        pass
+
+    def test_filter(self):
+        # TODO:
+        pass
+
+    def test_filter_out(self):
+        # TODO:
+        pass
+
+    def test_from_json(self):
+        # TODO:
+        pass
+
+    def test_group_by(self):
+        # TODO:
+        pass
+
+    def test_join(self):
+        # TODO:
+        pass
+
+    def test_ncol(self):
+        # TODO:
+        pass
+
+    def test_nrow(self):
+        # TODO:
+        pass
+
+    def test_read_csv(self):
+        # TODO:
+        pass
+
+    def test_read_json(self):
+        # TODO:
+        pass
+
+    def test_rename(self):
+        # TODO:
+        pass
+
+    def test_select(self):
+        # TODO:
+        pass
+
+    def test_sort(self):
+        # TODO:
+        pass
+
+    def test_to_json(self):
+        # TODO:
+        pass
+
+    def test_unique(self):
+        # TODO:
+        pass
+
+    def test_unselect(self):
+        # TODO:
+        pass
+
+    def test_write_csv(self):
+        # TODO:
+        pass
+
+    def test_write_json(self):
+        # TODO:
+        pass
+
+
+class TestDataFrameColumn:
+
+    def test___init__(self):
+        column = DataFrameColumn([1, 2, 3])
+        assert isinstance(column, DataFrameColumn)
+        assert isinstance(column, np.ndarray)
+
+    def test___init__given_dtype(self):
+        column = DataFrameColumn([1, 2, 3], dtype="float64")
+        assert column.dtype is np.dtype("float64")
+
+    def test__init___given_nrow(self):
+        column = DataFrameColumn(1, nrow=3)
+        assert column.tolist() == [1, 1, 1]
+
+    def test_nrow(self):
+        column = DataFrameColumn([1, 2, 3])
+        assert column.nrow == 3
 
 
 class TestListOfDicts:
@@ -47,11 +198,11 @@ class TestListOfDicts:
         self.data = ListOfDicts.read_json(fname)
         self.data_backup = self.data.deepcopy()
 
-    def test___getitem____dict(self):
+    def test___getitem___expect_dict(self):
         data = self.data[0]
         assert isinstance(data, dict)
 
-    def test___getitem____list(self):
+    def test___getitem___expect_list(self):
         data = self.data[:3]
         assert isinstance(data, ListOfDicts)
 
@@ -92,7 +243,7 @@ class TestListOfDicts:
             assert item == orig
             assert item is orig
 
-    def test_copy__predecessor(self):
+    def test_copy_handle_predecessor(self):
         a = self.data
         b = a.select("date")
         c = b.copy()
@@ -108,7 +259,7 @@ class TestListOfDicts:
             assert item == orig
             assert item is not orig
 
-    def test_deepcopy__predecessor(self):
+    def test_deepcopy_handle_predecessor(self):
         a = self.data
         b = a.select("date")
         c = b.deepcopy()
@@ -116,7 +267,7 @@ class TestListOfDicts:
         assert b._predecessor is a
         assert c._predecessor is None
 
-    def test_filter__function(self):
+    def test_filter_given_function(self):
         data = self.data.filter(lambda x: x.category == "Linux")
         assert len(data) == 38
         for item in data:
@@ -124,7 +275,7 @@ class TestListOfDicts:
             assert item in self.data
         self.assert_original_data_unchanged()
 
-    def test_filter__key_value_pairs(self):
+    def test_filter_given_key_value_pairs(self):
         data = self.data.filter(category="Linux")
         assert len(data) == 38
         for item in data:
@@ -132,7 +283,7 @@ class TestListOfDicts:
             assert item in self.data
         self.assert_original_data_unchanged()
 
-    def test_filter_out__function(self):
+    def test_filter_out_given_function(self):
         data = self.data.filter_out(lambda x: x.category == "Linux")
         assert len(data) == 99
         for item in data:
@@ -140,7 +291,7 @@ class TestListOfDicts:
             assert item in self.data
         self.assert_original_data_unchanged()
 
-    def test_filter_out__key_value_pairs(self):
+    def test_filter_out_given_key_value_pairs(self):
         data = self.data.filter_out(category="Linux")
         assert len(data) == 99
         for item in data:
@@ -176,7 +327,7 @@ class TestListOfDicts:
             self.assert_common_keys_match(item, orig)
         self.assert_original_data_obsolete()
 
-    def test__mark_obsolete__multiple_modify(self):
+    def test__mark_obsolete_after_multiple_modify(self):
         data = self.data
         data = data.modify(a=lambda x: 1)
         data = data.modify(b=lambda x: 2)
@@ -245,13 +396,13 @@ class TestListOfDicts:
             assert item in self.data
         self.assert_original_data_unchanged()
 
-    def test_sort__none_single(self):
+    def test_sort_with_none(self):
         # Nones should be sorted last.
         self.data[0].category = None
         data = self.data.sort("category")
         assert data[-1] == self.data[0]
 
-    def test_sort__none_multiple(self):
+    def test_sort_with_none_multiple_keys(self):
         # Nones should be sorted group-wise last.
         self.data[0].category = None
         self.data[1].date = None
