@@ -20,236 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""Classes for data manipulation."""
-
 import copy
 import csv
-import functools
+import itertools
 import json
-import numpy as np
 import operator
 import os
 
 from attd import AttributeDict
-
-__version__ = "0.7"
-
-PRINT_FLOAT_PRECISION = 6
-PRINT_MAX_ROWS = 10
-PRINT_MAX_WIDTH = 80
-
-np.set_printoptions(
-    linewidth=PRINT_MAX_WIDTH,
-    precision=PRINT_FLOAT_PRECISION,
-)
-
-
-def _modifies_dicts(function):
-    @functools.wraps(function)
-    def wrapper(self, *args, **kwargs):
-        value = function(self, *args, **kwargs)
-        self._mark_obsolete()
-        return value
-    return wrapper
-
-def _new_from_generator(function):
-    @functools.wraps(function)
-    def wrapper(self, *args, **kwargs):
-        return self._new(function(self, *args, **kwargs))
-    return wrapper
-
-def _to_string(value):
-    return np.array2string(
-        value,
-        precision=PRINT_FLOAT_PRECISION,
-        formatter={"numpystr": str, "str": str},
-    )
-
-def _translate_error(fm, to):
-    def outer_wrapper(function):
-        @functools.wraps(function)
-        def inner_wrapper(*args, **kwargs):
-            try:
-                return function(*args, **kwargs)
-            except fm as error:
-                raise to(str(error))
-        return inner_wrapper
-    return outer_wrapper
-
-
-class DataFrame(dict):
-
-    """A table (dictionary of :class:`DataFrameColumn`s)."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for key, value in self.items():
-            if not isinstance(value, DataFrameColumn):
-                super().__setitem__(key, DataFrameColumn(value))
-
-    def __copy__(self):
-        return self.__class__(self)
-
-    def __deepcopy__(self, memo=None):
-        return self.__class__({k: v.copy() for k, v in self.items()})
-
-    @_translate_error(KeyError, AttributeError)
-    def __delattr__(self, colname):
-        return self.__delitem__(colname)
-
-    @_translate_error(KeyError, AttributeError)
-    def __getattr__(self, colname):
-        return self.__getitem__(colname)
-
-    def __setattr__(self, colname, value):
-        return self.__setitem__(colname, value)
-
-    def __setitem__(self, key, value):
-        nrow = self.nrow if self else None
-        value = DataFrameColumn(value, nrow=nrow)
-        return super().__setitem__(key, value)
-
-    def __str__(self):
-        rows = [self.colnames]
-        rows.append([str(x.dtype) for x in self.columns])
-        for i in range(min(self.nrow, PRINT_MAX_ROWS)):
-            rows.append([_to_string(x[i]) for x in self.columns])
-        for i in range(len(rows[0])):
-            width = max(len(x[i]) for x in rows)
-            for row in rows:
-                padding = width - len(row[i])
-                row[i] = " " * padding + row[i]
-        # If the length of rows exceeds PRINT_MAX_WIDTH, split to
-        # batches of columns (like R's print.data.frame).
-        rows_to_print = []
-        while rows[0]:
-            batch_column_count = 0
-            for i in range(len(rows[0])):
-                text = " ".join(rows[0][:(i+1)])
-                if len(text) <= PRINT_MAX_WIDTH:
-                    batch_column_count = i + 1
-            batch_rows = [""] * len(rows)
-            for i, row in enumerate(rows):
-                batch_rows[i] += " ".join(row[:batch_column_count])
-                del row[:batch_column_count]
-            rows_to_print.extend(batch_rows)
-        return "\n".join(rows_to_print)
-
-    def aggregate(self, **colname_function_pairs):
-        raise NotImplementedError
-
-    @property
-    def colnames(self):
-        return list(self)
-
-    @property
-    def columns(self):
-        return list(self.values())
-
-    def copy(self):
-        return self.__copy__()
-
-    def deepcopy(self):
-        return self.__deepcopy__()
-
-    def filter(self, function=None, **colname_value_pairs):
-        raise NotImplementedError
-
-    def filter_out(self, function=None, **colname_value_pairs):
-        raise NotImplementedError
-
-    @classmethod
-    def from_json(cls, string, **kwargs):
-        obj = json.loads(string, **kwargs)
-        if not isinstance(obj, list):
-            raise TypeError("Not a list")
-        columns = {}
-        for item in obj:
-            for key, value in item.items():
-                columns.setdefault(key, []).append(value)
-        return cls(**columns)
-
-    def group_by(self, *colnames):
-        raise NotImplementedError
-
-    def join(self, other, *by):
-        raise NotImplementedError
-
-    @property
-    def ncol(self):
-        return len(self)
-
-    @property
-    def nrow(self):
-        if not self: return 0
-        return self[next(iter(self))].nrow
-
-    @classmethod
-    def read_csv(cls, fname, encoding="utf_8", **kwargs):
-        # TODO: Need to guess types, wrap pandas.read_csv?
-        raise NotImplementedError
-
-    @classmethod
-    def read_json(cls, fname, encoding="utf_8"):
-        with open(fname, "r", encoding=encoding) as f:
-            return cls.from_json(f.read())
-
-    def rename(self, **to_from_pairs):
-        raise NotImplementedError
-
-    def select(self, *colnames):
-        raise NotImplementedError
-
-    def sort(self, *colnames, reverse=False):
-        raise NotImplementedError
-
-    def to_json(self, **kwargs):
-        raise NotImplementedError
-
-    def unique(self, *colnames):
-        raise NotImplementedError
-
-    def unselect(self, *colnames):
-        raise NotImplementedError
-
-    def write_csv(self, fname, encoding="utf_8", **kwargs):
-        raise NotImplementedError
-
-    def write_json(self, fname, encoding="utf_8", **kwargs):
-        raise NotImplementedError
-
-
-class DataFrameColumn(np.ndarray):
-
-    """A vector (one-dimensional NumPy array)."""
-
-    def __new__(cls, object, dtype=None, nrow=None):
-        column = np.array(object, dtype)
-        if nrow is not None and nrow != column.size:
-            if not (column.size == 1 and nrow > 1):
-                raise ValueError("Incompatible object and nrow for broadcast")
-            column = column.repeat(nrow)
-        return column.view(cls)
-
-    def __init__(self, object, dtype=None, nrow=None):
-        self.__check_dimensions()
-
-    def __str__(self):
-        return _to_string(self)
-
-    def __check_dimensions(self):
-        if self.ndim == 1: return
-        raise ValueError("Bad dimensions: {!r}".format(self.ndim))
-
-    @property
-    def nrow(self):
-        self.__check_dimensions()
-        return self.size
+from dataiter import deco
+from dataiter import util
 
 
 class ListOfDicts(list):
-
-    """A list of dictionaries."""
 
     def __init__(self, dicts, group_keys=None, shallow=False, predecessor=None):
         super().__init__(dicts if shallow else (AttributeDict(x) for x in dicts))
@@ -273,7 +56,7 @@ class ListOfDicts(list):
         value = super().__getitem__(key)
         return self._new(value) if isinstance(value, list) else value
 
-    @_new_from_generator
+    @deco.new_from_generator
     def aggregate(self, **key_function_pairs):
         by = self._group_keys
         groups = self.unique(*by).deepcopy().select(*by)
@@ -290,7 +73,7 @@ class ListOfDicts(list):
     def deepcopy(self):
         return self.__deepcopy__()
 
-    @_new_from_generator
+    @deco.new_from_generator
     def filter(self, function=None, **key_value_pairs):
         if callable(function):
             for item in self:
@@ -304,7 +87,7 @@ class ListOfDicts(list):
                 if extract(item) == values:
                     yield item
 
-    @_new_from_generator
+    @deco.new_from_generator
     def filter_out(self, function=None, **key_value_pairs):
         if callable(function):
             for item in self:
@@ -329,8 +112,8 @@ class ListOfDicts(list):
         self._group_keys = keys[:]
         return self
 
-    @_modifies_dicts
-    @_new_from_generator
+    @deco.obsoletes
+    @deco.new_from_generator
     def join(self, other, *by):
         extract = operator.itemgetter(*by)
         other = {extract(x): x for x in reversed(other)}
@@ -343,8 +126,8 @@ class ListOfDicts(list):
             self._predecessor._mark_obsolete()
         self.__class__ = ObsoleteListOfDicts
 
-    @_modifies_dicts
-    @_new_from_generator
+    @deco.obsoletes
+    @deco.new_from_generator
     def modify(self, **key_function_pairs):
         key_function_pairs = key_function_pairs.items()
         for item in self:
@@ -352,8 +135,8 @@ class ListOfDicts(list):
                 item[key] = function(item)
             yield item
 
-    @_modifies_dicts
-    @_new_from_generator
+    @deco.obsoletes
+    @deco.new_from_generator
     def modify_if(self, predicate, **key_function_pairs):
         key_function_pairs = key_function_pairs.items()
         for item in self:
@@ -372,18 +155,21 @@ class ListOfDicts(list):
         return [x[key] for x in self]
 
     @classmethod
-    def read_csv(cls, fname, encoding="utf_8", **kwargs):
-        kwargs.setdefault("dialect", "unix")
+    def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         with open(fname, "r", encoding=encoding) as f:
-            return cls(csv.DictReader(f, **kwargs))
+            rows = list(csv.reader(f, dialect="unix", delimiter=sep))
+            if not rows: return cls([])
+            fallback = itertools.islice(util.yield_colnames(), len(rows[0]))
+            keys = rows.pop(0) if header else list(fallback)
+            return cls(dict(zip(keys, x)) for x in rows)
 
     @classmethod
-    def read_json(cls, fname, encoding="utf_8"):
+    def read_json(cls, fname, encoding="utf_8", **kwargs):
         with open(fname, "r", encoding=encoding) as f:
-            return cls.from_json(f.read())
+            return cls.from_json(f.read(), **kwargs)
 
-    @_modifies_dicts
-    @_new_from_generator
+    @deco.obsoletes
+    @deco.new_from_generator
     def rename(self, **to_from_pairs):
         to_from_pairs = to_from_pairs.items()
         for item in self:
@@ -391,8 +177,8 @@ class ListOfDicts(list):
                 item[to] = item.pop(fm)
             yield item
 
-    @_modifies_dicts
-    @_new_from_generator
+    @deco.obsoletes
+    @deco.new_from_generator
     def select(self, *keys):
         keys = set(keys)
         for item in self:
@@ -410,7 +196,7 @@ class ListOfDicts(list):
         kwargs.setdefault("indent", 2)
         return json.dumps(self, **kwargs)
 
-    @_new_from_generator
+    @deco.new_from_generator
     def unique(self, *keys):
         found_ids = set()
         extract = operator.itemgetter(*keys)
@@ -420,8 +206,8 @@ class ListOfDicts(list):
                 found_ids.add(id)
                 yield item
 
-    @_modifies_dicts
-    @_new_from_generator
+    @deco.obsoletes
+    @deco.new_from_generator
     def unselect(self, *keys):
         for item in self:
             for key in keys:
@@ -429,18 +215,17 @@ class ListOfDicts(list):
                     del item[key]
             yield item
 
-    def write_csv(self, fname, encoding="utf_8", **kwargs):
+    def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         if not self:
             raise Exception("Cannot write empty CSV file")
-        kwargs.setdefault("dialect", "unix")
         keys = list(self[0].keys())
         for item in self:
             if set(item.keys()) != set(keys):
                 raise Exception("Keys differ between dicts")
         os.makedirs(os.path.dirname(fname), exist_ok=True)
         with open(fname, "w", encoding=encoding) as f:
-            writer = csv.DictWriter(f, keys, **kwargs)
-            writer.writeheader()
+            writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
+            writer.writeheader() if header else None
             for item in self:
                 writer.writerow(item)
 

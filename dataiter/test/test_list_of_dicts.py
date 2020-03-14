@@ -21,163 +21,12 @@
 # THE SOFTWARE.
 
 import json
-import numpy as np
 import os
 import tempfile
 
-from dataiter import DataFrame
-from dataiter import DataFrameColumn
 from dataiter import ListOfDicts
 from dataiter import ObsoleteError
 from dataiter import ObsoleteListOfDicts
-
-
-class TestDataFrame:
-
-    def setup_method(self, method):
-        # https://pypistats.org/api/packages/attd/system
-        fname = os.path.splitext(__file__)[0] + ".json"
-        self.data = DataFrame.read_json(fname)
-        self.data_backup = self.data.deepcopy()
-
-    def test___init__(self):
-        # TODO:
-        pass
-
-    def test___copy__(self):
-        # TODO:
-        pass
-
-    def test___deepcopy__(self):
-        # TODO:
-        pass
-
-    def test___delattr__(self):
-        # TODO:
-        pass
-
-    def test___getattr__(self):
-        # TODO:
-        pass
-
-    def test___setattr__(self):
-        # TODO:
-        pass
-
-    def test___setitem__(self):
-        # TODO:
-        pass
-
-    def test___str__(self):
-        print(self.data)
-
-    def test_aggregate(self):
-        # TODO:
-        pass
-
-    def test_colnames(self):
-        # TODO:
-        pass
-
-    def test_columns(self):
-        # TODO:
-        pass
-
-    def test_copy(self):
-        # TODO:
-        pass
-
-    def test_deepcopy(self):
-        # TODO:
-        pass
-
-    def test_filter(self):
-        # TODO:
-        pass
-
-    def test_filter_out(self):
-        # TODO:
-        pass
-
-    def test_from_json(self):
-        # TODO:
-        pass
-
-    def test_group_by(self):
-        # TODO:
-        pass
-
-    def test_join(self):
-        # TODO:
-        pass
-
-    def test_ncol(self):
-        # TODO:
-        pass
-
-    def test_nrow(self):
-        # TODO:
-        pass
-
-    def test_read_csv(self):
-        # TODO:
-        pass
-
-    def test_read_json(self):
-        # TODO:
-        pass
-
-    def test_rename(self):
-        # TODO:
-        pass
-
-    def test_select(self):
-        # TODO:
-        pass
-
-    def test_sort(self):
-        # TODO:
-        pass
-
-    def test_to_json(self):
-        # TODO:
-        pass
-
-    def test_unique(self):
-        # TODO:
-        pass
-
-    def test_unselect(self):
-        # TODO:
-        pass
-
-    def test_write_csv(self):
-        # TODO:
-        pass
-
-    def test_write_json(self):
-        # TODO:
-        pass
-
-
-class TestDataFrameColumn:
-
-    def test___init__(self):
-        column = DataFrameColumn([1, 2, 3])
-        assert isinstance(column, DataFrameColumn)
-        assert isinstance(column, np.ndarray)
-
-    def test___init__given_dtype(self):
-        column = DataFrameColumn([1, 2, 3], dtype="float64")
-        assert column.dtype is np.dtype("float64")
-
-    def test__init___given_nrow(self):
-        column = DataFrameColumn(1, nrow=3)
-        assert column.tolist() == [1, 1, 1]
-
-    def test_nrow(self):
-        column = DataFrameColumn([1, 2, 3])
-        assert column.nrow == 3
 
 
 class TestListOfDicts:
@@ -194,7 +43,8 @@ class TestListOfDicts:
 
     def setup_method(self, method):
         # https://pypistats.org/api/packages/attd/system
-        fname = os.path.splitext(__file__)[0] + ".json"
+        directory = os.path.dirname(__file__)
+        fname = os.path.join(directory, "data", "downloads.json")
         self.data = ListOfDicts.read_json(fname)
         self.data_backup = self.data.deepcopy()
 
@@ -360,13 +210,15 @@ class TestListOfDicts:
         self.assert_original_data_unchanged()
 
     def test_read_csv(self):
-        fname = os.path.splitext(__file__)[0] + ".csv"
+        directory = os.path.dirname(__file__)
+        fname = os.path.join(directory, "data", "downloads.csv")
         data = ListOfDicts.read_csv(fname)
         data = data.modify(downloads=lambda x: int(x.downloads))
         assert data == self.data
 
     def test_read_json(self):
-        fname = os.path.splitext(__file__)[0] + ".json"
+        directory = os.path.dirname(__file__)
+        fname = os.path.join(directory, "data", "downloads.json")
         data = ListOfDicts.read_json(fname)
         assert data == self.data
 
@@ -453,7 +305,8 @@ class TestObsoleteListOfDicts:
 
     def setup_method(self, method):
         # https://pypistats.org/api/packages/attd/system
-        fname = os.path.splitext(__file__)[0] + ".json"
+        directory = os.path.dirname(__file__)
+        fname = os.path.join(directory, "data", "downloads.json")
         self.data = ListOfDicts.read_json(fname)
 
     def test___getattr__(self):

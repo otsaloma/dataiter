@@ -13,8 +13,10 @@ clean:
 	rm -rf dist
 	rm -rf __pycache__
 	rm -rf */__pycache__
+	rm -rf */*/__pycache__
 	rm -rf .pytest_cache
 	rm -rf */.pytest_cache
+	rm -rf */*/.pytest_cache
 
 install:
 	./setup.py install --prefix=$(PREFIX)
@@ -37,7 +39,7 @@ publish:
 release:
 	$(MAKE) check test clean
 	@echo "BUMP VERSION NUMBERS"
-	$(EDITOR) dataiter.py
+	$(EDITOR) dataiter/__init__.py
 	$(EDITOR) setup.py
 	@echo "ADD RELEASE NOTES"
 	$(EDITOR) NEWS.md
@@ -49,6 +51,8 @@ test:
 	py.test .
 
 test-installed:
-	cd && python3 -c "import dataiter; dataiter.ListOfDicts([])"
+	cd && python3 -c "import dataiter; dataiter.DataFrame()"
+	cd && python3 -c "import dataiter; dataiter.DataFrameColumn()"
+	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
 
 .PHONY: check clean install publish release test test-installed
