@@ -22,7 +22,6 @@
 
 import copy
 import csv
-import itertools
 import json
 import operator
 import os
@@ -159,8 +158,7 @@ class ListOfDicts(list):
         with open(fname, "r", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
             if not rows: return cls([])
-            fallback = itertools.islice(util.yield_colnames(), len(rows[0]))
-            keys = rows.pop(0) if header else list(fallback)
+            keys = rows.pop(0) if header else util.get_colnames(len(rows[0]))
             return cls(dict(zip(keys, x)) for x in rows)
 
     @classmethod

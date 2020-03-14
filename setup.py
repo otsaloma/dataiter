@@ -14,5 +14,5 @@ setup(
     license="MIT",
     py_modules=["dataiter"],
     python_requires=">=3.1.0",
-    install_requires=["attd>=0.3", "numpy>=1.7"],
+    install_requires=["attd>=0.3", "numpy>=1.7", "pandas>=1.0"],
 )

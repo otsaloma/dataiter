@@ -20,13 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import itertools
 import numpy as np
 
 from dataiter import util
 
 
 class TestUtil:
+
+    def test_get_colnames(self):
+        colnames = util.get_colnames(1000)
+        assert len(colnames) == 1000
+        assert len(set(colnames)) == 1000
 
     def test_np_to_string_bool(self):
         assert util.np_to_string(np.array([True])[0]) == "True"
@@ -42,8 +46,3 @@ class TestUtil:
 
     def test_np_to_string_str(self):
         assert util.np_to_string(np.array(["a"])[0]) == "a"
-
-    def test_yield_colnames(self):
-        generator = util.yield_colnames()
-        colnames = list(itertools.islice(generator, 1000))
-        assert len(set(colnames)) == len(colnames)

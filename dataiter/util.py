@@ -21,9 +21,13 @@
 # THE SOFTWARE.
 
 import dataiter
+import itertools
 import numpy as np
 import string
 
+
+def get_colnames(n):
+    return list(itertools.islice(yield_colnames(), n))
 
 def np_to_string(value):
     return np.array2string(

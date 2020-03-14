@@ -22,6 +22,7 @@
 
 import dataiter
 import json
+import pandas as pd
 
 from dataiter import DataFrameColumn
 from dataiter import deco
@@ -135,8 +136,11 @@ class DataFrame(dict):
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
-        # TODO: Need to guess types, wrap pandas.read_csv?
-        raise NotImplementedError
+        # XXX: Use Pandas for now as we don't have type guessing.
+        data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)
+        if not header:
+            data.columns = util.get_colnames(len(data.columns))
+        return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     @classmethod
     def read_json(cls, fname, encoding="utf_8", **kwargs):
