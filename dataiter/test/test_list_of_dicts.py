@@ -21,12 +21,12 @@
 # THE SOFTWARE.
 
 import json
-import os
 import tempfile
 
 from dataiter import ListOfDicts
 from dataiter import ObsoleteError
 from dataiter import ObsoleteListOfDicts
+from dataiter import test
 
 
 class TestListOfDicts:
@@ -42,10 +42,7 @@ class TestListOfDicts:
         assert isinstance(self.data, ObsoleteListOfDicts)
 
     def setup_method(self, method):
-        # https://pypistats.org/api/packages/attd/system
-        directory = os.path.dirname(__file__)
-        fname = os.path.join(directory, "data", "downloads.json")
-        self.data = ListOfDicts.read_json(fname)
+        self.data = ListOfDicts.read_json(test.get_json_filename())
         self.data_backup = self.data.deepcopy()
 
     def test___getitem___expect_dict(self):
@@ -210,16 +207,12 @@ class TestListOfDicts:
         self.assert_original_data_unchanged()
 
     def test_read_csv(self):
-        directory = os.path.dirname(__file__)
-        fname = os.path.join(directory, "data", "downloads.csv")
-        data = ListOfDicts.read_csv(fname)
+        data = ListOfDicts.read_csv(test.get_csv_filename())
         data = data.modify(downloads=lambda x: int(x.downloads))
         assert data == self.data
 
     def test_read_json(self):
-        directory = os.path.dirname(__file__)
-        fname = os.path.join(directory, "data", "downloads.json")
-        data = ListOfDicts.read_json(fname)
+        data = ListOfDicts.read_json(test.get_json_filename())
         assert data == self.data
 
     def test_rename(self):
@@ -304,15 +297,8 @@ class TestListOfDicts:
 class TestObsoleteListOfDicts:
 
     def setup_method(self, method):
-        # https://pypistats.org/api/packages/attd/system
-        directory = os.path.dirname(__file__)
-        fname = os.path.join(directory, "data", "downloads.json")
-        self.data = ListOfDicts.read_json(fname)
+        self.data = ListOfDicts.read_json(test.get_json_filename())
 
     def test___getattr__(self):
         data = self.data.select("date") # noqa
-        try:
-            self.data.select("date")
-            raise Exception("Expected ObsoleteError")
-        except ObsoleteError:
-            pass
+        test.assert_raises(ObsoleteError, lambda: self.data.select("date"))

@@ -20,18 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os
-
 from dataiter import DataFrame
+from dataiter import test
 
 
 class TestDataFrame:
 
     def setup_method(self, method):
-        # https://pypistats.org/api/packages/attd/system
-        directory = os.path.dirname(__file__)
-        fname = os.path.join(directory, "data", "downloads.json")
-        self.data = DataFrame.read_json(fname)
+        self.data = DataFrame.read_json(test.get_json_filename())
         self.data_backup = self.data.deepcopy()
 
     def test___init__(self):
