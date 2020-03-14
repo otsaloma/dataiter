@@ -60,10 +60,10 @@ class DataFrame(dict):
         return super().__setitem__(key, value)
 
     def __str__(self):
-        rows = [self.colnames]
-        rows.append([str(x.dtype) for x in self.columns])
+        rows = [[""] + self.colnames]
+        rows.append([""] + [str(x.dtype) for x in self.columns])
         for i in range(min(self.nrow, dataiter.PRINT_MAX_ROWS)):
-            rows.append([util.np_to_string(x[i]) for x in self.columns])
+            rows.append([str(i)] + [util.np_to_string(x[i]) for x in self.columns])
         for i in range(len(rows[0])):
             width = max(len(x[i]) for x in rows)
             for row in rows:
