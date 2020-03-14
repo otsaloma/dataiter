@@ -28,7 +28,6 @@ def assert_raises(exception, function, *args, **kwargs):
         function(*args, **kwargs)
         raise AssertionError("Expected {}".format(exception.__name__))
     except exception:
-        print("XXX")
         pass
 
 def get_csv_filename():
