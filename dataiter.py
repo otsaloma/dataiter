@@ -39,16 +39,16 @@ DATA_FRAME_PRINT_MAX_ROWS = 10
 
 def _modifies_dicts(function):
     @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        value = function(*args, **kwargs)
-        args[0]._mark_obsolete()
+    def wrapper(self, *args, **kwargs):
+        value = function(self, *args, **kwargs)
+        self._mark_obsolete()
         return value
     return wrapper
 
 def _new_from_generator(function):
     @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        return args[0]._new(function(*args, **kwargs))
+    def wrapper(self, *args, **kwargs):
+        return self._new(function(self, *args, **kwargs))
     return wrapper
 
 def _translate_error(fm, to):
