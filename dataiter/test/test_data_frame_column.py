@@ -32,7 +32,7 @@ class TestDataFrameColumn:
         assert isinstance(column, DataFrameColumn)
         assert isinstance(column, np.ndarray)
 
-    def test___init__given_dtype(self):
+    def test___init___given_dtype(self):
         column = DataFrameColumn([1, 2, 3], dtype="float64")
         assert column.dtype is np.dtype("float64")
 
