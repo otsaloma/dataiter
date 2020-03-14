@@ -80,15 +80,15 @@ class DataFrame(dict):
         return self.__class__({k: v.copy() for k, v in self.items()})
 
     @_translate_error(KeyError, AttributeError)
-    def __delattr__(self, name):
-        return self.__delitem__(name)
+    def __delattr__(self, colname):
+        return self.__delitem__(colname)
 
     @_translate_error(KeyError, AttributeError)
-    def __getattr__(self, name):
-        return self.__getitem__(name)
+    def __getattr__(self, colname):
+        return self.__getitem__(colname)
 
-    def __setattr__(self, name, value):
-        return self.__setitem__(name, value)
+    def __setattr__(self, colname, value):
+        return self.__setitem__(colname, value)
 
     def __setitem__(self, key, value):
         nrow = self.nrow if self else None
@@ -111,7 +111,7 @@ class DataFrame(dict):
         rows = [" ".join(x) for x in rows]
         return "\n" + "\n".join(rows)
 
-    def aggregate(self, **name_function_pairs):
+    def aggregate(self, **colname_function_pairs):
         raise NotImplementedError
 
     @property
@@ -128,10 +128,10 @@ class DataFrame(dict):
     def deepcopy(self):
         return self.__deepcopy__()
 
-    def filter(self, function=None, **name_value_pairs):
+    def filter(self, function=None, **colname_value_pairs):
         raise NotImplementedError
 
-    def filter_out(self, function=None, **name_value_pairs):
+    def filter_out(self, function=None, **colname_value_pairs):
         raise NotImplementedError
 
     @classmethod
@@ -145,7 +145,7 @@ class DataFrame(dict):
                 columns.setdefault(key, []).append(value)
         return cls(**columns)
 
-    def group_by(self, *names):
+    def group_by(self, *colnames):
         raise NotImplementedError
 
     def join(self, other, *by):
@@ -172,19 +172,19 @@ class DataFrame(dict):
     def rename(self, **to_from_pairs):
         raise NotImplementedError
 
-    def select(self, *names):
+    def select(self, *colnames):
         raise NotImplementedError
 
-    def sort(self, *names, reverse=False):
+    def sort(self, *colnames, reverse=False):
         raise NotImplementedError
 
     def to_json(self, **kwargs):
         raise NotImplementedError
 
-    def unique(self, *names):
+    def unique(self, *colnames):
         raise NotImplementedError
 
-    def unselect(self, *names):
+    def unselect(self, *colnames):
         raise NotImplementedError
 
     def write_csv(self, fname, encoding="utf_8", **kwargs):
@@ -196,7 +196,7 @@ class DataFrame(dict):
 
 class DataFrameColumn(np.ndarray):
 
-    """A vector (one-dimensional Numpy array)."""
+    """A vector (one-dimensional NumPy array)."""
 
     def __new__(cls, object, dtype=None, nrow=None):
         column = np.array(object, dtype)
