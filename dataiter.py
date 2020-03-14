@@ -34,7 +34,14 @@ from attd import AttributeDict
 
 __version__ = "0.7"
 
-DATA_FRAME_PRINT_MAX_ROWS = 10
+PRINT_FLOAT_PRECISION = 6
+PRINT_MAX_ROWS = 10
+PRINT_MAX_WIDTH = 80
+
+np.set_printoptions(
+    linewidth=PRINT_MAX_WIDTH,
+    precision=PRINT_FLOAT_PRECISION,
+)
 
 
 def _modifies_dicts(function):
@@ -50,6 +57,13 @@ def _new_from_generator(function):
     def wrapper(self, *args, **kwargs):
         return self._new(function(self, *args, **kwargs))
     return wrapper
+
+def _to_string(value):
+    return np.array2string(
+        value,
+        precision=PRINT_FLOAT_PRECISION,
+        formatter={"numpystr": str, "str": str},
+    )
 
 def _translate_error(fm, to):
     def outer_wrapper(function):
@@ -96,20 +110,30 @@ class DataFrame(dict):
         return super().__setitem__(key, value)
 
     def __str__(self):
-        # TODO: Wrap columns like R's print.data.frame.
-        # TODO: Use better type-specific formatting.
-        rows = []
-        rows.append(self.colnames)
+        rows = [self.colnames]
         rows.append([str(x.dtype) for x in self.columns])
-        for i in range(min(self.nrow, DATA_FRAME_PRINT_MAX_ROWS)):
-            rows.append([str(x[i]) for x in self.columns])
+        for i in range(min(self.nrow, PRINT_MAX_ROWS)):
+            rows.append([_to_string(x[i]) for x in self.columns])
         for i in range(len(rows[0])):
             width = max(len(x[i]) for x in rows)
             for row in rows:
                 padding = width - len(row[i])
                 row[i] = " " * padding + row[i]
-        rows = [" ".join(x) for x in rows]
-        return "\n" + "\n".join(rows)
+        # If the length of rows exceeds PRINT_MAX_WIDTH, split to
+        # batches of columns (like R's print.data.frame).
+        rows_to_print = []
+        while rows[0]:
+            batch_column_count = 0
+            for i in range(len(rows[0])):
+                text = " ".join(rows[0][:(i+1)])
+                if len(text) <= PRINT_MAX_WIDTH:
+                    batch_column_count = i + 1
+            batch_rows = [""] * len(rows)
+            for i, row in enumerate(rows):
+                batch_rows[i] += " ".join(row[:batch_column_count])
+                del row[:batch_column_count]
+            rows_to_print.extend(batch_rows)
+        return "\n".join(rows_to_print)
 
     def aggregate(self, **colname_function_pairs):
         raise NotImplementedError
@@ -208,6 +232,9 @@ class DataFrameColumn(np.ndarray):
 
     def __init__(self, object, dtype=None, nrow=None):
         self.__check_dimensions()
+
+    def __str__(self):
+        return _to_string(self)
 
     def __check_dimensions(self):
         if self.ndim == 1: return
