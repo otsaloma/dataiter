@@ -28,6 +28,7 @@ from dataiter import util
 class DataFrameColumn(np.ndarray):
 
     def __new__(cls, object, dtype=None, nrow=None):
+        object = [object] if np.isscalar(object) else object
         column = np.array(object, dtype)
         if nrow is not None and nrow != column.size:
             if not (column.size == 1 and nrow > 1):

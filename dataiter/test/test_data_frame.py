@@ -20,7 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import tempfile
+
 from dataiter import DataFrame
+from dataiter import DataFrameColumn
 from dataiter import test
 
 
@@ -30,56 +33,61 @@ class TestDataFrame:
         self.data = DataFrame.read_json(test.get_json_filename())
         self.data_backup = self.data.deepcopy()
 
-    def test___init__(self):
-        # TODO:
-        pass
+    def test___init___broadcast(self):
+        data = DataFrame(a=[1, 2, 3], b=1)
+        assert data.a.tolist() == [1, 2, 3]
+        assert data.b.tolist() == [1, 1, 1]
 
-    def test___copy__(self):
-        # TODO:
-        pass
+    def test___init___given_data_frame_column(self):
+        data = DataFrame(a=DataFrameColumn([1, 2, 3]))
+        assert data.ncol == 1
+        assert data.nrow == 3
 
-    def test___deepcopy__(self):
-        # TODO:
-        pass
+    def test___init___given_list(self):
+        data = DataFrame(a=[1, 2, 3])
+        assert data.ncol == 1
+        assert data.nrow == 3
 
     def test___delattr__(self):
-        # TODO:
-        pass
+        del self.data.date
+        assert "date" not in self.data.colnames
+
+    def test___eq__(self):
+        assert self.data == self.data_backup
 
     def test___getattr__(self):
-        # TODO:
-        pass
+        assert self.data.date is self.data["date"]
 
     def test___setattr__(self):
-        # TODO:
-        pass
+        self.data.new = 1
+        assert "new" in self.data.colnames
 
     def test___setitem__(self):
-        # TODO:
-        pass
+        self.data["new"] = 1
+        assert "new" in self.data.colnames
 
     def test___str__(self):
-        print(self.data)
+        assert str(self.data)
 
     def test_aggregate(self):
         # TODO:
         pass
 
     def test_colnames(self):
-        # TODO:
-        pass
+        assert self.data.colnames == ["category", "date", "downloads"]
 
     def test_columns(self):
-        # TODO:
-        pass
+        assert self.data.columns == [self.data.category, self.data.date, self.data.downloads]
 
     def test_copy(self):
-        # TODO:
-        pass
+        data = self.data.copy()
+        assert data == self.data
+        assert data is not self.data
 
     def test_deepcopy(self):
-        # TODO:
-        pass
+        data = self.data.copy()
+        assert data == self.data
+        assert data is not self.data
 
     def test_filter(self):
         # TODO:
@@ -90,8 +98,9 @@ class TestDataFrame:
         pass
 
     def test_from_json(self):
-        # TODO:
-        pass
+        string = self.data.to_json()
+        data = DataFrame.from_json(string)
+        assert data == self.data
 
     def test_group_by(self):
         # TODO:
@@ -102,20 +111,20 @@ class TestDataFrame:
         pass
 
     def test_ncol(self):
-        # TODO:
-        pass
+        assert self.data.ncol == 3
 
     def test_nrow(self):
-        # TODO:
-        pass
+        assert self.data.nrow == 137
 
     def test_read_csv(self):
-        # TODO:
-        pass
+        # XXX: pandas.read_csv reads "null" as NaN.
+        data = DataFrame.read_csv(test.get_csv_filename())
+        data.category[data.category == "nan"] = "null"
+        assert data == self.data
 
     def test_read_json(self):
-        # TODO:
-        pass
+        data = DataFrame.read_json(test.get_json_filename())
+        assert data == self.data
 
     def test_rename(self):
         # TODO:
@@ -130,8 +139,15 @@ class TestDataFrame:
         pass
 
     def test_to_json(self):
-        # TODO:
-        pass
+        string = self.data.to_json()
+        data = DataFrame.from_json(string)
+        assert data == self.data
+
+    def test_to_list_of_dicts(self):
+        self.data.to_list_of_dicts()
+
+    def test_to_pandas(self):
+        self.data.to_pandas()
 
     def test_unique(self):
         # TODO:
@@ -142,9 +158,15 @@ class TestDataFrame:
         pass
 
     def test_write_csv(self):
-        # TODO:
-        pass
+        # XXX: pandas.read_csv reads "null" as NaN.
+        handle, fname = tempfile.mkstemp(".csv")
+        self.data.write_csv(fname)
+        data = DataFrame.read_csv(fname)
+        data.category[data.category == "nan"] = "null"
+        assert data == self.data
 
     def test_write_json(self):
-        # TODO:
-        pass
+        handle, fname = tempfile.mkstemp(".json")
+        self.data.write_json(fname)
+        data = DataFrame.read_json(fname)
+        assert data == self.data

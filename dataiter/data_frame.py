@@ -22,10 +22,12 @@
 
 import dataiter
 import json
+import numpy as np
 import pandas as pd
 
 from dataiter import DataFrameColumn
 from dataiter import deco
+from dataiter import ListOfDicts
 from dataiter import util
 
 
@@ -33,9 +35,10 @@ class DataFrame(dict):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        nrow = max(util.length(x) for x in self.values())
         for key, value in self.items():
-            if not isinstance(value, DataFrameColumn):
-                super().__setitem__(key, DataFrameColumn(value))
+            if not isinstance(value, DataFrameColumn) or value.nrow != nrow:
+                super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
 
     def __copy__(self):
         return self.__class__(self)
@@ -46,6 +49,13 @@ class DataFrame(dict):
     @deco.translate_error(KeyError, AttributeError)
     def __delattr__(self, colname):
         return self.__delitem__(colname)
+
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__) and
+                self.nrow == other.nrow and
+                self.ncol == other.ncol and
+                set(self.colnames) == set(other.colnames) and
+                all(np.array_equal(self[x], other[x]) for x in self))
 
     @deco.translate_error(KeyError, AttributeError)
     def __getattr__(self, colname):
@@ -136,10 +146,8 @@ class DataFrame(dict):
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
-        # XXX: Use Pandas for now as we don't have type guessing.
         data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)
-        if not header:
-            data.columns = util.get_colnames(len(data.columns))
+        data.columns = util.get_colnames(len(data.columns)) if not header else data.columns
         return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     @classmethod
@@ -157,7 +165,18 @@ class DataFrame(dict):
         raise NotImplementedError
 
     def to_json(self, **kwargs):
-        raise NotImplementedError
+        data = self.to_list_of_dicts()
+        return json.dumps(data, **kwargs)
+
+    def to_list_of_dicts(self):
+        data = [{} for i in range(self.nrow)]
+        for colname in self.colnames:
+            for i, value in enumerate(self[colname].tolist()):
+                data[i][colname] = value
+        return ListOfDicts(data)
+
+    def to_pandas(self):
+        return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     def unique(self, *colnames):
         raise NotImplementedError
@@ -166,7 +185,7 @@ class DataFrame(dict):
         raise NotImplementedError
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
-        raise NotImplementedError
+        self.to_pandas().to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
-        raise NotImplementedError
+        return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)

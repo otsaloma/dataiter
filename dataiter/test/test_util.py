@@ -32,6 +32,11 @@ class TestUtil:
         assert len(colnames) == 1000
         assert len(set(colnames)) == 1000
 
+    def test_length(self):
+        assert util.length(1) == 1
+        assert util.length([1]) == 1
+        assert util.length([1, 2]) == 2
+
     def test_np_to_string_bool(self):
         assert util.np_to_string(np.array([True])[0]) == "True"
 

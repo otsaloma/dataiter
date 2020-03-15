@@ -37,6 +37,12 @@ class TestDataFrameColumn:
         assert column.dtype is np.dtype("float64")
 
     def test__init___given_nrow(self):
+        column = DataFrameColumn([1], nrow=3)
+        assert column.tolist() == [1, 1, 1]
+
+    def test__init___given_scalar(self):
+        column = DataFrameColumn(1, nrow=1)
+        assert column.tolist() == [1]
         column = DataFrameColumn(1, nrow=3)
         assert column.tolist() == [1, 1, 1]
 

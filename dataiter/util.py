@@ -29,6 +29,9 @@ import string
 def get_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 
+def length(value):
+    return 1 if np.isscalar(value) else len(value)
+
 def np_to_string(value):
     return np.array2string(
         value,
