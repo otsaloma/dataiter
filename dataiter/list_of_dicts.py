@@ -111,6 +111,9 @@ class ListOfDicts(list):
         self._group_keys = keys[:]
         return self
 
+    def head(self, n):
+        return self._new(self[:n])
+
     @deco.obsoletes
     @deco.new_from_generator
     def join(self, other, *by):
@@ -188,6 +191,9 @@ class ListOfDicts(list):
         def sort_key(item):
             return tuple((item[x] is None, item[x]) for x in keys)
         return self._new(sorted(self, key=sort_key, reverse=reverse))
+
+    def tail(self, n):
+        return self._new(self[-n:])
 
     def to_json(self, **kwargs):
         kwargs.setdefault("ensure_ascii", False)

@@ -164,6 +164,10 @@ class TestListOfDicts:
         data = self.from_file("downloads.json")
         data.group_by("category")
 
+    def head(self):
+        data = self.from_file("downloads.json")
+        assert data.head(10) == data[:10]
+
     def test_join(self):
         other = ListOfDicts([
             {"category": "Darwin",  "category_short": "D"},
@@ -269,6 +273,10 @@ class TestListOfDicts:
         assert data[ 4] is orig[0]
         assert data[-2] is orig[1]
         assert data[-1] is orig[2]
+
+    def tail(self):
+        data = self.from_file("downloads.json")
+        assert data.tail(10) == data[-10:]
 
     def test_to_json(self):
         orig = self.from_file("downloads.json")

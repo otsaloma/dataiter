@@ -199,6 +199,9 @@ class TestDataFrame:
     def test_group_by(self):
         pass
 
+    def test_head(self):
+        pass
+
     def test_join(self):
         pass
 
@@ -227,6 +230,9 @@ class TestDataFrame:
         pass
 
     def test_sort(self):
+        pass
+
+    def test_tail(self):
         pass
 
     def test_to_json(self):

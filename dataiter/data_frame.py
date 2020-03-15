@@ -194,6 +194,9 @@ class DataFrame(dict):
     def group_by(self, *colnames):
         raise NotImplementedError
 
+    def head(self, n):
+        raise NotImplementedError
+
     def join(self, other, *by):
         raise NotImplementedError
 
@@ -224,6 +227,9 @@ class DataFrame(dict):
         raise NotImplementedError
 
     def sort(self, *colnames, reverse=False):
+        raise NotImplementedError
+
+    def tail(self, n):
         raise NotImplementedError
 
     def to_json(self, **kwargs):
