@@ -27,6 +27,32 @@ from dataiter import DataFrameColumn
 from dataiter import test
 
 
+class TestDataFrameColumn:
+
+    def test___init__(self):
+        column = DataFrameColumn([1, 2, 3])
+        assert isinstance(column, DataFrameColumn)
+        assert isinstance(column, np.ndarray)
+
+    def test___init___given_dtype(self):
+        column = DataFrameColumn([1, 2, 3], dtype="float64")
+        assert column.dtype is np.dtype("float64")
+
+    def test__init___given_nrow(self):
+        column = DataFrameColumn([1], nrow=3)
+        assert column.tolist() == [1, 1, 1]
+
+    def test__init___given_scalar(self):
+        column = DataFrameColumn(1, nrow=1)
+        assert column.tolist() == [1]
+        column = DataFrameColumn(1, nrow=3)
+        assert column.tolist() == [1, 1, 1]
+
+    def test_nrow(self):
+        column = DataFrameColumn([1, 2, 3])
+        assert column.nrow == 3
+
+
 class TestDataFrame:
 
     def setup_method(self, method):

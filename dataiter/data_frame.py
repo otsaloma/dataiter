@@ -25,10 +25,36 @@ import json
 import numpy as np
 import pandas as pd
 
-from dataiter import DataFrameColumn
 from dataiter import deco
 from dataiter import ListOfDicts
 from dataiter import util
+
+
+class DataFrameColumn(np.ndarray):
+
+    def __new__(cls, object, dtype=None, nrow=None):
+        object = [object] if np.isscalar(object) else object
+        column = np.array(object, dtype)
+        if nrow is not None and nrow != column.size:
+            if not (column.size == 1 and nrow > 1):
+                raise ValueError("Incompatible object and nrow for broadcast")
+            column = column.repeat(nrow)
+        return column.view(cls)
+
+    def __init__(self, object, dtype=None, nrow=None):
+        self.__check_dimensions()
+
+    def __str__(self):
+        return util.np_to_string(self)
+
+    def __check_dimensions(self):
+        if self.ndim == 1: return
+        raise ValueError("Bad dimensions: {!r}".format(self.ndim))
+
+    @property
+    def nrow(self):
+        self.__check_dimensions()
+        return self.size
 
 
 class DataFrame(dict):

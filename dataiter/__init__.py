@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from dataiter.data_frame import DataFrame # noqa
+from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
 from dataiter.list_of_dicts import ObsoleteError # noqa
 from dataiter.list_of_dicts import ObsoleteListOfDicts # noqa
-from dataiter.data_frame_column import DataFrameColumn # noqa
-from dataiter.data_frame import DataFrame # noqa
 
 __version__ = "0.7"
 
