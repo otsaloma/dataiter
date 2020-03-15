@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import json
 import tempfile
 
 from dataiter import ListOfDicts
@@ -35,63 +34,71 @@ class TestListOfDicts:
         for key in set(a) & set(b):
             assert a[key] == b[key]
 
-    def assert_original_data_unchanged(self):
-        assert self.data == self.data_backup
+    def from_file(self, fname):
+        fname = test.get_data_filename(fname)
+        extension = fname.split(".")[-1]
+        read = getattr(ListOfDicts, "read_{}".format(extension))
+        return read(fname)
 
-    def assert_original_data_obsolete(self):
-        assert isinstance(self.data, ObsoleteListOfDicts)
-
-    def setup_method(self, method):
-        self.data = ListOfDicts.read_json(test.get_json_filename())
-        self.data_backup = self.data.deepcopy()
+    def test___init__(self):
+        test = dict(a=1, b=2, c=3)
+        data = ListOfDicts([test])
+        assert len(data) == 1
+        assert data[0] == test
 
     def test___getitem___expect_dict(self):
-        data = self.data[0]
-        assert isinstance(data, dict)
+        data = self.from_file("downloads.json")
+        assert isinstance(data[0], dict)
 
     def test___getitem___expect_list(self):
-        data = self.data[:3]
-        assert isinstance(data, ListOfDicts)
+        data = self.from_file("downloads.json")
+        assert isinstance(data[:3], ListOfDicts)
 
     def test_aggregate(self):
-        data = self.data.group_by("category").aggregate(**{
+        data = self.from_file("downloads.json")
+        data = data.group_by("category").aggregate(**{
             "date_min":  lambda x: min(x.pluck("date")),
             "date_max":  lambda x: max(x.pluck("date")),
             "downloads": lambda x: sum(x.pluck("downloads")),
         })
         assert data == [{
             "category": "Darwin",
-            "date_min": "2019-04-12",
-            "date_max": "2019-06-04",
-            "downloads": 4,
+            "date_min": "2019-09-16",
+            "date_max": "2020-03-14",
+            "downloads": 6928129,
         }, {
             "category": "Linux",
-            "date_min": "2019-04-12",
-            "date_max": "2019-09-26",
-            "downloads": 102,
+            "date_min": "2019-09-16",
+            "date_max": "2020-03-14",
+            "downloads": 510902781,
         }, {
             "category": "Windows",
-            "date_min": "2019-07-03",
-            "date_max": "2019-07-03",
-            "downloads": 1,
+            "date_min": "2019-09-16",
+            "date_max": "2020-03-14",
+            "downloads": 13024960,
         }, {
             "category": "null",
-            "date_min": "2019-04-02",
-            "date_max": "2019-09-24",
-            "downloads": 328,
+            "date_min": "2019-09-16",
+            "date_max": "2020-03-14",
+            "downloads": 10421576,
+        }, {
+            "category": "other",
+            "date_min": "2019-09-16",
+            "date_max": "2020-03-14",
+            "downloads": 58299,
         }]
-        self.assert_original_data_unchanged()
 
     def test_copy(self):
-        data = self.data.copy()
-        assert data == self.data
-        assert data is not self.data
-        for item, orig in zip(data, self.data):
-            assert item == orig
-            assert item is orig
+        orig = self.from_file("downloads.json")
+        data = orig.copy()
+        assert data == orig
+        assert data is not orig
+        for a, b in zip(data, orig):
+            assert a == b
+            assert a is b
 
     def test_copy_handle_predecessor(self):
-        a = self.data
+        a = self.from_file("downloads.json")
         b = a.select("date")
         c = b.copy()
         assert a._predecessor is None
@@ -99,15 +106,16 @@ class TestListOfDicts:
         assert c._predecessor is b
 
     def test_deepcopy(self):
-        data = self.data.deepcopy()
-        assert data == self.data
-        assert data is not self.data
-        for item, orig in zip(data, self.data):
-            assert item == orig
-            assert item is not orig
+        orig = self.from_file("downloads.json")
+        data = orig.deepcopy()
+        assert data == orig
+        assert data is not orig
+        for a, b in zip(data, orig):
+            assert a == b
+            assert a is not b
 
     def test_deepcopy_handle_predecessor(self):
-        a = self.data
+        a = self.from_file("downloads.json")
         b = a.select("date")
         c = b.deepcopy()
         assert a._predecessor is None
@@ -115,190 +123,196 @@ class TestListOfDicts:
         assert c._predecessor is None
 
     def test_filter_given_function(self):
-        data = self.data.filter(lambda x: x.category == "Linux")
-        assert len(data) == 38
+        orig = self.from_file("downloads.json")
+        data = orig.filter(lambda x: x.category == "Linux")
+        assert len(data) == 181
         for item in data:
             assert item.category == "Linux"
-            assert item in self.data
-        self.assert_original_data_unchanged()
+            assert item in orig
 
     def test_filter_given_key_value_pairs(self):
-        data = self.data.filter(category="Linux")
-        assert len(data) == 38
+        orig = self.from_file("downloads.json")
+        data = orig.filter(category="Linux")
+        assert len(data) == 181
         for item in data:
             assert item.category == "Linux"
-            assert item in self.data
-        self.assert_original_data_unchanged()
+            assert item in orig
 
     def test_filter_out_given_function(self):
-        data = self.data.filter_out(lambda x: x.category == "Linux")
-        assert len(data) == 99
+        orig = self.from_file("downloads.json")
+        data = orig.filter_out(lambda x: x.category == "Linux")
+        assert len(data) == 724
         for item in data:
             assert item.category != "Linux"
-            assert item in self.data
-        self.assert_original_data_unchanged()
+            assert item in orig
 
     def test_filter_out_given_key_value_pairs(self):
-        data = self.data.filter_out(category="Linux")
-        assert len(data) == 99
+        orig = self.from_file("downloads.json")
+        data = orig.filter_out(category="Linux")
+        assert len(data) == 724
         for item in data:
             assert item.category != "Linux"
-            assert item in self.data
-        self.assert_original_data_unchanged()
+            assert item in orig
 
     def test_from_json(self):
-        string = json.dumps(self.data)
-        data = ListOfDicts.from_json(string)
-        assert data == self.data
+        orig = self.from_file("downloads.json")
+        text = orig.to_json()
+        data = ListOfDicts.from_json(text)
+        assert data == orig
 
     def test_group_by(self):
-        self.data.group_by("category")
-        self.assert_original_data_unchanged()
+        data = self.from_file("downloads.json")
+        data.group_by("category")
 
     def test_join(self):
-        other = ListOfDicts([{
-            "category": "Darwin",
-            "category_short": "D",
-        }, {
-            "category": "Linux",
-            "category_short": "L",
-        }, {
-            "category": "Windows",
-            "category_short": "W",
-        }])
-        data = self.data.join(other, "category")
-        assert len(data) == len(self.data)
-        for item, orig in zip(data, self.data):
-            if item.category in other.pluck("category"):
-                assert item.category_short == item.category[0]
-            self.assert_common_keys_match(item, orig)
-        self.assert_original_data_obsolete()
+        other = ListOfDicts([
+            {"category": "Darwin",  "category_short": "D"},
+            {"category": "Linux",   "category_short": "L"},
+            {"category": "Windows", "category_short": "W"},
+            {"category": "null",    "category_short": "n"},
+            {"category": "other",   "category_short": "o"},
+        ])
+        orig = self.from_file("downloads.json")
+        data = orig.join(other, "category")
+        assert len(data) == len(orig)
+        for a, b in zip(data, orig):
+            if a.category in other.pluck("category"):
+                assert a.category_short == a.category[0]
+            self.assert_common_keys_match(a, b)
+        assert isinstance(orig, ObsoleteListOfDicts)
 
     def test__mark_obsolete_after_multiple_modify(self):
-        data = self.data
+        data = self.from_file("downloads.json")
         data = data.modify(a=lambda x: 1)
         data = data.modify(b=lambda x: 2)
         data = data.modify(c=lambda x: 3)
 
     def test_modify(self):
-        data = self.data.modify(year=lambda x: int(x.date[:4]))
-        assert len(data) == len(self.data)
-        for item, orig in zip(data, self.data):
-            assert item.year == int(orig.date[:4])
-            self.assert_common_keys_match(item, orig)
-        self.assert_original_data_obsolete()
+        orig = self.from_file("downloads.json")
+        data = orig.modify(year=lambda x: int(x.date[:4]))
+        assert len(data) == len(orig)
+        for a, b in zip(data, orig):
+            assert a.year == int(b.date[:4])
+            self.assert_common_keys_match(a, b)
+        assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_modify_if(self):
+        orig = self.from_file("downloads.json")
         predicate = lambda x: x.category == "Linux"
-        data = self.data.modify_if(predicate, year=lambda x: int(x.date[:4]))
-        assert len(data) == len(self.data)
-        for item, orig in zip(data, self.data):
-            assert (item.category == "Linux") == ("year" in item)
-            if item.category == "Linux":
-                assert item.year == int(orig.date[:4])
-            self.assert_common_keys_match(item, orig)
-        self.assert_original_data_obsolete()
+        data = orig.modify_if(predicate, year=lambda x: int(x.date[:4]))
+        assert len(data) == len(orig)
+        for a, b in zip(data, orig):
+            assert (a.category == "Linux") == ("year" in a)
+            if a.category == "Linux":
+                assert a.year == int(b.date[:4])
+            self.assert_common_keys_match(a, b)
+        assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_pluck(self):
-        dates = self.data.pluck("date")
-        assert len(dates) == len(self.data)
-        for date, orig in zip(dates, self.data):
-            assert date == orig.date
-        self.assert_original_data_unchanged()
+        data = self.from_file("downloads.json")
+        dates = data.pluck("date")
+        assert len(dates) == len(data)
+        for date, item in zip(dates, data):
+            assert date == item.date
 
     def test_read_csv(self):
-        data = ListOfDicts.read_csv(test.get_csv_filename())
-        data = data.modify(downloads=lambda x: int(x.downloads))
-        assert data == self.data
+        data = self.from_file("vehicles.csv")
+        assert len(data) == 33442
 
     def test_read_json(self):
-        data = ListOfDicts.read_json(test.get_json_filename())
-        assert data == self.data
+        data = self.from_file("downloads.json")
+        assert len(data) == 905
 
     def test_rename(self):
-        data = self.data.rename(ymd="date")
-        assert len(data) == len(self.data)
-        for item, orig in zip(data, self.data):
-            assert "ymd" in item
-            assert "date" not in item
-            self.assert_common_keys_match(item, orig)
-        self.assert_original_data_obsolete()
+        orig = self.from_file("downloads.json")
+        data = orig.rename(ymd="date")
+        assert len(data) == len(orig)
+        for a, b in zip(data, orig):
+            assert "ymd" in a
+            assert "date" not in a
+            self.assert_common_keys_match(a, b)
+        assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_select(self):
-        data = self.data.select("date", "downloads")
-        assert len(data) == len(self.data)
-        for item, orig in zip(data, self.data):
-            assert len(item) == 2
-            assert "date" in item
-            assert "downloads" in item
-            self.assert_common_keys_match(item, orig)
-        self.assert_original_data_obsolete()
+        orig = self.from_file("downloads.json")
+        data = orig.select("date", "downloads")
+        assert len(data) == len(orig)
+        for a, b in zip(data, orig):
+            assert len(a) == 2
+            assert "date" in a
+            assert "downloads" in a
+            self.assert_common_keys_match(a, b)
+        assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_sort(self):
-        data = self.data.sort("date", "category")
-        assert len(data) == len(self.data)
+        orig = self.from_file("downloads.json")
+        data = orig.sort("date", "category")
+        assert len(data) == len(orig)
         for item in data:
-            assert item in self.data
-        self.assert_original_data_unchanged()
+            assert item in orig
 
     def test_sort_with_none(self):
         # Nones should be sorted last.
-        self.data[0].category = None
-        data = self.data.sort("category")
-        assert data[-1] == self.data[0]
+        orig = self.from_file("downloads.json")
+        orig[0].category = None
+        data = orig.sort("category")
+        assert data[-1] is orig[0]
 
     def test_sort_with_none_multiple_keys(self):
         # Nones should be sorted group-wise last.
-        self.data[0].category = None
-        self.data[1].date = None
-        self.data[2].category = None
-        self.data[2].date = None
-        data = self.data.sort("date", "category")
-        assert data[ 7] == self.data[0]
-        assert data[-2] == self.data[1]
-        assert data[-1] == self.data[2]
+        orig = self.from_file("downloads.json")
+        orig[0].category = None
+        orig[1].date = None
+        orig[2].category = None
+        orig[2].date = None
+        data = orig.sort("date", "category")
+        assert data[ 4] is orig[0]
+        assert data[-2] is orig[1]
+        assert data[-1] is orig[2]
 
     def test_to_json(self):
-        string = self.data.to_json()
-        data = ListOfDicts.from_json(string)
-        assert data == self.data
-        self.assert_original_data_unchanged()
+        orig = self.from_file("downloads.json")
+        text = orig.to_json()
+        data = ListOfDicts.from_json(text)
+        assert data == orig
 
     def test_unique(self):
-        data = self.data.unique("date")
-        assert len(data) == 114
+        orig = self.from_file("downloads.json")
+        data = orig.unique("date")
+        assert len(data) == 181
         for item in data:
-            assert item in self.data
-        self.assert_original_data_unchanged()
+            assert item in orig
 
     def test_unselect(self):
-        data = self.data.unselect("date", "downloads")
-        assert len(data) == len(self.data)
-        for item, orig in zip(data, self.data):
-            assert "date" not in item
-            assert "downloads" not in item
-            self.assert_common_keys_match(item, orig)
-        self.assert_original_data_obsolete()
+        orig = self.from_file("downloads.json")
+        data = orig.unselect("date", "downloads")
+        assert len(data) == len(orig)
+        for a, b in zip(data, orig):
+            assert "date" not in a
+            assert "downloads" not in a
+            self.assert_common_keys_match(a, b)
+        assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_write_csv(self):
+        orig = self.from_file("vehicles.csv")
         handle, fname = tempfile.mkstemp(".csv")
-        self.data.write_csv(fname)
+        orig.write_csv(fname)
         data = ListOfDicts.read_csv(fname)
-        data = data.modify(downloads=lambda x: int(x.downloads))
-        assert data == self.data
+        assert data == orig
 
     def test_write_json(self):
+        orig = self.from_file("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
-        self.data.write_json(fname)
+        orig.write_json(fname)
         data = ListOfDicts.read_json(fname)
-        assert data == self.data
+        assert data == orig
 
 
 class TestObsoleteListOfDicts:
 
-    def setup_method(self, method):
-        self.data = ListOfDicts.read_json(test.get_json_filename())
+    from_file = TestListOfDicts.from_file
 
     def test___getattr__(self):
-        data = self.data.select("date") # noqa
-        test.assert_raises(ObsoleteError, lambda: self.data.select("date"))
+        orig = self.from_file("downloads.json")
+        data = orig.select("date") # noqa
+        test.assert_raises(ObsoleteError, lambda: orig.select("date"))
