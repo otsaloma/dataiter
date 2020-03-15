@@ -25,6 +25,7 @@ import csv
 import json
 import operator
 import os
+import pandas as pd
 
 from attd import AttributeDict
 from dataiter import deco
@@ -195,10 +196,24 @@ class ListOfDicts(list):
     def tail(self, n):
         return self._new(self[-n:])
 
+    def _to_columns(self):
+        columns = {}
+        for item in self:
+            for key, value in item.items():
+                columns.setdefault(key, []).append(value)
+        return columns
+
+    def to_data_frame(self):
+        from dataiter import DataFrame
+        return DataFrame(**self._to_columns())
+
     def to_json(self, **kwargs):
         kwargs.setdefault("ensure_ascii", False)
         kwargs.setdefault("indent", 2)
         return json.dumps(self, **kwargs)
+
+    def to_pandas(self):
+        return pd.DataFrame(self._to_columns())
 
     @deco.new_from_generator
     def unique(self, *keys):

@@ -278,11 +278,21 @@ class TestListOfDicts:
         data = self.from_file("downloads.json")
         assert data.tail(10) == data[-10:]
 
+    def test_to_data_frame(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.to_data_frame()
+        assert data.nrow == len(orig)
+
     def test_to_json(self):
         orig = self.from_file("downloads.json")
         text = orig.to_json()
         data = ListOfDicts.from_json(text)
         assert data == orig
+
+    def test_to_pandas(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.to_pandas()
+        assert data.shape[0] == len(orig)
 
     def test_unique(self):
         orig = self.from_file("downloads.json")
