@@ -247,8 +247,12 @@ class DataFrame(dict):
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
+    @deco.new_from_generator
     def rename(self, **to_from_pairs):
-        raise NotImplementedError
+        from_to_pairs = {v: k for k, v in to_from_pairs.items()}
+        for fm in self.colnames:
+            to = from_to_pairs.get(fm, fm)
+            yield to, self[fm].copy()
 
     @deco.new_from_generator
     def select(self, *colnames):

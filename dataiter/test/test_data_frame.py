@@ -245,7 +245,13 @@ class TestDataFrame:
         assert data.nrow == 905
 
     def test_rename(self):
-        pass
+        orig = self.from_file("downloads.csv")
+        assert orig.colnames == ["category", "date", "downloads"]
+        data = orig.rename(ymd="date")
+        assert data.colnames == ["category", "ymd", "downloads"]
+        assert data.category.equal(orig.category)
+        assert data.ymd.equal(orig.date)
+        assert data.downloads.equal(orig.downloads)
 
     def test_select(self):
         orig = self.from_file("vehicles.csv")
