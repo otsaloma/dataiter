@@ -1,11 +1,10 @@
 language: python
 python:
-  - 3.5
   - 3.6
   - 3.7
   - 3.8
 install:
-  - pip install attd flake8 setuptools
+  - pip install attd flake8 numpy pandas setuptools
 script:
   - make check
   - make test

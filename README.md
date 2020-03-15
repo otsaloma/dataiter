@@ -4,9 +4,18 @@ Python Classes for Data Manipulation
 [![Build Status](https://travis-ci.org/otsaloma/dataiter.svg)](https://travis-ci.org/otsaloma/dataiter)
 [![PyPI](https://img.shields.io/pypi/v/dataiter.svg)](https://pypi.org/project/dataiter/)
 
-dataiter currently includes `ListOfDicts`, a class useful for
-manipulating data from JSON APIs. Manipulation functions iterate over
-the data and return a shallow modified copy of the original.
+dataiter currently includes classes `DataFrame` and `ListOfDicts`.
+
+**`DataFrame`** is a class for tabular data similar to R's data.frame or
+pandas.DataFrame. It is under the hood a dict of NumPy arrays and thus
+capable of fast vectorized operations. You can consider this to be a
+very experimental, very light-weight alternative to Pandas with a simple
+and consistent API.
+
+**`ListOfDicts`** is a class useful for manipulating data from JSON
+APIs. Manipulation functions iterate over the data and return a shallow
+modified copy of the original. attd.AttributeDict is used to provide
+convenient access to keys.
 
 ## Installation
 
@@ -16,5 +25,5 @@ pip install dataiter
 
 ## Documentation
 
-dataiter is not yet stable, documentation will be added later. For now,
-you can look at the tests to see usage examples.
+dataiter is experimental and the API subject to change. If you
+nevertheless want to try it, take a look at the source code and tests.

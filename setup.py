@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -12,7 +13,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/otsaloma/dataiter",
     license="MIT",
-    py_modules=["dataiter"],
-    python_requires=">=3.1.0",
-    install_requires=["attd>=0.3"],
+    packages=find_packages(exclude=["*.test"]),
+    python_requires=">=3.6.0",
+    install_requires=["attd>=0.3", "numpy>=1.7", "pandas>=1.0"],
 )
