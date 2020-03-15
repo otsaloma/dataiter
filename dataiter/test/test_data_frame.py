@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import numpy as np
 import tempfile
 
 from dataiter import DataFrame
@@ -29,8 +30,8 @@ from dataiter import test
 
 class TestDataFrameColumn:
 
-    def test___init__(self):
-        column = DataFrameColumn([1, 2, 3])
+    def test___init___given_array(self):
+        column = DataFrameColumn(np.array([1, 2, 3]))
         assert isinstance(column, DataFrameColumn)
         assert isinstance(column, np.ndarray)
 
@@ -38,31 +39,90 @@ class TestDataFrameColumn:
         column = DataFrameColumn([1, 2, 3], dtype="float64")
         assert column.dtype is np.dtype("float64")
 
+    def test___init___given_list(self):
+        column = DataFrameColumn([1, 2, 3])
+        assert isinstance(column, DataFrameColumn)
+        assert isinstance(column, np.ndarray)
+
     def test__init___given_nrow(self):
         column = DataFrameColumn([1], nrow=3)
         assert column.tolist() == [1, 1, 1]
 
     def test__init___given_scalar(self):
-        column = DataFrameColumn(1, nrow=1)
+        column = DataFrameColumn(1)
         assert column.tolist() == [1]
-        column = DataFrameColumn(1, nrow=3)
-        assert column.tolist() == [1, 1, 1]
+
+    def test_equal_given_bool(self):
+        a = DataFrameColumn([True, False, np.nan])
+        b = DataFrameColumn([True, False, np.nan])
+        assert a.equal(b)
+        assert not a.equal(b[::-1])
+
+    def test_equal_given_float(self):
+        a = DataFrameColumn([1.1, 2.2, np.nan])
+        b = DataFrameColumn([1.1, 2.2, np.nan])
+        assert a.equal(b)
+        assert not a.equal(b[::-1])
+
+    def test_equal_given_int(self):
+        a = DataFrameColumn([1, 2, 3])
+        b = DataFrameColumn([1, 2, 3])
+        assert a.equal(b)
+        assert not a.equal(b[::-1])
+
+    def test_equal_given_str(self):
+        a = DataFrameColumn(["a", "b", "c"])
+        b = DataFrameColumn(["a", "b", "c"])
+        assert a.equal(b)
+        assert not a.equal(b[::-1])
+
+    def test_is_boolean(self):
+        assert DataFrameColumn([True]).is_boolean
+        assert not DataFrameColumn([1.1]).is_boolean
+        assert not DataFrameColumn([1]).is_boolean
+        assert not DataFrameColumn(["a"]).is_boolean
+
+    def test_is_float(self):
+        assert not DataFrameColumn([True]).is_float
+        assert DataFrameColumn([1.1]).is_float
+        assert not DataFrameColumn([1]).is_float
+        assert not DataFrameColumn(["a"]).is_float
+
+    def test_is_integer(self):
+        assert not DataFrameColumn([True]).is_integer
+        assert not DataFrameColumn([1.1]).is_integer
+        assert DataFrameColumn([1]).is_integer
+        assert not DataFrameColumn(["a"]).is_integer
+
+    def test_is_number(self):
+        assert not DataFrameColumn([True]).is_number
+        assert DataFrameColumn([1.1]).is_number
+        assert DataFrameColumn([1]).is_number
+        assert not DataFrameColumn(["a"]).is_number
+
+    def test_is_string(self):
+        assert not DataFrameColumn([True]).is_string
+        assert not DataFrameColumn([1.1]).is_string
+        assert not DataFrameColumn([1]).is_string
+        assert DataFrameColumn(["a"]).is_string
 
     def test_nrow(self):
-        column = DataFrameColumn([1, 2, 3])
-        assert column.nrow == 3
+        assert DataFrameColumn([1, 2, 3]).nrow == 3
 
 
 class TestDataFrame:
 
-    def setup_method(self, method):
-        self.data = DataFrame.read_json(test.get_json_filename())
-        self.data_backup = self.data.deepcopy()
+    def from_file(self, fname):
+        fname = test.get_data_filename(fname)
+        extension = fname.split(".")[-1]
+        read = getattr(DataFrame, "read_{}".format(extension))
+        return read(fname)
 
     def test___init___broadcast(self):
-        data = DataFrame(a=[1, 2, 3], b=1)
+        data = DataFrame(a=[1, 2, 3], b=[1], c=1)
         assert data.a.tolist() == [1, 2, 3]
         assert data.b.tolist() == [1, 1, 1]
+        assert data.c.tolist() == [1, 1, 1]
 
     def test___init___given_data_frame_column(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
@@ -75,124 +135,133 @@ class TestDataFrame:
         assert data.nrow == 3
 
     def test___delattr__(self):
-        del self.data.date
-        assert "date" not in self.data.colnames
+        data = DataFrame(a=DataFrameColumn([1, 2, 3]))
+        assert "a" in data.colnames
+        del data.a
+        assert "a" not in data.colnames
 
     def test___eq__(self):
-        assert self.data == self.data_backup
+        data = self.from_file("vehicles.csv")
+        assert data == data.copy()
+        assert data == data.deepcopy()
 
     def test___getattr__(self):
-        assert self.data.date is self.data["date"]
+        data = self.from_file("vehicles.csv")
+        assert data.make is data["make"]
 
     def test___setattr__(self):
-        self.data.new = 1
-        assert "new" in self.data.colnames
+        data = self.from_file("vehicles.csv")
+        assert "test" not in data.colnames
+        data.test = 1
+        assert "test" in data.colnames
 
     def test___setitem__(self):
-        self.data["new"] = 1
-        assert "new" in self.data.colnames
-
-    def test___str__(self):
-        assert str(self.data)
+        data = self.from_file("vehicles.csv")
+        assert "test" not in data.colnames
+        data["test"] = 1
+        assert "test" in data.colnames
 
     def test_aggregate(self):
-        # TODO:
         pass
 
     def test_colnames(self):
-        assert self.data.colnames == ["category", "date", "downloads"]
+        data = self.from_file("downloads.csv")
+        assert data.colnames == ["category", "date", "downloads"]
 
     def test_columns(self):
-        assert self.data.columns == [self.data.category, self.data.date, self.data.downloads]
+        data = self.from_file("downloads.csv")
+        assert data.columns == [data.category, data.date, data.downloads]
 
     def test_copy(self):
-        data = self.data.copy()
-        assert data == self.data
-        assert data is not self.data
+        orig = self.from_file("vehicles.csv")
+        data = orig.copy()
+        assert data == orig
+        assert data is not orig
 
     def test_deepcopy(self):
-        data = self.data.copy()
-        assert data == self.data
-        assert data is not self.data
+        orig = self.from_file("vehicles.csv")
+        data = orig.copy()
+        assert data == orig
+        assert data is not orig
 
     def test_filter(self):
-        # TODO:
         pass
 
     def test_filter_out(self):
-        # TODO:
         pass
 
     def test_from_json(self):
-        string = self.data.to_json()
-        data = DataFrame.from_json(string)
-        assert data == self.data
+        orig = self.from_file("downloads.json")
+        text = orig.to_json()
+        data = DataFrame.from_json(text)
+        assert data == orig
 
     def test_group_by(self):
-        # TODO:
         pass
 
     def test_join(self):
-        # TODO:
         pass
 
     def test_ncol(self):
-        assert self.data.ncol == 3
+        data = self.from_file("downloads.csv")
+        assert data.ncol == 3
 
     def test_nrow(self):
-        assert self.data.nrow == 137
+        data = self.from_file("downloads.csv")
+        assert data.nrow == 905
 
     def test_read_csv(self):
-        # XXX: pandas.read_csv reads "null" as NaN.
-        data = DataFrame.read_csv(test.get_csv_filename())
-        data.category[data.category == "nan"] = "null"
-        assert data == self.data
+        data = self.from_file("vehicles.csv")
+        assert data.ncol == 12
+        assert data.nrow == 33442
 
     def test_read_json(self):
-        data = DataFrame.read_json(test.get_json_filename())
-        assert data == self.data
+        data = self.from_file("downloads.json")
+        assert data.ncol == 3
+        assert data.nrow == 905
 
     def test_rename(self):
-        # TODO:
         pass
 
     def test_select(self):
-        # TODO:
         pass
 
     def test_sort(self):
-        # TODO:
         pass
 
     def test_to_json(self):
-        string = self.data.to_json()
-        data = DataFrame.from_json(string)
-        assert data == self.data
+        orig = self.from_file("downloads.json")
+        text = orig.to_json()
+        data = DataFrame.from_json(text)
+        assert data == orig
 
     def test_to_list_of_dicts(self):
-        self.data.to_list_of_dicts()
+        orig = self.from_file("vehicles.csv")
+        data = orig.to_list_of_dicts()
+        assert len(data) == orig.nrow
 
     def test_to_pandas(self):
-        self.data.to_pandas()
+        orig = self.from_file("vehicles.csv")
+        data = orig.to_pandas()
+        assert data.shape[0] == orig.nrow
+        assert data.shape[1] == orig.ncol
 
     def test_unique(self):
-        # TODO:
         pass
 
     def test_unselect(self):
-        # TODO:
         pass
 
     def test_write_csv(self):
-        # XXX: pandas.read_csv reads "null" as NaN.
+        orig = self.from_file("vehicles.csv")
         handle, fname = tempfile.mkstemp(".csv")
-        self.data.write_csv(fname)
+        orig.write_csv(fname)
         data = DataFrame.read_csv(fname)
-        data.category[data.category == "nan"] = "null"
-        assert data == self.data
+        assert data == orig
 
     def test_write_json(self):
+        orig = self.from_file("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
-        self.data.write_json(fname)
+        orig.write_json(fname)
         data = DataFrame.read_json(fname)
-        assert data == self.data
+        assert data == orig

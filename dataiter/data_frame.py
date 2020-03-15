@@ -26,7 +26,6 @@ import numpy as np
 import pandas as pd
 
 from dataiter import deco
-from dataiter import ListOfDicts
 from dataiter import util
 
 
@@ -44,12 +43,40 @@ class DataFrameColumn(np.ndarray):
     def __init__(self, object, dtype=None, nrow=None):
         self.__check_dimensions()
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
         return util.np_to_string(self)
 
     def __check_dimensions(self):
         if self.ndim == 1: return
         raise ValueError("Bad dimensions: {!r}".format(self.ndim))
+
+    def equal(self, other):
+        if self.is_float and other.is_float:
+            return np.allclose(self, other, equal_nan=True)
+        return np.array_equal(self, other)
+
+    @property
+    def is_boolean(self):
+        return np.issubdtype(self.dtype, np.bool_)
+
+    @property
+    def is_float(self):
+        return np.issubdtype(self.dtype, np.floating)
+
+    @property
+    def is_integer(self):
+        return np.issubdtype(self.dtype, np.integer)
+
+    @property
+    def is_number(self):
+        return np.issubdtype(self.dtype, np.number)
+
+    @property
+    def is_string(self):
+        return np.issubdtype(self.dtype, np.character)
 
     @property
     def nrow(self):
@@ -65,6 +92,7 @@ class DataFrame(dict):
         for key, value in self.items():
             if not isinstance(value, DataFrameColumn) or value.nrow != nrow:
                 super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
+        self.__check_dimensions()
 
     def __copy__(self):
         return self.__class__(self)
@@ -81,7 +109,7 @@ class DataFrame(dict):
                 self.nrow == other.nrow and
                 self.ncol == other.ncol and
                 set(self.colnames) == set(other.colnames) and
-                all(np.array_equal(self[x], other[x]) for x in self))
+                all(self[x].equal(other[x]) for x in self))
 
     @deco.translate_error(KeyError, AttributeError)
     def __getattr__(self, colname):
@@ -94,6 +122,9 @@ class DataFrame(dict):
         nrow = self.nrow if self else None
         value = DataFrameColumn(value, nrow=nrow)
         return super().__setitem__(key, value)
+
+    def __repr__(self):
+        return self.__str__()
 
     def __str__(self):
         rows = [[""] + self.colnames]
@@ -123,6 +154,11 @@ class DataFrame(dict):
 
     def aggregate(self, **colname_function_pairs):
         raise NotImplementedError
+
+    def __check_dimensions(self):
+        nrows = [x.nrow for x in self.columns]
+        if len(set(nrows)) == 1: return
+        raise ValueError("Bad dimensions: {!r}".format(nrows))
 
     @property
     def colnames(self):
@@ -191,10 +227,10 @@ class DataFrame(dict):
         raise NotImplementedError
 
     def to_json(self, **kwargs):
-        data = self.to_list_of_dicts()
-        return json.dumps(data, **kwargs)
+        return json.dumps(self.to_list_of_dicts(), **kwargs)
 
     def to_list_of_dicts(self):
+        from dataiter import ListOfDicts
         data = [{} for i in range(self.nrow)]
         for colname in self.colnames:
             for i, value in enumerate(self[colname].tolist()):

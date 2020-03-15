@@ -30,12 +30,6 @@ def assert_raises(exception, function, *args, **kwargs):
     except exception:
         pass
 
-def get_csv_filename():
-    # https://pypistats.org/api/packages/attd/system
+def get_data_filename(fname):
     directory = os.path.dirname(__file__)
-    return os.path.join(directory, "data", "downloads.csv")
-
-def get_json_filename():
-    # https://pypistats.org/api/packages/attd/system
-    directory = os.path.dirname(__file__)
-    return os.path.join(directory, "data", "downloads.json")
+    return os.path.join(directory, "..", "..", "data", fname)
