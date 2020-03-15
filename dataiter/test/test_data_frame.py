@@ -229,6 +229,9 @@ class TestDataFrame:
     def test_select(self):
         pass
 
+    def test_slice(self):
+        pass
+
     def test_sort(self):
         pass
 

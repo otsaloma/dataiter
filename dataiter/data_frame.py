@@ -226,6 +226,9 @@ class DataFrame(dict):
     def select(self, *colnames):
         raise NotImplementedError
 
+    def slice(self, rows=None, cols=None):
+        raise NotImplementedError
+
     def sort(self, *colnames, reverse=False):
         raise NotImplementedError
 
