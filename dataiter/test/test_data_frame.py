@@ -227,7 +227,11 @@ class TestDataFrame:
         pass
 
     def test_select(self):
-        pass
+        orig = self.from_file("vehicles.csv")
+        orig_colnames = list(orig.colnames)
+        data = orig.select("make", "model")
+        assert data.colnames == ["make", "model"]
+        assert orig.colnames == orig_colnames
 
     def test_slice(self):
         pass
@@ -259,7 +263,11 @@ class TestDataFrame:
         pass
 
     def test_unselect(self):
-        pass
+        orig = self.from_file("vehicles.csv")
+        orig_colnames = list(orig.colnames)
+        data = orig.unselect("make", "model")
+        assert data.colnames == [x for x in orig_colnames if not x in ["make", "model"]]
+        assert orig.colnames == orig_colnames
 
     def test_write_csv(self):
         orig = self.from_file("vehicles.csv")

@@ -204,6 +204,9 @@ class DataFrame(dict):
     def ncol(self):
         return len(self)
 
+    def _new(self, *args, **kwargs):
+        return self.__class__(*args, **kwargs)
+
     @property
     def nrow(self):
         if not self: return 0
@@ -223,8 +226,10 @@ class DataFrame(dict):
     def rename(self, **to_from_pairs):
         raise NotImplementedError
 
+    @deco.new_from_generator
     def select(self, *colnames):
-        raise NotImplementedError
+        for colname in colnames:
+            yield colname, self[colname].copy()
 
     def slice(self, rows=None, cols=None):
         raise NotImplementedError
@@ -252,8 +257,11 @@ class DataFrame(dict):
     def unique(self, *colnames):
         raise NotImplementedError
 
+    @deco.new_from_generator
     def unselect(self, *colnames):
-        raise NotImplementedError
+        for colname in self.colnames:
+            if colname not in colnames:
+                yield colname, self[colname].copy()
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         self.to_pandas().to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
