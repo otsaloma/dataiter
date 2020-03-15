@@ -195,7 +195,7 @@ class DataFrame(dict):
         raise NotImplementedError
 
     def head(self, n):
-        raise NotImplementedError
+        return self.slice(list(range(n)))
 
     def join(self, other, *by):
         raise NotImplementedError
@@ -211,6 +211,30 @@ class DataFrame(dict):
     def nrow(self):
         if not self: return 0
         return self[next(iter(self))].nrow
+
+    def _parse_cols_argument(self, cols):
+        if cols is None:
+            cols = np.arange(self.ncol)
+        if np.isscalar(cols):
+            cols = [cols]
+        cols = np.array(cols)
+        if np.issubdtype(cols.dtype, np.bool_):
+            assert len(cols) == self.ncol
+            cols = cols.nonzero()[0]
+        assert np.issubdtype(cols.dtype, np.integer)
+        return cols
+
+    def _parse_rows_argument(self, rows):
+        if rows is None:
+            rows = np.arange(self.nrow)
+        if np.isscalar(rows):
+            rows = [rows]
+        rows = np.array(rows)
+        if np.issubdtype(rows.dtype, np.bool_):
+            assert len(rows) == self.nrow
+            rows = rows.nonzero()[0]
+        assert np.issubdtype(rows.dtype, np.integer)
+        return rows
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
@@ -231,14 +255,18 @@ class DataFrame(dict):
         for colname in colnames:
             yield colname, self[colname].copy()
 
+    @deco.new_from_generator
     def slice(self, rows=None, cols=None):
-        raise NotImplementedError
+        rows = self._parse_rows_argument(rows)
+        cols = self._parse_cols_argument(cols)
+        for colname in (self.colnames[x] for x in cols):
+            yield colname, self[colname][rows].copy()
 
     def sort(self, *colnames, reverse=False):
         raise NotImplementedError
 
     def tail(self, n):
-        raise NotImplementedError
+        return self.slice(list(range(self.nrow - n, self.nrow)))
 
     def to_json(self, **kwargs):
         return json.dumps(self.to_list_of_dicts(), **kwargs)

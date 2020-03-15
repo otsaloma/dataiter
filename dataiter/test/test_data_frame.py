@@ -200,7 +200,8 @@ class TestDataFrame:
         pass
 
     def test_head(self):
-        pass
+        data = self.from_file("vehicles.csv")
+        assert data.head(5) == data.slice(list(range(5)))
 
     def test_join(self):
         pass
@@ -212,6 +213,26 @@ class TestDataFrame:
     def test_nrow(self):
         data = self.from_file("downloads.csv")
         assert data.nrow == 905
+
+    def test__parse_cols_argument(self):
+        data = self.from_file("downloads.csv")
+        parse = data._parse_cols_argument
+        assert parse(None).tolist() == [0, 1, 2]
+        assert parse(0).tolist() == [0]
+        assert parse([0]).tolist() == [0]
+        assert parse([0, 1]).tolist() == [0, 1]
+        assert parse([True, True, False]).tolist() == [0, 1]
+        test.assert_raises(AssertionError, parse, True)
+
+    def test__parse_rows_argument(self):
+        data = self.from_file("downloads.csv").head(3)
+        parse = data._parse_rows_argument
+        assert parse(None).tolist() == [0, 1, 2]
+        assert parse(0).tolist() == [0]
+        assert parse([0]).tolist() == [0]
+        assert parse([0, 1]).tolist() == [0, 1]
+        assert parse([True, True, False]).tolist() == [0, 1]
+        test.assert_raises(AssertionError, parse, True)
 
     def test_read_csv(self):
         data = self.from_file("vehicles.csv")
@@ -233,14 +254,32 @@ class TestDataFrame:
         assert data.colnames == ["make", "model"]
         assert orig.colnames == orig_colnames
 
-    def test_slice(self):
-        pass
+    def test_slice_given_both(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.slice(rows=[0, 1, 2], cols=[0, 1, 2])
+        assert data.ncol == 3
+        assert data.nrow == 3
+        assert data.colnames == orig.colnames[:3]
+
+    def test_slice_given_cols(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.slice(cols=[0, 1, 2])
+        assert data.ncol == 3
+        assert data.nrow == orig.nrow
+        assert data.colnames == orig.colnames[:3]
+
+    def test_slice_given_rows(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.slice(rows=[0, 1, 2])
+        assert data.ncol == orig.ncol
+        assert data.nrow == 3
 
     def test_sort(self):
         pass
 
     def test_tail(self):
-        pass
+        data = self.from_file("vehicles.csv")
+        assert data.tail(5) == data.slice(list(range(data.nrow - 5, data.nrow)))
 
     def test_to_json(self):
         orig = self.from_file("downloads.json")
