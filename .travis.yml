@@ -8,6 +8,3 @@ install:
 script:
   - make check
   - make test
-  - make install
-  - make test-installed
-  - make clean
