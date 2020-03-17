@@ -34,7 +34,7 @@ class DataFrameColumn(Array):
 
     def __new__(cls, object, dtype=None, nrow=None):
         object = [object] if np.isscalar(object) else object
-        column = np.array(object, dtype)
+        column = Array(object, dtype)
         if nrow is not None and nrow != column.size:
             if not (column.size == 1 and nrow > 1):
                 raise ValueError("Incompatible object and nrow for broadcast")
@@ -187,11 +187,11 @@ class DataFrame(dict):
             cols = np.arange(self.ncol)
         if np.isscalar(cols):
             cols = [cols]
-        cols = np.array(cols)
-        if np.issubdtype(cols.dtype, np.bool_):
+        cols = Array(cols)
+        if cols.is_boolean:
             assert len(cols) == self.ncol
-            cols = cols.nonzero()[0]
-        assert np.issubdtype(cols.dtype, np.integer)
+            cols = Array(cols.nonzero()[0])
+        assert cols.is_integer
         return cols
 
     def _parse_rows_argument(self, rows):
@@ -199,11 +199,11 @@ class DataFrame(dict):
             rows = np.arange(self.nrow)
         if np.isscalar(rows):
             rows = [rows]
-        rows = np.array(rows)
-        if np.issubdtype(rows.dtype, np.bool_):
+        rows = Array(rows)
+        if rows.is_boolean:
             assert len(rows) == self.nrow
-            rows = rows.nonzero()[0]
-        assert np.issubdtype(rows.dtype, np.integer)
+            rows = Array(rows.nonzero()[0])
+        assert rows.is_integer
         return rows
 
     @classmethod
