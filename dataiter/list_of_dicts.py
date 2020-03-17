@@ -197,11 +197,7 @@ class ListOfDicts(list):
         return self._new(self[-n:])
 
     def _to_columns(self):
-        columns = {}
-        for item in self:
-            for key, value in item.items():
-                columns.setdefault(key, []).append(value)
-        return columns
+        return {k: self.pluck(k) for k in self[0]} if self else {}
 
     def to_data_frame(self):
         from dataiter import DataFrame
