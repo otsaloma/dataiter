@@ -25,11 +25,12 @@ import json
 import numpy as np
 import pandas as pd
 
+from dataiter import Array
 from dataiter import deco
 from dataiter import util
 
 
-class DataFrameColumn(np.ndarray):
+class DataFrameColumn(Array):
 
     def __new__(cls, object, dtype=None, nrow=None):
         object = [object] if np.isscalar(object) else object
@@ -43,40 +44,9 @@ class DataFrameColumn(np.ndarray):
     def __init__(self, object, dtype=None, nrow=None):
         self.__check_dimensions()
 
-    def __repr__(self):
-        return self.__str__()
-
-    def __str__(self):
-        return util.np_to_string(self)
-
     def __check_dimensions(self):
         if self.ndim == 1: return
         raise ValueError("Bad dimensions: {!r}".format(self.ndim))
-
-    def equal(self, other):
-        if self.is_float and other.is_float:
-            return np.allclose(self, other, equal_nan=True)
-        return np.array_equal(self, other)
-
-    @property
-    def is_boolean(self):
-        return np.issubdtype(self.dtype, np.bool_)
-
-    @property
-    def is_float(self):
-        return np.issubdtype(self.dtype, np.floating)
-
-    @property
-    def is_integer(self):
-        return np.issubdtype(self.dtype, np.integer)
-
-    @property
-    def is_number(self):
-        return np.issubdtype(self.dtype, np.number)
-
-    @property
-    def is_string(self):
-        return np.issubdtype(self.dtype, np.character)
 
     @property
     def nrow(self):

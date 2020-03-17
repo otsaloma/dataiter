@@ -52,60 +52,6 @@ class TestDataFrameColumn:
         column = DataFrameColumn(1)
         assert column.tolist() == [1]
 
-    def test_equal_given_bool(self):
-        a = DataFrameColumn([True, False, np.nan])
-        b = DataFrameColumn([True, False, np.nan])
-        assert a.equal(b)
-        assert not a.equal(b[::-1])
-
-    def test_equal_given_float(self):
-        a = DataFrameColumn([1.1, 2.2, np.nan])
-        b = DataFrameColumn([1.1, 2.2, np.nan])
-        assert a.equal(b)
-        assert not a.equal(b[::-1])
-
-    def test_equal_given_int(self):
-        a = DataFrameColumn([1, 2, 3])
-        b = DataFrameColumn([1, 2, 3])
-        assert a.equal(b)
-        assert not a.equal(b[::-1])
-
-    def test_equal_given_str(self):
-        a = DataFrameColumn(["a", "b", "c"])
-        b = DataFrameColumn(["a", "b", "c"])
-        assert a.equal(b)
-        assert not a.equal(b[::-1])
-
-    def test_is_boolean(self):
-        assert DataFrameColumn([True]).is_boolean
-        assert not DataFrameColumn([1.1]).is_boolean
-        assert not DataFrameColumn([1]).is_boolean
-        assert not DataFrameColumn(["a"]).is_boolean
-
-    def test_is_float(self):
-        assert not DataFrameColumn([True]).is_float
-        assert DataFrameColumn([1.1]).is_float
-        assert not DataFrameColumn([1]).is_float
-        assert not DataFrameColumn(["a"]).is_float
-
-    def test_is_integer(self):
-        assert not DataFrameColumn([True]).is_integer
-        assert not DataFrameColumn([1.1]).is_integer
-        assert DataFrameColumn([1]).is_integer
-        assert not DataFrameColumn(["a"]).is_integer
-
-    def test_is_number(self):
-        assert not DataFrameColumn([True]).is_number
-        assert DataFrameColumn([1.1]).is_number
-        assert DataFrameColumn([1]).is_number
-        assert not DataFrameColumn(["a"]).is_number
-
-    def test_is_string(self):
-        assert not DataFrameColumn([True]).is_string
-        assert not DataFrameColumn([1.1]).is_string
-        assert not DataFrameColumn([1]).is_string
-        assert DataFrameColumn(["a"]).is_string
-
     def test_nrow(self):
         assert DataFrameColumn([1, 2, 3]).nrow == 3
 

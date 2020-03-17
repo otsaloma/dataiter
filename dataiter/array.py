@@ -20,15 +20,44 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from dataiter.array import Array # noqa
-from dataiter.data_frame import DataFrame # noqa
-from dataiter.data_frame import DataFrameColumn # noqa
-from dataiter.list_of_dicts import ListOfDicts # noqa
-from dataiter.list_of_dicts import ObsoleteError # noqa
-from dataiter.list_of_dicts import ObsoleteListOfDicts # noqa
+import numpy as np
 
-__version__ = "0.7"
+from dataiter import util
 
-PRINT_FLOAT_PRECISION = 6
-PRINT_MAX_ROWS = 10
-PRINT_MAX_WIDTH = 80
+
+class Array(np.ndarray):
+
+    def __new__(cls, object, dtype=None):
+        object = [object] if np.isscalar(object) else object
+        return np.array(object, dtype).view(cls)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return util.np_to_string(self)
+
+    def equal(self, other):
+        if self.is_float and other.is_float:
+            return np.allclose(self, other, equal_nan=True)
+        return np.array_equal(self, other)
+
+    @property
+    def is_boolean(self):
+        return np.issubdtype(self.dtype, np.bool_)
+
+    @property
+    def is_float(self):
+        return np.issubdtype(self.dtype, np.floating)
+
+    @property
+    def is_integer(self):
+        return np.issubdtype(self.dtype, np.integer)
+
+    @property
+    def is_number(self):
+        return np.issubdtype(self.dtype, np.number)
+
+    @property
+    def is_string(self):
+        return np.issubdtype(self.dtype, np.character)
