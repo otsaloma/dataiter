@@ -52,7 +52,6 @@ test:
 
 test-installed:
 	cd && python3 -c "import dataiter; dataiter.DataFrame()"
-	cd && python3 -c "import dataiter; dataiter.DataFrameColumn()"
 	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
 
 .PHONY: check clean install publish release test test-installed
