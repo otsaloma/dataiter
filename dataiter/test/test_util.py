@@ -27,8 +27,8 @@ from dataiter import util
 
 class TestUtil:
 
-    def test_get_colnames(self):
-        colnames = util.get_colnames(1000)
+    def test_generate_colnames(self):
+        colnames = util.generate_colnames(1000)
         assert len(colnames) == 1000
         assert len(set(colnames)) == 1000
 

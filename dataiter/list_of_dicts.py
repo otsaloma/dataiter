@@ -162,7 +162,7 @@ class ListOfDicts(list):
         with open(fname, "r", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
             if not rows: return cls([])
-            keys = rows.pop(0) if header else util.get_colnames(len(rows[0]))
+            keys = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
             return cls(dict(zip(keys, x)) for x in rows)
 
     @classmethod

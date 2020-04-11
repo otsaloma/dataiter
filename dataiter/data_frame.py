@@ -209,7 +209,7 @@ class DataFrame(dict):
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)
-        data.columns = util.get_colnames(len(data.columns)) if not header else data.columns
+        data.columns = util.generate_colnames(len(data.columns)) if not header else data.columns
         return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     @classmethod

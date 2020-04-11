@@ -26,7 +26,7 @@ import numpy as np
 import string
 
 
-def get_colnames(n):
+def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 
 def length(value):
