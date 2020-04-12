@@ -180,6 +180,7 @@ class DataFrame(dict):
     @property
     def nrow(self):
         if not self: return 0
+        self.__check_dimensions()
         return self[next(iter(self))].nrow
 
     def _parse_cols_argument(self, cols):
