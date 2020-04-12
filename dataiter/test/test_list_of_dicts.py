@@ -27,6 +27,13 @@ from dataiter import ObsoleteError
 from dataiter import ObsoleteListOfDicts
 from dataiter import test
 
+SPECIAL_DATES = [
+    {"date": "1970-01-01", "special": "Epoch"},
+    {"date": "2019-12-25", "special": "Christmas"},
+    {"date": "2020-01-01", "special": "New Year"},
+    {"date": "2020-02-14", "special": "Valentine's Day"},
+]
+
 
 class TestListOfDicts:
 
@@ -87,6 +94,14 @@ class TestListOfDicts:
             "date_max": "2020-03-14",
             "downloads": 58299,
         }]
+
+    def test_anti_join(self):
+        orig = self.from_file("downloads.json")
+        special_dates = ListOfDicts(SPECIAL_DATES)
+        data = orig.anti_join(special_dates, "date")
+        assert len(data) < len(orig)
+        special_dates = [x.date for x in special_dates]
+        assert not any(x in special_dates for x in data.pluck("date"))
 
     def test_copy(self):
         orig = self.from_file("downloads.json")
@@ -160,6 +175,14 @@ class TestListOfDicts:
         data = ListOfDicts.from_json(text)
         assert data == orig
 
+    def test_full_join(self):
+        orig = self.from_file("downloads.json")
+        special_dates = ListOfDicts(SPECIAL_DATES)
+        data = orig.full_join(special_dates, "date")
+        assert len(data) > len(orig)
+        assert sum("special" in x for x in data) == 16
+        assert isinstance(orig, ObsoleteListOfDicts)
+
     def test_group_by(self):
         data = self.from_file("downloads.json")
         data.group_by("category")
@@ -168,21 +191,20 @@ class TestListOfDicts:
         data = self.from_file("downloads.json")
         assert data.head(10) == data[:10]
 
-    def test_join(self):
-        other = ListOfDicts([
-            {"category": "Darwin",  "category_short": "D"},
-            {"category": "Linux",   "category_short": "L"},
-            {"category": "Windows", "category_short": "W"},
-            {"category": "null",    "category_short": "n"},
-            {"category": "other",   "category_short": "o"},
-        ])
+    def test_inner_join(self):
         orig = self.from_file("downloads.json")
-        data = orig.join(other, "category")
+        special_dates = ListOfDicts(SPECIAL_DATES)
+        data = orig.inner_join(special_dates, "date")
+        assert len(data) < len(orig)
+        assert all("special" in x for x in data)
+        assert isinstance(orig, ObsoleteListOfDicts)
+
+    def test_left_join(self):
+        orig = self.from_file("downloads.json")
+        special_dates = ListOfDicts(SPECIAL_DATES)
+        data = orig.left_join(special_dates, "date")
         assert len(data) == len(orig)
-        for a, b in zip(data, orig):
-            if a.category in other.pluck("category"):
-                assert a.category_short == a.category[0]
-            self.assert_common_keys_match(a, b)
+        assert sum("special" in x for x in data) == 15
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test__mark_obsolete_after_multiple_modify(self):
@@ -247,6 +269,14 @@ class TestListOfDicts:
             assert "downloads" in a
             self.assert_common_keys_match(a, b)
         assert isinstance(orig, ObsoleteListOfDicts)
+
+    def test_semi_join(self):
+        orig = self.from_file("downloads.json")
+        special_dates = ListOfDicts(SPECIAL_DATES)
+        data = orig.semi_join(special_dates, "date")
+        assert len(data) < len(orig)
+        special_dates = [x.date for x in special_dates]
+        assert all(x in special_dates for x in data.pluck("date"))
 
     def test_sort(self):
         orig = self.from_file("downloads.json")

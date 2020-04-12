@@ -22,6 +22,7 @@
 
 import copy
 import csv
+import itertools
 import json
 import operator
 import os
@@ -67,6 +68,14 @@ class ListOfDicts(list):
                 group[key] = function(items)
             yield group
 
+    @deco.new_from_generator
+    def anti_join(self, other, *by):
+        extract = operator.itemgetter(*by)
+        other_ids = set(map(extract, other))
+        for item in self:
+            if extract(item) not in other_ids:
+                yield item
+
     def copy(self):
         return self.__copy__()
 
@@ -108,6 +117,18 @@ class ListOfDicts(list):
             raise TypeError("Not a list")
         return cls(obj)
 
+    @deco.obsoletes
+    @deco.new_from_generator
+    def full_join(self, other, *by):
+        counter = itertools.count(start=1)
+        x = self.deepcopy().modify(_xid=lambda x: next(counter))
+        y = other.deepcopy().modify(_yid=lambda x: next(counter))
+        return (self.__class__(x.left_join(y, *by) + y.left_join(x, *by))
+                .modify(_xid=lambda x: x.get("_xid", -1))
+                .modify(_yid=lambda x: x.get("_yid", -1))
+                .unique("_xid", "_yid")
+                .unselect("_xid", "_yid"))
+
     def group_by(self, *keys):
         self._group_keys = keys[:]
         return self
@@ -117,11 +138,22 @@ class ListOfDicts(list):
 
     @deco.obsoletes
     @deco.new_from_generator
-    def join(self, other, *by):
+    def inner_join(self, other, *by):
         extract = operator.itemgetter(*by)
-        other = {extract(x): x for x in reversed(other)}
+        other_by_id = {extract(x): x for x in reversed(other)}
         for item in self:
-            item.update(other.get(extract(item), {}))
+            id = extract(item)
+            if id in other_by_id:
+                item.update(other_by_id[id])
+                yield item
+
+    @deco.obsoletes
+    @deco.new_from_generator
+    def left_join(self, other, *by):
+        extract = operator.itemgetter(*by)
+        other_by_id = {extract(x): x for x in reversed(other)}
+        for item in self:
+            item.update(other_by_id.get(extract(item), {}))
             yield item
 
     def _mark_obsolete(self):
@@ -187,6 +219,14 @@ class ListOfDicts(list):
             for key in set(item) - keys:
                 del item[key]
             yield item
+
+    @deco.new_from_generator
+    def semi_join(self, other, *by):
+        extract = operator.itemgetter(*by)
+        other_ids = set(map(extract, other))
+        for item in self:
+            if extract(item) in other_ids:
+                yield item
 
     def sort(self, *keys, reverse=False):
         def sort_key(item):

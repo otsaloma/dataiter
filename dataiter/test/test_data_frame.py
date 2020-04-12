@@ -110,6 +110,9 @@ class TestDataFrame:
     def test_aggregate(self):
         pass
 
+    def test_anti_join(self):
+        pass
+
     def test_colnames(self):
         data = self.from_file("downloads.csv")
         assert data.colnames == ["category", "date", "downloads"]
@@ -148,6 +151,9 @@ class TestDataFrame:
         data = DataFrame.from_json(text)
         assert data == orig
 
+    def test_full_join(self):
+        pass
+
     def test_group_by(self):
         pass
 
@@ -155,7 +161,10 @@ class TestDataFrame:
         data = self.from_file("vehicles.csv")
         assert data.head(5) == data.slice(list(range(5)))
 
-    def test_join(self):
+    def test_inner_join(self):
+        pass
+
+    def test_left_join(self):
         pass
 
     def test_ncol(self):
@@ -191,6 +200,9 @@ class TestDataFrame:
         data = orig.select("make", "model")
         assert data.colnames == ["make", "model"]
         assert orig.colnames == orig_colnames
+
+    def test_semi_join(self):
+        pass
 
     def test_slice_given_both(self):
         orig = self.from_file("vehicles.csv")

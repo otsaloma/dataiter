@@ -125,6 +125,9 @@ class DataFrame(dict):
     def aggregate(self, **colname_function_pairs):
         raise NotImplementedError
 
+    def anti_join(self, other, *by):
+        raise NotImplementedError
+
     def __check_dimensions(self):
         nrows = [x.nrow for x in self.columns]
         if len(set(nrows)) == 1: return
@@ -167,13 +170,19 @@ class DataFrame(dict):
                 columns.setdefault(key, []).append(value)
         return cls(**columns)
 
+    def full_join(self, other, *by):
+        raise NotImplementedError
+
     def group_by(self, *colnames):
         raise NotImplementedError
 
     def head(self, n):
         return self.slice(list(range(n)))
 
-    def join(self, other, *by):
+    def inner_join(self, other, *by):
+        raise NotImplementedError
+
+    def left_join(self, other, *by):
         raise NotImplementedError
 
     @property
@@ -237,6 +246,9 @@ class DataFrame(dict):
     def select(self, *colnames):
         for colname in colnames:
             yield colname, self[colname].copy()
+
+    def semi_join(self, other, *by):
+        raise NotImplementedError
 
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
