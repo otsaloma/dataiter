@@ -131,16 +131,16 @@ class TestDataFrame:
         assert data is not orig
 
     def test_filter(self):
-        data = self.from_file("downloads.json")
-        data = data.filter(data.category == "Linux")
-        assert data.nrow == 181
-        assert np.all(data.category == "Linux")
+        data = self.from_file("vehicles.csv")
+        data = data.filter(data.make == "Saab")
+        assert data.nrow == 424
+        assert np.all(data.make == "Saab")
 
     def test_filter_out(self):
-        data = self.from_file("downloads.json")
-        data = data.filter(data.category != "Linux")
-        assert data.nrow == 724
-        assert np.all(data.category != "Linux")
+        data = self.from_file("vehicles.csv")
+        data = data.filter_out(data.make == "Saab")
+        assert data.nrow == 33018
+        assert np.all(data.make != "Saab")
 
     def test_from_json(self):
         orig = self.from_file("downloads.json")
@@ -237,7 +237,11 @@ class TestDataFrame:
         assert data.shape[1] == orig.ncol
 
     def test_unique(self):
-        pass
+        data = self.from_file("vehicles.csv")
+        data = data.unique("make", "model")
+        assert data.nrow == 3264
+        by = list(zip(data.make, data.model))
+        assert len(set(by)) == len(by)
 
     def test_unselect(self):
         orig = self.from_file("vehicles.csv")

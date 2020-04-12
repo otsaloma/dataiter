@@ -300,6 +300,8 @@ class TestListOfDicts:
         assert len(data) == 181
         for item in data:
             assert item in orig
+        by = data.pluck("date")
+        assert len(set(by)) == len(by)
 
     def test_unselect(self):
         orig = self.from_file("downloads.json")
