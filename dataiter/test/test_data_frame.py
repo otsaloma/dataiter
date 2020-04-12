@@ -131,10 +131,16 @@ class TestDataFrame:
         assert data is not orig
 
     def test_filter(self):
-        pass
+        data = self.from_file("downloads.json")
+        data = data.filter(data.category == "Linux")
+        assert data.nrow == 181
+        assert np.all(data.category == "Linux")
 
     def test_filter_out(self):
-        pass
+        data = self.from_file("downloads.json")
+        data = data.filter(data.category != "Linux")
+        assert data.nrow == 724
+        assert np.all(data.category != "Linux")
 
     def test_from_json(self):
         orig = self.from_file("downloads.json")
@@ -159,26 +165,6 @@ class TestDataFrame:
     def test_nrow(self):
         data = self.from_file("downloads.csv")
         assert data.nrow == 905
-
-    def test__parse_cols_argument(self):
-        data = self.from_file("downloads.csv")
-        parse = data._parse_cols_argument
-        assert parse(None).tolist() == [0, 1, 2]
-        assert parse(0).tolist() == [0]
-        assert parse([0]).tolist() == [0]
-        assert parse([0, 1]).tolist() == [0, 1]
-        assert parse([True, True, False]).tolist() == [0, 1]
-        test.assert_raises(AssertionError, parse, True)
-
-    def test__parse_rows_argument(self):
-        data = self.from_file("downloads.csv").head(3)
-        parse = data._parse_rows_argument
-        assert parse(None).tolist() == [0, 1, 2]
-        assert parse(0).tolist() == [0]
-        assert parse([0]).tolist() == [0]
-        assert parse([0, 1]).tolist() == [0, 1]
-        assert parse([True, True, False]).tolist() == [0, 1]
-        test.assert_raises(AssertionError, parse, True)
 
     def test_read_csv(self):
         data = self.from_file("vehicles.csv")

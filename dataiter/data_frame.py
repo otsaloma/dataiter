@@ -144,11 +144,17 @@ class DataFrame(dict):
     def deepcopy(self):
         return self.__deepcopy__()
 
-    def filter(self, function=None, **colname_value_pairs):
-        raise NotImplementedError
+    @deco.new_from_generator
+    def filter(self, rows):
+        rows = self._parse_rows_boolean(rows)
+        for colname, column in self.items():
+            yield colname, np.take(column, rows)
 
-    def filter_out(self, function=None, **colname_value_pairs):
-        raise NotImplementedError
+    @deco.new_from_generator
+    def filter_out(self, rows):
+        rows = self._parse_rows_boolean(rows)
+        for colname, column in self.items():
+            yield colname, np.delete(column, rows)
 
     @classmethod
     def from_json(cls, string, **kwargs):
@@ -183,27 +189,29 @@ class DataFrame(dict):
         self.__check_dimensions()
         return self[next(iter(self))].nrow
 
-    def _parse_cols_argument(self, cols):
-        if cols is None:
-            cols = np.arange(self.ncol)
-        if np.isscalar(cols):
-            cols = [cols]
+    def _parse_cols_boolean(self, cols):
         cols = Array(cols)
-        if cols.is_boolean:
-            assert len(cols) == self.ncol
-            cols = Array(cols.nonzero()[0])
+        assert cols.is_boolean
+        assert len(cols) == self.ncol
+        cols = Array(np.nonzero(cols)[0])
         assert cols.is_integer
         return cols
 
-    def _parse_rows_argument(self, rows):
-        if rows is None:
-            rows = np.arange(self.nrow)
-        if np.isscalar(rows):
-            rows = [rows]
+    def _parse_cols_integer(self, cols):
+        cols = Array(cols)
+        assert cols.is_integer
+        return cols
+
+    def _parse_rows_boolean(self, rows):
         rows = Array(rows)
-        if rows.is_boolean:
-            assert len(rows) == self.nrow
-            rows = Array(rows.nonzero()[0])
+        assert rows.is_boolean
+        assert len(rows) == self.nrow
+        rows = Array(np.nonzero(rows)[0])
+        assert rows.is_integer
+        return rows
+
+    def _parse_rows_integer(self, rows):
+        rows = Array(rows)
         assert rows.is_integer
         return rows
 
@@ -232,8 +240,10 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
-        rows = self._parse_rows_argument(rows)
-        cols = self._parse_cols_argument(cols)
+        rows = np.arange(self.nrow) if rows is None else rows
+        cols = np.arange(self.ncol) if cols is None else cols
+        rows = self._parse_rows_integer(rows)
+        cols = self._parse_cols_integer(cols)
         for colname in (self.colnames[x] for x in cols):
             yield colname, self[colname][rows].copy()
 
