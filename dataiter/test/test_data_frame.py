@@ -262,6 +262,9 @@ class TestDataFrame:
         assert data.colnames == [x for x in orig_colnames if not x in ["make", "model"]]
         assert orig.colnames == orig_colnames
 
+    def test_update(self):
+        pass
+
     def test_write_csv(self):
         orig = self.from_file("vehicles.csv")
         handle, fname = tempfile.mkstemp(".csv")

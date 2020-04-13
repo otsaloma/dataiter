@@ -292,6 +292,9 @@ class DataFrame(dict):
             if colname not in colnames:
                 yield colname, self[colname].copy()
 
+    def update(self, other=None):
+        raise NotImplementedError
+
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         self.to_pandas().to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
 
