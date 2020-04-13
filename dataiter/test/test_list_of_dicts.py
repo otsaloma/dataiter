@@ -22,6 +22,7 @@
 
 import tempfile
 
+from attd import AttributeDict
 from dataiter import ListOfDicts
 from dataiter import ObsoleteError
 from dataiter import ObsoleteListOfDicts
@@ -66,6 +67,12 @@ class TestListOfDicts:
     def test___getitem___expect_list(self):
         data = self.from_file("downloads.json")
         assert isinstance(data[:3], ListOfDicts)
+
+    def test___setitem__(self):
+        data = self.from_file("downloads.json")
+        data[0] = {"date": "1970-01-01"}
+        assert isinstance(data[0], AttributeDict)
+        assert data[0] == {"date": "1970-01-01"}
 
     def test_aggregate(self):
         data = self.from_file("downloads.json")

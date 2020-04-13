@@ -57,10 +57,13 @@ class ListOfDicts(list):
                               shallow=True,
                               predecessor=None)
 
-    def __getitem__(self, key):
+    def __getitem__(self, index):
         # Needed so that slicing gives a ListOfDicts, not a list.
-        value = super().__getitem__(key)
+        value = super().__getitem__(index)
         return self._new(value) if isinstance(value, list) else value
+
+    def __setitem__(self, index, value):
+        return super().__setitem__(index, AttributeDict(value))
 
     @deco.new_from_generator
     def aggregate(self, **key_function_pairs):
