@@ -238,6 +238,10 @@ class ListOfDicts(list):
                 item[to] = item.pop(fm)
             yield item
 
+    @deco.new_from_generator
+    def reverse(self):
+        yield from reversed(self)
+
     @deco.obsoletes
     @deco.new_from_generator
     def select(self, *keys):

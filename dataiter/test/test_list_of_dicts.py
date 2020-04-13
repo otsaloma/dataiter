@@ -297,6 +297,11 @@ class TestListOfDicts:
             self.assert_common_keys_match(a, b)
         assert isinstance(orig, ObsoleteListOfDicts)
 
+    def test_reverse(self):
+        orig = self.from_file("downloads.json")
+        data = orig.reverse()
+        assert data[::-1] == orig
+
     def test_select(self):
         orig = self.from_file("downloads.json")
         data = orig.select("date", "downloads")
