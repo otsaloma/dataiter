@@ -180,6 +180,10 @@ class DataFrame(dict):
                 columns.setdefault(key, []).append(value)
         return cls(**columns)
 
+    @classmethod
+    def from_pandas(cls, data):
+        return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
+
     def full_join(self, other, *by):
         raise NotImplementedError
 
@@ -238,7 +242,7 @@ class DataFrame(dict):
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)
         data.columns = util.generate_colnames(len(data.columns)) if not header else data.columns
-        return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
+        return cls.from_pandas(data)
 
     @classmethod
     def read_json(cls, fname, encoding="utf_8", **kwargs):

@@ -165,6 +165,16 @@ class TestDataFrame:
         data = DataFrame.from_json(text)
         assert data == orig
 
+    def test_from_pandas(self):
+        import pandas as pd
+        orig = self.from_file("vehicles.csv")
+        data = orig.to_pandas()
+        assert isinstance(data, pd.DataFrame)
+        assert data.shape[0] == orig.nrow
+        assert data.shape[1] == orig.ncol
+        data = DataFrame.from_pandas(data)
+        assert data == orig
+
     def test_full_join(self):
         pass
 
@@ -257,8 +267,10 @@ class TestDataFrame:
         assert len(data) == orig.nrow
 
     def test_to_pandas(self):
+        import pandas as pd
         orig = self.from_file("vehicles.csv")
         data = orig.to_pandas()
+        assert isinstance(data, pd.DataFrame)
         assert data.shape[0] == orig.nrow
         assert data.shape[1] == orig.ncol
 
