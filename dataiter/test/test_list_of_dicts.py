@@ -162,6 +162,12 @@ class TestListOfDicts:
         assert b._predecessor is a
         assert c._predecessor is None
 
+    def test_extend(self):
+        orig = self.from_file("downloads.json")
+        data = orig.extend(orig)
+        assert isinstance(data, ListOfDicts)
+        assert len(data) == len(orig) * 2
+
     def test_filter_given_function(self):
         orig = self.from_file("downloads.json")
         data = orig.filter(lambda x: x.category == "Linux")

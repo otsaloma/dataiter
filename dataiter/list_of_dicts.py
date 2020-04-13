@@ -98,6 +98,11 @@ class ListOfDicts(list):
         return self.__deepcopy__()
 
     @deco.new_from_generator
+    def extend(self, other):
+        assert isinstance(other, self.__class__)
+        yield from itertools.chain(self, other)
+
+    @deco.new_from_generator
     def filter(self, function=None, **key_value_pairs):
         if callable(function):
             for item in self:
