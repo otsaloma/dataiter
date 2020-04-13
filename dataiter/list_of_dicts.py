@@ -40,6 +40,11 @@ class ListOfDicts(list):
         self._group_keys = group_keys or []
         self._predecessor = predecessor
 
+    @deco.new_from_generator
+    def __add__(self, other):
+        assert isinstance(other, self.__class__)
+        yield from itertools.chain(self, other)
+
     def __copy__(self):
         return self.__class__(self,
                               group_keys=self._group_keys[:],

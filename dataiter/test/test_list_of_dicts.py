@@ -53,6 +53,12 @@ class TestListOfDicts:
         assert len(data) == 1
         assert data[0] == test
 
+    def test___add__(self):
+        orig = self.from_file("downloads.json")
+        data = orig + orig
+        assert isinstance(data, ListOfDicts)
+        assert len(data) == len(orig) * 2
+
     def test___getitem___expect_dict(self):
         data = self.from_file("downloads.json")
         assert isinstance(data[0], dict)
