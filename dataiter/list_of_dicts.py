@@ -167,6 +167,13 @@ class ListOfDicts(list):
                 item.update(other_by_id[id])
                 yield item
 
+    @deco.new_from_generator
+    def insert(self, index, item):
+        for i in range(len(self)):
+            if i == index:
+                yield AttributeDict(item)
+            yield self[i]
+
     @deco.obsoletes
     @deco.new_from_generator
     def left_join(self, other, *by):

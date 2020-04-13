@@ -230,6 +230,13 @@ class TestListOfDicts:
         assert all("special" in x for x in data)
         assert isinstance(orig, ObsoleteListOfDicts)
 
+    def test_insert(self):
+        orig = self.from_file("downloads.json")
+        data = orig.insert(100, {"date": "3000-01-01"})
+        assert len(data) == len(orig) + 1
+        assert isinstance(data[100], AttributeDict)
+        assert data[100] == {"date": "3000-01-01"}
+
     def test_left_join(self):
         orig = self.from_file("downloads.json")
         special_dates = ListOfDicts(SPECIAL_DATES)
