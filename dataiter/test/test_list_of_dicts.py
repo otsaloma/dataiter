@@ -123,6 +123,11 @@ class TestListOfDicts:
         assert isinstance(data[-1], AttributeDict)
         assert data[-1] == {"date": "3000-01-01"}
 
+    def test_clear(self):
+        orig = self.from_file("downloads.json")
+        data = orig.clear()
+        assert len(data) == 0
+
     def test_copy(self):
         orig = self.from_file("downloads.json")
         data = orig.copy()

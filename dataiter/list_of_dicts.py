@@ -88,6 +88,9 @@ class ListOfDicts(list):
     def append(self, item):
         yield from itertools.chain(self, [AttributeDict(item)])
 
+    def clear(self):
+        return self._new([])
+
     def copy(self):
         return self.__copy__()
 
