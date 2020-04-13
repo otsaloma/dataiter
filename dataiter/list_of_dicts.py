@@ -42,7 +42,8 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def __add__(self, other):
-        assert isinstance(other, self.__class__)
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
         yield from itertools.chain(self, other)
 
     def __copy__(self):
@@ -63,7 +64,9 @@ class ListOfDicts(list):
         return self._new(value) if isinstance(value, list) else value
 
     def __setitem__(self, index, value):
-        return super().__setitem__(index, AttributeDict(value))
+        if not isinstance(value, AttributeDict):
+            value = AttributeDict(value)
+        return super().__setitem__(index, value)
 
     @deco.new_from_generator
     def aggregate(self, **key_function_pairs):
@@ -86,7 +89,9 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def append(self, item):
-        yield from itertools.chain(self, [AttributeDict(item)])
+        if not isinstance(item, AttributeDict):
+            item = AttributeDict(item)
+        yield from itertools.chain(self, [item])
 
     def clear(self):
         return self._new([])
@@ -99,7 +104,8 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def extend(self, other):
-        assert isinstance(other, self.__class__)
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
         yield from itertools.chain(self, other)
 
     @deco.new_from_generator
@@ -169,9 +175,11 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def insert(self, index, item):
+        if not isinstance(item, AttributeDict):
+            item = AttributeDict(item)
         for i in range(len(self)):
             if i == index:
-                yield AttributeDict(item)
+                yield item
             yield self[i]
 
     @deco.obsoletes
