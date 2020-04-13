@@ -307,7 +307,7 @@ class DataFrame(dict):
             if colname not in colnames:
                 yield colname, self[colname].copy()
 
-    def update(self, other=None):
+    def update(self, *args, **kwargs):
         raise NotImplementedError
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
