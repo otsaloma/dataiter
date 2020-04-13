@@ -113,6 +113,20 @@ class TestDataFrame:
     def test_anti_join(self):
         pass
 
+    def test_cbind(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.cbind(orig)
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol * 2
+
+    def test_cbind_broadcast(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.cbind(DataFrame({"test": 1}))
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert np.all(data.test == 1)
+        assert data.unselect("test") == orig
+
     def test_colnames(self):
         data = self.from_file("downloads.csv")
         assert data.colnames == ["category", "date", "downloads"]

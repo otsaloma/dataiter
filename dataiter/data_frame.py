@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import dataiter
+import itertools
 import json
 import numpy as np
 import pandas as pd
@@ -89,8 +90,7 @@ class DataFrame(dict):
         return self.__setitem__(colname, value)
 
     def __setitem__(self, key, value):
-        nrow = self.nrow if self else None
-        value = DataFrameColumn(value, nrow=nrow)
+        value = self._reconcile_column(value)
         return super().__setitem__(key, value)
 
     def __repr__(self):
@@ -127,6 +127,16 @@ class DataFrame(dict):
 
     def anti_join(self, other, *by):
         raise NotImplementedError
+
+    @deco.new_from_generator
+    def cbind(self, *others):
+        data_frames = [self] + list(others)
+        colnames = list(itertools.chain(*data_frames))
+        colnames = util.make_unique_names(colnames)
+        for data in data_frames:
+            for column in data.values():
+                column = self._reconcile_column(column)
+                yield colnames.pop(0), column.copy()
 
     def __check_dimensions(self):
         nrows = [x.nrow for x in self.columns]
@@ -234,6 +244,11 @@ class DataFrame(dict):
     def read_json(cls, fname, encoding="utf_8", **kwargs):
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
+
+    def _reconcile_column(self, column):
+        return (DataFrameColumn(column, nrow=(self.nrow if self else None))
+                if not isinstance(column, DataFrameColumn) or column.nrow != self.nrow
+                else column)
 
     @deco.new_from_generator
     def rename(self, **to_from_pairs):

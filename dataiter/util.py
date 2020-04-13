@@ -32,6 +32,15 @@ def generate_colnames(n):
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
+def make_unique_names(names):
+    unique_names = []
+    for i, name in enumerate(names):
+        n = names[:i].count(name) + 1
+        while name in unique_names:
+            name += str(n)
+        unique_names.append(name)
+    return unique_names
+
 def np_to_string(value):
     return np.array2string(
         value,
