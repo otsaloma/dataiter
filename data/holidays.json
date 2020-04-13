@@ -1,0 +1,130 @@
+[
+  {
+    "date": "1000-01-01",
+    "holiday": "New Year's Day"
+  },
+  {
+    "date": "2019-01-01",
+    "holiday": "New Year's Day"
+  },
+  {
+    "date": "2019-01-06",
+    "holiday": "Epiphany"
+  },
+  {
+    "date": "2019-04-19",
+    "holiday": "Good Friday"
+  },
+  {
+    "date": "2019-04-21",
+    "holiday": "Easter Sunday"
+  },
+  {
+    "date": "2019-04-22",
+    "holiday": "Easter Monday"
+  },
+  {
+    "date": "2019-05-01",
+    "holiday": "May Day"
+  },
+  {
+    "date": "2019-05-30",
+    "holiday": "Ascension Day"
+  },
+  {
+    "date": "2019-06-09",
+    "holiday": "Whit Sunday"
+  },
+  {
+    "date": "2019-06-21",
+    "holiday": "Midsummer's Eve"
+  },
+  {
+    "date": "2019-06-22",
+    "holiday": "Midsummer Day"
+  },
+  {
+    "date": "2019-11-02",
+    "holiday": "All Saints' Day"
+  },
+  {
+    "date": "2019-12-06",
+    "holiday": "Independence Day"
+  },
+  {
+    "date": "2019-12-24",
+    "holiday": "Christmas Eve"
+  },
+  {
+    "date": "2019-12-25",
+    "holiday": "Christmas Day"
+  },
+  {
+    "date": "2019-12-26",
+    "holiday": "2nd Day of Christmas"
+  },
+  {
+    "date": "2020-01-01",
+    "holiday": "New Year's Day"
+  },
+  {
+    "date": "2020-01-06",
+    "holiday": "Epiphany"
+  },
+  {
+    "date": "2020-04-10",
+    "holiday": "Good Friday"
+  },
+  {
+    "date": "2020-04-12",
+    "holiday": "Easter Sunday"
+  },
+  {
+    "date": "2020-04-13",
+    "holiday": "Easter Monday"
+  },
+  {
+    "date": "2020-05-01",
+    "holiday": "May Day"
+  },
+  {
+    "date": "2020-05-21",
+    "holiday": "Ascension Day"
+  },
+  {
+    "date": "2020-05-31",
+    "holiday": "Whit Sunday"
+  },
+  {
+    "date": "2020-06-19",
+    "holiday": "Midsummer's Eve"
+  },
+  {
+    "date": "2020-06-20",
+    "holiday": "Midsummer Day"
+  },
+  {
+    "date": "2020-10-31",
+    "holiday": "All Saints' Day"
+  },
+  {
+    "date": "2020-12-06",
+    "holiday": "Independence Day"
+  },
+  {
+    "date": "2020-12-24",
+    "holiday": "Christmas Eve"
+  },
+  {
+    "date": "2020-12-25",
+    "holiday": "Christmas Day"
+  },
+  {
+    "date": "2020-12-26",
+    "holiday": "2nd Day of Christmas"
+  },
+  {
+    "date": "3000-01-01",
+    "holiday": "New Year's Day"
+  }
+]

@@ -28,13 +28,6 @@ from dataiter import ObsoleteError
 from dataiter import ObsoleteListOfDicts
 from dataiter import test
 
-SPECIAL_DATES = [
-    {"date": "1970-01-01", "special": "Epoch"},
-    {"date": "2019-12-25", "special": "Christmas"},
-    {"date": "2020-01-01", "special": "New Year"},
-    {"date": "2020-02-14", "special": "Valentine's Day"},
-]
-
 
 class TestListOfDicts:
 
@@ -110,11 +103,11 @@ class TestListOfDicts:
 
     def test_anti_join(self):
         orig = self.from_file("downloads.json")
-        special_dates = ListOfDicts(SPECIAL_DATES)
-        data = orig.anti_join(special_dates, "date")
+        holidays = self.from_file("holidays.json")
+        data = orig.anti_join(holidays, "date")
         assert len(data) < len(orig)
-        special_dates = [x.date for x in special_dates]
-        assert not any(x in special_dates for x in data.pluck("date"))
+        holidays = [x.date for x in holidays]
+        assert not any(x in holidays for x in data.pluck("date"))
 
     def test_append(self):
         orig = self.from_file("downloads.json")
@@ -208,10 +201,10 @@ class TestListOfDicts:
 
     def test_full_join(self):
         orig = self.from_file("downloads.json")
-        special_dates = ListOfDicts(SPECIAL_DATES)
-        data = orig.full_join(special_dates, "date")
+        holidays = self.from_file("holidays.json")
+        data = orig.full_join(holidays, "date")
         assert len(data) > len(orig)
-        assert sum("special" in x for x in data) == 16
+        assert sum("holiday" in x for x in data) == 60
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_group_by(self):
@@ -224,10 +217,10 @@ class TestListOfDicts:
 
     def test_inner_join(self):
         orig = self.from_file("downloads.json")
-        special_dates = ListOfDicts(SPECIAL_DATES)
-        data = orig.inner_join(special_dates, "date")
+        holidays = self.from_file("holidays.json")
+        data = orig.inner_join(holidays, "date")
         assert len(data) < len(orig)
-        assert all("special" in x for x in data)
+        assert all("holiday" in x for x in data)
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_insert(self):
@@ -239,10 +232,10 @@ class TestListOfDicts:
 
     def test_left_join(self):
         orig = self.from_file("downloads.json")
-        special_dates = ListOfDicts(SPECIAL_DATES)
-        data = orig.left_join(special_dates, "date")
+        holidays = self.from_file("holidays.json")
+        data = orig.left_join(holidays, "date")
         assert len(data) == len(orig)
-        assert sum("special" in x for x in data) == 15
+        assert sum("holiday" in x for x in data) == 35
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test__mark_obsolete_after_multiple_modify(self):
@@ -315,11 +308,11 @@ class TestListOfDicts:
 
     def test_semi_join(self):
         orig = self.from_file("downloads.json")
-        special_dates = ListOfDicts(SPECIAL_DATES)
-        data = orig.semi_join(special_dates, "date")
+        holidays = self.from_file("holidays.json")
+        data = orig.semi_join(holidays, "date")
         assert len(data) < len(orig)
-        special_dates = [x.date for x in special_dates]
-        assert all(x in special_dates for x in data.pluck("date"))
+        holidays = [x.date for x in holidays]
+        assert all(x in holidays for x in data.pluck("date"))
 
     def test_sort(self):
         orig = self.from_file("downloads.json")
