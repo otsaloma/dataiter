@@ -84,6 +84,10 @@ class ListOfDicts(list):
             if extract(item) not in other_ids:
                 yield item
 
+    @deco.new_from_generator
+    def append(self, item):
+        yield from itertools.chain(self, [AttributeDict(item)])
+
     def copy(self):
         return self.__copy__()
 

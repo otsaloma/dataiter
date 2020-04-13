@@ -116,6 +116,13 @@ class TestListOfDicts:
         special_dates = [x.date for x in special_dates]
         assert not any(x in special_dates for x in data.pluck("date"))
 
+    def test_append(self):
+        orig = self.from_file("downloads.json")
+        data = orig.append({"date": "3000-01-01"})
+        assert len(data) == len(orig) + 1
+        assert isinstance(data[-1], AttributeDict)
+        assert data[-1] == {"date": "3000-01-01"}
+
     def test_copy(self):
         orig = self.from_file("downloads.json")
         data = orig.copy()
