@@ -53,6 +53,9 @@ def np_to_string(value):
         },
     )
 
+def unique(lst):
+    return list(dict.fromkeys(lst))
+
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...
     for batch in range(1, 1000):

@@ -56,3 +56,7 @@ class TestUtil:
 
     def test_np_to_string_str(self):
         assert util.np_to_string(np.array(["a"])[0]) == "a"
+
+    def test_unique(self):
+        assert util.unique([1, 2, 3]) == [1, 2, 3]
+        assert util.unique([1, 2, 3, 1]) == [1, 2, 3]

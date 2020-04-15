@@ -238,6 +238,20 @@ class DataFrame(dict):
         assert rows.is_integer
         return rows
 
+    @deco.new_from_generator
+    def rbind(self, *others):
+        data_frames = [self] + list(others)
+        colnames = list(itertools.chain(*data_frames))
+        colnames = util.unique(colnames)
+        def get_part(data, colname):
+            if colname in data:
+                return data[colname]
+            return Array(np.nan).repeat(data.nrow)
+        for colname in colnames:
+            parts = [get_part(x, colname) for x in data_frames]
+            total = DataFrameColumn(np.concatenate(parts))
+            yield colname, total
+
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)

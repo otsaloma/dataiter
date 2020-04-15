@@ -23,18 +23,18 @@
 import functools
 
 
+def new_from_generator(function):
+    @functools.wraps(function)
+    def wrapper(self, *args, **kwargs):
+        return self._new(function(self, *args, **kwargs))
+    return wrapper
+
 def obsoletes(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):
         value = function(self, *args, **kwargs)
         self._mark_obsolete()
         return value
-    return wrapper
-
-def new_from_generator(function):
-    @functools.wraps(function)
-    def wrapper(self, *args, **kwargs):
-        return self._new(function(self, *args, **kwargs))
     return wrapper
 
 def translate_error(fm, to):

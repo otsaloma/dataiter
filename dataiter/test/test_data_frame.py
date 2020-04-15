@@ -199,6 +199,28 @@ class TestDataFrame:
         data = self.from_file("downloads.csv")
         assert data.nrow == 905
 
+    def test_rbind(self):
+        orig = self.from_file("downloads.csv")
+        data = orig.rbind(orig, orig)
+        assert data.nrow == orig.nrow * 3
+        assert data.ncol == orig.ncol
+        assert data.slice(range(orig.nrow*0, orig.nrow*1)) == orig
+        assert data.slice(range(orig.nrow*1, orig.nrow*2)) == orig
+        assert data.slice(range(orig.nrow*2, orig.nrow*3)) == orig
+
+    def test_rbind_missing(self):
+        part1 = self.from_file("downloads.csv")
+        part2 = self.from_file("downloads.csv")
+        part1.test1 = 1
+        part2.test2 = 2
+        data = part1.rbind(part2)
+        assert data.nrow == part1.nrow + part2.nrow
+        assert data.ncol == part1.ncol + 1
+        assert np.all(data.test1[:3] == 1)
+        assert np.all(np.isnan(data.test1[-3:]))
+        assert np.all(np.isnan(data.test2[:3]))
+        assert np.all(data.test2[-3:] == 2)
+
     def test_read_csv(self):
         data = self.from_file("vehicles.csv")
         assert data.ncol == 12
