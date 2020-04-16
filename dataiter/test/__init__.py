@@ -26,7 +26,7 @@ import os
 def assert_raises(exception, function, *args, **kwargs):
     try:
         function(*args, **kwargs)
-        raise AssertionError("Expected {}".format(exception.__name__))
+        raise AssertionError(f"Expected {exception.__name__}")
     except exception:
         pass
 

@@ -47,7 +47,7 @@ class DataFrameColumn(Array):
 
     def __check_dimensions(self):
         if self.ndim == 1: return
-        raise ValueError("Bad dimensions: {!r}".format(self.ndim))
+        raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
     @property
     def nrow(self):
@@ -141,7 +141,7 @@ class DataFrame(dict):
     def __check_dimensions(self):
         nrows = [x.nrow for x in self.columns]
         if len(set(nrows)) == 1: return
-        raise ValueError("Bad dimensions: {!r}".format(nrows))
+        raise ValueError(f"Bad dimensions: {nrows!r}")
 
     @property
     def colnames(self):

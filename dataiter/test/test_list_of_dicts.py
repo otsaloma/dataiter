@@ -38,7 +38,7 @@ class TestListOfDicts:
     def from_file(self, fname):
         fname = test.get_data_filename(fname)
         extension = fname.split(".")[-1]
-        read = getattr(ListOfDicts, "read_{}".format(extension))
+        read = getattr(ListOfDicts, f"read_{extension}")
         return read(fname)
 
     def test___init__(self):

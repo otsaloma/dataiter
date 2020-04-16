@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import numpy as np
+import pandas as pd
 import tempfile
 
 from dataiter import DataFrame
@@ -61,7 +62,7 @@ class TestDataFrame:
     def from_file(self, fname):
         fname = test.get_data_filename(fname)
         extension = fname.split(".")[-1]
-        read = getattr(DataFrame, "read_{}".format(extension))
+        read = getattr(DataFrame, f"read_{extension}")
         return read(fname)
 
     def test___init___broadcast(self):
@@ -166,7 +167,6 @@ class TestDataFrame:
         assert data == orig
 
     def test_from_pandas(self):
-        import pandas as pd
         orig = self.from_file("vehicles.csv")
         data = orig.to_pandas()
         assert isinstance(data, pd.DataFrame)
@@ -289,7 +289,6 @@ class TestDataFrame:
         assert len(data) == orig.nrow
 
     def test_to_pandas(self):
-        import pandas as pd
         orig = self.from_file("vehicles.csv")
         data = orig.to_pandas()
         assert isinstance(data, pd.DataFrame)
