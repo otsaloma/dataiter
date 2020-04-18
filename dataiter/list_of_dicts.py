@@ -35,28 +35,25 @@ from dataiter import util
 
 class ListOfDicts(list):
 
-    def __init__(self, dicts, group_keys=None, shallow=False, predecessor=None):
-        super().__init__(dicts if shallow else (AttributeDict(x) for x in dicts))
+    def __init__(self, dicts, group_keys=None, predecessor=None, as_is=False):
+        super().__init__(dicts if as_is else map(AttributeDict, dicts))
         self._group_keys = group_keys or []
         self._predecessor = predecessor
 
     @deco.new_from_generator
     def __add__(self, other):
-        if not isinstance(other, self.__class__):
-            other = self.__class__(other)
+        if not isinstance(other, ListOfDicts):
+            raise TypeError("Not a ListOfDicts")
         yield from itertools.chain(self, other)
 
     def __copy__(self):
-        return self.__class__(self,
-                              group_keys=self._group_keys[:],
-                              shallow=True,
-                              predecessor=self)
+        return self._new(self)
 
     def __deepcopy__(self, memo=None):
         return self.__class__(map(copy.deepcopy, self),
                               group_keys=self._group_keys[:],
-                              shallow=True,
-                              predecessor=None)
+                              predecessor=None,
+                              as_is=True)
 
     def __getitem__(self, index):
         # Needed so that slicing gives a ListOfDicts, not a list.
@@ -66,8 +63,8 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def __mul__(self, other):
         if not isinstance(other, int):
-            raise ValueError("Multiplier not an integer")
-        for round in range(other):
+            raise TypeError("Multiplier not an integer")
+        for i in range(other):
             yield from self
 
     def __rmul__(self, other):
@@ -153,17 +150,18 @@ class ListOfDicts(list):
             raise TypeError("Not a list")
         return cls(obj)
 
-    @deco.obsoletes
     @deco.new_from_generator
     def full_join(self, other, *by):
         counter = itertools.count(start=1)
-        x = self.deepcopy().modify(_xid=lambda x: next(counter))
-        y = other.deepcopy().modify(_yid=lambda x: next(counter))
-        return (self.__class__(x.left_join(y, *by) + y.left_join(x, *by))
-                .modify(_xid=lambda x: x.get("_xid", -1))
-                .modify(_yid=lambda x: x.get("_yid", -1))
-                .unique("_xid", "_yid")
-                .unselect("_xid", "_yid"))
+        a = self.deepcopy().modify(__aid=lambda x: next(counter))
+        b = other.deepcopy().modify(__bid=lambda x: next(counter))
+        ab = a.left_join(b, *by)
+        ba = b.left_join(a, *by)
+        return ((ab + ba)
+                .modify(__aid=lambda x: x.get("__aid", -1))
+                .modify(__bid=lambda x: x.get("__bid", -1))
+                .unique("__aid", "__bid")
+                .unselect("__aid", "__bid"))
 
     def group_by(self, *keys):
         self._group_keys = keys[:]
@@ -228,8 +226,8 @@ class ListOfDicts(list):
     def _new(self, dicts):
         return self.__class__(dicts,
                               group_keys=self._group_keys[:],
-                              shallow=True,
-                              predecessor=self)
+                              predecessor=self,
+                              as_is=True)
 
     def pluck(self, key):
         return [x[key] for x in self]
@@ -322,15 +320,14 @@ class ListOfDicts(list):
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         if not self:
             raise Exception("Cannot write empty CSV file")
-        keys = list(self[0].keys())
-        for item in self:
-            if set(item.keys()) != set(keys):
-                raise Exception("Keys differ between dicts")
+        # Take a superset of all keys and fill in missing as None.
+        keys = util.unique_keys(list(itertools.chain(*self)))
+        data = [{**dict.fromkeys(keys), **x} for x in self]
         os.makedirs(os.path.dirname(fname), exist_ok=True)
         with open(fname, "w", encoding=encoding) as f:
             writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
             writer.writeheader() if header else None
-            for item in self:
+            for item in data:
                 writer.writerow(item)
 
     def write_json(self, fname, encoding="utf_8", **kwargs):

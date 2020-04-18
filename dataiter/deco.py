@@ -23,6 +23,12 @@
 import functools
 
 
+def listify(function):
+    @functools.wraps(function)
+    def wrapper(self, *args, **kwargs):
+        return list(function(self, *args, **kwargs))
+    return wrapper
+
 def new_from_generator(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):

@@ -25,6 +25,8 @@ import itertools
 import numpy as np
 import string
 
+from dataiter import deco
+
 
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
@@ -32,16 +34,18 @@ def generate_colnames(n):
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
+@deco.listify
 def make_unique_names(names):
-    unique_names = []
-    for i, name in enumerate(names):
-        n = names[:i].count(name) + 1
-        while name in unique_names:
-            name += str(n)
-        unique_names.append(name)
-    return unique_names
+    found = []
+    for name in names:
+        while name in found:
+            name += "_"
+        found.append(name)
+        yield name
 
 def np_to_string(value):
+    if np.isscalar(value):
+        value = np.array(value)
     return np.array2string(
         value,
         max_line_width=dataiter.PRINT_MAX_WIDTH,
@@ -53,8 +57,8 @@ def np_to_string(value):
         },
     )
 
-def unique(lst):
-    return list(dict.fromkeys(lst))
+def unique_keys(keys):
+    return list(dict.fromkeys(keys))
 
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...

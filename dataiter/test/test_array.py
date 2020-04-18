@@ -27,25 +27,25 @@ from dataiter import Array
 
 class TestArray:
 
-    def test_equal_given_bool(self):
+    def test_equal_boolean(self):
         a = Array([True, False, np.nan])
         b = Array([True, False, np.nan])
         assert a.equal(b)
         assert not a.equal(b[::-1])
 
-    def test_equal_given_float(self):
+    def test_equal_float(self):
         a = Array([1.1, 2.2, np.nan])
         b = Array([1.1, 2.2, np.nan])
         assert a.equal(b)
         assert not a.equal(b[::-1])
 
-    def test_equal_given_int(self):
+    def test_equal_integer(self):
         a = Array([1, 2, 3])
         b = Array([1, 2, 3])
         assert a.equal(b)
         assert not a.equal(b[::-1])
 
-    def test_equal_given_str(self):
+    def test_equal_string(self):
         a = Array(["a", "b", "c"])
         b = Array(["a", "b", "c"])
         assert a.equal(b)
@@ -53,30 +53,30 @@ class TestArray:
 
     def test_is_boolean(self):
         assert Array([True]).is_boolean
-        assert not Array([1.1]).is_boolean
         assert not Array([1]).is_boolean
+        assert not Array([1.1]).is_boolean
         assert not Array(["a"]).is_boolean
 
     def test_is_float(self):
         assert not Array([True]).is_float
-        assert Array([1.1]).is_float
         assert not Array([1]).is_float
+        assert Array([1.1]).is_float
         assert not Array(["a"]).is_float
 
     def test_is_integer(self):
         assert not Array([True]).is_integer
-        assert not Array([1.1]).is_integer
         assert Array([1]).is_integer
+        assert not Array([1.1]).is_integer
         assert not Array(["a"]).is_integer
 
     def test_is_number(self):
         assert not Array([True]).is_number
-        assert Array([1.1]).is_number
         assert Array([1]).is_number
+        assert Array([1.1]).is_number
         assert not Array(["a"]).is_number
 
     def test_is_string(self):
         assert not Array([True]).is_string
-        assert not Array([1.1]).is_string
         assert not Array([1]).is_string
+        assert not Array([1.1]).is_string
         assert Array(["a"]).is_string

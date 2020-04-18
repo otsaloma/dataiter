@@ -39,24 +39,16 @@ class TestUtil:
 
     def test_make_unique_names(self):
         assert util.make_unique_names(["a", "b", "c"]) == ["a", "b", "c"]
-        assert util.make_unique_names(["a", "a", "b"]) == ["a", "a2", "b"]
-        assert util.make_unique_names(["a", "a", "a"]) == ["a", "a2", "a3"]
+        assert util.make_unique_names(["a", "a", "b"]) == ["a", "a_", "b"]
+        assert util.make_unique_names(["a", "a", "a"]) == ["a", "a_", "a__"]
 
-    def test_np_to_string_bool(self):
-        assert util.np_to_string(np.array([True])[0]) == "True"
-
-    def test_np_to_string_date(self):
+    def test_np_to_string(self):
+        assert util.np_to_string(np.bool(True)) == "True"
+        assert util.np_to_string(np.int(1)) == "1"
+        assert util.np_to_string(np.float(1/3)) == "0.333333"
+        assert util.np_to_string(np.str("a")) == "a"
         assert util.np_to_string(np.datetime64("2020-01-01")) == "2020-01-01"
 
-    def test_np_to_string_float(self):
-        assert util.np_to_string(np.array([1/3])[0]) == "0.333333"
-
-    def test_np_to_string_int(self):
-        assert util.np_to_string(np.array([1])[0]) == "1"
-
-    def test_np_to_string_str(self):
-        assert util.np_to_string(np.array(["a"])[0]) == "a"
-
-    def test_unique(self):
-        assert util.unique([1, 2, 3]) == [1, 2, 3]
-        assert util.unique([1, 2, 3, 1]) == [1, 2, 3]
+    def test_unique_keys(self):
+        assert util.unique_keys([1, 2, 3]) == [1, 2, 3]
+        assert util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]

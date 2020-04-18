@@ -63,6 +63,7 @@ class DataFrame(dict):
         for key, value in self.items():
             if not isinstance(value, DataFrameColumn) or value.nrow != nrow:
                 super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
+        # Check that the above broadcasting produced a uniform table.
         self.__check_dimensions()
 
     def __copy__(self):
@@ -76,7 +77,7 @@ class DataFrame(dict):
         return self.__delitem__(colname)
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__) and
+        return (isinstance(other, DataFrame) and
                 self.nrow == other.nrow and
                 self.ncol == other.ncol and
                 set(self.colnames) == set(other.colnames) and
@@ -174,10 +175,8 @@ class DataFrame(dict):
         obj = json.loads(string, **kwargs)
         if not isinstance(obj, list):
             raise TypeError("Not a list")
-        columns = {}
-        for item in obj:
-            for key, value in item.items():
-                columns.setdefault(key, []).append(value)
+        keys = util.unique_keys(itertools.chain(*obj))
+        columns = {k: [x.get(k, None) for x in obj] for k in keys}
         return cls(**columns)
 
     @classmethod
@@ -241,8 +240,7 @@ class DataFrame(dict):
     @deco.new_from_generator
     def rbind(self, *others):
         data_frames = [self] + list(others)
-        colnames = list(itertools.chain(*data_frames))
-        colnames = util.unique(colnames)
+        colnames = util.unique_keys(itertools.chain(*data_frames))
         def get_part(data, colname):
             if colname in data:
                 return data[colname]

@@ -23,13 +23,6 @@
 import os
 
 
-def assert_raises(exception, function, *args, **kwargs):
-    try:
-        function(*args, **kwargs)
-        raise AssertionError(f"Expected {exception.__name__}")
-    except exception:
-        pass
-
 def get_data_filename(fname):
     directory = os.path.dirname(__file__)
     return os.path.join(directory, "..", "..", "data", fname)

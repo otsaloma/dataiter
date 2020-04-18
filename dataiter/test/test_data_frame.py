@@ -73,19 +73,19 @@ class TestDataFrame:
 
     def test___init___given_data_frame_column(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
-        assert data.ncol == 1
         assert data.nrow == 3
+        assert data.ncol == 1
 
     def test___init___given_list(self):
         data = DataFrame(a=[1, 2, 3])
-        assert data.ncol == 1
         assert data.nrow == 3
+        assert data.ncol == 1
 
     def test___delattr__(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
-        assert "a" in data.colnames
+        assert "a" in data
         del data.a
-        assert "a" not in data.colnames
+        assert "a" not in data
 
     def test___eq__(self):
         data = self.from_file("vehicles.csv")
@@ -98,15 +98,15 @@ class TestDataFrame:
 
     def test___setattr__(self):
         data = self.from_file("vehicles.csv")
-        assert "test" not in data.colnames
+        assert "test" not in data
         data.test = 1
-        assert "test" in data.colnames
+        assert "test" in data
 
     def test___setitem__(self):
         data = self.from_file("vehicles.csv")
-        assert "test" not in data.colnames
+        assert "test" not in data
         data["test"] = 1
-        assert "test" in data.colnames
+        assert "test" in data
 
     def test_aggregate(self):
         pass
@@ -183,7 +183,7 @@ class TestDataFrame:
 
     def test_head(self):
         data = self.from_file("vehicles.csv")
-        assert data.head(5) == data.slice(list(range(5)))
+        assert data.head(10) == data.slice(list(range(10)))
 
     def test_inner_join(self):
         pass
@@ -223,13 +223,13 @@ class TestDataFrame:
 
     def test_read_csv(self):
         data = self.from_file("vehicles.csv")
-        assert data.ncol == 12
         assert data.nrow == 33442
+        assert data.ncol == 12
 
     def test_read_json(self):
         data = self.from_file("downloads.json")
-        assert data.ncol == 3
         assert data.nrow == 905
+        assert data.ncol == 3
 
     def test_rename(self):
         orig = self.from_file("downloads.csv")
@@ -253,29 +253,29 @@ class TestDataFrame:
     def test_slice_given_both(self):
         orig = self.from_file("vehicles.csv")
         data = orig.slice(rows=[0, 1, 2], cols=[0, 1, 2])
-        assert data.ncol == 3
         assert data.nrow == 3
+        assert data.ncol == 3
         assert data.colnames == orig.colnames[:3]
 
     def test_slice_given_cols(self):
         orig = self.from_file("vehicles.csv")
         data = orig.slice(cols=[0, 1, 2])
-        assert data.ncol == 3
         assert data.nrow == orig.nrow
+        assert data.ncol == 3
         assert data.colnames == orig.colnames[:3]
 
     def test_slice_given_rows(self):
         orig = self.from_file("vehicles.csv")
         data = orig.slice(rows=[0, 1, 2])
-        assert data.ncol == orig.ncol
         assert data.nrow == 3
+        assert data.ncol == orig.ncol
 
     def test_sort(self):
         pass
 
     def test_tail(self):
         data = self.from_file("vehicles.csv")
-        assert data.tail(5) == data.slice(list(range(data.nrow - 5, data.nrow)))
+        assert data.tail(10) == data.slice(list(range(data.nrow - 10, data.nrow)))
 
     def test_to_json(self):
         orig = self.from_file("downloads.json")
