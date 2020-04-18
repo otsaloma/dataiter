@@ -63,6 +63,16 @@ class ListOfDicts(list):
         value = super().__getitem__(index)
         return self._new(value) if isinstance(value, list) else value
 
+    @deco.new_from_generator
+    def __mul__(self, other):
+        if not isinstance(other, int):
+            raise ValueError("Multiplier not an integer")
+        for round in range(other):
+            yield from self
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
     def __setitem__(self, index, value):
         if not isinstance(value, AttributeDict):
             value = AttributeDict(value)

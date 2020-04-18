@@ -61,6 +61,18 @@ class TestListOfDicts:
         data = self.from_file("downloads.json")
         assert isinstance(data[:3], ListOfDicts)
 
+    def test___mul__(self):
+        orig = self.from_file("downloads.json")
+        data = orig * 2
+        assert isinstance(data, ListOfDicts)
+        assert len(data) == len(orig) * 2
+
+    def test___rmul__(self):
+        orig = self.from_file("downloads.json")
+        data = 2 * orig
+        assert isinstance(data, ListOfDicts)
+        assert len(data) == len(orig) * 2
+
     def test___setitem__(self):
         data = self.from_file("downloads.json")
         data[0] = {"date": "1970-01-01"}
