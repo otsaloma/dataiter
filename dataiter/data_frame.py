@@ -312,7 +312,7 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def unique(self, *colnames):
-        by = np.column_stack(tuple(self[x] for x in colnames))
+        by = np.column_stack(tuple(self[x].astype(bytes) for x in colnames))
         values, indices = np.unique(by, return_index=True, axis=0)
         for colname, column in self.items():
             yield colname, column[indices].copy()

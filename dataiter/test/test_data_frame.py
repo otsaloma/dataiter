@@ -297,9 +297,9 @@ class TestDataFrame:
 
     def test_unique(self):
         data = self.from_file("vehicles.csv")
-        data = data.unique("make", "model")
-        assert data.nrow == 3264
-        by = list(zip(data.make, data.model))
+        data = data.unique("make", "year", "displ")
+        assert data.nrow == 6415
+        by = list(zip(data.make, data.year, data.displ))
         assert len(set(by)) == len(by)
 
     def test_unselect(self):
