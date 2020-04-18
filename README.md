@@ -6,16 +6,16 @@ Python Classes for Data Manipulation
 
 dataiter currently includes classes `DataFrame` and `ListOfDicts`.
 
-**`DataFrame`** is a class for tabular data similar to R's data.frame or
-pandas.DataFrame. It is under the hood a dictionary of NumPy arrays and
-thus capable of fast vectorized operations. You can consider this to be
-a very experimental, very light-weight alternative to Pandas with a
+**`DataFrame`** is a class for tabular data similar to R's `data.frame`
+or `pandas.DataFrame`. It is under the hood a dictionary of NumPy arrays
+and thus capable of fast vectorized operations. You can consider this to
+be a very experimental, very light-weight alternative to Pandas with a
 simple and consistent API.
 
 **`ListOfDicts`** is a class useful for manipulating data from JSON
 APIs. It provides functionality similar to libraries such as
 Underscore.js, with manipulation functions that iterate over the data
-and return a shallow modified copy of the original. attd.AttributeDict
+and return a shallow modified copy of the original. `attd.AttributeDict`
 is used to provide convenient access to dictionary keys.
 
 ## Installation
