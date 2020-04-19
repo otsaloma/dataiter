@@ -189,7 +189,8 @@ class DataFrame(dict):
     def group_by(self, *colnames):
         raise NotImplementedError
 
-    def head(self, n):
+    def head(self, n=None):
+        n = n or dataiter.DEFAULT_HEAD_TAIL
         return self.slice(list(range(n)))
 
     def inner_join(self, other, *by):
@@ -297,7 +298,8 @@ class DataFrame(dict):
         for colname, column in self.items():
             yield colname, column[indices].copy()
 
-    def tail(self, n):
+    def tail(self, n=None):
+        n = n or dataiter.DEFAULT_HEAD_TAIL
         return self.slice(list(range(self.nrow - n, self.nrow)))
 
     def to_json(self, **kwargs):

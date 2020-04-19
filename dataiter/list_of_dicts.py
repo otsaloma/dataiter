@@ -22,6 +22,7 @@
 
 import copy
 import csv
+import dataiter
 import itertools
 import json
 import operator
@@ -167,7 +168,8 @@ class ListOfDicts(list):
         self._group_keys = keys[:]
         return self
 
-    def head(self, n):
+    def head(self, n=None):
+        n = n or dataiter.DEFAULT_HEAD_TAIL
         return self._new(self[:n])
 
     @deco.obsoletes
@@ -280,7 +282,8 @@ class ListOfDicts(list):
             return tuple((item[x] is None, item[x]) for x in keys)
         return self._new(sorted(self, key=sort_key, reverse=reverse))
 
-    def tail(self, n):
+    def tail(self, n=None):
+        n = n or dataiter.DEFAULT_HEAD_TAIL
         return self._new(self[-n:])
 
     def _to_columns(self):
