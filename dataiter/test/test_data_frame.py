@@ -271,7 +271,11 @@ class TestDataFrame:
         assert data.ncol == orig.ncol
 
     def test_sort(self):
-        pass
+        orig = self.from_file("vehicles.csv")
+        data = orig.sort("year", "make", "model")
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol
+        assert data.year.tolist() == sorted(data.year.tolist())
 
     def test_tail(self):
         data = self.from_file("vehicles.csv")

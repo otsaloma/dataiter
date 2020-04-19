@@ -290,8 +290,12 @@ class DataFrame(dict):
         for colname in (self.colnames[x] for x in cols):
             yield colname, self[colname][rows].copy()
 
+    @deco.new_from_generator
     def sort(self, *colnames, reverse=False):
-        raise NotImplementedError
+        indices = np.lexsort(tuple(self[x] for x in colnames[::-1]))
+        indices = indices[::-1] if reverse else indices
+        for colname, column in self.items():
+            yield colname, column[indices].copy()
 
     def tail(self, n):
         return self.slice(list(range(self.nrow - n, self.nrow)))
