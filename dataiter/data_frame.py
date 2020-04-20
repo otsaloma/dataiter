@@ -194,9 +194,9 @@ class DataFrame(dict):
         b = other.copy().modify(_bid_=bid)
         ab = a.left_join(b, *by)
         ba = b.left_join(a, *by)
-        return (ab.rbind(ba)
-                .unique("_aid_", "_bid_")
-                .unselect("_aid_", "_bid_"))
+        return ab.rbind(ba) \
+                 .unique("_aid_", "_bid_") \
+                 .unselect("_aid_", "_bid_")
 
     def _get_join_indices(self, other, *by):
         other_ids = list(zip(*[other[x] for x in by]))

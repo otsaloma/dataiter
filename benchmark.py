@@ -15,10 +15,9 @@ def data_frame(fname, nrow=1000000):
 
 def data_frame_full_join():
     data = data_frame("vehicles.csv")
-    meta = (data
-            .select("make", "model")
-            .unique("make", "model")
-            .modify(x=lambda x: np.random.random(x.nrow)))
+    meta = data.select("make", "model") \
+               .unique("make", "model") \
+               .modify(random=lambda x: np.random.random(x.nrow))
 
     start = time.time()
     data.full_join(meta, "make", "model")
@@ -29,10 +28,9 @@ def data_frame_group_by_aggregate():
 
 def data_frame_left_join():
     data = data_frame("vehicles.csv")
-    meta = (data
-            .select("make", "model")
-            .unique("make", "model")
-            .modify(x=lambda x: np.random.random(x.nrow)))
+    meta = data.select("make", "model") \
+               .unique("make", "model") \
+               .modify(random=lambda x: np.random.random(x.nrow))
 
     start = time.time()
     data.left_join(meta, "make", "model")
@@ -67,11 +65,10 @@ def list_of_dicts(fname, length=100000):
 
 def list_of_dicts_full_join():
     data = list_of_dicts("vehicles.json")
-    meta = (data
-            .deepcopy()
-            .select("make", "model")
-            .unique("make", "model")
-            .modify(x=lambda x: random.random()))
+    meta = data.deepcopy() \
+               .select("make", "model") \
+               .unique("make", "model") \
+               .modify(random=lambda x: random.random())
 
     start = time.time()
     data.full_join(meta, "make", "model")
@@ -85,11 +82,10 @@ def list_of_dicts_group_by_aggregate():
 
 def list_of_dicts_left_join():
     data = list_of_dicts("vehicles.json")
-    meta = (data
-            .deepcopy()
-            .select("make", "model")
-            .unique("make", "model")
-            .modify(x=lambda x: random.random()))
+    meta = data.deepcopy() \
+               .select("make", "model") \
+               .unique("make", "model") \
+               .modify(random=lambda x: random.random())
 
     start = time.time()
     data.left_join(meta, "make", "model")
