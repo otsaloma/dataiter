@@ -211,7 +211,7 @@ class DataFrame(dict):
         raise NotImplementedError
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL
+        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
         return self.slice(list(range(n)))
 
     @deco.new_from_generator
@@ -350,7 +350,7 @@ class DataFrame(dict):
             yield colname, column[indices].copy()
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL
+        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
         return self.slice(list(range(self.nrow - n, self.nrow)))
 
     def to_json(self, **kwargs):

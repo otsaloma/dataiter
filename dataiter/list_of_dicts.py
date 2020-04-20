@@ -169,7 +169,7 @@ class ListOfDicts(list):
         return self
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL
+        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
         return self._new(self[:n])
 
     @deco.obsoletes
@@ -283,7 +283,7 @@ class ListOfDicts(list):
         return self._new(sorted(self, key=sort_key, reverse=reverse))
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL
+        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
         return self._new(self[-n:])
 
     def _to_columns(self):

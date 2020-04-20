@@ -29,7 +29,7 @@ from dataiter.list_of_dicts import ObsoleteListOfDicts # noqa
 
 __version__ = "0.7"
 
-DEFAULT_HEAD_TAIL = 10
+DEFAULT_HEAD_TAIL_ROWS = 10
 PRINT_FLOAT_PRECISION = 6
-PRINT_MAX_ROWS = 10
+PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
