@@ -38,6 +38,7 @@ class Array(np.ndarray):
         return util.np_to_string(self)
 
     def equal(self, other):
+        # XXX: Not really sure what we want to consider equal.
         if self.is_float and other.is_float:
             return np.allclose(self, other, equal_nan=True)
         return np.array_equal(self, other)
