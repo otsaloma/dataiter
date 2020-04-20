@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import random
 import sys
 import time
@@ -18,13 +19,29 @@ def data_frame(fname, nrow=1000000):
     return data.head(nrow)
 
 def data_frame_full_join():
-    return -0.001
+    data = data_frame("vehicles.csv")
+    meta = (data
+            .select("make", "model")
+            .unique("make", "model")
+            .modify(x=lambda x: np.random.random(x.nrow)))
+
+    start = time.time()
+    data.full_join(meta, "make", "model")
+    return time.time() - start
 
 def data_frame_group_by_aggregate():
     return -0.001
 
 def data_frame_left_join():
-    return -0.001
+    data = data_frame("vehicles.csv")
+    meta = (data
+            .select("make", "model")
+            .unique("make", "model")
+            .modify(x=lambda x: np.random.random(x.nrow)))
+
+    start = time.time()
+    data.left_join(meta, "make", "model")
+    return time.time() - start
 
 def data_frame_rbind_002():
     # 2 * 500,000 = 1,000,000
@@ -92,6 +109,6 @@ for i, benchmark in enumerate(benchmarks):
     width = max(map(len, benchmarks))
     padding = "." * (width + 1 - len(benchmark))
     label = f"{benchmark} {padding}"
-    print(f"{i+1:2d}/{len(benchmarks)}. {label} ", end="")
+    print(f"{i+1:2d}/{len(benchmarks)}. {label} ", end="", flush=True)
     elapsed = globals()[benchmark]()
-    print("{:5.0f} ms".format(elapsed * 1000))
+    print("{:5.0f} ms".format(elapsed * 1000), flush=True)

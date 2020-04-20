@@ -154,15 +154,15 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def full_join(self, other, *by):
         counter = itertools.count(start=1)
-        a = self.deepcopy().modify(__aid=lambda x: next(counter))
-        b = other.deepcopy().modify(__bid=lambda x: next(counter))
+        a = self.deepcopy().modify(_aid_=lambda x: next(counter))
+        b = other.deepcopy().modify(_bid_=lambda x: next(counter))
         ab = a.left_join(b, *by)
         ba = b.left_join(a, *by)
         return ((ab + ba)
-                .modify(__aid=lambda x: x.get("__aid", -1))
-                .modify(__bid=lambda x: x.get("__bid", -1))
-                .unique("__aid", "__bid")
-                .unselect("__aid", "__bid"))
+                .modify(_aid_=lambda x: x.get("_aid_", -1))
+                .modify(_bid_=lambda x: x.get("_bid_", -1))
+                .unique("_aid_", "_bid_")
+                .unselect("_aid_", "_bid_"))
 
     def group_by(self, *keys):
         self._group_keys = keys[:]

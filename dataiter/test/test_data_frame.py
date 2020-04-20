@@ -112,7 +112,11 @@ class TestDataFrame:
         pass
 
     def test_anti_join(self):
-        pass
+        orig = self.from_file("downloads.csv")
+        holidays = self.from_file("holidays.csv")
+        data = orig.anti_join(holidays, "date")
+        assert data.nrow == 870
+        assert data.ncol == orig.ncol
 
     def test_cbind(self):
         orig = self.from_file("vehicles.csv")
@@ -176,7 +180,12 @@ class TestDataFrame:
         assert data == orig
 
     def test_full_join(self):
-        pass
+        orig = self.from_file("downloads.csv")
+        holidays = self.from_file("holidays.csv")
+        data = orig.full_join(holidays, "date")
+        assert data.nrow > orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert sum(data.holiday != "nan") == 60
 
     def test_group_by(self):
         pass
@@ -186,10 +195,34 @@ class TestDataFrame:
         assert data.head(10) == data.slice(list(range(10)))
 
     def test_inner_join(self):
-        pass
+        orig = self.from_file("downloads.csv")
+        holidays = self.from_file("holidays.csv")
+        data = orig.inner_join(holidays, "date")
+        assert data.nrow == 35
+        assert data.ncol == orig.ncol + 1
+        assert all(data.holiday != "nan")
 
     def test_left_join(self):
-        pass
+        orig = self.from_file("downloads.csv")
+        holidays = self.from_file("holidays.csv")
+        data = orig.left_join(holidays, "date")
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert sum(data.holiday != "nan") == 35
+
+    def test_modify(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.modify(test=1)
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert np.all(data.test == 1)
+
+    def test_modify_function(self):
+        orig = self.from_file("vehicles.csv")
+        data = orig.modify(test=lambda x: x.make)
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert np.all(data.test == data.make)
 
     def test_ncol(self):
         data = self.from_file("downloads.csv")
@@ -248,7 +281,11 @@ class TestDataFrame:
         assert orig.colnames == orig_colnames
 
     def test_semi_join(self):
-        pass
+        orig = self.from_file("downloads.csv")
+        holidays = self.from_file("holidays.csv")
+        data = orig.semi_join(holidays, "date")
+        assert data.nrow == 35
+        assert data.ncol == orig.ncol
 
     def test_slice_given_both(self):
         orig = self.from_file("vehicles.csv")

@@ -126,8 +126,12 @@ class DataFrame(dict):
     def aggregate(self, **colname_function_pairs):
         raise NotImplementedError
 
+    @deco.new_from_generator
     def anti_join(self, other, *by):
-        raise NotImplementedError
+        other = other.unique(*by)
+        found, src = self._get_join_indices(other, *by)
+        for colname, column in self.items():
+            yield colname, np.delete(column, found)
 
     @deco.new_from_generator
     def cbind(self, *others):
@@ -184,7 +188,24 @@ class DataFrame(dict):
         return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     def full_join(self, other, *by):
-        raise NotImplementedError
+        aid = np.arange(self.nrow)
+        bid = self.nrow + np.arange(other.nrow)
+        a = self.copy().modify(_aid_=aid)
+        b = other.copy().modify(_bid_=bid)
+        ab = a.left_join(b, *by)
+        ba = b.left_join(a, *by)
+        return (ab.rbind(ba)
+                .unique("_aid_", "_bid_")
+                .unselect("_aid_", "_bid_"))
+
+    def _get_join_indices(self, other, *by):
+        other_ids = list(zip(*[other[x] for x in by]))
+        other_by_id = {other_ids[i]: i for i in range(other.nrow)}
+        self_ids = zip(*[self[x] for x in by])
+        src = map(lambda x: other_by_id.get(x, -1), self_ids)
+        src = np.fromiter(src, np.int, count=self.nrow)
+        found = np.where(src > -1)
+        return found, src
 
     def group_by(self, *colnames):
         raise NotImplementedError
@@ -193,11 +214,37 @@ class DataFrame(dict):
         n = n or dataiter.DEFAULT_HEAD_TAIL
         return self.slice(list(range(n)))
 
+    @deco.new_from_generator
     def inner_join(self, other, *by):
-        raise NotImplementedError
+        other = other.unique(*by)
+        found, src = self._get_join_indices(other, *by)
+        for colname, column in self.items():
+            yield colname, column[found].copy()
+        for colname, column in other.items():
+            if colname in self: continue
+            yield colname, column[src[found]].copy()
 
+    @deco.new_from_generator
     def left_join(self, other, *by):
-        raise NotImplementedError
+        other = other.unique(*by)
+        found, src = self._get_join_indices(other, *by)
+        for colname, column in self.items():
+            yield colname, column.copy()
+        for colname, column in other.items():
+            if colname in self: continue
+            # NaN not allowed in integer column, use float instead.
+            dtype = np.float if column.is_integer else column.dtype
+            new = DataFrameColumn(np.nan, dtype=dtype, nrow=self.nrow)
+            new[found] = column[src[found]]
+            yield colname, new.copy()
+
+    @deco.new_from_generator
+    def modify(self, function=None, **colname_value_pairs):
+        for colname, column in self.items():
+            yield colname, column.copy()
+        for colname, value in colname_value_pairs.items():
+            value = value(self) if callable(value) else value
+            yield colname, self._reconcile_column(value).copy()
 
     @property
     def ncol(self):
@@ -279,8 +326,12 @@ class DataFrame(dict):
         for colname in colnames:
             yield colname, self[colname].copy()
 
+    @deco.new_from_generator
     def semi_join(self, other, *by):
-        raise NotImplementedError
+        other = other.unique(*by)
+        found, src = self._get_join_indices(other, *by)
+        for colname, column in self.items():
+            yield colname, column[found].copy()
 
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
