@@ -38,14 +38,8 @@ class TestListOfDicts:
         assert data[0] == test
         assert data[0] is not test
 
-    def from_file(self, fname):
-        fname = test.get_data_filename(fname)
-        extension = fname.split(".")[-1]
-        read = getattr(ListOfDicts, f"read_{extension}")
-        return read(fname)
-
     def test___add__(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig + orig
         assert isinstance(data, ListOfDicts)
         assert len(data) == len(orig) * 2
@@ -53,12 +47,12 @@ class TestListOfDicts:
         assert data[-len(orig):] == orig
 
     def test___getitem__(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         assert isinstance(data[0], AttributeDict)
         assert isinstance(data[:3], ListOfDicts)
 
     def test___mul__(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig * 2
         assert isinstance(data, ListOfDicts)
         assert len(data) == len(orig) * 2
@@ -66,7 +60,7 @@ class TestListOfDicts:
         assert data[-len(orig):] == orig
 
     def test___rmul__(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = 2 * orig
         assert isinstance(data, ListOfDicts)
         assert len(data) == len(orig) * 2
@@ -74,13 +68,13 @@ class TestListOfDicts:
         assert data[-len(orig):] == orig
 
     def test___setitem__(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         data[0] = {"date": "1970-01-01"}
         assert isinstance(data[0], AttributeDict)
         assert data[0] == {"date": "1970-01-01"}
 
     def test_aggregate(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         data = data.group_by("category").aggregate(**{
             "date_min":  lambda x: min(x.pluck("date")),
             "date_max":  lambda x: max(x.pluck("date")),
@@ -114,27 +108,27 @@ class TestListOfDicts:
         }]
 
     def test_anti_join(self):
-        orig = self.from_file("downloads.json")
-        holidays = self.from_file("holidays.json")
+        orig = test.list_of_dicts("downloads.json")
+        holidays = test.list_of_dicts("holidays.json")
         data = orig.anti_join(holidays, "date")
         assert len(data) < len(orig)
         holidays = holidays.pluck("date")
         assert not any(x.date in holidays for x in data)
 
     def test_append(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.append({"date": "3000-01-01"})
         assert len(data) == len(orig) + 1
         assert isinstance(data[-1], AttributeDict)
         assert data[-1] == {"date": "3000-01-01"}
 
     def test_clear(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.clear()
         assert len(data) == 0
 
     def test_copy(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.copy()
         assert data == orig
         assert data is not orig
@@ -143,7 +137,7 @@ class TestListOfDicts:
             assert a is b
 
     def test_copy_handle_predecessor(self):
-        a = self.from_file("downloads.json")
+        a = test.list_of_dicts("downloads.json")
         b = a.select("date")
         c = b.copy()
         assert a._predecessor is None
@@ -151,7 +145,7 @@ class TestListOfDicts:
         assert c._predecessor is b
 
     def test_deepcopy(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.deepcopy()
         assert data == orig
         assert data is not orig
@@ -160,7 +154,7 @@ class TestListOfDicts:
             assert a is not b
 
     def test_deepcopy_handle_predecessor(self):
-        a = self.from_file("downloads.json")
+        a = test.list_of_dicts("downloads.json")
         b = a.select("date")
         c = b.deepcopy()
         assert a._predecessor is None
@@ -168,7 +162,7 @@ class TestListOfDicts:
         assert c._predecessor is None
 
     def test_extend(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.extend(orig)
         assert isinstance(data, ListOfDicts)
         assert len(data) == len(orig) * 2
@@ -176,7 +170,7 @@ class TestListOfDicts:
         assert data[-len(orig):] == orig
 
     def test_filter_given_function(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.filter(lambda x: x.category == "Linux")
         assert len(data) == 181
         for item in data:
@@ -184,7 +178,7 @@ class TestListOfDicts:
             assert item in orig
 
     def test_filter_given_key_value_pairs(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.filter(category="Linux")
         assert len(data) == 181
         for item in data:
@@ -192,7 +186,7 @@ class TestListOfDicts:
             assert item in orig
 
     def test_filter_out_given_function(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.filter_out(lambda x: x.category == "Linux")
         assert len(data) == 724
         for item in data:
@@ -200,7 +194,7 @@ class TestListOfDicts:
             assert item in orig
 
     def test_filter_out_given_key_value_pairs(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.filter_out(category="Linux")
         assert len(data) == 724
         for item in data:
@@ -208,60 +202,60 @@ class TestListOfDicts:
             assert item in orig
 
     def test_from_json(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         text = orig.to_json()
         data = ListOfDicts.from_json(text)
         assert data == orig
 
     def test_full_join(self):
-        orig = self.from_file("downloads.json")
-        holidays = self.from_file("holidays.json")
+        orig = test.list_of_dicts("downloads.json")
+        holidays = test.list_of_dicts("holidays.json")
         data = orig.full_join(holidays, "date")
         assert len(data) > len(orig)
         assert sum("holiday" in x for x in data) == 60
 
     def head(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         assert data.head(10) == data[:10]
 
     def test_inner_join(self):
-        orig = self.from_file("downloads.json")
-        holidays = self.from_file("holidays.json")
+        orig = test.list_of_dicts("downloads.json")
+        holidays = test.list_of_dicts("holidays.json")
         data = orig.inner_join(holidays, "date")
         assert len(data) < len(orig)
         assert all("holiday" in x for x in data)
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_insert(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.insert(100, {"date": "3000-01-01"})
         assert len(data) == len(orig) + 1
         assert isinstance(data[100], AttributeDict)
         assert data[100] == {"date": "3000-01-01"}
 
     def test_left_join(self):
-        orig = self.from_file("downloads.json")
-        holidays = self.from_file("holidays.json")
+        orig = test.list_of_dicts("downloads.json")
+        holidays = test.list_of_dicts("holidays.json")
         data = orig.left_join(holidays, "date")
         assert len(data) == len(orig)
         assert sum("holiday" in x for x in data) == 35
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test__mark_obsolete_after_multiple_modify(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         data = data.modify(a=lambda x: 1)
         data = data.modify(b=lambda x: 2)
         data = data.modify(c=lambda x: 3)
 
     def test_modify(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.modify(year=lambda x: int(x.date[:4]))
         assert len(data) == len(orig)
         assert all("year" in x for x in data)
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_modify_if(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         predicate = lambda x: x.category == "Linux"
         data = orig.modify_if(predicate, year=lambda x: int(x.date[:4]))
         assert len(data) == len(orig)
@@ -269,23 +263,23 @@ class TestListOfDicts:
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_pluck(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         dates = data.pluck("date")
         assert len(dates) == len(data)
         assert all(dates[i] == data[i].date for i in range(len(dates)))
 
     def test_read_csv(self):
-        data = self.from_file("vehicles.csv")
+        data = test.list_of_dicts("vehicles.csv")
         assert len(data) == 33442
         assert all(len(x) == 12 for x in data)
 
     def test_read_json(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         assert len(data) == 905
         assert all(len(x) == 3 for x in data)
 
     def test_rename(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.rename(ymd="date")
         assert len(data) == len(orig)
         assert all("ymd" in x for x in data)
@@ -293,12 +287,12 @@ class TestListOfDicts:
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_reverse(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.reverse()
         assert data[::-1] == orig
 
     def test_select(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.select("date", "downloads")
         assert len(data) == len(orig)
         assert all(len(x) == 2 for x in data)
@@ -307,29 +301,29 @@ class TestListOfDicts:
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_semi_join(self):
-        orig = self.from_file("downloads.json")
-        holidays = self.from_file("holidays.json")
+        orig = test.list_of_dicts("downloads.json")
+        holidays = test.list_of_dicts("holidays.json")
         data = orig.semi_join(holidays, "date")
         assert len(data) < len(orig)
         holidays = holidays.pluck("date")
         assert all(x.date in holidays for x in data)
 
     def test_sort(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.sort("date", "category")
         assert len(data) == len(orig)
         assert all(x in orig for x in data)
 
     def test_sort_with_none(self):
         # Nones should be sorted last.
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         orig[0].category = None
         data = orig.sort("category")
         assert data[-1] is orig[0]
 
     def test_sort_with_none_multiple_keys(self):
         # Nones should be sorted group-wise last.
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         orig[0].category = None
         orig[1].date = None
         orig[2].category = None
@@ -340,29 +334,29 @@ class TestListOfDicts:
         assert data[-1] is orig[2]
 
     def tail(self):
-        data = self.from_file("downloads.json")
+        data = test.list_of_dicts("downloads.json")
         assert data.tail(10) == data[-10:]
 
     def test_to_data_frame(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.list_of_dicts("vehicles.csv")
         data = orig.to_data_frame()
         assert data.nrow == len(orig)
         assert data.ncol == len(orig[0])
 
     def test_to_json(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         text = orig.to_json()
         data = ListOfDicts.from_json(text)
         assert data == orig
 
     def test_to_pandas(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.list_of_dicts("vehicles.csv")
         data = orig.to_pandas()
         assert data.shape[0] == len(orig)
         assert data.shape[1] == len(orig[0])
 
     def test_unique(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.unique("date")
         assert len(data) == 181
         assert all(x in orig for x in data)
@@ -370,7 +364,7 @@ class TestListOfDicts:
         assert len(set(by)) == len(by)
 
     def test_unselect(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.unselect("date", "downloads")
         assert len(data) == len(orig)
         assert all(len(x) == 1 for x in data)
@@ -379,14 +373,14 @@ class TestListOfDicts:
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_write_csv(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.list_of_dicts("vehicles.csv")
         handle, fname = tempfile.mkstemp(".csv")
         orig.write_csv(fname)
         data = ListOfDicts.read_csv(fname)
         assert data == orig
 
     def test_write_json(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
         orig.write_json(fname)
         data = ListOfDicts.read_json(fname)
@@ -395,10 +389,8 @@ class TestListOfDicts:
 
 class TestObsoleteListOfDicts:
 
-    from_file = TestListOfDicts.from_file
-
     def test___getattr__(self):
-        orig = self.from_file("downloads.json")
+        orig = test.list_of_dicts("downloads.json")
         data = orig.select("date") # noqa
         try:
             orig.select("date")

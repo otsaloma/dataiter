@@ -5,15 +5,10 @@ import random
 import sys
 import time
 
-from dataiter import DataFrame
-from dataiter import ListOfDicts
 from dataiter import test
 
 def data_frame(fname, nrow=1000000):
-    fname = test.get_data_filename(fname)
-    extension = fname.split(".")[-1]
-    read = getattr(DataFrame, f"read_{extension}")
-    data = read(fname)
+    data = test.data_frame(fname)
     n = nrow // data.nrow
     data = data.rbind(*([data] * n))
     return data.head(nrow)
@@ -65,10 +60,7 @@ def data_frame_rbind_100k():
     return time.time() - start
 
 def list_of_dicts(fname, length=100000):
-    fname = test.get_data_filename(fname)
-    extension = fname.split(".")[-1]
-    read = getattr(ListOfDicts, f"read_{extension}")
-    data = read(fname)
+    data = test.list_of_dicts(fname)
     n = length // len(data) + 1
     data = data * n
     return data.head(length)

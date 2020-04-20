@@ -22,7 +22,22 @@
 
 import os
 
+from dataiter import DataFrame
+from dataiter import ListOfDicts
+
+
+def data_frame(fname):
+    fname = get_data_filename(fname)
+    extension = fname.split(".")[-1]
+    read = getattr(DataFrame, f"read_{extension}")
+    return read(fname)
 
 def get_data_filename(fname):
     directory = os.path.dirname(__file__)
     return os.path.join(directory, "..", "..", "data", fname)
+
+def list_of_dicts(fname):
+    fname = get_data_filename(fname)
+    extension = fname.split(".")[-1]
+    read = getattr(ListOfDicts, f"read_{extension}")
+    return read(fname)

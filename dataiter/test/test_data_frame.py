@@ -59,12 +59,6 @@ class TestDataFrameColumn:
 
 class TestDataFrame:
 
-    def from_file(self, fname):
-        fname = test.get_data_filename(fname)
-        extension = fname.split(".")[-1]
-        read = getattr(DataFrame, f"read_{extension}")
-        return read(fname)
-
     def test___init___broadcast(self):
         data = DataFrame(a=[1, 2, 3], b=[1], c=1)
         assert data.a.tolist() == [1, 2, 3]
@@ -88,22 +82,22 @@ class TestDataFrame:
         assert "a" not in data
 
     def test___eq__(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert data == data.copy()
         assert data == data.deepcopy()
 
     def test___getattr__(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert data.make is data["make"]
 
     def test___setattr__(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert "test" not in data
         data.test = 1
         assert "test" in data
 
     def test___setitem__(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert "test" not in data
         data["test"] = 1
         assert "test" in data
@@ -112,20 +106,20 @@ class TestDataFrame:
         pass
 
     def test_anti_join(self):
-        orig = self.from_file("downloads.csv")
-        holidays = self.from_file("holidays.csv")
+        orig = test.data_frame("downloads.csv")
+        holidays = test.data_frame("holidays.csv")
         data = orig.anti_join(holidays, "date")
         assert data.nrow == 870
         assert data.ncol == orig.ncol
 
     def test_cbind(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.cbind(orig)
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol * 2
 
     def test_cbind_broadcast(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.cbind(DataFrame({"test": 1}))
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
@@ -133,45 +127,45 @@ class TestDataFrame:
         assert data.unselect("test") == orig
 
     def test_colnames(self):
-        data = self.from_file("downloads.csv")
+        data = test.data_frame("downloads.csv")
         assert data.colnames == ["category", "date", "downloads"]
 
     def test_columns(self):
-        data = self.from_file("downloads.csv")
+        data = test.data_frame("downloads.csv")
         assert data.columns == [data.category, data.date, data.downloads]
 
     def test_copy(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.copy()
         assert data == orig
         assert data is not orig
 
     def test_deepcopy(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.copy()
         assert data == orig
         assert data is not orig
 
     def test_filter(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         data = data.filter(data.make == "Saab")
         assert data.nrow == 424
         assert np.all(data.make == "Saab")
 
     def test_filter_out(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         data = data.filter_out(data.make == "Saab")
         assert data.nrow == 33018
         assert np.all(data.make != "Saab")
 
     def test_from_json(self):
-        orig = self.from_file("downloads.json")
+        orig = test.data_frame("downloads.json")
         text = orig.to_json()
         data = DataFrame.from_json(text)
         assert data == orig
 
     def test_from_pandas(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.to_pandas()
         assert isinstance(data, pd.DataFrame)
         assert data.shape[0] == orig.nrow
@@ -180,8 +174,8 @@ class TestDataFrame:
         assert data == orig
 
     def test_full_join(self):
-        orig = self.from_file("downloads.csv")
-        holidays = self.from_file("holidays.csv")
+        orig = test.data_frame("downloads.csv")
+        holidays = test.data_frame("holidays.csv")
         data = orig.full_join(holidays, "date")
         assert data.nrow > orig.nrow
         assert data.ncol == orig.ncol + 1
@@ -191,49 +185,49 @@ class TestDataFrame:
         pass
 
     def test_head(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert data.head(10) == data.slice(list(range(10)))
 
     def test_inner_join(self):
-        orig = self.from_file("downloads.csv")
-        holidays = self.from_file("holidays.csv")
+        orig = test.data_frame("downloads.csv")
+        holidays = test.data_frame("holidays.csv")
         data = orig.inner_join(holidays, "date")
         assert data.nrow == 35
         assert data.ncol == orig.ncol + 1
         assert all(data.holiday != "nan")
 
     def test_left_join(self):
-        orig = self.from_file("downloads.csv")
-        holidays = self.from_file("holidays.csv")
+        orig = test.data_frame("downloads.csv")
+        holidays = test.data_frame("holidays.csv")
         data = orig.left_join(holidays, "date")
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
         assert sum(data.holiday != "nan") == 35
 
     def test_modify(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.modify(test=1)
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
         assert np.all(data.test == 1)
 
     def test_modify_function(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.modify(test=lambda x: x.make)
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
         assert np.all(data.test == data.make)
 
     def test_ncol(self):
-        data = self.from_file("downloads.csv")
+        data = test.data_frame("downloads.csv")
         assert data.ncol == 3
 
     def test_nrow(self):
-        data = self.from_file("downloads.csv")
+        data = test.data_frame("downloads.csv")
         assert data.nrow == 905
 
     def test_rbind(self):
-        orig = self.from_file("downloads.csv")
+        orig = test.data_frame("downloads.csv")
         data = orig.rbind(orig, orig)
         assert data.nrow == orig.nrow * 3
         assert data.ncol == orig.ncol
@@ -242,8 +236,8 @@ class TestDataFrame:
         assert data.slice(range(orig.nrow*2, orig.nrow*3)) == orig
 
     def test_rbind_missing(self):
-        part1 = self.from_file("downloads.csv")
-        part2 = self.from_file("downloads.csv")
+        part1 = test.data_frame("downloads.csv")
+        part2 = test.data_frame("downloads.csv")
         part1.test1 = 1
         part2.test2 = 2
         data = part1.rbind(part2)
@@ -255,17 +249,17 @@ class TestDataFrame:
         assert np.all(data.test2[-3:] == 2)
 
     def test_read_csv(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert data.nrow == 33442
         assert data.ncol == 12
 
     def test_read_json(self):
-        data = self.from_file("downloads.json")
+        data = test.data_frame("downloads.json")
         assert data.nrow == 905
         assert data.ncol == 3
 
     def test_rename(self):
-        orig = self.from_file("downloads.csv")
+        orig = test.data_frame("downloads.csv")
         assert orig.colnames == ["category", "date", "downloads"]
         data = orig.rename(ymd="date")
         assert data.colnames == ["category", "ymd", "downloads"]
@@ -274,77 +268,77 @@ class TestDataFrame:
         assert data.downloads.equal(orig.downloads)
 
     def test_select(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         orig_colnames = list(orig.colnames)
         data = orig.select("make", "model")
         assert data.colnames == ["make", "model"]
         assert orig.colnames == orig_colnames
 
     def test_semi_join(self):
-        orig = self.from_file("downloads.csv")
-        holidays = self.from_file("holidays.csv")
+        orig = test.data_frame("downloads.csv")
+        holidays = test.data_frame("holidays.csv")
         data = orig.semi_join(holidays, "date")
         assert data.nrow == 35
         assert data.ncol == orig.ncol
 
     def test_slice_given_both(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.slice(rows=[0, 1, 2], cols=[0, 1, 2])
         assert data.nrow == 3
         assert data.ncol == 3
         assert data.colnames == orig.colnames[:3]
 
     def test_slice_given_cols(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.slice(cols=[0, 1, 2])
         assert data.nrow == orig.nrow
         assert data.ncol == 3
         assert data.colnames == orig.colnames[:3]
 
     def test_slice_given_rows(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.slice(rows=[0, 1, 2])
         assert data.nrow == 3
         assert data.ncol == orig.ncol
 
     def test_sort(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.sort("year", "make", "model")
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol
         assert data.year.tolist() == sorted(data.year.tolist())
 
     def test_tail(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         assert data.tail(10) == data.slice(list(range(data.nrow - 10, data.nrow)))
 
     def test_to_json(self):
-        orig = self.from_file("downloads.json")
+        orig = test.data_frame("downloads.json")
         text = orig.to_json()
         data = DataFrame.from_json(text)
         assert data == orig
 
     def test_to_list_of_dicts(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.to_list_of_dicts()
         assert len(data) == orig.nrow
 
     def test_to_pandas(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.to_pandas()
         assert isinstance(data, pd.DataFrame)
         assert data.shape[0] == orig.nrow
         assert data.shape[1] == orig.ncol
 
     def test_unique(self):
-        data = self.from_file("vehicles.csv")
+        data = test.data_frame("vehicles.csv")
         data = data.unique("make", "year", "displ")
         assert data.nrow == 6415
         by = list(zip(data.make, data.year, data.displ))
         assert len(set(by)) == len(by)
 
     def test_unselect(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         orig_colnames = list(orig.colnames)
         data = orig.unselect("make", "model")
         assert data.colnames == [x for x in orig_colnames if not x in ["make", "model"]]
@@ -354,14 +348,14 @@ class TestDataFrame:
         pass
 
     def test_write_csv(self):
-        orig = self.from_file("vehicles.csv")
+        orig = test.data_frame("vehicles.csv")
         handle, fname = tempfile.mkstemp(".csv")
         orig.write_csv(fname)
         data = DataFrame.read_csv(fname)
         assert data == orig
 
     def test_write_json(self):
-        orig = self.from_file("downloads.json")
+        orig = test.data_frame("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
         orig.write_json(fname)
         data = DataFrame.read_json(fname)
