@@ -35,11 +35,11 @@ def length(value):
     return 1 if np.isscalar(value) else len(value)
 
 @deco.listify
-def make_unique_names(names):
+def make_unique_names(names, suffix="_"):
     found = []
     for name in names:
         while name in found:
-            name += "_"
+            name += suffix
         found.append(name)
         yield name
 
