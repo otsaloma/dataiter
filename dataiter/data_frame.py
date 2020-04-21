@@ -188,15 +188,10 @@ class DataFrame(dict):
         return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     def full_join(self, other, *by):
-        aid = np.arange(self.nrow)
-        bid = self.nrow + np.arange(other.nrow)
-        a = self.copy().modify(_aid_=aid)
-        b = other.copy().modify(_bid_=bid)
-        ab = a.left_join(b, *by)
-        ba = b.left_join(a, *by)
-        return ab.rbind(ba) \
-                 .unique("_aid_", "_bid_") \
-                 .unselect("_aid_", "_bid_")
+        other = other.modify(_id_=np.arange(other.nrow))
+        a = self.left_join(other, *by)
+        b = other.filter_out(np.isin(other._id_, a._id_))
+        return a.rbind(b).unselect("_id_")
 
     def _get_join_indices(self, other, *by):
         other_ids = list(zip(*[other[x] for x in by]))
