@@ -345,7 +345,12 @@ class TestDataFrame:
         assert orig.colnames == orig_colnames
 
     def test_update(self):
-        pass
+        orig = test.data_frame("vehicles.csv")
+        data = orig.update({"make": "Talbot", "test": 1})
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert np.all(data.make == "Talbot")
+        assert np.all(data.test == 1)
 
     def test_write_csv(self):
         orig = test.data_frame("vehicles.csv")

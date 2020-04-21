@@ -375,8 +375,14 @@ class DataFrame(dict):
             if colname not in colnames:
                 yield colname, self[colname].copy()
 
-    def update(self, *args, **kwargs):
-        raise NotImplementedError
+    @deco.new_from_generator
+    def update(self, other):
+        for colname, column in self.items():
+            if colname in other: continue
+            yield colname, column.copy()
+        for colname, column in other.items():
+            column = self._reconcile_column(column)
+            yield colname, column.copy()
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         self.to_pandas().to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
