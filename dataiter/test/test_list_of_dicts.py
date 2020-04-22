@@ -32,11 +32,11 @@ from dataiter import test
 class TestListOfDicts:
 
     def test___init__(self):
-        test = dict(a=1, b=2, c=3)
-        data = ListOfDicts([test])
+        item = dict(a=1, b=2, c=3)
+        data = ListOfDicts([item])
         assert len(data) == 1
-        assert data[0] == test
-        assert data[0] is not test
+        assert data[0] == item
+        assert data[0] is not item
 
     def test___add__(self):
         orig = test.list_of_dicts("downloads.json")
@@ -49,7 +49,7 @@ class TestListOfDicts:
     def test___getitem__(self):
         data = test.list_of_dicts("downloads.json")
         assert isinstance(data[0], AttributeDict)
-        assert isinstance(data[:3], ListOfDicts)
+        assert isinstance(data[:100], ListOfDicts)
 
     def test___mul__(self):
         orig = test.list_of_dicts("downloads.json")
@@ -69,17 +69,19 @@ class TestListOfDicts:
 
     def test___setitem__(self):
         data = test.list_of_dicts("downloads.json")
-        data[0] = {"date": "1970-01-01"}
+        item = dict(date="1970-01-01")
+        data[0] = item
         assert isinstance(data[0], AttributeDict)
-        assert data[0] == {"date": "1970-01-01"}
+        assert data[0] == item
+        assert data[0] is not item
 
     def test_aggregate(self):
         data = test.list_of_dicts("downloads.json")
-        stat = data.group_by("category").aggregate(**{
-            "date_min":  lambda x: min(x.pluck("date")),
-            "date_max":  lambda x: max(x.pluck("date")),
-            "downloads": lambda x: sum(x.pluck("downloads")),
-        })
+        stat = data.group_by("category").aggregate(
+            date_min =lambda x: min(x.pluck("date")),
+            date_max =lambda x: max(x.pluck("date")),
+            downloads=lambda x: sum(x.pluck("downloads")),
+        )
         assert stat == [{
             "category": "Darwin",
             "date_min": "2019-09-16",
@@ -111,16 +113,16 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
         data = orig.anti_join(holidays, "date")
-        assert len(data) < len(orig)
-        holidays = holidays.pluck("date")
-        assert not any(x.date in holidays for x in data)
+        assert len(data) == 870
+        assert sum(data.pluck("downloads")) == 523109256
 
     def test_append(self):
         orig = test.list_of_dicts("downloads.json")
-        data = orig.append({"date": "3000-01-01"})
+        item = dict(date="3000-01-01")
+        data = orig.append(item)
         assert len(data) == len(orig) + 1
         assert isinstance(data[-1], AttributeDict)
-        assert data[-1] == {"date": "3000-01-01"}
+        assert data[-1] == item
 
     def test_clear(self):
         orig = test.list_of_dicts("downloads.json")
@@ -173,33 +175,25 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         data = orig.filter(lambda x: x.category == "Linux")
         assert len(data) == 181
-        for item in data:
-            assert item.category == "Linux"
-            assert item in orig
+        assert sum(data.pluck("downloads")) == 510902781
 
     def test_filter_given_key_value_pairs(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.filter(category="Linux")
         assert len(data) == 181
-        for item in data:
-            assert item.category == "Linux"
-            assert item in orig
+        assert sum(data.pluck("downloads")) == 510902781
 
     def test_filter_out_given_function(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.filter_out(lambda x: x.category == "Linux")
         assert len(data) == 724
-        for item in data:
-            assert item.category != "Linux"
-            assert item in orig
+        assert sum(data.pluck("downloads")) == 30432964
 
     def test_filter_out_given_key_value_pairs(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.filter_out(category="Linux")
         assert len(data) == 724
-        for item in data:
-            assert item.category != "Linux"
-            assert item in orig
+        assert sum(data.pluck("downloads")) == 30432964
 
     def test_from_json(self):
         orig = test.list_of_dicts("downloads.json")
@@ -211,8 +205,9 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
         data = orig.full_join(holidays, "date")
-        assert len(data) > len(orig)
+        assert len(data) == 930
         assert sum("holiday" in x for x in data) == 60
+        assert sum(data.pluck("downloads", 0)) == 541335745
 
     def head(self):
         data = test.list_of_dicts("downloads.json")
@@ -222,24 +217,25 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
         data = orig.inner_join(holidays, "date")
-        assert len(data) < len(orig)
+        assert len(data) == 35
         assert all("holiday" in x for x in data)
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert sum(data.pluck("downloads")) == 18226489
 
     def test_insert(self):
         orig = test.list_of_dicts("downloads.json")
-        data = orig.insert(100, {"date": "3000-01-01"})
+        item = dict(date="3000-01-01")
+        data = orig.insert(100, item)
         assert len(data) == len(orig) + 1
         assert isinstance(data[100], AttributeDict)
-        assert data[100] == {"date": "3000-01-01"}
+        assert data[100] == item
 
     def test_left_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
         data = orig.left_join(holidays, "date")
-        assert len(data) == len(orig)
+        assert len(data) == 905
         assert sum("holiday" in x for x in data) == 35
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert sum(data.pluck("downloads")) == 541335745
 
     def test__mark_obsolete_after_multiple_modify(self):
         data = test.list_of_dicts("downloads.json")
@@ -252,6 +248,7 @@ class TestListOfDicts:
         data = orig.modify(year=lambda x: int(x.date[:4]))
         assert len(data) == len(orig)
         assert all("year" in x for x in data)
+        assert sum(data.pluck("year")) == 1827565
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_modify_if(self):
@@ -260,13 +257,21 @@ class TestListOfDicts:
         data = orig.modify_if(predicate, year=lambda x: int(x.date[:4]))
         assert len(data) == len(orig)
         assert sum("year" in x for x in data) == 181
+        assert sum(data.pluck("year", 0)) == 365513
         assert isinstance(orig, ObsoleteListOfDicts)
 
     def test_pluck(self):
         data = test.list_of_dicts("downloads.json")
-        dates = data.pluck("date")
-        assert len(dates) == len(data)
-        assert all(dates[i] == data[i].date for i in range(len(dates)))
+        downloads = data.pluck("downloads")
+        assert len(downloads) == len(data)
+        assert sum(downloads) == 541335745
+
+    def test_pluck_with_missing(self):
+        data = test.list_of_dicts("downloads.json")
+        del data[0].downloads
+        downloads = data.pluck("downloads", 0)
+        assert len(downloads) == len(data)
+        assert sum(downloads) == 541300639
 
     def test_read_csv(self):
         data = test.list_of_dicts("vehicles.csv")
@@ -289,7 +294,7 @@ class TestListOfDicts:
     def test_reverse(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.reverse()
-        assert data[::-1] == orig
+        assert data == orig[::-1]
 
     def test_select(self):
         orig = test.list_of_dicts("downloads.json")
@@ -304,9 +309,8 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
         data = orig.semi_join(holidays, "date")
-        assert len(data) < len(orig)
-        holidays = holidays.pluck("date")
-        assert all(x.date in holidays for x in data)
+        assert len(data) == 35
+        assert sum(data.pluck("downloads")) == 18226489
 
     def test_sort(self):
         orig = test.list_of_dicts("downloads.json")
@@ -359,7 +363,6 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         data = orig.unique("date")
         assert len(data) == 181
-        assert all(x in orig for x in data)
         by = data.pluck("date")
         assert len(set(by)) == len(by)
 

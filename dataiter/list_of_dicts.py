@@ -38,7 +38,7 @@ class ListOfDicts(list):
 
     def __init__(self, dicts, group_keys=None, predecessor=None, as_is=False):
         super().__init__(dicts if as_is else map(AttributeDict, dicts))
-        self._group_keys = group_keys or []
+        self._group_keys = tuple(group_keys or ())
         self._predecessor = predecessor
 
     @deco.new_from_generator
@@ -52,7 +52,7 @@ class ListOfDicts(list):
 
     def __deepcopy__(self, memo=None):
         return self.__class__(map(copy.deepcopy, self),
-                              group_keys=self._group_keys[:],
+                              group_keys=self._group_keys,
                               predecessor=None,
                               as_is=True)
 
@@ -80,9 +80,15 @@ class ListOfDicts(list):
     def aggregate(self, **key_function_pairs):
         by = self._group_keys
         groups = self.unique(*by).deepcopy().select(*by)
+        extract = operator.itemgetter(*by)
+        items_by_group = {}
+        for item in self:
+            id = extract(item)
+            items_by_group.setdefault(id, []).append(item)
         key_function_pairs = key_function_pairs.items()
         for group in groups.sort(*by):
-            items = self.filter(**group)
+            id = extract(group)
+            items = ListOfDicts(items_by_group[id])
             for key, function in key_function_pairs:
                 group[key] = function(items)
             yield group
@@ -161,7 +167,7 @@ class ListOfDicts(list):
         return (a + b).unselect("_id_")
 
     def group_by(self, *keys):
-        self._group_keys = keys[:]
+        self._group_keys = tuple(keys)
         return self
 
     def head(self, n=None):
@@ -223,12 +229,12 @@ class ListOfDicts(list):
 
     def _new(self, dicts):
         return self.__class__(dicts,
-                              group_keys=self._group_keys[:],
+                              group_keys=self._group_keys,
                               predecessor=self,
                               as_is=True)
 
-    def pluck(self, key):
-        return [x[key] for x in self]
+    def pluck(self, key, default=None):
+        return [x.get(key, default) for x in self]
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):

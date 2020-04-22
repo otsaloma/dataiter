@@ -51,21 +51,21 @@ def data_frame_left_join():
     data.left_join(meta, "make", "model")
     return time.time() - start
 
-def data_frame_rbind_002():
+def data_frame_rbind_000002():
     # 2 * 500,000 = 1,000,000
     data = data_frame("vehicles.csv", 500000)
     start = time.time()
     data.rbind(data)
     return time.time() - start
 
-def data_frame_rbind_100():
+def data_frame_rbind_000100():
     # 100 * 10,000 = 1,000,000
     data = data_frame("vehicles.csv", 10000)
     start = time.time()
     data.rbind(*([data] * (100 - 1)))
     return time.time() - start
 
-def data_frame_rbind_100k():
+def data_frame_rbind_100000():
     # 100,000 * 10 = 1,000,000
     data = data_frame("vehicles.csv", 10)
     start = time.time()
@@ -89,10 +89,22 @@ def list_of_dicts_full_join():
     data.full_join(meta, "make", "model")
     return time.time() - start
 
-def list_of_dicts_group_by_aggregate():
+def list_of_dicts_group_by_aggregate_00128():
     data = list_of_dicts("vehicles.json")
     start = time.time()
     data.group_by("make").aggregate(n=len)
+    return time.time() - start
+
+def list_of_dicts_group_by_aggregate_03264():
+    data = list_of_dicts("vehicles.json")
+    start = time.time()
+    data.group_by("make", "model").aggregate(n=len)
+    return time.time() - start
+
+def list_of_dicts_group_by_aggregate_14668():
+    data = list_of_dicts("vehicles.json")
+    start = time.time()
+    data.group_by("make", "model", "year").aggregate(n=len)
     return time.time() - start
 
 def list_of_dicts_left_join():
