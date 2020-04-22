@@ -305,6 +305,12 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def unique(self, *keys):
+        if not self: return
+        if not keys:
+            # If keys not given, use all common keys.
+            keys = set(self[0])
+            for item in self:
+                keys &= set(item)
         found_ids = set()
         extract = operator.itemgetter(*keys)
         for item in self:

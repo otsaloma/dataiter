@@ -366,6 +366,12 @@ class TestListOfDicts:
         by = data.pluck("date")
         assert len(set(by)) == len(by)
 
+    def test_unique_by_all(self):
+        orig = test.list_of_dicts("downloads.json")
+        orig = orig.append(orig[-1])
+        data = orig.unique()
+        assert len(data) == len(orig) - 1
+
     def test_unselect(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.unselect("date", "downloads")

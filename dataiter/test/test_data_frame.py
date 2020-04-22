@@ -340,11 +340,17 @@ class TestDataFrame:
         assert data.shape[1] == orig.ncol
 
     def test_unique(self):
-        data = test.data_frame("vehicles.csv")
-        data = data.unique("make", "year", "displ")
+        orig = test.data_frame("vehicles.csv")
+        data = orig.unique("make", "year", "displ")
         assert data.nrow == 6415
         by = list(zip(data.make, data.year, data.displ))
         assert len(set(by)) == len(by)
+
+    def test_unique_by_all(self):
+        orig = test.data_frame("vehicles.csv")
+        orig = orig.rbind(orig.tail(1))
+        data = orig.unique()
+        assert data.nrow == orig.nrow - 1
 
     def test_unselect(self):
         orig = test.data_frame("vehicles.csv")
