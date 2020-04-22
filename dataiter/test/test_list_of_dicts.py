@@ -75,12 +75,12 @@ class TestListOfDicts:
 
     def test_aggregate(self):
         data = test.list_of_dicts("downloads.json")
-        data = data.group_by("category").aggregate(**{
+        stat = data.group_by("category").aggregate(**{
             "date_min":  lambda x: min(x.pluck("date")),
             "date_max":  lambda x: max(x.pluck("date")),
             "downloads": lambda x: sum(x.pluck("downloads")),
         })
-        assert data == [{
+        assert stat == [{
             "category": "Darwin",
             "date_min": "2019-09-16",
             "date_max": "2020-03-14",

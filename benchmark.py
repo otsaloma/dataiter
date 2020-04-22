@@ -23,8 +23,23 @@ def data_frame_full_join():
     data.full_join(meta, "make", "model")
     return time.time() - start
 
-def data_frame_group_by_aggregate():
-    return -0.001
+def data_frame_group_by_aggregate_00128():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.group_by("make").aggregate(n=lambda x: x.nrow)
+    return time.time() - start
+
+def data_frame_group_by_aggregate_03264():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.group_by("make", "model").aggregate(n=lambda x: x.nrow)
+    return time.time() - start
+
+def data_frame_group_by_aggregate_14668():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.group_by("make", "model", "year").aggregate(n=lambda x: x.nrow)
+    return time.time() - start
 
 def data_frame_left_join():
     data = data_frame("vehicles.csv")

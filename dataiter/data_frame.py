@@ -57,6 +57,8 @@ class DataFrameColumn(Array):
 
 class DataFrame(dict):
 
+    ATTRIBUTES = ["_group_colnames"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         nrow = max(util.length(x) for x in self.values())
@@ -65,6 +67,7 @@ class DataFrame(dict):
                 super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
         # Check that the above broadcasting produced a uniform table.
         self.__check_dimensions()
+        self._group_colnames = []
 
     def __copy__(self):
         return self.__class__(self)
@@ -73,8 +76,10 @@ class DataFrame(dict):
         return self.__class__({k: v.copy() for k, v in self.items()})
 
     @deco.translate_error(KeyError, AttributeError)
-    def __delattr__(self, colname):
-        return self.__delitem__(colname)
+    def __delattr__(self, name):
+        if name in self.ATTRIBUTES:
+            return super().__delattr__(name)
+        return self.__delitem__(name)
 
     def __eq__(self, other):
         return (isinstance(other, DataFrame) and
@@ -84,11 +89,15 @@ class DataFrame(dict):
                 all(self[x].equal(other[x]) for x in self))
 
     @deco.translate_error(KeyError, AttributeError)
-    def __getattr__(self, colname):
-        return self.__getitem__(colname)
+    def __getattr__(self, name):
+        if name in self.ATTRIBUTES:
+            return super().__getattr__(name)
+        return self.__getitem__(name)
 
-    def __setattr__(self, colname, value):
-        return self.__setitem__(colname, value)
+    def __setattr__(self, name, value):
+        if name in self.ATTRIBUTES:
+            return super().__setattr__(name, value)
+        return self.__setitem__(name, value)
 
     def __setitem__(self, key, value):
         value = self._reconcile_column(value)
@@ -124,7 +133,16 @@ class DataFrame(dict):
         return "\n".join(rows_to_print)
 
     def aggregate(self, **colname_function_pairs):
-        raise NotImplementedError
+        by = np.column_stack(tuple(self[x].astype(bytes) for x in self._group_colnames))
+        values, ui, inv = np.unique(by, return_index=True, return_inverse=True, axis=0)
+        stat = self.slice(ui).select(*self._group_colnames)
+        slice_indices = {}
+        for i in range(self.nrow):
+            slice_indices.setdefault(inv[i], []).append(i)
+        slices = [self.slice(slice_indices[i]) for i in range(stat.nrow)]
+        for colname, function in colname_function_pairs.items():
+            stat[colname] = [function(x) for x in slices]
+        return stat.sort(*self._group_colnames)
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
@@ -203,7 +221,8 @@ class DataFrame(dict):
         return found, src
 
     def group_by(self, *colnames):
-        raise NotImplementedError
+        self._group_colnames = colnames[:]
+        return self
 
     def head(self, n=None):
         n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS

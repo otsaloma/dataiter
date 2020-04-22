@@ -103,7 +103,16 @@ class TestDataFrame:
         assert "test" in data
 
     def test_aggregate(self):
-        pass
+        data = test.data_frame("vehicles.csv")
+        stat = data.group_by("make", "model") \
+                   .aggregate(cyl=lambda x: np.nanmedian(x.cyl),
+                              displ=lambda x: np.nanmean(x.displ))
+
+        assert stat.nrow == 3264
+        assert stat.ncol == 4
+        assert stat.sort("make", "model") == stat
+        assert np.isclose(np.nansum(stat.cyl), 19964.5, atol=0.1)
+        assert np.isclose(np.nansum(stat.displ), 11430.1, atol=0.1)
 
     def test_anti_join(self):
         orig = test.data_frame("downloads.csv")
