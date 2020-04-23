@@ -110,7 +110,7 @@ class TestDataFrame:
 
         assert stat.nrow == 3264
         assert stat.ncol == 4
-        assert stat.sort("make", "model") == stat
+        assert stat.sort(make=1, model=1) == stat
         assert np.isclose(np.nansum(stat.cyl), 19964.5, atol=0.1)
         assert np.isclose(np.nansum(stat.displ), 11430.1, atol=0.1)
 
@@ -312,10 +312,10 @@ class TestDataFrame:
 
     def test_sort(self):
         orig = test.data_frame("vehicles.csv")
-        data = orig.sort("year", "make", "model")
+        data = orig.sort(year=-1, make=1, model=1)
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol
-        assert data.year.tolist() == sorted(data.year.tolist())
+        assert data.year.tolist() == sorted(data.year.tolist(), reverse=True)
 
     def test_tail(self):
         data = test.data_frame("vehicles.csv")

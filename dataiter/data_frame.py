@@ -142,7 +142,7 @@ class DataFrame(dict):
         slices = [self.slice(slice_indices[i]) for i in range(stat.nrow)]
         for colname, function in colname_function_pairs.items():
             stat[colname] = [function(x) for x in slices]
-        return stat.sort(*self._group_colnames)
+        return stat.sort(**dict.fromkeys(self._group_colnames, 1))
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
@@ -357,9 +357,16 @@ class DataFrame(dict):
             yield colname, self[colname][rows].copy()
 
     @deco.new_from_generator
-    def sort(self, *colnames, reverse=False):
-        indices = np.lexsort(tuple(self[x] for x in colnames[::-1]))
-        indices = indices[::-1] if reverse else indices
+    def sort(self, **colname_dir_pairs):
+        @deco.tuplefy
+        def sort_key():
+            for colname, dir in reversed(colname_dir_pairs.items()):
+                column = self[colname]
+                if dir < 0 and not (column.is_boolean or column.is_number):
+                    # Use rank for non-numeric types so that we can sort descending.
+                    column = column.rank()
+                yield column if dir >= 0 else -column
+        indices = np.lexsort(sort_key())
         for colname, column in self.items():
             yield colname, column[indices].copy()
 

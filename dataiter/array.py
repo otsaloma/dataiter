@@ -62,3 +62,6 @@ class Array(np.ndarray):
     @property
     def is_string(self):
         return np.issubdtype(self.dtype, np.character)
+
+    def rank(self):
+        return np.unique(self, return_inverse=True)[1]

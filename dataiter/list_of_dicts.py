@@ -86,7 +86,7 @@ class ListOfDicts(list):
             id = extract(item)
             items_by_group.setdefault(id, []).append(item)
         key_function_pairs = key_function_pairs.items()
-        for group in groups.sort(*by):
+        for group in groups.sort(**dict.fromkeys(by, 1)):
             id = extract(group)
             items = ListOfDicts(items_by_group[id])
             for key, function in key_function_pairs:
@@ -279,10 +279,18 @@ class ListOfDicts(list):
             if extract(item) in other_ids:
                 yield item
 
-    def sort(self, *keys, reverse=False):
+    def sort(self, **key_dir_pairs):
+        key_dir_pairs = key_dir_pairs.items()
+        def flip(value, dir):
+            # XXX: This only supports numeric types of value.
+            if dir < 0 and isinstance(value, (bool, int, float)):
+                return -value
+            return value
+        @deco.tuplefy
         def sort_key(item):
-            return tuple((item[x] is None, item[x]) for x in keys)
-        return self._new(sorted(self, key=sort_key, reverse=reverse))
+            for key, dir in key_dir_pairs:
+                yield (item[key] is None, flip(item[key], dir))
+        return self._new(sorted(self, key=sort_key))
 
     def tail(self, n=None):
         n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS

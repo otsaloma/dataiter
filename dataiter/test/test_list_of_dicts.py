@@ -314,7 +314,7 @@ class TestListOfDicts:
 
     def test_sort(self):
         orig = test.list_of_dicts("downloads.json")
-        data = orig.sort("date", "category")
+        data = orig.sort(date=1, category=1)
         assert len(data) == len(orig)
         assert all(x in orig for x in data)
 
@@ -322,7 +322,7 @@ class TestListOfDicts:
         # Nones should be sorted last.
         orig = test.list_of_dicts("downloads.json")
         orig[0].category = None
-        data = orig.sort("category")
+        data = orig.sort(category=1)
         assert data[-1] is orig[0]
 
     def test_sort_with_none_multiple_keys(self):
@@ -332,7 +332,7 @@ class TestListOfDicts:
         orig[1].date = None
         orig[2].category = None
         orig[2].date = None
-        data = orig.sort("date", "category")
+        data = orig.sort(date=1, category=1)
         assert data[ 4] is orig[0]
         assert data[-2] is orig[1]
         assert data[-1] is orig[2]

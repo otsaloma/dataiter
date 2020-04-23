@@ -25,8 +25,8 @@ import functools
 
 def listify(function):
     @functools.wraps(function)
-    def wrapper(self, *args, **kwargs):
-        return list(function(self, *args, **kwargs))
+    def wrapper(*args, **kwargs):
+        return list(function(*args, **kwargs))
     return wrapper
 
 def new_from_generator(function):
@@ -53,3 +53,9 @@ def translate_error(fm, to):
                 raise to(str(error))
         return inner_wrapper
     return outer_wrapper
+
+def tuplefy(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        return tuple(function(*args, **kwargs))
+    return wrapper

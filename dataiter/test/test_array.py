@@ -80,3 +80,7 @@ class TestArray:
         assert not Array([1]).is_string
         assert not Array([1.1]).is_string
         assert Array(["a"]).is_string
+
+    def test_rank(self):
+        assert Array([1, 2, 1, 2, 3]).rank().tolist() == [0, 1, 0, 1, 2]
+        assert Array([np.nan, 1, 2, 3]).rank().tolist() == [3, 0, 1, 2]

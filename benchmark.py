@@ -71,6 +71,12 @@ def data_frame_rbind_100000():
     data.rbind(*([data] * (100000 - 1)))
     return time.time() - start
 
+def data_frame_sort():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.sort(year=-1, make=1, model=1)
+    return time.time() - start
+
 def list_of_dicts(fname, length=100000):
     data = test.list_of_dicts(fname)
     n = length // len(data) + 1
@@ -109,6 +115,12 @@ def list_of_dicts_left_join():
     meta = meta.modify(random=lambda x: random.random())
     start = time.time()
     data.left_join(meta, "make", "model")
+    return time.time() - start
+
+def list_of_dicts_sort():
+    data = list_of_dicts("vehicles.csv")
+    start = time.time()
+    data.sort(year=-1, make=1, model=1)
     return time.time() - start
 
 is_benchmark = lambda x: x.startswith(("data_frame_", "list_of_dicts_"))
