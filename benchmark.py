@@ -16,7 +16,7 @@ def data_frame(fname, nrow=1000000):
 def data_frame_full_join():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "model").unique()
-    meta = meta.modify(random=lambda x: np.random.random(x.nrow))
+    meta.random = np.random.random(meta.nrow)
     start = time.time()
     data.full_join(meta, "make", "model")
     return time.time() - start
@@ -45,7 +45,7 @@ def data_frame_group_by_aggregate_14668():
 def data_frame_left_join():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "model").unique()
-    meta = meta.modify(random=lambda x: np.random.random(x.nrow))
+    meta.random = np.random.random(meta.nrow)
     start = time.time()
     data.left_join(meta, "make", "model")
     return time.time() - start
