@@ -360,7 +360,8 @@ class DataFrame(dict):
     def sort(self, **colname_dir_pairs):
         @deco.tuplefy
         def sort_key():
-            for colname, dir in reversed(colname_dir_pairs.items()):
+            pairs = colname_dir_pairs.items()
+            for colname, dir in reversed(list(pairs)):
                 column = self[colname]
                 if dir < 0 and not (column.is_boolean or column.is_number):
                     # Use rank for non-numeric types so that we can sort descending.
