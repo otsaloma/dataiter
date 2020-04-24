@@ -281,6 +281,9 @@ class ListOfDicts(list):
 
     def sort(self, **key_dir_pairs):
         key_dir_pairs = key_dir_pairs.items()
+        for key, dir in key_dir_pairs:
+            if dir not in [-1, 1]:
+                raise ValueError("dir should be 1 or -1")
         def flip(value, dir):
             # XXX: This only supports numeric types of value.
             if dir < 0 and isinstance(value, (bool, int, float)):

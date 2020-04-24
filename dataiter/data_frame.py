@@ -365,6 +365,8 @@ class DataFrame(dict):
         def sort_key():
             pairs = colname_dir_pairs.items()
             for colname, dir in reversed(list(pairs)):
+                if dir not in [-1, 1]:
+                    raise ValueError("dir should be 1 or -1")
                 column = self[colname]
                 if dir < 0 and not (column.is_boolean or column.is_number):
                     # Use rank for non-numeric types so that we can sort descending.
