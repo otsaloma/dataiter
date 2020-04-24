@@ -82,5 +82,6 @@ class TestArray:
         assert Array(["a"]).is_string
 
     def test_rank(self):
+        assert isinstance(Array([1, 2, 3]).rank(), Array)
         assert Array([1, 2, 1, 2, 3]).rank().tolist() == [0, 1, 0, 1, 2]
-        assert Array([np.nan, 1, 2, 3]).rank().tolist() == [3, 0, 1, 2]
+        assert Array([np.nan, 1, 2, 3, np.nan]).rank().tolist() == [3, 0, 1, 2, 4]

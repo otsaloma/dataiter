@@ -64,4 +64,5 @@ class Array(np.ndarray):
         return np.issubdtype(self.dtype, np.character)
 
     def rank(self):
-        return np.unique(self, return_inverse=True)[1]
+        rank = np.unique(self, return_inverse=True)[1]
+        return rank.view(self.__class__)
