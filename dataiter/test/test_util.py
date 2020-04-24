@@ -37,11 +37,6 @@ class TestUtil:
         assert util.length([1]) == 1
         assert util.length([1, 2]) == 2
 
-    def test_make_unique_names(self):
-        assert util.make_unique_names(["a", "b", "c"]) == ["a", "b", "c"]
-        assert util.make_unique_names(["a", "a", "b"]) == ["a", "a_", "b"]
-        assert util.make_unique_names(["a", "a", "a"]) == ["a", "a_", "a__"]
-
     def test_np_to_string(self):
         assert util.np_to_string(np.bool(True)) == "True"
         assert util.np_to_string(np.int(1)) == "1"

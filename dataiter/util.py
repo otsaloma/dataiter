@@ -25,23 +25,12 @@ import itertools
 import numpy as np
 import string
 
-from dataiter import deco
-
 
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 
 def length(value):
     return 1 if np.isscalar(value) else len(value)
-
-@deco.listify
-def make_unique_names(names, suffix="_"):
-    found = []
-    for name in names:
-        while name in found:
-            name += suffix
-        found.append(name)
-        yield name
 
 def np_to_string(value):
     if np.isscalar(value):

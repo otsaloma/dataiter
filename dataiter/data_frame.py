@@ -57,6 +57,7 @@ class DataFrameColumn(Array):
 
 class DataFrame(dict):
 
+    # List of names that are actual attributes, not columns
     ATTRIBUTES = ["_group_colnames"]
 
     def __init__(self, *args, **kwargs):
@@ -153,13 +154,15 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def cbind(self, *others):
+        found_colnames = set()
         data_frames = [self] + list(others)
-        colnames = list(itertools.chain(*data_frames))
-        colnames = util.make_unique_names(colnames)
-        for data in data_frames:
-            for column in data.values():
+        for i, data in enumerate(data_frames):
+            for colname, column in data.items():
+                while colname in found_colnames:
+                    colname += str(i + 1)
+                found_colnames.add(colname)
                 column = self._reconcile_column(column)
-                yield colnames.pop(0), column.copy()
+                yield colname, column.copy()
 
     def __check_dimensions(self):
         nrows = [x.nrow for x in self.columns]
