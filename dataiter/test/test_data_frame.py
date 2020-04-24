@@ -104,15 +104,18 @@ class TestDataFrame:
 
     def test_aggregate(self):
         data = test.data_frame("vehicles.csv")
+        # Avoid RuntimeWarning: All-NaN slice encountered.
+        data = data.filter(~np.isnan(data.cyl))
+        data = data.filter(~np.isnan(data.displ))
         stat = data.group_by("make", "model") \
-                   .aggregate(cyl=lambda x: np.nanmedian(x.cyl),
-                              displ=lambda x: np.nanmean(x.displ))
+                   .aggregate(cyl=lambda x: np.median(x.cyl),
+                              displ=lambda x: np.mean(x.displ))
 
-        assert stat.nrow == 3264
+        assert stat.nrow == 3240
         assert stat.ncol == 4
         assert stat.sort(make=1, model=1) == stat
-        assert np.isclose(np.nansum(stat.cyl), 19964.5, atol=0.1)
-        assert np.isclose(np.nansum(stat.displ), 11430.1, atol=0.1)
+        assert np.isclose(np.sum(stat.cyl), 19964.5, atol=0.1)
+        assert np.isclose(np.sum(stat.displ), 11430.1, atol=0.1)
 
     def test_anti_join(self):
         orig = test.data_frame("downloads.csv")
@@ -120,6 +123,7 @@ class TestDataFrame:
         data = orig.anti_join(holidays, "date")
         assert data.nrow == 870
         assert data.ncol == orig.ncol
+        assert np.sum(data.downloads) == 523109256
 
     def test_cbind(self):
         orig = test.data_frame("vehicles.csv")
@@ -129,7 +133,7 @@ class TestDataFrame:
 
     def test_cbind_broadcast(self):
         orig = test.data_frame("vehicles.csv")
-        data = orig.cbind(DataFrame({"test": 1}))
+        data = orig.cbind(DataFrame(test=1))
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
         assert np.all(data.test == 1)
@@ -160,12 +164,14 @@ class TestDataFrame:
         data = data.filter(data.make == "Saab")
         assert data.nrow == 424
         assert np.all(data.make == "Saab")
+        assert np.sum(data.hwy) == 10672
 
     def test_filter_out(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter_out(data.make == "Saab")
         assert data.nrow == 33018
         assert np.all(data.make != "Saab")
+        assert np.sum(data.hwy) == 776930
 
     def test_from_json(self):
         orig = test.data_frame("downloads.json")
@@ -189,9 +195,7 @@ class TestDataFrame:
         assert data.nrow > orig.nrow
         assert data.ncol == orig.ncol + 1
         assert sum(data.holiday != "nan") == 60
-
-    def test_group_by(self):
-        pass
+        assert np.nansum(data.downloads) == 541335745
 
     def test_head(self):
         data = test.data_frame("vehicles.csv")
@@ -204,6 +208,7 @@ class TestDataFrame:
         assert data.nrow == 35
         assert data.ncol == orig.ncol + 1
         assert all(data.holiday != "nan")
+        assert np.sum(data.downloads) == 18226489
 
     def test_left_join(self):
         orig = test.data_frame("downloads.csv")
@@ -212,6 +217,7 @@ class TestDataFrame:
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
         assert sum(data.holiday != "nan") == 35
+        assert np.sum(data.downloads) == 541335745
 
     def test_modify(self):
         orig = test.data_frame("vehicles.csv")
@@ -228,15 +234,15 @@ class TestDataFrame:
         assert np.all(data.test == data.make)
 
     def test_ncol(self):
-        data = test.data_frame("downloads.csv")
-        assert data.ncol == 3
+        data = test.data_frame("vehicles.csv")
+        assert data.ncol == 12
 
     def test_nrow(self):
-        data = test.data_frame("downloads.csv")
-        assert data.nrow == 905
+        data = test.data_frame("vehicles.csv")
+        assert data.nrow == 33442
 
     def test_rbind(self):
-        orig = test.data_frame("downloads.csv")
+        orig = test.data_frame("vehicles.csv")
         data = orig.rbind(orig, orig)
         assert data.nrow == orig.nrow * 3
         assert data.ncol == orig.ncol
@@ -245,8 +251,8 @@ class TestDataFrame:
         assert data.slice(range(orig.nrow*2, orig.nrow*3)) == orig
 
     def test_rbind_missing(self):
-        part1 = test.data_frame("downloads.csv")
-        part2 = test.data_frame("downloads.csv")
+        part1 = test.data_frame("vehicles.csv")
+        part2 = test.data_frame("vehicles.csv")
         part1.test1 = 1
         part2.test2 = 2
         data = part1.rbind(part2)
@@ -289,6 +295,7 @@ class TestDataFrame:
         data = orig.semi_join(holidays, "date")
         assert data.nrow == 35
         assert data.ncol == orig.ncol
+        assert np.sum(data.downloads) == 18226489
 
     def test_slice_given_both(self):
         orig = test.data_frame("vehicles.csv")
@@ -309,13 +316,14 @@ class TestDataFrame:
         data = orig.slice(rows=[0, 1, 2])
         assert data.nrow == 3
         assert data.ncol == orig.ncol
+        assert data.colnames == orig.colnames
 
     def test_sort(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.sort(year=-1, make=1, model=1)
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol
-        assert data.year.tolist() == sorted(data.year.tolist(), reverse=True)
+        assert data.year.tolist() == sorted(data.year, reverse=True)
 
     def test_tail(self):
         data = test.data_frame("vehicles.csv")
