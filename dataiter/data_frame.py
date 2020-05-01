@@ -24,7 +24,6 @@ import dataiter
 import itertools
 import json
 import numpy as np
-import pandas as pd
 
 from dataiter import Array
 from dataiter import deco
@@ -317,6 +316,7 @@ class DataFrame(dict):
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
+        import pandas as pd
         data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)
         data.columns = util.generate_colnames(len(data.columns)) if not header else data.columns
         return cls.from_pandas(data)
@@ -397,6 +397,7 @@ class DataFrame(dict):
         return ListOfDicts(data)
 
     def to_pandas(self):
+        import pandas as pd
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     @deco.new_from_generator

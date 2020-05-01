@@ -21,7 +21,6 @@
 # THE SOFTWARE.
 
 import numpy as np
-import pandas as pd
 import tempfile
 
 from dataiter import DataFrame
@@ -180,6 +179,7 @@ class TestDataFrame:
         assert data == orig
 
     def test_from_pandas(self):
+        import pandas as pd
         orig = test.data_frame("vehicles.csv")
         data = orig.to_pandas()
         assert isinstance(data, pd.DataFrame)
@@ -345,6 +345,7 @@ class TestDataFrame:
         assert len(data) == orig.nrow
 
     def test_to_pandas(self):
+        import pandas as pd
         orig = test.data_frame("vehicles.csv")
         data = orig.to_pandas()
         assert isinstance(data, pd.DataFrame)

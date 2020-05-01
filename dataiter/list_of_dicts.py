@@ -27,7 +27,6 @@ import itertools
 import json
 import operator
 import os
-import pandas as pd
 import random
 
 from attd import AttributeDict
@@ -319,6 +318,7 @@ class ListOfDicts(list):
         return json.dumps(self, **kwargs)
 
     def to_pandas(self):
+        import pandas as pd
         return pd.DataFrame(self._to_columns())
 
     @deco.new_from_generator
