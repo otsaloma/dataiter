@@ -172,7 +172,7 @@ class ListOfDicts(list):
         return self
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
+        n = n or dataiter.DEFAULT_PEEK_ROWS
         return self._new(self[:n])
 
     @deco.obsoletes
@@ -265,7 +265,7 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def sample(self, n=None):
-        n = min(len(self), n or dataiter.DEFAULT_HEAD_TAIL_ROWS)
+        n = min(len(self), n or dataiter.DEFAULT_PEEK_ROWS)
         for i in sorted(random.sample(range(len(self)), n)):
             yield self[i]
 
@@ -303,7 +303,7 @@ class ListOfDicts(list):
         return self._new(sorted(self, key=sort_key))
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
+        n = n or dataiter.DEFAULT_PEEK_ROWS
         return self._new(self[-n:])
 
     def _to_columns(self):

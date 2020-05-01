@@ -228,7 +228,7 @@ class DataFrame(dict):
         return self
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
+        n = n or dataiter.DEFAULT_PEEK_ROWS
         return self.slice(list(range(n)))
 
     @deco.new_from_generator
@@ -339,7 +339,7 @@ class DataFrame(dict):
             yield to, self[fm].copy()
 
     def sample(self, n=None):
-        n = min(self.nrow, n or dataiter.DEFAULT_HEAD_TAIL_ROWS)
+        n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
         rows = np.random.choice(self.nrow, n, replace=False)
         return self.slice(sorted(rows))
 
@@ -382,7 +382,7 @@ class DataFrame(dict):
             yield colname, column[indices].copy()
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_HEAD_TAIL_ROWS
+        n = n or dataiter.DEFAULT_PEEK_ROWS
         return self.slice(list(range(self.nrow - n, self.nrow)))
 
     def to_json(self, **kwargs):
