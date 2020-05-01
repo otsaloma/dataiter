@@ -338,6 +338,11 @@ class DataFrame(dict):
             to = from_to_pairs.get(fm, fm)
             yield to, self[fm].copy()
 
+    def sample(self, n=None):
+        n = min(self.nrow, n or dataiter.DEFAULT_HEAD_TAIL_ROWS)
+        rows = np.random.choice(self.nrow, n, replace=False)
+        return self.slice(sorted(rows))
+
     @deco.new_from_generator
     def select(self, *colnames):
         for colname in colnames:

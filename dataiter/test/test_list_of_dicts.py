@@ -296,6 +296,10 @@ class TestListOfDicts:
         data = orig.reverse()
         assert data == orig[::-1]
 
+    def test_sample(self):
+        data = test.list_of_dicts("downloads.json")
+        assert len(data.sample(10)) == 10
+
     def test_select(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.select("date", "downloads")
@@ -337,7 +341,7 @@ class TestListOfDicts:
         assert data[-2] is orig[1]
         assert data[-1] is orig[2]
 
-    def tail(self):
+    def test_tail(self):
         data = test.list_of_dicts("downloads.json")
         assert data.tail(10) == data[-10:]
 

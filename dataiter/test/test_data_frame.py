@@ -282,6 +282,10 @@ class TestDataFrame:
         assert data.ymd.equal(orig.date)
         assert data.downloads.equal(orig.downloads)
 
+    def test_sample(self):
+        data = test.data_frame("vehicles.csv")
+        assert data.sample(10).nrow == 10
+
     def test_select(self):
         orig = test.data_frame("vehicles.csv")
         orig_colnames = list(orig.colnames)

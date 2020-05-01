@@ -28,6 +28,7 @@ import json
 import operator
 import os
 import pandas as pd
+import random
 
 from attd import AttributeDict
 from dataiter import deco
@@ -261,6 +262,12 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def reverse(self):
         yield from reversed(self)
+
+    @deco.new_from_generator
+    def sample(self, n=None):
+        n = min(len(self), n or dataiter.DEFAULT_HEAD_TAIL_ROWS)
+        for i in sorted(random.sample(range(len(self)), n)):
+            yield self[i]
 
     @deco.obsoletes
     @deco.new_from_generator
