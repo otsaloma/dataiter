@@ -43,15 +43,15 @@ class DataFrameColumn(Array):
         return column.view(cls)
 
     def __init__(self, object, dtype=None, nrow=None):
-        self.__check_dimensions()
+        self._check_dimensions()
 
-    def __check_dimensions(self):
+    def _check_dimensions(self):
         if self.ndim == 1: return
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
     @property
     def nrow(self):
-        self.__check_dimensions()
+        self._check_dimensions()
         return self.size
 
 
@@ -67,7 +67,7 @@ class DataFrame(dict):
             if not isinstance(value, DataFrameColumn) or value.nrow != nrow:
                 super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
         # Check that the above broadcasting produced a uniform table.
-        self.__check_dimensions()
+        self._check_dimensions()
         self._group_colnames = []
 
     def __copy__(self):
@@ -164,7 +164,7 @@ class DataFrame(dict):
                 column = self._reconcile_column(column)
                 yield colname, column.copy()
 
-    def __check_dimensions(self):
+    def _check_dimensions(self):
         nrows = [x.nrow for x in self.columns]
         if len(set(nrows)) == 1: return
         raise ValueError(f"Bad dimensions: {nrows!r}")
@@ -273,7 +273,7 @@ class DataFrame(dict):
     @property
     def nrow(self):
         if not self: return 0
-        self.__check_dimensions()
+        self._check_dimensions()
         return self[next(iter(self))].nrow
 
     def _parse_cols_boolean(self, cols):
