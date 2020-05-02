@@ -105,33 +105,10 @@ class DataFrame(dict):
         return super().__setitem__(key, value)
 
     def __repr__(self):
-        return self.__str__()
+        return self.to_string()
 
     def __str__(self):
-        rows = [[""] + self.colnames]
-        rows.append([""] + [str(x.dtype) for x in self.columns])
-        for i in range(min(self.nrow, dataiter.PRINT_MAX_ROWS)):
-            rows.append([str(i)] + [util.np_to_string(x[i]) for x in self.columns])
-        for i in range(len(rows[0])):
-            width = max(len(x[i]) for x in rows)
-            for row in rows:
-                padding = width - len(row[i])
-                row[i] = " " * padding + row[i]
-        # If the length of rows exceeds PRINT_MAX_WIDTH, split to
-        # batches of columns (like R's print.data.frame).
-        rows_to_print = []
-        while rows[0]:
-            batch_column_count = 0
-            for i in range(len(rows[0])):
-                text = " ".join(rows[0][:(i+1)])
-                if len(text) <= dataiter.PRINT_MAX_WIDTH:
-                    batch_column_count = i + 1
-            batch_rows = [""] * len(rows)
-            for i, row in enumerate(rows):
-                batch_rows[i] += " ".join(row[:batch_column_count])
-                del row[:batch_column_count]
-            rows_to_print.extend(batch_rows)
-        return "\n".join(rows_to_print)
+        return self.to_string()
 
     def aggregate(self, **colname_function_pairs):
         by = np.column_stack(tuple(self[x].astype(bytes) for x in self._group_colnames))
@@ -302,6 +279,9 @@ class DataFrame(dict):
         assert rows.is_integer
         return rows
 
+    def print_(self, max_rows=None, max_width=None):
+        print(self.to_string(max_rows, max_width))
+
     @deco.new_from_generator
     def rbind(self, *others):
         data_frames = [self] + list(others)
@@ -405,6 +385,35 @@ class DataFrame(dict):
     def to_pandas(self):
         import pandas as pd
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
+
+    def to_string(self, max_rows=None, max_width=None):
+        max_rows = max_rows or dataiter.PRINT_MAX_ROWS
+        max_width = max_width or dataiter.PRINT_MAX_WIDTH
+        rows = [[""] + self.colnames]
+        rows.append([""] + [str(x.dtype) for x in self.columns])
+        for i in range(min(self.nrow, max_rows)):
+            rows.append([str(i)] + [util.np_to_string(x[i]) for x in self.columns])
+        for i in range(len(rows[0])):
+            width = max(len(x[i]) for x in rows)
+            for row in rows:
+                padding = width - len(row[i])
+                row[i] = " " * padding + row[i]
+        # If the length of rows exceeds max_width, split to
+        # batches of columns (like R's print.data.frame).
+        rows_to_print = []
+        while rows[0]:
+            batch_column_count = 0
+            for i in range(len(rows[0])):
+                text = " ".join(rows[0][:(i+1)])
+                if len(text) <= max_width:
+                    batch_column_count = i + 1
+            batch_rows = [""] * len(rows)
+            for i, row in enumerate(rows):
+                batch_rows[i] += " ".join(row[:batch_column_count])
+                del row[:batch_column_count]
+            rows_to_print.extend(batch_rows)
+        rows_to_print.append(f"... {self.nrow} rows total")
+        return "\n".join(rows_to_print)
 
     @deco.new_from_generator
     def unique(self, *colnames):

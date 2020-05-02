@@ -237,6 +237,9 @@ class ListOfDicts(list):
     def pluck(self, key, default=None):
         return [x.get(key, default) for x in self]
 
+    def print_(self, max_items=None):
+        print(self.to_string(max_items))
+
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         with open(fname, "r", encoding=encoding) as f:
@@ -326,6 +329,10 @@ class ListOfDicts(list):
     def to_pandas(self):
         import pandas as pd
         return pd.DataFrame(self._to_columns())
+
+    def to_string(self, max_items=None):
+        max_items = max_items or dataiter.PRINT_MAX_ITEMS
+        return self.head(max_items).to_json() + f" ... {len(self)} items total"
 
     @deco.new_from_generator
     def unique(self, *keys):
