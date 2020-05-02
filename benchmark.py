@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import dataiter as di
 import numpy as np
 import random
 import sys
@@ -24,22 +25,19 @@ def data_frame_full_join():
 def data_frame_group_by_aggregate_00128():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.group_by("make") \
-        .aggregate(n=lambda x: x.nrow)
+    data.group_by("make").aggregate(n=di.nrow)
     return time.time() - start
 
 def data_frame_group_by_aggregate_03264():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.group_by("make", "model") \
-        .aggregate(n=lambda x: x.nrow)
+    data.group_by("make", "model").aggregate(n=di.nrow)
     return time.time() - start
 
 def data_frame_group_by_aggregate_14668():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.group_by("make", "model", "year") \
-        .aggregate(n=lambda x: x.nrow)
+    data.group_by("make", "model", "year").aggregate(n=di.nrow)
     return time.time() - start
 
 def data_frame_left_join():

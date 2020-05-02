@@ -34,3 +34,9 @@ PRINT_FLOAT_PRECISION = 6
 PRINT_MAX_ITEMS = 10
 PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
+
+def ncol(data):
+    return data.ncol
+
+def nrow(data):
+    return data.nrow
