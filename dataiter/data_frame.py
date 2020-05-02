@@ -226,9 +226,10 @@ class DataFrame(dict):
             yield colname, column.copy()
         for colname, column in other.items():
             if colname in self: continue
+            na = column.missing_value
             # NaN not allowed in integer column, use float instead.
             dtype = np.float if column.is_integer else column.dtype
-            new = DataFrameColumn(np.nan, dtype=dtype, nrow=self.nrow)
+            new = DataFrameColumn(na, dtype=dtype, nrow=self.nrow)
             new[found] = column[src[found]]
             yield colname, new.copy()
 

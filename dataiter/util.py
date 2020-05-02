@@ -29,6 +29,21 @@ import string
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 
+def is_missing(value):
+    if value in [None, np.nan]:
+        return True
+    if (isinstance(value, float) and
+        np.isnan(value)):
+        return True
+    if (isinstance(value, str) and
+        not value):
+        return True
+    if (hasattr(value, "dtype") and
+        np.issubdtype(value.dtype, np.datetime64) and
+        np.isnat(value)):
+        return True
+    return False
+
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
@@ -48,6 +63,9 @@ def np_to_string(value):
 
 def unique_keys(keys):
     return list(dict.fromkeys(keys))
+
+def unique_types(seq):
+    return set(type(x) for x in seq if not is_missing(x))
 
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...

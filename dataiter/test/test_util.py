@@ -32,6 +32,12 @@ class TestUtil:
         assert len(colnames) == 1000
         assert len(set(colnames)) == 1000
 
+    def test_is_missing(self):
+        assert util.is_missing(None)
+        assert util.is_missing(np.nan)
+        assert util.is_missing("")
+        assert util.is_missing(np.datetime64("NaT"))
+
     def test_length(self):
         assert util.length(1) == 1
         assert util.length([1]) == 1
@@ -47,3 +53,6 @@ class TestUtil:
     def test_unique_keys(self):
         assert util.unique_keys([1, 2, 3]) == [1, 2, 3]
         assert util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]
+
+    def test_unique_types(self):
+        assert util.unique_types([1, 2, 3.3, None]) == set((int, float))
