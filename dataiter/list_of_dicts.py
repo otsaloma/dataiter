@@ -27,6 +27,7 @@ import itertools
 import json
 import operator
 import os
+import pickle
 import random
 
 from attd import AttributeDict
@@ -249,6 +250,11 @@ class ListOfDicts(list):
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
+    @classmethod
+    def read_pickle(cls, fname):
+        with open(fname, "rb") as f:
+            return cls(pickle.load(f))
+
     @deco.obsoletes
     @deco.new_from_generator
     def rename(self, **to_from_pairs):
@@ -368,6 +374,11 @@ class ListOfDicts(list):
             for chunk in encoder.iterencode(self):
                 f.write(chunk)
             f.write("\n")
+
+    def write_pickle(self, fname):
+        with open(fname, "wb") as f:
+            out = [dict(x) for x in self]
+            pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
 
 
 class ObsoleteError(Exception):

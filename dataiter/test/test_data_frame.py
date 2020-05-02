@@ -273,6 +273,13 @@ class TestDataFrame:
         assert data.nrow == 905
         assert data.ncol == 3
 
+    def test_read_pickle(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(fname)
+        data = DataFrame.read_pickle(fname)
+        assert data == orig
+
     def test_rename(self):
         orig = test.data_frame("downloads.csv")
         assert orig.colnames == ["category", "date", "downloads"]
@@ -392,4 +399,11 @@ class TestDataFrame:
         handle, fname = tempfile.mkstemp(".json")
         orig.write_json(fname)
         data = DataFrame.read_json(fname)
+        assert data == orig
+
+    def test_write_pickle(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(fname)
+        data = DataFrame.read_pickle(fname)
         assert data == orig

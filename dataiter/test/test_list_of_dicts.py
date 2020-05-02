@@ -283,6 +283,13 @@ class TestListOfDicts:
         assert len(data) == 905
         assert all(len(x) == 3 for x in data)
 
+    def test_read_pickle(self):
+        orig = test.list_of_dicts("downloads.json")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(fname)
+        data = ListOfDicts.read_pickle(fname)
+        assert data == orig
+
     def test_rename(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.rename(ymd="date")
@@ -397,6 +404,13 @@ class TestListOfDicts:
         handle, fname = tempfile.mkstemp(".json")
         orig.write_json(fname)
         data = ListOfDicts.read_json(fname)
+        assert data == orig
+
+    def test_write_pickle(self):
+        orig = test.list_of_dicts("downloads.json")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(fname)
+        data = ListOfDicts.read_pickle(fname)
         assert data == orig
 
 

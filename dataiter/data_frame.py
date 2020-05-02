@@ -24,6 +24,7 @@ import dataiter
 import itertools
 import json
 import numpy as np
+import pickle
 
 from dataiter import Array
 from dataiter import deco
@@ -326,6 +327,11 @@ class DataFrame(dict):
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
+    @classmethod
+    def read_pickle(cls, fname):
+        with open(fname, "rb") as f:
+            return cls(pickle.load(f))
+
     def _reconcile_column(self, column):
         return (DataFrameColumn(column, nrow=(self.nrow if self else None))
                 if not isinstance(column, DataFrameColumn) or column.nrow != self.nrow
@@ -428,3 +434,8 @@ class DataFrame(dict):
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
         return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)
+
+    def write_pickle(self, fname):
+        with open(fname, "wb") as f:
+            out = {k: np.array(v) for k, v in self.items()}
+            pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
