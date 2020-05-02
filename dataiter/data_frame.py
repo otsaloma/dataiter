@@ -68,7 +68,7 @@ class DataFrame(dict):
                 super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
         # Check that the above broadcasting produced a uniform table.
         self._check_dimensions()
-        self._group_colnames = []
+        self._group_colnames = ()
 
     def __copy__(self):
         return self.__class__(self)
@@ -224,7 +224,7 @@ class DataFrame(dict):
         return found, src
 
     def group_by(self, *colnames):
-        self._group_colnames = colnames[:]
+        self._group_colnames = tuple(colnames)
         return self
 
     def head(self, n=None):
