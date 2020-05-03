@@ -32,25 +32,23 @@ class TestDataFrameColumn:
 
     def test___init___given_array(self):
         column = DataFrameColumn(np.array([1, 2, 3]))
-        assert isinstance(column, DataFrameColumn)
-        assert isinstance(column, np.ndarray)
-
-    def test___init___given_dtype(self):
-        column = DataFrameColumn([1, 2, 3], dtype="float64")
-        assert column.dtype is np.dtype("float64")
+        assert column.tolist() == [1, 2, 3]
 
     def test___init___given_list(self):
         column = DataFrameColumn([1, 2, 3])
-        assert isinstance(column, DataFrameColumn)
-        assert isinstance(column, np.ndarray)
-
-    def test__init___given_nrow(self):
-        column = DataFrameColumn([1], nrow=3)
-        assert column.tolist() == [1, 1, 1]
+        assert column.tolist() == [1, 2, 3]
 
     def test__init___given_scalar(self):
         column = DataFrameColumn(1)
         assert column.tolist() == [1]
+
+    def test___init___with_dtype(self):
+        column = DataFrameColumn([1, 2, 3], dtype=float)
+        assert column.is_float
+
+    def test__init___with_nrow(self):
+        column = DataFrameColumn([1], nrow=3)
+        assert column.tolist() == [1, 1, 1]
 
     def test_nrow(self):
         assert DataFrameColumn([1, 2, 3]).nrow == 3
@@ -66,13 +64,11 @@ class TestDataFrame:
 
     def test___init___given_data_frame_column(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
-        assert data.nrow == 3
-        assert data.ncol == 1
+        assert data.a.tolist() == [1, 2, 3]
 
     def test___init___given_list(self):
         data = DataFrame(a=[1, 2, 3])
-        assert data.nrow == 3
-        assert data.ncol == 1
+        assert data.a.tolist() == [1, 2, 3]
 
     def test___delattr__(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
@@ -125,10 +121,13 @@ class TestDataFrame:
         assert np.sum(data.downloads) == 523109256
 
     def test_cbind(self):
-        orig = test.data_frame("vehicles.csv")
-        data = orig.cbind(orig)
-        assert data.nrow == orig.nrow
-        assert data.ncol == orig.ncol * 2
+        data1 = test.data_frame("vehicles.csv")
+        data2 = test.data_frame("vehicles.csv")
+        data1.colnames = [x + "1" for x in data1.colnames]
+        data2.colnames = [x + "2" for x in data2.colnames]
+        data = data1.cbind(data2)
+        assert data.nrow == data1.nrow
+        assert data.ncol == data1.ncol + data2.ncol
 
     def test_cbind_broadcast(self):
         orig = test.data_frame("vehicles.csv")
@@ -141,6 +140,11 @@ class TestDataFrame:
     def test_colnames(self):
         data = test.data_frame("downloads.csv")
         assert data.colnames == ["category", "date", "downloads"]
+
+    def test_colnames_set(self):
+        data = test.data_frame("downloads.csv")
+        data.colnames = ["a", "b", "c"]
+        assert data.colnames == ["a", "b", "c"]
 
     def test_columns(self):
         data = test.data_frame("downloads.csv")
@@ -194,7 +198,7 @@ class TestDataFrame:
         data = orig.full_join(holidays, "date")
         assert data.nrow > orig.nrow
         assert data.ncol == orig.ncol + 1
-        assert sum(data.holiday != "nan") == 60
+        assert sum(data.holiday != "") == 60
         assert np.nansum(data.downloads) == 541335745
 
     def test_head(self):
@@ -207,7 +211,7 @@ class TestDataFrame:
         data = orig.inner_join(holidays, "date")
         assert data.nrow == 35
         assert data.ncol == orig.ncol + 1
-        assert all(data.holiday != "nan")
+        assert all(data.holiday != "")
         assert np.sum(data.downloads) == 18226489
 
     def test_left_join(self):
@@ -216,7 +220,7 @@ class TestDataFrame:
         data = orig.left_join(holidays, "date")
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
-        assert sum(data.holiday != "nan") == 35
+        assert sum(data.holiday != "") == 35
         assert np.sum(data.downloads) == 541335745
 
     def test_modify(self):

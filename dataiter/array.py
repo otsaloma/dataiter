@@ -23,7 +23,6 @@
 import datetime
 import numpy as np
 
-from dataiter import deco
 from dataiter import util
 
 TYPE_CONVERSIONS = {
@@ -35,15 +34,20 @@ TYPE_CONVERSIONS = {
 class Array(np.ndarray):
 
     def __new__(cls, object, dtype=None):
+        # If given a NumPy array, we can do a fast initialization.
+        if isinstance(object, np.ndarray):
+            dtype = dtype or object.dtype
+            return np.array(object, dtype).view(cls)
+        # If given a Python list, or something else generic, we need
+        # to convert certain types and special values. This is really
+        # slow, see Array.fast for faster initialization.
         object = [object] if np.isscalar(object) else object
-        if not isinstance(object, np.ndarray):
-            object = list(cls._std_to_np(object))
-        if dtype is None:
-            types = util.unique_types(object)
-            for fm, to in TYPE_CONVERSIONS.items():
-                if types and all(x in [fm] for x in types):
-                    dtype = to
-        return np.array(object, dtype).view(cls)
+        return cls._std_to_np(object, dtype).view(cls)
+
+    def __array_wrap__(self, array, context=None):
+        # Avoid returning 0-dimensional arrays.
+        # https://github.com/numpy/numpy/issues/7403
+        return array[()] if array.shape == () else array
 
     def __repr__(self):
         return self.__str__()
@@ -51,15 +55,39 @@ class Array(np.ndarray):
     def __str__(self):
         return util.np_to_string(self)
 
+    def as_boolean(self):
+        return self.astype(bool)
+
+    def as_date(self):
+        return self.astype(np.dtype("datetime64[D]"))
+
+    def as_datetime(self):
+        return self.astype(np.dtype("datetime64[us]"))
+
+    def as_float(self):
+        return self.astype(float)
+
+    def as_integer(self):
+        return self.astype(int)
+
+    def as_string(self):
+        return self.astype(str)
+
     def equal(self, other):
-        # XXX: Not really sure what we want to consider equal.
-        if self.is_float and other.is_float:
-            return np.allclose(self, other, equal_nan=True)
         if self.is_datetime and other.is_datetime:
-            na1 = np.isnat(self)
-            na2 = np.isnat(other)
-            return np.all(na1 == na2) and np.all(self[~na1] == other[~na2])
+            return self._equal_missing(other, np.isnat)
+        if self.is_float and other.is_float:
+            return self._equal_missing(other, np.isnan)
         return np.array_equal(self, other)
+
+    def _equal_missing(self, other, isna):
+        ii, jj = map(isna, (self, other))
+        return (np.all(ii == jj) and
+                np.all(self[~ii] == other[~jj]))
+
+    @classmethod
+    def fast(cls, object, dtype=None):
+        return np.array(object, dtype).view(cls)
 
     @property
     def is_boolean(self):
@@ -83,14 +111,29 @@ class Array(np.ndarray):
 
     @property
     def is_object(self):
-        return np.issubdtype(self.dtype, np.dtype("object"))
+        return np.issubdtype(self.dtype, np.object_)
 
     @property
     def is_string(self):
         return np.issubdtype(self.dtype, np.character)
 
     @property
+    def missing_dtype(self):
+        # Return corresponding dtype that can handle missing data.
+        # Needed for upcasting when missing data is first introduced.
+        if self.is_datetime:
+            return self.dtype
+        if self.is_float:
+            return self.dtype
+        if self.is_integer:
+            return float
+        if self.is_string:
+            return self.dtype
+        return object
+
+    @property
     def missing_value(self):
+        # Return value to use to represent missing values.
         if self.is_datetime:
             return np.datetime64("NaT")
         if self.is_float:
@@ -99,32 +142,49 @@ class Array(np.ndarray):
             return np.nan
         if self.is_string:
             return ""
+        # Note that using None, e.g. for a boolean array,
+        # might not work directly as it requires upcasting to object.
         return None
-
-    @classmethod
-    def _std_to_np(cls, seq):
-        # Convert special values in seq to NumPy equivalents.
-        types = set(type(x) for x in seq if not util.is_missing(x))
-        if str in types:
-            missing = ""
-        elif all(x in [float, int] for x in types):
-            missing = np.nan
-        elif all(x in [datetime.date, datetime.datetime] for x in types):
-            missing = np.datetime64("NaT")
-        else:
-            missing = None
-        for item in seq:
-            if util.is_missing(item):
-                item = missing
-            yield item
 
     def rank(self):
         rank = np.unique(self, return_inverse=True)[1]
         return rank.view(self.__class__)
 
-    @deco.listify
+    @classmethod
+    def _std_to_np(cls, seq, dtype=None):
+        # Convert missing values in seq to NumPy equivalents.
+        types = util.unique_types(seq)
+        missing = cls._std_to_np_missing_value(types)
+        seq = [missing if x is None else x for x in seq]
+        if dtype is not None:
+            return np.array(seq, dtype)
+        # NaT values bring in np.datetime64 to types.
+        types.discard(np.datetime64)
+        for fm, to in TYPE_CONVERSIONS.items():
+            if types and all(x == fm for x in types):
+                return np.array(seq, to)
+        # Let NumPy guess the appropriate dtype.
+        return np.array(seq, dtype)
+
+    @classmethod
+    def _std_to_np_missing_value(cls, types):
+        if str in types:
+            return ""
+        if all(x in [float, int] for x in types):
+            return np.nan
+        datetimes = [datetime.date, datetime.datetime, np.datetime64]
+        if all(x in datetimes for x in types):
+            return np.datetime64("NaT")
+        # Usually causes dtype to be object!
+        return None
+
     def tolist(self):
-        for item in super().tolist():
-            if util.is_missing(item):
-                item = None
-            yield item
+        def replace(isna):
+            return np.where(isna(self), None, self).tolist()
+        if self.is_datetime:
+            return replace(np.isnat)
+        if self.is_float:
+            return replace(np.isnan)
+        if self.is_string:
+            return replace(lambda x: x == "")
+        return super().tolist()

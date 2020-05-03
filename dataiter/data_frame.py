@@ -37,8 +37,8 @@ class DataFrameColumn(Array):
         object = [object] if np.isscalar(object) else object
         column = Array(object, dtype)
         if nrow is not None and nrow != column.size:
-            if not (column.size == 1 and nrow > 1):
-                raise ValueError("Incompatible object and nrow for broadcast")
+            if column.size != 1 or nrow < 1:
+                raise ValueError("Bad arguments for broadcast")
             column = column.repeat(nrow)
         return column.view(cls)
 
@@ -58,15 +58,17 @@ class DataFrameColumn(Array):
 class DataFrame(dict):
 
     # List of names that are actual attributes, not columns
-    ATTRIBUTES = ["_group_colnames"]
+    ATTRIBUTES = ["colnames", "_group_colnames"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        nrow = max(util.length(x) for x in self.values())
+        nrow = max(map(util.length, self.values()))
         for key, value in self.items():
-            if not isinstance(value, DataFrameColumn) or value.nrow != nrow:
-                super().__setitem__(key, DataFrameColumn(value, nrow=nrow))
-        # Check that the above broadcasting produced a uniform table.
+            if (isinstance(value, DataFrameColumn) and
+                value.nrow == nrow): continue
+            column = DataFrameColumn(value, nrow=nrow)
+            super().__setitem__(key, column)
+        # Check that we have a uniform table.
         self._check_dimensions()
         self._group_colnames = ()
 
@@ -76,11 +78,10 @@ class DataFrame(dict):
     def __deepcopy__(self, memo=None):
         return self.__class__({k: v.copy() for k, v in self.items()})
 
-    @deco.translate_error(KeyError, AttributeError)
     def __delattr__(self, name):
-        if name in self.ATTRIBUTES:
-            return super().__delattr__(name)
-        return self.__delitem__(name)
+        if name in self:
+            return self.__delitem__(name)
+        return super().__delattr__(name)
 
     def __eq__(self, other):
         return (isinstance(other, DataFrame) and
@@ -89,11 +90,10 @@ class DataFrame(dict):
                 set(self.colnames) == set(other.colnames) and
                 all(self[x].equal(other[x]) for x in self))
 
-    @deco.translate_error(KeyError, AttributeError)
     def __getattr__(self, name):
-        if name in self.ATTRIBUTES:
-            return super().__getattr__(name)
-        return self.__getitem__(name)
+        if name in self:
+            return self.__getitem__(name)
+        return super().__getattr__(name)
 
     def __setattr__(self, name, value):
         if name in self.ATTRIBUTES:
@@ -111,7 +111,7 @@ class DataFrame(dict):
         return self.to_string()
 
     def aggregate(self, **colname_function_pairs):
-        by = np.column_stack(tuple(self[x].astype(bytes) for x in self._group_colnames))
+        by = np.column_stack([self[x].astype(bytes) for x in self._group_colnames])
         values, ui, inv = np.unique(by, return_index=True, return_inverse=True, axis=0)
         stat = self.slice(ui).select(*self._group_colnames)
         slice_indices = {}
@@ -135,8 +135,7 @@ class DataFrame(dict):
         data_frames = [self] + list(others)
         for i, data in enumerate(data_frames):
             for colname, column in data.items():
-                while colname in found_colnames:
-                    colname += str(i + 1)
+                if colname in found_colnames: continue
                 found_colnames.add(colname)
                 column = self._reconcile_column(column)
                 yield colname, column.copy()
@@ -150,6 +149,11 @@ class DataFrame(dict):
     def colnames(self):
         return list(self)
 
+    @colnames.setter
+    def colnames(self, colnames):
+        for fm, to in zip(list(self.keys()), colnames):
+            self[to] = self.pop(fm)
+
     @property
     def columns(self):
         return list(self.values())
@@ -162,13 +166,13 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def filter(self, rows):
-        rows = self._parse_rows_boolean(rows)
+        rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.take(column, rows)
 
     @deco.new_from_generator
     def filter_out(self, rows):
-        rows = self._parse_rows_boolean(rows)
+        rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.delete(column, rows)
 
@@ -205,8 +209,8 @@ class DataFrame(dict):
         return self
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_PEEK_ROWS
-        return self.slice(list(range(n)))
+        n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
+        return self.slice(np.arange(n))
 
     @deco.new_from_generator
     def inner_join(self, other, *by):
@@ -226,15 +230,14 @@ class DataFrame(dict):
             yield colname, column.copy()
         for colname, column in other.items():
             if colname in self: continue
-            na = column.missing_value
-            # NaN not allowed in integer column, use float instead.
-            dtype = np.float if column.is_integer else column.dtype
-            new = DataFrameColumn(na, dtype=dtype, nrow=self.nrow)
+            value = column.missing_value
+            dtype = column.missing_dtype
+            new = DataFrameColumn(value, dtype, self.nrow)
             new[found] = column[src[found]]
             yield colname, new.copy()
 
     @deco.new_from_generator
-    def modify(self, function=None, **colname_value_pairs):
+    def modify(self, **colname_value_pairs):
         for colname, column in self.items():
             yield colname, column.copy()
         for colname, value in colname_value_pairs.items():
@@ -243,6 +246,7 @@ class DataFrame(dict):
 
     @property
     def ncol(self):
+        self._check_dimensions()
         return len(self)
 
     def _new(self, *args, **kwargs):
@@ -254,31 +258,23 @@ class DataFrame(dict):
         self._check_dimensions()
         return self[next(iter(self))].nrow
 
-    def _parse_cols_boolean(self, cols):
-        cols = Array(cols)
-        assert cols.is_boolean
-        assert len(cols) == self.ncol
-        cols = Array(np.nonzero(cols)[0])
-        assert cols.is_integer
-        return cols
+    def _parse_cols_from_boolean(self, cols):
+        cols = Array.fast(cols, bool)
+        if len(cols) != self.ncol:
+            raise ValueError("Bad length for boolean cols")
+        return Array.fast(np.nonzero(cols)[0], int)
 
-    def _parse_cols_integer(self, cols):
-        cols = Array(cols)
-        assert cols.is_integer
-        return cols
+    def _parse_cols_from_integer(self, cols):
+        return Array.fast(cols, int)
 
-    def _parse_rows_boolean(self, rows):
-        rows = Array(rows)
-        assert rows.is_boolean
-        assert len(rows) == self.nrow
-        rows = Array(np.nonzero(rows)[0])
-        assert rows.is_integer
-        return rows
+    def _parse_rows_from_boolean(self, rows):
+        rows = Array.fast(rows, bool)
+        if len(rows) != self.nrow:
+            raise ValueError("Bad length for boolean rows")
+        return Array.fast(np.nonzero(rows)[0], int)
 
-    def _parse_rows_integer(self, rows):
-        rows = Array(rows)
-        assert rows.is_integer
-        return rows
+    def _parse_rows_from_integer(self, rows):
+        return Array.fast(rows, int)
 
     def print_(self, max_rows=None, max_width=None):
         print(self.to_string(max_rows, max_width))
@@ -290,7 +286,11 @@ class DataFrame(dict):
         def get_part(data, colname):
             if colname in data:
                 return data[colname]
-            return Array(np.nan).repeat(data.nrow)
+            for ref in data_frames:
+                if colname not in ref: continue
+                value = ref[colname].missing_value
+                dtype = ref[colname].missing_dtype
+                return Array.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
             parts = [get_part(x, colname) for x in data_frames]
             total = DataFrameColumn(np.concatenate(parts))
@@ -299,8 +299,14 @@ class DataFrame(dict):
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         import pandas as pd
-        data = pd.read_csv(fname, sep=sep, header=0 if header else None, encoding=encoding)
-        data.columns = util.generate_colnames(len(data.columns)) if not header else data.columns
+        data = pd.read_csv(fname,
+                           sep=sep,
+                           header=0 if header else None,
+                           parse_dates=False,
+                           encoding=encoding)
+
+        if not header:
+            data.columns = util.generate_colnames(len(data.columns))
         return cls.from_pandas(data)
 
     @classmethod
@@ -314,9 +320,11 @@ class DataFrame(dict):
             return cls(pickle.load(f))
 
     def _reconcile_column(self, column):
-        return (DataFrameColumn(column, nrow=(self.nrow if self else None))
-                if not isinstance(column, DataFrameColumn) or column.nrow != self.nrow
-                else column)
+        if isinstance(column, DataFrameColumn):
+            if column.nrow == self.nrow:
+                return column
+        nrow = self.nrow if self else None
+        return DataFrameColumn(column, nrow=nrow)
 
     @deco.new_from_generator
     def rename(self, **to_from_pairs):
@@ -328,7 +336,7 @@ class DataFrame(dict):
     def sample(self, n=None):
         n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
         rows = np.random.choice(self.nrow, n, replace=False)
-        return self.slice(sorted(rows))
+        return self.slice(np.sort(rows))
 
     @deco.new_from_generator
     def select(self, *colnames):
@@ -346,8 +354,8 @@ class DataFrame(dict):
     def slice(self, rows=None, cols=None):
         rows = np.arange(self.nrow) if rows is None else rows
         cols = np.arange(self.ncol) if cols is None else cols
-        rows = self._parse_rows_integer(rows)
-        cols = self._parse_cols_integer(cols)
+        rows = self._parse_rows_from_integer(rows)
+        cols = self._parse_cols_from_integer(cols)
         for colname in (self.colnames[x] for x in cols):
             yield colname, self[colname][rows].copy()
 
@@ -369,8 +377,8 @@ class DataFrame(dict):
             yield colname, column[indices].copy()
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_PEEK_ROWS
-        return self.slice(list(range(self.nrow - n, self.nrow)))
+        n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
+        return self.slice(np.arange(self.nrow - n, self.nrow))
 
     def to_json(self, **kwargs):
         return json.dumps(self.to_list_of_dicts(), **kwargs)
@@ -393,7 +401,7 @@ class DataFrame(dict):
         rows = [[""] + self.colnames]
         rows.append([""] + [str(x.dtype) for x in self.columns])
         for i in range(min(self.nrow, max_rows)):
-            rows.append([str(i)] + [util.np_to_string(x[i]) for x in self.columns])
+            rows.append([str(i)] + [util.np_to_string(x[i], quote=False) for x in self.columns])
         for i in range(len(rows[0])):
             width = max(len(x[i]) for x in rows)
             for row in rows:
@@ -419,7 +427,7 @@ class DataFrame(dict):
     @deco.new_from_generator
     def unique(self, *colnames):
         colnames = colnames or self.colnames
-        by = np.column_stack(tuple(self[x].astype(bytes) for x in colnames))
+        by = np.column_stack([self[x].astype(bytes) for x in colnames])
         values, indices = np.unique(by, return_index=True, axis=0)
         for colname, column in self.items():
             yield colname, column[indices].copy()
@@ -447,5 +455,5 @@ class DataFrame(dict):
 
     def write_pickle(self, fname):
         with open(fname, "wb") as f:
-            out = {k: np.array(v) for k, v in self.items()}
+            out = {k: np.array(v, v.dtype) for k, v in self.items()}
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)

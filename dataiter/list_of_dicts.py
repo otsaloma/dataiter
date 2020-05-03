@@ -158,11 +158,11 @@ class ListOfDicts(list):
             raise TypeError("Not a list")
         return cls(obj)
 
-    @deco.new_from_generator
     def full_join(self, other, *by):
         counter = itertools.count(start=1)
         other = other.deepcopy().modify(_id_=lambda x: next(counter))
-        a = self.deepcopy().left_join(other, *by)
+        # This obsoletes self, @deco.obsoletes not needed.
+        a = self.left_join(other, *by)
         found_ids = set(x.get("_id_", -1) for x in a)
         b = other.filter_out(lambda x: x._id_ in found_ids)
         return (a + b).unselect("_id_")
@@ -172,7 +172,7 @@ class ListOfDicts(list):
         return self
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_PEEK_ROWS
+        n = n or dataiter.DEFAULT_PEEK_ITEMS
         return self._new(self[:n])
 
     @deco.obsoletes
@@ -273,7 +273,7 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def sample(self, n=None):
-        n = min(len(self), n or dataiter.DEFAULT_PEEK_ROWS)
+        n = min(len(self), n or dataiter.DEFAULT_PEEK_ITEMS)
         for i in sorted(random.sample(range(len(self)), n)):
             yield self[i]
 
@@ -311,7 +311,7 @@ class ListOfDicts(list):
         return self._new(sorted(self, key=sort_key))
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_PEEK_ROWS
+        n = n or dataiter.DEFAULT_PEEK_ITEMS
         return self._new(self[-n:])
 
     def _to_columns(self):
@@ -361,7 +361,7 @@ class ListOfDicts(list):
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         if not self:
-            raise Exception("Cannot write empty CSV file")
+            raise ValueError("Cannot write empty CSV file")
         # Take a superset of all keys and fill in missing as None.
         keys = util.unique_keys(list(itertools.chain(*self)))
         data = [{**dict.fromkeys(keys), **x} for x in self]

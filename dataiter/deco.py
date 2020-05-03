@@ -26,13 +26,15 @@ import functools
 def listify(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
-        return list(function(*args, **kwargs))
+        value = function(*args, **kwargs)
+        return list(value)
     return wrapper
 
 def new_from_generator(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):
-        return self._new(function(self, *args, **kwargs))
+        value = function(self, *args, **kwargs)
+        return self._new(value)
     return wrapper
 
 def obsoletes(function):
@@ -43,19 +45,9 @@ def obsoletes(function):
         return value
     return wrapper
 
-def translate_error(fm, to):
-    def outer_wrapper(function):
-        @functools.wraps(function)
-        def inner_wrapper(*args, **kwargs):
-            try:
-                return function(*args, **kwargs)
-            except fm as error:
-                raise to(str(error))
-        return inner_wrapper
-    return outer_wrapper
-
 def tuplefy(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
-        return tuple(function(*args, **kwargs))
+        value = function(*args, **kwargs)
+        return tuple(value)
     return wrapper

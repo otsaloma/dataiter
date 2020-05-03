@@ -8,6 +8,32 @@ import time
 
 from dataiter import test
 
+def array_fast_list():
+    seq = list(range(1000000))
+    start = time.time()
+    di.Array.fast(seq, int)
+    return time.time() - start
+
+def array_fast_np():
+    seq = list(range(1000000))
+    seq = np.array(seq)
+    start = time.time()
+    di.Array.fast(seq, int)
+    return time.time() - start
+
+def array_new_list():
+    seq = list(range(1000000))
+    start = time.time()
+    di.Array(seq)
+    return time.time() - start
+
+def array_new_np():
+    seq = list(range(1000000))
+    seq = np.array(seq)
+    start = time.time()
+    di.Array(seq)
+    return time.time() - start
+
 def data_frame(fname, nrow=1000000):
     data = test.data_frame(fname)
     n = nrow // data.nrow
@@ -121,8 +147,12 @@ def list_of_dicts_sort():
     data.sort(year=-1, make=1, model=1)
     return time.time() - start
 
-is_benchmark = lambda x: x.startswith(("data_frame_", "list_of_dicts_"))
-benchmarks = sys.argv[1:] or list(filter(is_benchmark, dir()))
+is_benchmark = lambda x: x.startswith(("array_", "data_frame_", "list_of_dicts_"))
+benchmarks = list(filter(is_benchmark, dir()))
+if sys.argv[1:]:
+    # If arguments given, limit to matching benchmarks.
+    f = lambda x: any(y in x for y in sys.argv[1:])
+    benchmarks = list(filter(f, benchmarks))
 for i, benchmark in enumerate(benchmarks):
     width = max(map(len, benchmarks))
     padding = "." * (width + 1 - len(benchmark))

@@ -20,39 +20,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import dataiter as di
 import numpy as np
-
-from dataiter import util
 
 
 class TestUtil:
 
     def test_generate_colnames(self):
-        colnames = util.generate_colnames(1000)
+        colnames = di.util.generate_colnames(1000)
         assert len(colnames) == 1000
         assert len(set(colnames)) == 1000
 
-    def test_is_missing(self):
-        assert util.is_missing(None)
-        assert util.is_missing(np.nan)
-        assert util.is_missing("")
-        assert util.is_missing(np.datetime64("NaT"))
-
     def test_length(self):
-        assert util.length(1) == 1
-        assert util.length([1]) == 1
-        assert util.length([1, 2]) == 2
+        assert di.util.length(1) == 1
+        assert di.util.length([1]) == 1
+        assert di.util.length([1, 2]) == 2
 
     def test_np_to_string(self):
-        assert util.np_to_string(np.bool(True)) == "True"
-        assert util.np_to_string(np.int(1)) == "1"
-        assert util.np_to_string(np.float(1/3)) == "0.333333"
-        assert util.np_to_string(np.str("a")) == "a"
-        assert util.np_to_string(np.datetime64("2020-01-01")) == "2020-01-01"
+        assert di.util.np_to_string(np.bool(True)) == "True"
+        assert di.util.np_to_string(np.int(1)) == "1"
+        assert di.util.np_to_string(np.float(1/3)) == "0.333333"
+        assert di.util.np_to_string(np.str("a")) == '"a"'
+        assert di.util.np_to_string(np.str("a"), quote=True) == '"a"'
+        assert di.util.np_to_string(np.str("a"), quote=False) == "a"
+        assert di.util.np_to_string(np.datetime64("2020-01-01")) == '"2020-01-01"'
 
     def test_unique_keys(self):
-        assert util.unique_keys([1, 2, 3]) == [1, 2, 3]
-        assert util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]
+        assert di.util.unique_keys([1, 2, 3]) == [1, 2, 3]
+        assert di.util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]
 
     def test_unique_types(self):
-        assert util.unique_types([1, 2, 3.3, None]) == set((int, float))
+        assert di.util.unique_types([1, 2, 3.3, np.nan, None]) == set((int, float))

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import dataiter
+import dataiter as di
 import itertools
 import numpy as np
 import string
@@ -29,43 +29,30 @@ import string
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 
-def is_missing(value):
-    if value in [None, np.nan]:
-        return True
-    if (isinstance(value, float) and
-        np.isnan(value)):
-        return True
-    if (isinstance(value, str) and
-        not value):
-        return True
-    if (hasattr(value, "dtype") and
-        np.issubdtype(value.dtype, np.datetime64) and
-        np.isnat(value)):
-        return True
-    return False
-
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
-def np_to_string(value):
-    if np.isscalar(value):
-        value = np.array(value)
+def np_to_string(value, quote=True):
+    str_ = format_quoted if quote else str
     return np.array2string(
-        value,
-        max_line_width=dataiter.PRINT_MAX_WIDTH,
-        precision=dataiter.PRINT_FLOAT_PRECISION,
+        np.array(value),
+        max_line_width=di.PRINT_MAX_WIDTH,
+        precision=di.PRINT_FLOAT_PRECISION,
         formatter={
-            "datetime": str,
-            "numpystr": str,
-            "str": str,
+            "datetime": str_,
+            "numpystr": str_,
+            "str": str_,
         },
     )
+
+def format_quoted(value):
+    return '"{}"'.format(str(value).replace('"', r'\"'))
 
 def unique_keys(keys):
     return list(dict.fromkeys(keys))
 
 def unique_types(seq):
-    return set(type(x) for x in seq if not is_missing(x))
+    return set(x.__class__ for x in set(seq) if not x in set((np.nan, None)))
 
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...
