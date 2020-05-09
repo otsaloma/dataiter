@@ -421,7 +421,8 @@ class DataFrame(dict):
                 batch_rows[i] += " ".join(row[:batch_column_count])
                 del row[:batch_column_count]
             rows_to_print.extend(batch_rows)
-        rows_to_print.append(f"... {self.nrow} rows total")
+        if max_rows < self.nrow:
+            rows_to_print.append(f"... {self.nrow} rows total")
         return "\n".join(rows_to_print)
 
     @deco.new_from_generator

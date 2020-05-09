@@ -332,7 +332,10 @@ class ListOfDicts(list):
 
     def to_string(self, max_items=None):
         max_items = max_items or dataiter.PRINT_MAX_ITEMS
-        return self.head(max_items).to_json() + f" ... {len(self)} items total"
+        string = self.head(max_items).to_json()
+        if max_items < len(self):
+            string += f" ... {len(self)} items total"
+        return string
 
     @deco.new_from_generator
     def unique(self, *keys):
