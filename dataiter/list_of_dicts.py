@@ -75,13 +75,13 @@ class ListOfDicts(list):
     def __rmul__(self, other):
         return self.__mul__(other)
 
-    def __str__(self):
-        return self.to_string()
-
     def __setitem__(self, index, value):
         if not isinstance(value, AttributeDict):
             value = AttributeDict(value)
         return super().__setitem__(index, value)
+
+    def __str__(self):
+        return self.to_string()
 
     @deco.new_from_generator
     def aggregate(self, **key_function_pairs):
