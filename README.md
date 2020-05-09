@@ -33,7 +33,7 @@ usage examples.
 
 ### Quick Start Example: `DataFrame`
 
-```python
+```
 >>> import dataiter as di
 >>> data = di.DataFrame.read_csv("data/vehicles.csv")
 >>> data.filter(data.make == "Saab").sort(year=1).head(3)
@@ -56,7 +56,7 @@ usage examples.
 
 ### Quick Start Example: `ListOfDicts`
 
-```python
+```
 >>> import dataiter as di
 >>> data = di.ListOfDicts.read_json("data/vehicles.json")
 >>> data.filter(make="Saab").sort(year=1).head(1)
