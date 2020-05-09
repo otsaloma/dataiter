@@ -410,14 +410,16 @@ class DataFrame(dict):
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
+        row_numbers = [x.pop(0) for x in rows]
         while rows[0]:
             batch_column_count = 0
             for i in range(len(rows[0])):
                 text = " ".join(rows[0][:(i+1)])
                 if len(text) <= max_width:
                     batch_column_count = i + 1
-            batch_rows = [""] * len(rows)
+            batch_rows = row_numbers[:]
             for i, row in enumerate(rows):
+                batch_rows[i] += " "
                 batch_rows[i] += " ".join(row[:batch_column_count])
                 del row[:batch_column_count]
             rows_to_print.extend(batch_rows)
