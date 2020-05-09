@@ -402,11 +402,14 @@ class DataFrame(dict):
         rows.append([""] + [str(x.dtype) for x in self.columns])
         for i in range(min(self.nrow, max_rows)):
             rows.append([str(i)] + [util.np_to_string(x[i], quote=False) for x in self.columns])
+        separators = []
         for i in range(len(rows[0])):
             width = max(len(x[i]) for x in rows)
             for row in rows:
                 padding = width - len(row[i])
                 row[i] = " " * padding + row[i]
+            separators.append("-" * width if i > 0 else " " * width)
+        rows.insert(2, separators)
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
@@ -422,7 +425,9 @@ class DataFrame(dict):
                 batch_rows[i] += " "
                 batch_rows[i] += " ".join(row[:batch_column_count])
                 del row[:batch_column_count]
+            rows_to_print.append("")
             rows_to_print.extend(batch_rows)
+        rows_to_print.append("")
         if max_rows < self.nrow:
             rows_to_print.append(f"... {self.nrow} rows total")
         return "\n".join(rows_to_print)
