@@ -69,8 +69,14 @@ class ListOfDicts(list):
         for i in range(other):
             yield from self
 
+    def __repr__(self):
+        return self.to_string()
+
     def __rmul__(self, other):
         return self.__mul__(other)
+
+    def __str__(self):
+        return self.to_string()
 
     def __setitem__(self, index, value):
         if not isinstance(value, AttributeDict):
@@ -322,6 +328,7 @@ class ListOfDicts(list):
         return DataFrame(**self._to_columns())
 
     def to_json(self, **kwargs):
+        kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
         kwargs.setdefault("indent", 2)
         return json.dumps(self, **kwargs)
@@ -376,6 +383,7 @@ class ListOfDicts(list):
                 writer.writerow(item)
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
+        kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
         kwargs.setdefault("indent", 2)
         os.makedirs(os.path.dirname(fname), exist_ok=True)
