@@ -62,7 +62,7 @@ class DataFrame(dict):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        nrow = max(map(util.length, self.values()))
+        nrow = max(map(util.length, self.values()), default=0)
         for key, value in self.items():
             if (isinstance(value, DataFrameColumn) and
                 value.nrow == nrow): continue
@@ -141,6 +141,7 @@ class DataFrame(dict):
                 yield colname, column.copy()
 
     def _check_dimensions(self):
+        if not self: return
         nrows = [x.nrow for x in self.columns]
         if len(set(nrows)) == 1: return
         raise ValueError(f"Bad dimensions: {nrows!r}")

@@ -62,6 +62,13 @@ class TestDataFrame:
         assert data.b.tolist() == [1, 1, 1]
         assert data.c.tolist() == [1, 1, 1]
 
+    def test___init___empty(self):
+        data = DataFrame()
+        assert data.nrow == 0
+        assert data.ncol == 0
+        assert not data.columns
+        assert not data.colnames
+
     def test___init___given_data_frame_column(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
         assert data.a.tolist() == [1, 2, 3]
