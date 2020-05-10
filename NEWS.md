@@ -1,3 +1,41 @@
+2019-05-10: dataiter 0.8
+========================
+
+* `DataFrame`: New class
+* `ListOfDicts.__add__`: New method to support the `+` operator
+* `ListOfDicts.__init__`: Rename, reorder arguments
+* `ListOfDicts.__mul__`: New method to support the `*` operator
+* `ListOfDicts.__repr__`: New method, format as JSON
+* `ListOfDicts.__rmul__`: New method to support the `*` operator
+* `ListOfDicts.__setitem__`: New method, coerce to `AttributeDict`
+* `ListOfDicts.__str__`: New method, format as JSON
+* `ListOfDicts.aggregate`: Speed up
+* `ListOfDicts.anti_join`: New method
+* `ListOfDicts.append`: New method
+* `ListOfDicts.clear`: New method
+* `ListOfDicts.extend`: New method
+* `ListOfDicts.full_join`: New method
+* `ListOfDicts.head`: New method
+* `ListOfDicts.inner_join`: New method
+* `ListOfDicts.insert`: New method
+* `ListOfDicts.join`: Removed in favor of specific join types
+* `ListOfDicts.left_join`: New method
+* `ListOfDicts.pluck`: Add argument "default" to handle missing keys
+* `ListOfDicts.print_`: New method
+* `ListOfDicts.read_csv`: Add explicit arguments
+* `ListOfDicts.read_json`: Relay arguments to `json.loads`
+* `ListOfDicts.read_pickle`: New method
+* `ListOfDicts.reverse`: New method
+* `ListOfDicts.sample`: New method
+* `ListOfDicts.semi_join`: New method
+* `ListOfDicts.sort`: Change arguments to support sort direction better
+* `ListOfDicts.tail`: New method
+* `ListOfDicts.to_data_frame`: New method
+* `ListOfDicts.to_pandas`: New method
+* `ListOfDicts.unique`: Return unique by all keys if none given
+* `ListOfDicts.write_csv`: Add explicit arguments
+* `ListOfDicts.write_pickle`: New method
+
 2019-12-03: dataiter 0.7
 ========================
 
