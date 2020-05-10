@@ -45,6 +45,9 @@ class Vector(np.ndarray):
         object = [object] if np.isscalar(object) else object
         return cls._std_to_np(object, dtype).view(cls)
 
+    def __init__(self, object, dtype=None):
+        self._check_dimensions()
+
     def __array_wrap__(self, array, context=None):
         # Avoid returning 0-dimensional arrays.
         # https://github.com/numpy/numpy/issues/7403
@@ -74,6 +77,10 @@ class Vector(np.ndarray):
     def as_string(self):
         return self.astype(str)
 
+    def _check_dimensions(self):
+        if self.ndim == 1: return
+        raise ValueError(f"Bad dimensions: {self.ndim!r}")
+
     def equal(self, other):
         if self.is_datetime and other.is_datetime:
             return self._equal_missing(other, np.isnat)
@@ -93,7 +100,7 @@ class Vector(np.ndarray):
     def head(self, n=None):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
-        n = min(self.size, n)
+        n = min(self.length, n)
         return self[np.arange(n)].copy()
 
     @property
@@ -132,6 +139,11 @@ class Vector(np.ndarray):
     @property
     def is_string(self):
         return np.issubdtype(self.dtype, np.character)
+
+    @property
+    def length(self):
+        self._check_dimensions()
+        return self.size
 
     @property
     def missing_dtype(self):
@@ -173,8 +185,8 @@ class Vector(np.ndarray):
     def sample(self, n=None):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
-        n = min(self.size, n)
-        indices = np.random.choice(self.size, n, replace=False)
+        n = min(self.length, n)
+        indices = np.random.choice(self.length, n, replace=False)
         return self[np.sort(indices)].copy()
 
     def sort(self, dir=1):
@@ -218,8 +230,8 @@ class Vector(np.ndarray):
     def tail(self, n=None):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
-        n = min(self.size, n)
-        return self[np.arange(self.size - n, self.size)].copy()
+        n = min(self.length, n)
+        return self[np.arange(self.length - n, self.length)].copy()
 
     def tolist(self):
         return np.where(self.is_missing(), None, self).tolist()

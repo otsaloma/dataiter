@@ -36,23 +36,18 @@ class DataFrameColumn(Vector):
     def __new__(cls, object, dtype=None, nrow=None):
         object = [object] if np.isscalar(object) else object
         column = Vector(object, dtype)
-        if nrow is not None and nrow != column.size:
-            if column.size != 1 or nrow < 1:
+        if nrow is not None and nrow != column.length:
+            if column.length != 1 or nrow < 1:
                 raise ValueError("Bad arguments for broadcast")
             column = column.repeat(nrow)
         return column.view(cls)
 
     def __init__(self, object, dtype=None, nrow=None):
-        self._check_dimensions()
-
-    def _check_dimensions(self):
-        if self.ndim == 1: return
-        raise ValueError(f"Bad dimensions: {self.ndim!r}")
+        super().__init__(object, dtype)
 
     @property
     def nrow(self):
-        self._check_dimensions()
-        return self.size
+        return self.length
 
 
 class DataFrame(dict):
