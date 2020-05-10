@@ -178,7 +178,9 @@ class ListOfDicts(list):
         return self
 
     def head(self, n=None):
-        n = n or dataiter.DEFAULT_PEEK_ITEMS
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ITEMS
+        n = min(len(self), n)
         return self._new(self[:n])
 
     @deco.obsoletes
@@ -279,7 +281,9 @@ class ListOfDicts(list):
 
     @deco.new_from_generator
     def sample(self, n=None):
-        n = min(len(self), n or dataiter.DEFAULT_PEEK_ITEMS)
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ITEMS
+        n = min(len(self), n)
         for i in sorted(random.sample(range(len(self)), n)):
             yield self[i]
 
@@ -317,7 +321,9 @@ class ListOfDicts(list):
         return self._new(sorted(self, key=sort_key))
 
     def tail(self, n=None):
-        n = n or dataiter.DEFAULT_PEEK_ITEMS
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ITEMS
+        n = min(len(self), n)
         return self._new(self[-n:])
 
     def _to_columns(self):
@@ -338,7 +344,8 @@ class ListOfDicts(list):
         return pd.DataFrame(self._to_columns())
 
     def to_string(self, max_items=None):
-        max_items = max_items or dataiter.PRINT_MAX_ITEMS
+        if max_items is None:
+            max_items = dataiter.PRINT_MAX_ITEMS
         string = self.head(max_items).to_json()
         if max_items < len(self):
             string += f" ... {len(self)} items total"

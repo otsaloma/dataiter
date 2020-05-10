@@ -209,7 +209,9 @@ class DataFrame(dict):
         return self
 
     def head(self, n=None):
-        n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ROWS
+        n = min(self.nrow, n)
         return self.slice(np.arange(n))
 
     @deco.new_from_generator
@@ -334,7 +336,9 @@ class DataFrame(dict):
             yield to, self[fm].copy()
 
     def sample(self, n=None):
-        n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ROWS
+        n = min(self.nrow, n)
         rows = np.random.choice(self.nrow, n, replace=False)
         return self.slice(np.sort(rows))
 
@@ -377,7 +381,9 @@ class DataFrame(dict):
             yield colname, column[indices].copy()
 
     def tail(self, n=None):
-        n = min(self.nrow, n or dataiter.DEFAULT_PEEK_ROWS)
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ROWS
+        n = min(self.nrow, n)
         return self.slice(np.arange(self.nrow - n, self.nrow))
 
     def to_json(self, **kwargs):
@@ -396,24 +402,35 @@ class DataFrame(dict):
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     def to_string(self, max_rows=None, max_width=None):
-        max_rows = max_rows or dataiter.PRINT_MAX_ROWS
-        max_width = max_width or dataiter.PRINT_MAX_WIDTH
-        rows = [[""] + self.colnames]
-        rows.append([""] + [str(x.dtype) for x in self.columns])
+        # TODO: Rewrite this mess. Move formatting logic to Array?
+        max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
+        max_width = dataiter.PRINT_MAX_WIDTH if max_width is None else max_width
+        rows = [self.colnames]
+        rows.append([str(x.dtype) for x in self.columns])
+        format = lambda x: util.np_to_string(x, quote=False)
         for i in range(min(self.nrow, max_rows)):
-            rows.append([str(i)] + [util.np_to_string(x[i], quote=False) for x in self.columns])
+            rows.append([format(x[i]) for x in self.columns])
+        ndec = lambda x: len(x.split(".")[-1]) if "." in x else 0
+        for i in range(len(rows[0])):
+            # Use the same amount of decimals for all rows.
+            if not self.columns[i].is_float: continue
+            max_dec = max((ndec(x[i]) for x in rows[2:]), default=0)
+            for row in rows[2:]:
+                row[i] += "0" * (max_dec - ndec(row[i]))
         separators = []
         for i in range(len(rows[0])):
             width = max(len(x[i]) for x in rows)
             for row in rows:
                 padding = width - len(row[i])
                 row[i] = " " * padding + row[i]
-            separators.append("-" * width if i > 0 else " " * width)
+            separators.append("-" * width)
         rows.insert(2, separators)
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
-        row_numbers = [x.pop(0) for x in rows]
+        num = "{{:{}d}}".format(len(str(len(rows) - 4)))
+        row_numbers = [num.format(i) for i in range(len(rows) - 3)]
+        row_numbers = [" " * max(map(len, row_numbers), default=0)] * 3 + row_numbers
         while rows[0]:
             batch_column_count = 0
             for i in range(len(rows[0])):

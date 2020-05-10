@@ -363,6 +363,11 @@ class TestDataFrame:
         assert data.shape[0] == orig.nrow
         assert data.shape[1] == orig.ncol
 
+    def test_to_string(self):
+        data = test.data_frame("vehicles.csv")
+        assert data.head(0).to_string()
+        assert data.head(5).to_string()
+
     def test_unique(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.unique("make", "year", "displ")

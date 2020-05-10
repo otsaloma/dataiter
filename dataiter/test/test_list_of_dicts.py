@@ -370,6 +370,11 @@ class TestListOfDicts:
         assert data.shape[0] == len(orig)
         assert data.shape[1] == len(orig[0])
 
+    def test_to_string(self):
+        data = test.list_of_dicts("downloads.json")
+        assert data.head(0).to_string()
+        assert data.head(5).to_string()
+
     def test_unique(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.unique("date")
