@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import dataiter as di
+import dataiter
 import itertools
 import numpy as np
 import string
@@ -36,8 +36,8 @@ def np_to_string(value, quote=True):
     str_ = format_quoted if quote else str
     return np.array2string(
         np.array(value),
-        max_line_width=di.PRINT_MAX_WIDTH,
-        precision=di.PRINT_FLOAT_PRECISION,
+        max_line_width=dataiter.PRINT_MAX_WIDTH,
+        precision=dataiter.PRINT_FLOAT_PRECISION,
         formatter={
             "datetime": str_,
             "numpystr": str_,
