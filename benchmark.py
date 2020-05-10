@@ -8,32 +8,6 @@ import time
 
 from dataiter import test
 
-def array_fast_list():
-    seq = list(range(1000000))
-    start = time.time()
-    di.Array.fast(seq, int)
-    return time.time() - start
-
-def array_fast_np():
-    seq = list(range(1000000))
-    seq = np.array(seq)
-    start = time.time()
-    di.Array.fast(seq, int)
-    return time.time() - start
-
-def array_new_list():
-    seq = list(range(1000000))
-    start = time.time()
-    di.Array(seq)
-    return time.time() - start
-
-def array_new_np():
-    seq = list(range(1000000))
-    seq = np.array(seq)
-    start = time.time()
-    di.Array(seq)
-    return time.time() - start
-
 def data_frame(fname, nrow=1000000):
     data = test.data_frame(fname)
     n = nrow // data.nrow
@@ -147,7 +121,33 @@ def list_of_dicts_sort():
     data.sort(year=-1, make=1, model=1)
     return time.time() - start
 
-is_benchmark = lambda x: x.startswith(("array_", "data_frame_", "list_of_dicts_"))
+def vector_fast_list():
+    seq = list(range(1000000))
+    start = time.time()
+    di.Vector.fast(seq, int)
+    return time.time() - start
+
+def vector_fast_np():
+    seq = list(range(1000000))
+    seq = np.array(seq)
+    start = time.time()
+    di.Vector.fast(seq, int)
+    return time.time() - start
+
+def vector_new_list():
+    seq = list(range(1000000))
+    start = time.time()
+    di.Vector(seq)
+    return time.time() - start
+
+def vector_new_np():
+    seq = list(range(1000000))
+    seq = np.array(seq)
+    start = time.time()
+    di.Vector(seq)
+    return time.time() - start
+
+is_benchmark = lambda x: x.startswith(("data_frame_", "list_of_dicts_", "vector_"))
 benchmarks = list(filter(is_benchmark, dir()))
 if sys.argv[1:]:
     # If arguments given, limit to matching benchmarks.

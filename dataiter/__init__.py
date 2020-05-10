@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from dataiter.array import Array # noqa
+from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa

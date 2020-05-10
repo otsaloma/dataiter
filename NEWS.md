@@ -1,12 +1,13 @@
 2019-05-xx: dataiter 0.9
 ========================
 
-* `Array.head`: New method
-* `Array.range`: New method
-* `Array.sample`: New method
-* `Array.sort`: New method
-* `Array.tail`: New method
-* `Array.unique`: New method
+* `Array`: Rename to `Vector`
+* `Vector.head`: New method
+* `Vector.range`: New method
+* `Vector.sample`: New method
+* `Vector.sort`: New method
+* `Vector.tail`: New method
+* `Vector.unique`: New method
 
 2019-05-10: dataiter 0.8
 ========================

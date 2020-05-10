@@ -26,16 +26,16 @@ import json
 import numpy as np
 import pickle
 
-from dataiter import Array
 from dataiter import deco
 from dataiter import util
+from dataiter import Vector
 
 
-class DataFrameColumn(Array):
+class DataFrameColumn(Vector):
 
     def __new__(cls, object, dtype=None, nrow=None):
         object = [object] if np.isscalar(object) else object
-        column = Array(object, dtype)
+        column = Vector(object, dtype)
         if nrow is not None and nrow != column.size:
             if column.size != 1 or nrow < 1:
                 raise ValueError("Bad arguments for broadcast")
@@ -262,22 +262,22 @@ class DataFrame(dict):
         return self[next(iter(self))].nrow
 
     def _parse_cols_from_boolean(self, cols):
-        cols = Array.fast(cols, bool)
+        cols = Vector.fast(cols, bool)
         if len(cols) != self.ncol:
             raise ValueError("Bad length for boolean cols")
-        return Array.fast(np.nonzero(cols)[0], int)
+        return Vector.fast(np.nonzero(cols)[0], int)
 
     def _parse_cols_from_integer(self, cols):
-        return Array.fast(cols, int)
+        return Vector.fast(cols, int)
 
     def _parse_rows_from_boolean(self, rows):
-        rows = Array.fast(rows, bool)
+        rows = Vector.fast(rows, bool)
         if len(rows) != self.nrow:
             raise ValueError("Bad length for boolean rows")
-        return Array.fast(np.nonzero(rows)[0], int)
+        return Vector.fast(np.nonzero(rows)[0], int)
 
     def _parse_rows_from_integer(self, rows):
-        return Array.fast(rows, int)
+        return Vector.fast(rows, int)
 
     def print_(self, max_rows=None, max_width=None):
         print(self.to_string(max_rows, max_width))
@@ -293,7 +293,7 @@ class DataFrame(dict):
                 if colname not in ref: continue
                 value = ref[colname].missing_value
                 dtype = ref[colname].missing_dtype
-                return Array.fast([value], dtype).repeat(data.nrow)
+                return Vector.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
             parts = [get_part(x, colname) for x in data_frames]
             total = DataFrameColumn(np.concatenate(parts))
@@ -403,7 +403,7 @@ class DataFrame(dict):
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     def to_string(self, max_rows=None, max_width=None):
-        # TODO: Rewrite this mess. Move formatting logic to Array?
+        # TODO: Rewrite this mess. Move formatting logic to Vector?
         max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
         max_width = dataiter.PRINT_MAX_WIDTH if max_width is None else max_width
         rows = [self.colnames]

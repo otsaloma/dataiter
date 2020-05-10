@@ -32,7 +32,7 @@ TYPE_CONVERSIONS = {
 }
 
 
-class Array(np.ndarray):
+class Vector(np.ndarray):
 
     def __new__(cls, object, dtype=None):
         # If given a NumPy array, we can do a fast initialization.
@@ -41,7 +41,7 @@ class Array(np.ndarray):
             return np.array(object, dtype).view(cls)
         # If given a Python list, or something else generic, we need
         # to convert certain types and special values. This is really
-        # slow, see Array.fast for faster initialization.
+        # slow, see Vector.fast for faster initialization.
         object = [object] if np.isscalar(object) else object
         return cls._std_to_np(object, dtype).view(cls)
 
@@ -158,7 +158,7 @@ class Array(np.ndarray):
             return np.nan
         if self.is_string:
             return ""
-        # Note that using None, e.g. for a boolean array,
+        # Note that using None, e.g. for a boolean vector,
         # might not work directly as it requires upcasting to object.
         return None
 
@@ -178,14 +178,14 @@ class Array(np.ndarray):
         return self[np.sort(indices)].copy()
 
     def sort(self, dir=1):
-        array = self.copy()
-        np.ndarray.sort(array)
+        vector = self.copy()
+        np.ndarray.sort(vector)
         if dir < 0:
             # Flip order, but keep missing last.
-            na = array.is_missing()
+            na = vector.is_missing()
             ok = np.nonzero(~na)
-            np.put(array, ok, array[ok][::-1])
-        return array
+            np.put(vector, ok, vector[ok][::-1])
+        return vector
 
     @classmethod
     def _std_to_np(cls, seq, dtype=None):
