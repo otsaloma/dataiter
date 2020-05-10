@@ -209,7 +209,7 @@ class TestListOfDicts:
         assert sum("holiday" in x for x in data) == 60
         assert sum(data.pluck("downloads", 0)) == 541335745
 
-    def head(self):
+    def test_head(self):
         data = test.list_of_dicts("downloads.json")
         assert data.head(10) == data[:10]
 
