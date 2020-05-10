@@ -37,7 +37,7 @@ from dataiter import util
 
 class ListOfDicts(list):
 
-    def __init__(self, dicts, group_keys=None, predecessor=None, as_is=False):
+    def __init__(self, dicts=(), group_keys=None, predecessor=None, as_is=False):
         super().__init__(dicts if as_is else map(AttributeDict, dicts))
         self._group_keys = tuple(group_keys or ())
         self._predecessor = predecessor

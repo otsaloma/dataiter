@@ -38,6 +38,10 @@ class TestListOfDicts:
         assert data[0] == item
         assert data[0] is not item
 
+    def test___init___empty(self):
+        data = ListOfDicts()
+        assert len(data) == 0
+
     def test___add__(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig + orig
