@@ -169,6 +169,10 @@ class TestArray:
         assert a.is_integer
         assert a.equal(b)
 
+    def test_head(self):
+        a = Array([1, 2, 3, 4, 5])
+        assert a.head(3).tolist() == [1, 2, 3]
+
     def test_is_boolean(self):
         assert Array([True]).is_boolean
         assert not Array([1]).is_boolean
@@ -205,6 +209,26 @@ class TestArray:
         assert not Array([DATETIME]).is_integer
         assert not Array([self]).is_integer
 
+    def test_is_missing_date(self):
+        a = Array([DATE, DATE, NaT])
+        assert a.is_missing().tolist() == [False, False, True]
+
+    def test_is_missing_datetime(self):
+        a = Array([DATETIME, DATETIME, NaT])
+        assert a.is_missing().tolist() == [False, False, True]
+
+    def test_is_missing_float(self):
+        a = Array([1, 2, None])
+        assert a.is_missing().tolist() == [False, False, True]
+
+    def test_is_missing_object(self):
+        a = Array([self, self, None])
+        assert a.is_missing().tolist() == [False, False, True]
+
+    def test_is_missing_string(self):
+        a = Array(["a", "b", ""])
+        assert a.is_missing().tolist() == [False, False, True]
+
     def test_is_number(self):
         assert not Array([True]).is_number
         assert Array([1]).is_number
@@ -232,6 +256,10 @@ class TestArray:
         assert not Array([DATETIME]).is_string
         assert not Array([self]).is_string
 
+    def test_range(self):
+        a = Array([1, 2, 3, 4, 5, None])
+        assert a.range().tolist() == [1, 5]
+
     def test_rank(self):
         a = Array([1, 2, 1, 2, 3])
         assert a.rank().tolist() == [0, 1, 0, 1, 2]
@@ -239,6 +267,20 @@ class TestArray:
     def test_rank_missing(self):
         a = Array([np.nan, 1, 2, 3, np.nan])
         assert a.rank().tolist() == [3, 0, 1, 2, 4]
+
+    def test_sample(self):
+        a = Array([1, 2, 3, 4, 5])
+        assert np.all(np.isin(a.sample(3), a))
+        assert a.sample(5).tolist() == [1, 2, 3, 4, 5]
+
+    def test_sort(self):
+        a = Array([1, 2, 3, 4, 5, None])
+        assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5, None]
+        assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1, None]
+
+    def test_tail(self):
+        a = Array([1, 2, 3, 4, 5])
+        assert a.tail(3).tolist() == [3, 4, 5]
 
     def test_tolist_boolean(self):
         a = [True, False]
@@ -274,3 +316,7 @@ class TestArray:
         a = ["a", "b", ""]
         b = ["a", "b", None]
         assert Array(a).tolist() == b
+
+    def test_unique(self):
+        a = Array([1, 2, None, 1, 2, 3])
+        assert a.unique().tolist() == [1, 2, None, 3]

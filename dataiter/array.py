@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import dataiter
 import datetime
 import numpy as np
 
@@ -89,6 +90,12 @@ class Array(np.ndarray):
     def fast(cls, object, dtype=None):
         return np.array(object, dtype).view(cls)
 
+    def head(self, n=None):
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ELEMENTS
+        n = min(self.size, n)
+        return self[np.arange(n)].copy()
+
     @property
     def is_boolean(self):
         return np.issubdtype(self.dtype, np.bool_)
@@ -104,6 +111,15 @@ class Array(np.ndarray):
     @property
     def is_integer(self):
         return np.issubdtype(self.dtype, np.integer)
+
+    def is_missing(self):
+        if self.is_datetime:
+            return np.isnat(self)
+        if self.is_float:
+            return np.isnan(self)
+        if self.is_string:
+            return self == ""
+        return np.isin(self, [None])
 
     @property
     def is_number(self):
@@ -146,9 +162,30 @@ class Array(np.ndarray):
         # might not work directly as it requires upcasting to object.
         return None
 
+    def range(self):
+        rng = [np.nanmin(self), np.nanmax(self)]
+        return self.__class__(rng, self.dtype)
+
     def rank(self):
         rank = np.unique(self, return_inverse=True)[1]
         return rank.view(self.__class__)
+
+    def sample(self, n=None):
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ELEMENTS
+        n = min(self.size, n)
+        indices = np.random.choice(self.size, n, replace=False)
+        return self[np.sort(indices)].copy()
+
+    def sort(self, dir=1):
+        array = self.copy()
+        np.ndarray.sort(array)
+        if dir < 0:
+            # Flip order, but keep missing last.
+            na = array.is_missing()
+            ok = np.nonzero(~na)
+            np.put(array, ok, array[ok][::-1])
+        return array
 
     @classmethod
     def _std_to_np(cls, seq, dtype=None):
@@ -178,13 +215,15 @@ class Array(np.ndarray):
         # Usually causes dtype to be object!
         return None
 
+    def tail(self, n=None):
+        if n is None:
+            n = dataiter.DEFAULT_PEEK_ELEMENTS
+        n = min(self.size, n)
+        return self[np.arange(self.size - n, self.size)].copy()
+
     def tolist(self):
-        def replace(isna):
-            return np.where(isna(self), None, self).tolist()
-        if self.is_datetime:
-            return replace(np.isnat)
-        if self.is_float:
-            return replace(np.isnan)
-        if self.is_string:
-            return replace(lambda x: x == "")
-        return super().tolist()
+        return np.where(self.is_missing(), None, self).tolist()
+
+    def unique(self):
+        u, indices = np.unique(self, return_index=True)
+        return self[indices.sort()].copy()

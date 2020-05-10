@@ -29,6 +29,7 @@ from dataiter.list_of_dicts import ObsoleteListOfDicts # noqa
 
 __version__ = "0.8"
 
+DEFAULT_PEEK_ELEMENTS = 10
 DEFAULT_PEEK_ITEMS = 3
 DEFAULT_PEEK_ROWS = 10
 PRINT_FLOAT_PRECISION = 6
