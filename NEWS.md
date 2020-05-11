@@ -1,4 +1,4 @@
-2019-05-xx: dataiter 0.9
+2019-05-11: dataiter 0.9
 ========================
 
 * `Array`: Rename to `Vector`
