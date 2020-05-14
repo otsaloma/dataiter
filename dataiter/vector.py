@@ -82,14 +82,12 @@ class Vector(np.ndarray):
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
     def equal(self, other):
-        if self.is_datetime and other.is_datetime:
-            return self._equal_missing(other, np.isnat)
-        if self.is_float and other.is_float:
-            return self._equal_missing(other, np.isnan)
-        return np.array_equal(self, other)
-
-    def _equal_missing(self, other, isna):
-        ii, jj = map(isna, (self, other))
+        if not (isinstance(other, Vector) and
+                self.length == other.length and
+                str(self.missing_value) == str(other.missing_value)):
+            return False
+        ii = self.is_missing()
+        jj = other.is_missing()
         return (np.all(ii == jj) and
                 np.all(self[~ii] == other[~jj]))
 
