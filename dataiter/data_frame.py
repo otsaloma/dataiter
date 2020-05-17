@@ -398,48 +398,35 @@ class DataFrame(dict):
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     def to_string(self, max_rows=None, max_width=None):
-        # TODO: Rewrite this mess. Move formatting logic to Vector?
+        if not self: return ""
         max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
         max_width = dataiter.PRINT_MAX_WIDTH if max_width is None else max_width
-        rows = [self.colnames]
-        rows.append([str(x.dtype) for x in self.columns])
-        format = lambda x: util.np_to_string(x, quote=False)
-        for i in range(min(self.nrow, max_rows)):
-            rows.append([format(x[i]) for x in self.columns])
-        ndec = lambda x: len(x.split(".")[-1]) if "." in x else 0
-        for i in range(len(rows[0])):
-            # Use the same amount of decimals for all rows.
-            if not self.columns[i].is_float: continue
-            max_dec = max((ndec(x[i]) for x in rows[2:]), default=0)
-            for row in rows[2:]:
-                row[i] += "0" * (max_dec - ndec(row[i]))
-        separators = []
-        for i in range(len(rows[0])):
-            width = max(len(x[i]) for x in rows)
-            for row in rows:
-                padding = width - len(row[i])
-                row[i] = " " * padding + row[i]
-            separators.append("-" * width)
-        rows.insert(2, separators)
+        n = min(self.nrow, max_rows)
+        columns = {colname: util.pad(
+            [colname] +
+            [str(column.dtype)] +
+            column[:n].to_strings(quote=False, pad=True).tolist()
+        ) for colname, column in self.items()}
+        for column in columns.values():
+            column.insert(2, "-" * len(column[0]))
+        row_numbers = [str(i) for i in range(n)]
+        row_numbers = util.pad(["", "", ""] + row_numbers)
+        columns = {**{"_": row_numbers}, **columns}
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
-        num = "{{:{}d}}".format(len(str(len(rows) - 4)))
-        row_numbers = [num.format(i) for i in range(len(rows) - 3)]
-        row_numbers = [" " * max(map(len, row_numbers), default=0)] * 3 + row_numbers
-        while rows[0]:
-            batch_column_count = 0
-            for i in range(len(rows[0])):
-                text = " ".join(rows[0][:(i+1)])
-                if len(text) <= max_width:
-                    batch_column_count = i + 1
-            batch_rows = row_numbers[:]
-            for i, row in enumerate(rows):
-                batch_rows[i] += " "
-                batch_rows[i] += " ".join(row[:batch_column_count])
-                del row[:batch_column_count]
+        while columns:
+            first = next(iter(columns.keys()))
+            batch_rows = columns.pop(first)[:]
+            for colname, column in list(columns.items()):
+                width = len(batch_rows[0] + column[0]) + 1
+                if width > max_width: break
+                for i in range(len(column)):
+                    batch_rows[i] += " "
+                    batch_rows[i] += column[i]
+                del columns[colname]
             rows_to_print.append("")
-            rows_to_print.extend(batch_rows)
+            rows_to_print += batch_rows
         rows_to_print.append("")
         if max_rows < self.nrow:
             rows_to_print.append(f"... {self.nrow} rows total")

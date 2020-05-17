@@ -27,6 +27,10 @@ from dataiter import util
 
 class TestUtil:
 
+    def test_count_decimals(self):
+        assert util.count_decimals(1.1) == 1
+        assert util.count_decimals(1.11) == 2
+
     def test_generate_colnames(self):
         colnames = util.generate_colnames(1000)
         assert len(colnames) == 1000
@@ -37,14 +41,13 @@ class TestUtil:
         assert util.length([1]) == 1
         assert util.length([1, 2]) == 2
 
-    def test_np_to_string(self):
-        assert util.np_to_string(np.bool(True)) == "True"
-        assert util.np_to_string(np.int(1)) == "1"
-        assert util.np_to_string(np.float(1/3)) == "0.333333"
-        assert util.np_to_string(np.str("a")) == '"a"'
-        assert util.np_to_string(np.str("a"), quote=True) == '"a"'
-        assert util.np_to_string(np.str("a"), quote=False) == "a"
-        assert util.np_to_string(np.datetime64("2020-01-01")) == '"2020-01-01"'
+    def test_pad(self):
+        assert util.pad(["a", "aa", "aaa"], align="right") == ["  a", " aa", "aaa"]
+        assert util.pad(["a", "aa", "aaa"], align="left")  == ["a  ", "aa ", "aaa"]
+
+    def test_quote(self):
+        assert util.quote("hello") == '"hello"'
+        assert util.quote('"hello"') == '"\\"hello\\""'
 
     def test_unique_keys(self):
         assert util.unique_keys([1, 2, 3]) == [1, 2, 3]

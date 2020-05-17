@@ -282,6 +282,41 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5])
         assert a.tail(3).tolist() == [3, 4, 5]
 
+    def test_to_string(self):
+        assert Vector(np.arange(1)).to_string()
+        assert Vector(np.arange(1000)).to_string()
+        assert Vector(np.arange(1000000)).to_string()
+
+    def test_to_strings_boolean(self):
+        a = [True, False]
+        b = ["True", "False"]
+        assert Vector(a).to_strings().tolist() == b
+
+    def test_to_strings_date(self):
+        a = [DATE, DATE]
+        b = [DATE.isoformat(), DATE.isoformat()]
+        assert Vector(a).to_strings().tolist() == b
+
+    def test_to_strings_datetime(self):
+        a = [DATETIME, DATETIME]
+        b = [DATETIME.isoformat(), DATETIME.isoformat()]
+        assert Vector(a).to_strings().tolist() == b
+
+    def test_to_strings_float(self):
+        a = [0.1, 1/3]
+        b = ["0.100000", "0.333333"]
+        assert Vector(a).to_strings().tolist() == b
+
+    def test_to_strings_integer(self):
+        a = [1, 2]
+        b = ["1", "2"]
+        assert Vector(a).to_strings().tolist() == b
+
+    def test_to_strings_string(self):
+        a = ["a", "b"]
+        b = ['"a"', '"b"']
+        assert Vector(a).to_strings().tolist() == b
+
     def test_tolist_boolean(self):
         a = [True, False]
         b = [True, False]

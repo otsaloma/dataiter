@@ -1,3 +1,11 @@
+2019-xx-yy: dataiter 0.10
+=========================
+
+* `Vector.__repr__`: Add custom conversion to string for display
+* `Vector.__str__`: Add custom conversion to string for display
+* `Vector.to_string`: Add custom conversion to string for display
+* `Vector.to_strings`: Add custom conversion to string for display
+
 2019-05-11: dataiter 0.9
 ========================
 

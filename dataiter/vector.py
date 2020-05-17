@@ -54,10 +54,10 @@ class Vector(np.ndarray):
         return array[()] if array.shape == () else array
 
     def __repr__(self):
-        return self.__str__()
+        return self.to_string()
 
     def __str__(self):
-        return util.np_to_string(self)
+        return self.to_string()
 
     def as_boolean(self):
         return self.astype(bool)
@@ -230,6 +230,45 @@ class Vector(np.ndarray):
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
         return self[np.arange(self.length - n, self.length)].copy()
+
+    def to_string(self, max_elements=None):
+        def add_string_element(string, rows):
+            if len(rows[-1]) <= 1:
+                return rows[-1].append(string)
+            row = " ".join(rows[-1] + [string])
+            if len(row) < dataiter.PRINT_MAX_WIDTH:
+                return rows[-1].append(string)
+            # Start a new row with padding and string.
+            return rows.append([" ", string])
+        if max_elements is None:
+            max_elements = dataiter.PRINT_MAX_ELEMENTS
+        rows = [["["]]
+        for string in self[:max_elements].to_strings(pad=True):
+            add_string_element(string, rows)
+        if max_elements < self.length:
+            add_string_element("...", rows)
+        add_string_element("]", rows)
+        return "\n".join(" ".join(x) for x in rows)
+
+    def to_strings(self, quote=True, pad=False):
+        if self.length == 0:
+            return self.__class__.fast([], str)
+        identity = lambda x, *args, **kwargs: x
+        quote = util.quote if quote else identity
+        pad = util.pad if pad else identity
+        if self.is_float:
+            precision = max(map(util.count_decimals, self))
+            precision = min(precision, dataiter.PRINT_FLOAT_PRECISION)
+            strings = [f"{{:.{precision}f}}".format(x) for x in self]
+            return self.__class__.fast(pad(strings), str)
+        if self.is_integer:
+            strings = ["{:d}".format(x) for x in self]
+            return self.__class__.fast(pad(strings), str)
+        if self.is_string:
+            strings = [quote(x) for x in self]
+            return self.__class__.fast(pad(strings), str)
+        strings = [str(x) for x in self]
+        return self.__class__.fast(pad(strings), str)
 
     def tolist(self):
         return np.where(self.is_missing(), None, self).tolist()

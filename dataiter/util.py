@@ -20,11 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import dataiter
 import itertools
 import numpy as np
 import string
 
+from dataiter import deco
+
+
+def count_decimals(value):
+    value = str(float(value)).rstrip("0")
+    if "." not in value: return 0
+    return len(value.split(".")[-1])
 
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
@@ -32,20 +38,16 @@ def generate_colnames(n):
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
-def np_to_string(value, quote=True):
-    str_ = format_quoted if quote else str
-    return np.array2string(
-        np.array(value),
-        max_line_width=dataiter.PRINT_MAX_WIDTH,
-        precision=dataiter.PRINT_FLOAT_PRECISION,
-        formatter={
-            "datetime": str_,
-            "numpystr": str_,
-            "str": str_,
-        },
-    )
+@deco.listify
+def pad(strings, align="right"):
+    width = max(len(x) for x in strings)
+    for value in strings:
+        padding = " " * (width - len(value))
+        yield (padding + value
+               if align == "right"
+               else value + padding)
 
-def format_quoted(value):
+def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))
 
 def unique_keys(keys):
