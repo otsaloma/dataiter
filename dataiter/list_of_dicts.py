@@ -290,11 +290,8 @@ class ListOfDicts(list):
     @deco.obsoletes
     @deco.new_from_generator
     def select(self, *keys):
-        keys = set(keys)
         for item in self:
-            for key in set(item) - keys:
-                del item[key]
-            yield item
+            yield {x: item[x] for x in keys if x in item}
 
     @deco.new_from_generator
     def semi_join(self, other, *by):

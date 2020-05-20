@@ -320,6 +320,12 @@ class TestListOfDicts:
         assert all("downloads" in x for x in data)
         assert isinstance(orig, ObsoleteListOfDicts)
 
+    def test_select_order(self):
+        data1 = test.list_of_dicts("downloads.json").select("date", "downloads")
+        data2 = test.list_of_dicts("downloads.json").select("downloads", "date")
+        assert list(data1[0].keys()) == ["date", "downloads"]
+        assert list(data2[0].keys()) == ["downloads", "date"]
+
     def test_semi_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
