@@ -22,6 +22,6 @@ handle, fname = tempfile.mkstemp()
 atexit.register(os.remove, fname)
 data = data_frame("vehicles.csv")
 cProfile.run("prof(data)", fname)
-pstats.Stats(fname) \
-      .sort_stats(pstats.SortKey.CUMULATIVE) \
-      .print_stats(25)
+stats = pstats.Stats(fname)
+stats.sort_stats(pstats.SortKey.CUMULATIVE)
+stats.print_stats(25)

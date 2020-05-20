@@ -109,9 +109,10 @@ class TestDataFrame:
         # Avoid RuntimeWarning: All-NaN slice encountered.
         data = data.filter(~np.isnan(data.cyl))
         data = data.filter(~np.isnan(data.displ))
-        stat = data.group_by("make", "model") \
-                   .aggregate(cyl=lambda x: np.median(x.cyl),
-                              displ=lambda x: np.mean(x.displ))
+        stat = (data
+                .group_by("make", "model")
+                .aggregate(cyl=lambda x: np.median(x.cyl),
+                           displ=lambda x: np.mean(x.displ)))
 
         assert stat.nrow == 3240
         assert stat.ncol == 4
