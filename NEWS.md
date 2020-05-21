@@ -1,6 +1,8 @@
 2020-xx-yy: dataiter 0.10
 =========================
 
+* `DataFrame.aggregate`: Fix `UnicodeEncodeError` with string columns
+* `DataFrame.unique`: Fix `UnicodeEncodeError` with string columns
 * `ListOfDicts.select`: Return keys in requested order
 * `Vector.__repr__`: Add custom conversion to string for display
 * `Vector.__str__`: Add custom conversion to string for display

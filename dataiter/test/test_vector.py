@@ -102,6 +102,16 @@ class TestVector:
         assert a.is_boolean
         assert np.all(a == [True, False])
 
+    def test_as_bytes(self):
+        a = Vector([0, 1]).as_bytes()
+        assert a.is_bytes
+        assert np.all(a == [b'0', b'1'])
+
+    def test_as_bytes_string(self):
+        a = Vector(["a", "ö"]).as_bytes()
+        assert a.is_bytes
+        assert np.all(a == [b'a', b'\xc3\xb6'])
+
     def test_as_date(self):
         a = Vector([DATETIME]).as_date()
         assert a.is_datetime
@@ -174,6 +184,7 @@ class TestVector:
         assert a.head(3).tolist() == [1, 2, 3]
 
     def test_is_boolean(self):
+        assert not Vector([b'1']).is_boolean
         assert Vector([True]).is_boolean
         assert not Vector([1]).is_boolean
         assert not Vector([1.1]).is_boolean
@@ -182,7 +193,18 @@ class TestVector:
         assert not Vector([DATETIME]).is_boolean
         assert not Vector([self]).is_boolean
 
+    def test_is_bytes(self):
+        assert Vector([b'1']).is_bytes
+        assert not Vector([True]).is_bytes
+        assert not Vector([1]).is_bytes
+        assert not Vector([1.1]).is_bytes
+        assert not Vector(["a"]).is_bytes
+        assert not Vector([DATE]).is_bytes
+        assert not Vector([DATETIME]).is_bytes
+        assert not Vector([self]).is_bytes
+
     def test_is_datetime(self):
+        assert not Vector([b'1']).is_datetime
         assert not Vector([True]).is_datetime
         assert not Vector([1]).is_datetime
         assert not Vector([1.1]).is_datetime
@@ -192,6 +214,7 @@ class TestVector:
         assert not Vector([self]).is_datetime
 
     def test_is_float(self):
+        assert not Vector([b'1']).is_float
         assert not Vector([True]).is_float
         assert not Vector([1]).is_float
         assert Vector([1.1]).is_float
@@ -201,6 +224,7 @@ class TestVector:
         assert not Vector([self]).is_float
 
     def test_is_integer(self):
+        assert not Vector([b'1']).is_integer
         assert not Vector([True]).is_integer
         assert Vector([1]).is_integer
         assert not Vector([1.1]).is_integer
@@ -230,6 +254,7 @@ class TestVector:
         assert a.is_missing().tolist() == [False, False, True]
 
     def test_is_number(self):
+        assert not Vector([b'1']).is_number
         assert not Vector([True]).is_number
         assert Vector([1]).is_number
         assert Vector([1.1]).is_number
@@ -239,6 +264,7 @@ class TestVector:
         assert not Vector([self]).is_number
 
     def test_is_object(self):
+        assert not Vector([b'1']).is_object
         assert not Vector([True]).is_object
         assert not Vector([1]).is_object
         assert not Vector([1.1]).is_object
@@ -248,6 +274,7 @@ class TestVector:
         assert Vector([self]).is_object
 
     def test_is_string(self):
+        assert not Vector([b'1']).is_string
         assert not Vector([True]).is_string
         assert not Vector([1]).is_string
         assert not Vector([1.1]).is_string

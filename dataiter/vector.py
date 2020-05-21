@@ -62,6 +62,12 @@ class Vector(np.ndarray):
     def as_boolean(self):
         return self.astype(bool)
 
+    def as_bytes(self):
+        if self.is_string:
+            array = np.char.encode(self, "UTF-8")
+            return array.view(self.__class__)
+        return self.astype(bytes)
+
     def as_date(self):
         return self.astype(np.dtype("datetime64[D]"))
 
@@ -106,6 +112,10 @@ class Vector(np.ndarray):
         return np.issubdtype(self.dtype, np.bool_)
 
     @property
+    def is_bytes(self):
+        return np.issubdtype(self.dtype, np.bytes_)
+
+    @property
     def is_datetime(self):
         return np.issubdtype(self.dtype, np.datetime64)
 
@@ -136,7 +146,7 @@ class Vector(np.ndarray):
 
     @property
     def is_string(self):
-        return np.issubdtype(self.dtype, np.character)
+        return np.issubdtype(self.dtype, np.unicode_)
 
     @property
     def length(self):

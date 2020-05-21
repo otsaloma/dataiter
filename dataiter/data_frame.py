@@ -106,7 +106,7 @@ class DataFrame(dict):
         return self.to_string()
 
     def aggregate(self, **colname_function_pairs):
-        by = np.column_stack([self[x].astype(bytes) for x in self._group_colnames])
+        by = np.column_stack([self[x].as_bytes() for x in self._group_colnames])
         values, ui, inv = np.unique(by, return_index=True, return_inverse=True, axis=0)
         stat = self.slice(ui).select(*self._group_colnames)
         slice_indices = {}
@@ -435,7 +435,7 @@ class DataFrame(dict):
     @deco.new_from_generator
     def unique(self, *colnames):
         colnames = colnames or self.colnames
-        by = np.column_stack([self[x].astype(bytes) for x in colnames])
+        by = np.column_stack([self[x].as_bytes() for x in colnames])
         values, indices = np.unique(by, return_index=True, axis=0)
         for colname, column in self.items():
             yield colname, column[indices].copy()
