@@ -27,7 +27,7 @@ from dataiter.list_of_dicts import ListOfDicts # noqa
 from dataiter.list_of_dicts import ObsoleteError # noqa
 from dataiter.list_of_dicts import ObsoleteListOfDicts # noqa
 
-__version__ = "0.9"
+__version__ = "0.10"
 
 DEFAULT_PEEK_ELEMENTS = 10
 DEFAULT_PEEK_ITEMS = 3

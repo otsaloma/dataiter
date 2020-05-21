@@ -1,4 +1,4 @@
-2020-xx-yy: dataiter 0.10
+2020-05-21: dataiter 0.10
 =========================
 
 * `DataFrame.aggregate`: Fix `UnicodeEncodeError` with string columns
