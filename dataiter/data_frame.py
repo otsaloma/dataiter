@@ -411,13 +411,13 @@ class DataFrame(dict):
             column.insert(2, "-" * len(column[0]))
         row_numbers = [str(i) for i in range(n)]
         row_numbers = util.pad(["", "", ""] + row_numbers)
-        columns = {**{"_": row_numbers}, **columns}
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
         while columns:
             first = next(iter(columns.keys()))
-            batch_rows = columns.pop(first)[:]
+            batch_rows = [" ".join(x) for x in zip(
+                row_numbers, columns.pop(first))]
             for colname, column in list(columns.items()):
                 width = len(batch_rows[0] + column[0]) + 1
                 if width > max_width: break
