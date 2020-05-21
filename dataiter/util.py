@@ -20,17 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import dataiter
 import itertools
+import math
 import numpy as np
 import string
 
 from dataiter import deco
 
 
-def count_decimals(value):
-    value = str(float(value)).rstrip("0")
-    if "." not in value: return 0
-    return len(value.split(".")[-1])
+def count_digits(value):
+    if np.isnan(value): return 0, 0
+    if math.isinf(value): return 0, 0
+    parts = str(float(value)).split(".")
+    n = len(parts[0].lstrip("0"))
+    m = len(parts[1].rstrip("0"))
+    return n, m
+
+def format_floats(seq):
+    precision = dataiter.PRINT_FLOAT_PRECISION
+    if any(0 < x < 1/10**precision for x in seq):
+        # Format tiny numbers in scientific notation.
+        f = np.format_float_scientific
+        return [f(x, precision=precision, trim="-") for x in seq]
+    if any(x > 10**16 - 1 for x in seq):
+        # Format huge numbers in scientific notation.
+        f = np.format_float_scientific
+        return [f(x, precision=precision, trim="-") for x in seq]
+    # Format like largest by significant digits.
+    n = max(count_digits(x)[0] for x in seq)
+    precision = max(0, precision - n)
+    return [f"{{:.{precision}f}}".format(x) for x in seq]
 
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))

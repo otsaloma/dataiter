@@ -257,9 +257,7 @@ class Vector(np.ndarray):
         quote = util.quote if quote else identity
         pad = util.pad if pad else identity
         if self.is_float:
-            precision = max(map(util.count_decimals, self))
-            precision = min(precision, dataiter.PRINT_FLOAT_PRECISION)
-            strings = [f"{{:.{precision}f}}".format(x) for x in self]
+            strings = util.format_floats(self)
             return self.__class__.fast(pad(strings), str)
         if self.is_integer:
             strings = ["{:d}".format(x) for x in self]
