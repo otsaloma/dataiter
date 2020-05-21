@@ -69,6 +69,11 @@ class TestUtil:
         b = ["-inf", "0e+00", "inf", "nan"]
         assert util.format_floats(a) == b
 
+    def test_format_floats_integer(self):
+        a = [1.0, 2.0, 3.0, np.nan]
+        b = ["1", "2", "3", "nan"]
+        assert util.format_floats(a) == b
+
     def test_generate_colnames(self):
         colnames = util.generate_colnames(1000)
         assert len(colnames) == 1000

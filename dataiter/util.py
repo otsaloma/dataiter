@@ -48,8 +48,10 @@ def format_floats(seq):
         f = np.format_float_scientific
         return [f(x, precision=precision, trim="-") for x in seq]
     # Format like largest by significant digits.
-    n = max(count_digits(x)[0] for x in seq)
-    precision = max(0, precision - n)
+    digits = [count_digits(x) for x in seq]
+    n = max(x[0] for x in digits)
+    m = max(x[1] for x in digits)
+    precision = min(m, max(0, precision - n))
     return [f"{{:.{precision}f}}".format(x) for x in seq]
 
 def generate_colnames(n):
