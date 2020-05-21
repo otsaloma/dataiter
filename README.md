@@ -48,9 +48,9 @@ usage examples.
       cyl   displ    fuel   hwy   cty
   float64 float64    <U27 int64 int64
   ------- ------- ------- ----- -----
-0      4.      2. Regular    19    16
-1      4.      2. Regular    21    16
-2      4.      2. Regular    23    17
+0       4       2 Regular    19    16
+1       4       2 Regular    21    16
+2       4       2 Regular    23    17
 
 ```
 
