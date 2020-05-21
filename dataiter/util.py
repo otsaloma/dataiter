@@ -39,12 +39,8 @@ def count_digits(value):
 
 def format_floats(seq):
     precision = dataiter.PRINT_FLOAT_PRECISION
-    if any(0 < x < 1/10**precision for x in seq):
-        # Format tiny numbers in scientific notation.
-        f = np.format_float_scientific
-        return [f(x, precision=precision, trim="-") for x in seq]
-    if any(x > 10**16 - 1 for x in seq):
-        # Format huge numbers in scientific notation.
+    if any(0 < x < 1/10**precision or x > 10**16 - 1 for x in seq):
+        # Format tiny and huge numbers in scientific notation.
         f = np.format_float_scientific
         return [f(x, precision=precision, trim="-") for x in seq]
     # Format like largest by significant digits.
