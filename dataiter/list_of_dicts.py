@@ -291,7 +291,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def select(self, *keys):
         for item in self:
-            yield {x: item[x] for x in keys if x in item}
+            yield AttributeDict({x: item[x] for x in keys if x in item})
 
     @deco.new_from_generator
     def semi_join(self, other, *by):

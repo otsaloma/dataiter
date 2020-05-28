@@ -31,6 +31,10 @@ from dataiter import test
 
 class TestListOfDicts:
 
+    def is_list_of_dicts(self, data):
+        return (isinstance(data, ListOfDicts) and
+                all(isinstance(x, AttributeDict) for x in data))
+
     def test___init__(self):
         item = dict(a=1, b=2, c=3)
         data = ListOfDicts([item])
@@ -314,6 +318,7 @@ class TestListOfDicts:
     def test_select(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.select("date", "downloads")
+        assert self.is_list_of_dicts(data)
         assert len(data) == len(orig)
         assert all(len(x) == 2 for x in data)
         assert all("date" in x for x in data)
