@@ -1,7 +1,7 @@
 INPROGRESS: dataiter 0.11
 =========================
 
-* `DataFrame.read_csv`: Speed up by fixing type deduction
+* `Vector.__init__`: Speed up by fixing type deduction
 
 2020-05-28: dataiter 0.10.1
 ===========================
