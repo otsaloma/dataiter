@@ -48,6 +48,16 @@ def data_frame_left_join():
     data.left_join(meta, "make", "model")
     return time.time() - start
 
+def data_frame_read_csv():
+    start = time.time()
+    test.data_frame("vehicles.csv")
+    return time.time() - start
+
+def data_frame_read_json():
+    start = time.time()
+    test.data_frame("vehicles.json")
+    return time.time() - start
+
 def data_frame_rbind_000002():
     # 2 * 500,000 = 1,000,000
     data = data_frame("vehicles.csv", 500000)
@@ -113,6 +123,16 @@ def list_of_dicts_left_join():
     meta = meta.modify(random=lambda x: random.random())
     start = time.time()
     data.left_join(meta, "make", "model")
+    return time.time() - start
+
+def list_of_dicts_read_csv():
+    start = time.time()
+    test.list_of_dicts("vehicles.csv")
+    return time.time() - start
+
+def list_of_dicts_read_json():
+    start = time.time()
+    test.list_of_dicts("vehicles.json")
     return time.time() - start
 
 def list_of_dicts_sort():
