@@ -183,6 +183,8 @@ class DataFrame(dict):
 
     @classmethod
     def from_pandas(cls, data):
+        # It would be a lot faster to skip tolist here,
+        # but then we'd need to map some Pandas dtype oddities.
         return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     def full_join(self, other, *by):

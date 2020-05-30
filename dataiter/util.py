@@ -72,7 +72,7 @@ def unique_keys(keys):
     return list(dict.fromkeys(keys))
 
 def unique_types(seq):
-    return set(x.__class__ for x in set(seq) if not x in set((np.nan, None)))
+    return set(x.__class__ for x in seq) - set((None.__class__,))
 
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...
