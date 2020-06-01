@@ -1,4 +1,4 @@
-INPROGRESS: dataiter 0.11
+2020-06-02: dataiter 0.11
 =========================
 
 * `Vector.__init__`: Speed up by fixing type deduction
