@@ -178,6 +178,12 @@ class ListOfDicts(list):
         return self
 
     def head(self, n=None):
+        """
+        Return the first `n` items.
+
+        >>> data = di.ListOfDicts.read_json("data/vehicles.json")
+        >>> data.head()
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
         n = min(len(self), n)
@@ -318,6 +324,12 @@ class ListOfDicts(list):
         return self._new(sorted(self, key=sort_key))
 
     def tail(self, n=None):
+        """
+        Return the last `n` items.
+
+        >>> data = di.ListOfDicts.read_json("data/vehicles.json")
+        >>> data.tail()
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
         n = min(len(self), n)

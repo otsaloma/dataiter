@@ -207,6 +207,12 @@ class DataFrame(dict):
         return self
 
     def head(self, n=None):
+        """
+        Return the first `n` rows.
+
+        >>> data = di.DataFrame.read_csv("data/vehicles.csv")
+        >>> data.head()
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
         n = min(self.nrow, n)
@@ -379,6 +385,12 @@ class DataFrame(dict):
             yield colname, column[indices].copy()
 
     def tail(self, n=None):
+        """
+        Return the last `n` rows.
+
+        >>> data = di.DataFrame.read_csv("data/vehicles.csv")
+        >>> data.tail()
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
         n = min(self.nrow, n)

@@ -3,3 +3,4 @@ __pycache__
 build
 dataiter.egg-info
 dist
+doc/_build
