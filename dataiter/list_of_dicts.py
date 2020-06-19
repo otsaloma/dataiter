@@ -26,7 +26,6 @@ import dataiter
 import itertools
 import json
 import operator
-import os
 import pickle
 import random
 
