@@ -181,8 +181,8 @@ class ListOfDicts(list):
         """
         Return the first `n` items.
 
-        >>> data = di.ListOfDicts.read_json("data/vehicles.json")
-        >>> data.head()
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.head(3)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
@@ -327,8 +327,8 @@ class ListOfDicts(list):
         """
         Return the last `n` items.
 
-        >>> data = di.ListOfDicts.read_json("data/vehicles.json")
-        >>> data.tail()
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.tail(3)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
@@ -391,7 +391,7 @@ class ListOfDicts(list):
         # Take a superset of all keys and fill in missing as None.
         keys = util.unique_keys(list(itertools.chain(*self)))
         data = [{**dict.fromkeys(keys), **x} for x in self]
-        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        util.makedirs_for_file(fname)
         with open(fname, "w", encoding=encoding) as f:
             writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
             writer.writeheader() if header else None
@@ -402,7 +402,7 @@ class ListOfDicts(list):
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
         kwargs.setdefault("indent", 2)
-        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        util.makedirs_for_file(fname)
         with open(fname, "w", encoding=encoding) as f:
             encoder = json.JSONEncoder(**kwargs)
             for chunk in encoder.iterencode(self):
@@ -410,6 +410,7 @@ class ListOfDicts(list):
             f.write("\n")
 
     def write_pickle(self, fname):
+        util.makedirs_for_file(fname)
         with open(fname, "wb") as f:
             out = [dict(x) for x in self]
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)

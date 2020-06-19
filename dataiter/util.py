@@ -24,6 +24,7 @@ import dataiter
 import itertools
 import math
 import numpy as np
+import os
 import string
 
 from dataiter import deco
@@ -55,6 +56,11 @@ def generate_colnames(n):
 
 def length(value):
     return 1 if np.isscalar(value) else len(value)
+
+def makedirs_for_file(fname):
+    fname = os.path.abspath(fname)
+    directory = os.path.dirname(fname)
+    return os.makedirs(directory, exist_ok=True)
 
 @deco.listify
 def pad(strings, align="right"):

@@ -210,8 +210,8 @@ class DataFrame(dict):
         """
         Return the first `n` rows.
 
-        >>> data = di.DataFrame.read_csv("data/vehicles.csv")
-        >>> data.head()
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.head(5)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
@@ -388,8 +388,8 @@ class DataFrame(dict):
         """
         Return the last `n` rows.
 
-        >>> data = di.DataFrame.read_csv("data/vehicles.csv")
-        >>> data.tail()
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.tail(5)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
@@ -470,12 +470,15 @@ class DataFrame(dict):
             yield colname, column.copy()
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
-        self.to_pandas().to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
+        pddf = self.to_pandas()
+        util.makedirs_for_file(fname)
+        pddf.to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
         return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)
 
     def write_pickle(self, fname):
+        util.makedirs_for_file(fname)
         with open(fname, "wb") as f:
             out = {k: np.array(v, v.dtype) for k, v in self.items()}
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
