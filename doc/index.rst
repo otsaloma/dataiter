@@ -1,17 +1,15 @@
-``dataiter`` Documentation
-==========================
-
-TODO
-
-Contents
---------
+dataiter Documentation
+======================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: General
 
    quick-start
-   api
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 1
+   :caption: API Documentation
+
+   data-frame
+   list-of-dicts
