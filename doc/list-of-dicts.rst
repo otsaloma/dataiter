@@ -1,6 +1,6 @@
-ListOfDicts
-===========
+dataiter.ListOfDicts
+====================
 
 .. autoclass:: dataiter.ListOfDicts
-   :members: head, tail
-   :special-members:
+   :members:
+   :special-members: __init__

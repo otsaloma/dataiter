@@ -34,6 +34,9 @@ TYPE_CONVERSIONS = {
 
 class Vector(np.ndarray):
 
+    """
+    """
+
     def __new__(cls, object, dtype=None):
         # If given a NumPy array, we can do a fast initialization.
         if isinstance(object, np.ndarray):
@@ -46,6 +49,8 @@ class Vector(np.ndarray):
         return cls._std_to_np(object, dtype).view(cls)
 
     def __init__(self, object, dtype=None):
+        """
+        """
         self._check_dimensions()
 
     def __array_wrap__(self, array, context=None):
@@ -60,27 +65,41 @@ class Vector(np.ndarray):
         return self.to_string()
 
     def as_boolean(self):
+        """
+        """
         return self.astype(bool)
 
     def as_bytes(self):
+        """
+        """
         if self.is_string:
             array = np.char.encode(self, "UTF-8")
             return array.view(self.__class__)
         return self.astype(bytes)
 
     def as_date(self):
+        """
+        """
         return self.astype(np.dtype("datetime64[D]"))
 
     def as_datetime(self):
+        """
+        """
         return self.astype(np.dtype("datetime64[us]"))
 
     def as_float(self):
+        """
+        """
         return self.astype(float)
 
     def as_integer(self):
+        """
+        """
         return self.astype(int)
 
     def as_string(self):
+        """
+        """
         return self.astype(str)
 
     def _check_dimensions(self):
@@ -88,6 +107,8 @@ class Vector(np.ndarray):
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
     def equal(self, other):
+        """
+        """
         if not (isinstance(other, Vector) and
                 self.length == other.length and
                 str(self.missing_value) == str(other.missing_value)):
@@ -99,9 +120,13 @@ class Vector(np.ndarray):
 
     @classmethod
     def fast(cls, object, dtype=None):
+        """
+        """
         return np.array(object, dtype).view(cls)
 
     def head(self, n=None):
+        """
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
@@ -109,25 +134,37 @@ class Vector(np.ndarray):
 
     @property
     def is_boolean(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.bool_)
 
     @property
     def is_bytes(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.bytes_)
 
     @property
     def is_datetime(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.datetime64)
 
     @property
     def is_float(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.floating)
 
     @property
     def is_integer(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.integer)
 
     def is_missing(self):
+        """
+        """
         if self.is_datetime:
             return np.isnat(self)
         if self.is_float:
@@ -138,23 +175,33 @@ class Vector(np.ndarray):
 
     @property
     def is_number(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.number)
 
     @property
     def is_object(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.object_)
 
     @property
     def is_string(self):
+        """
+        """
         return np.issubdtype(self.dtype, np.unicode_)
 
     @property
     def length(self):
+        """
+        """
         self._check_dimensions()
         return self.size
 
     @property
     def missing_dtype(self):
+        """
+        """
         # Return corresponding dtype that can handle missing data.
         # Needed for upcasting when missing data is first introduced.
         if self.is_datetime:
@@ -169,6 +216,8 @@ class Vector(np.ndarray):
 
     @property
     def missing_value(self):
+        """
+        """
         # Return value to use to represent missing values.
         if self.is_datetime:
             return np.datetime64("NaT")
@@ -183,14 +232,20 @@ class Vector(np.ndarray):
         return None
 
     def range(self):
+        """
+        """
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
 
     def rank(self):
+        """
+        """
         rank = np.unique(self, return_inverse=True)[1]
         return rank.view(self.__class__)
 
     def sample(self, n=None):
+        """
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
@@ -198,6 +253,8 @@ class Vector(np.ndarray):
         return self[np.sort(indices)].copy()
 
     def sort(self, dir=1):
+        """
+        """
         vector = self.copy()
         np.ndarray.sort(vector)
         if dir < 0:
@@ -236,12 +293,16 @@ class Vector(np.ndarray):
         return None
 
     def tail(self, n=None):
+        """
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
         return self[np.arange(self.length - n, self.length)].copy()
 
     def to_string(self, max_elements=None):
+        """
+        """
         def add_string_element(string, rows):
             if len(rows[-1]) <= 1:
                 return rows[-1].append(string)
@@ -261,6 +322,8 @@ class Vector(np.ndarray):
         return "\n".join(" ".join(x) for x in rows)
 
     def to_strings(self, quote=True, pad=False):
+        """
+        """
         if self.length == 0:
             return self.__class__.fast([], str)
         identity = lambda x, *args, **kwargs: x
@@ -279,8 +342,12 @@ class Vector(np.ndarray):
         return self.__class__.fast(pad(strings), str)
 
     def tolist(self):
+        """
+        """
         return np.where(self.is_missing(), None, self).tolist()
 
     def unique(self):
+        """
+        """
         u, indices = np.unique(self, return_index=True)
         return self[indices.sort()].copy()

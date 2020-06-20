@@ -1,6 +1,6 @@
-DataFrame
-=========
+dataiter.DataFrame
+==================
 
 .. autoclass:: dataiter.DataFrame
-   :members: head, tail
-   :special-members:
+   :members:
+   :special-members: __init__

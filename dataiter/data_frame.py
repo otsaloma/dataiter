@@ -33,6 +33,9 @@ from dataiter import Vector
 
 class DataFrameColumn(Vector):
 
+    """
+    """
+
     def __new__(cls, object, dtype=None, nrow=None):
         object = [object] if np.isscalar(object) else object
         column = Vector(object, dtype)
@@ -43,19 +46,28 @@ class DataFrameColumn(Vector):
         return column.view(cls)
 
     def __init__(self, object, dtype=None, nrow=None):
+        """
+        """
         super().__init__(object, dtype)
 
     @property
     def nrow(self):
+        """
+        """
         return self.length
 
 
 class DataFrame(dict):
 
+    """
+    """
+
     # List of names that are actual attributes, not columns
     ATTRIBUTES = ["colnames", "_group_colnames"]
 
     def __init__(self, *args, **kwargs):
+        """
+        """
         super().__init__(*args, **kwargs)
         nrow = max(map(util.length, self.values()), default=0)
         for key, value in self.items():
@@ -106,6 +118,8 @@ class DataFrame(dict):
         return self.to_string()
 
     def aggregate(self, **colname_function_pairs):
+        """
+        """
         by = np.column_stack([self[x].as_bytes() for x in self._group_colnames])
         values, ui, inv = np.unique(by, return_index=True, return_inverse=True, axis=0)
         stat = self.slice(ui).select(*self._group_colnames)
@@ -119,6 +133,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
+        """
+        """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
         for colname, column in self.items():
@@ -126,6 +142,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def cbind(self, *others):
+        """
+        """
         found_colnames = set()
         data_frames = [self] + list(others)
         for i, data in enumerate(data_frames):
@@ -143,37 +161,53 @@ class DataFrame(dict):
 
     @property
     def colnames(self):
+        """
+        """
         return list(self)
 
     @colnames.setter
     def colnames(self, colnames):
+        """
+        """
         for fm, to in zip(list(self.keys()), colnames):
             self[to] = self.pop(fm)
 
     @property
     def columns(self):
+        """
+        """
         return list(self.values())
 
     def copy(self):
+        """
+        """
         return self.__copy__()
 
     def deepcopy(self):
+        """
+        """
         return self.__deepcopy__()
 
     @deco.new_from_generator
     def filter(self, rows):
+        """
+        """
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.take(column, rows)
 
     @deco.new_from_generator
     def filter_out(self, rows):
+        """
+        """
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.delete(column, rows)
 
     @classmethod
     def from_json(cls, string, **kwargs):
+        """
+        """
         obj = json.loads(string, **kwargs)
         if not isinstance(obj, list):
             raise TypeError("Not a list")
@@ -183,11 +217,15 @@ class DataFrame(dict):
 
     @classmethod
     def from_pandas(cls, data):
+        """
+        """
         # It would be a lot faster to skip tolist here,
         # but then we'd need to map some Pandas dtype oddities.
         return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
 
     def full_join(self, other, *by):
+        """
+        """
         other = other.modify(_id_=np.arange(other.nrow))
         a = self.left_join(other, *by)
         b = other.filter_out(np.isin(other._id_, a._id_))
@@ -203,6 +241,8 @@ class DataFrame(dict):
         return found, src
 
     def group_by(self, *colnames):
+        """
+        """
         self._group_colnames = tuple(colnames)
         return self
 
@@ -220,6 +260,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def inner_join(self, other, *by):
+        """
+        """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
         for colname, column in self.items():
@@ -230,6 +272,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def left_join(self, other, *by):
+        """
+        """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
         for colname, column in self.items():
@@ -244,6 +288,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def modify(self, **colname_value_pairs):
+        """
+        """
         for colname, column in self.items():
             yield colname, column.copy()
         for colname, value in colname_value_pairs.items():
@@ -252,6 +298,8 @@ class DataFrame(dict):
 
     @property
     def ncol(self):
+        """
+        """
         self._check_dimensions()
         return len(self)
 
@@ -260,6 +308,8 @@ class DataFrame(dict):
 
     @property
     def nrow(self):
+        """
+        """
         if not self: return 0
         self._check_dimensions()
         return self[next(iter(self))].nrow
@@ -283,10 +333,14 @@ class DataFrame(dict):
         return Vector.fast(rows, int)
 
     def print_(self, max_rows=None, max_width=None):
+        """
+        """
         print(self.to_string(max_rows, max_width))
 
     @deco.new_from_generator
     def rbind(self, *others):
+        """
+        """
         data_frames = [self] + list(others)
         colnames = util.unique_keys(itertools.chain(*data_frames))
         def get_part(data, colname):
@@ -304,6 +358,8 @@ class DataFrame(dict):
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
+        """
+        """
         import pandas as pd
         data = pd.read_csv(fname,
                            sep=sep,
@@ -317,11 +373,15 @@ class DataFrame(dict):
 
     @classmethod
     def read_json(cls, fname, encoding="utf_8", **kwargs):
+        """
+        """
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
     @classmethod
     def read_pickle(cls, fname):
+        """
+        """
         with open(fname, "rb") as f:
             return cls(pickle.load(f))
 
@@ -334,12 +394,20 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def rename(self, **to_from_pairs):
+        """
+        """
         from_to_pairs = {v: k for k, v in to_from_pairs.items()}
         for fm in self.colnames:
             to = from_to_pairs.get(fm, fm)
             yield to, self[fm].copy()
 
     def sample(self, n=None):
+        """
+        Return random `n` rows.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.sample(5)
+        """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
         n = min(self.nrow, n)
@@ -348,11 +416,15 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def select(self, *colnames):
+        """
+        """
         for colname in colnames:
             yield colname, self[colname].copy()
 
     @deco.new_from_generator
     def semi_join(self, other, *by):
+        """
+        """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
         for colname, column in self.items():
@@ -360,6 +432,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
+        """
+        """
         rows = np.arange(self.nrow) if rows is None else rows
         cols = np.arange(self.ncol) if cols is None else cols
         rows = self._parse_rows_from_integer(rows)
@@ -369,6 +443,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def sort(self, **colname_dir_pairs):
+        """
+        """
         @deco.tuplefy
         def sort_key():
             pairs = colname_dir_pairs.items()
@@ -397,9 +473,13 @@ class DataFrame(dict):
         return self.slice(np.arange(self.nrow - n, self.nrow))
 
     def to_json(self, **kwargs):
+        """
+        """
         return json.dumps(self.to_list_of_dicts(), **kwargs)
 
     def to_list_of_dicts(self):
+        """
+        """
         from dataiter import ListOfDicts
         data = [{} for i in range(self.nrow)]
         for colname in self.colnames:
@@ -408,10 +488,14 @@ class DataFrame(dict):
         return ListOfDicts(data)
 
     def to_pandas(self):
+        """
+        """
         import pandas as pd
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     def to_string(self, max_rows=None, max_width=None):
+        """
+        """
         if not self: return ""
         max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
         max_width = dataiter.PRINT_MAX_WIDTH if max_width is None else max_width
@@ -448,6 +532,8 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def unique(self, *colnames):
+        """
+        """
         colnames = colnames or self.colnames
         by = np.column_stack([self[x].as_bytes() for x in colnames])
         values, indices = np.unique(by, return_index=True, axis=0)
@@ -456,12 +542,16 @@ class DataFrame(dict):
 
     @deco.new_from_generator
     def unselect(self, *colnames):
+        """
+        """
         for colname in self.colnames:
             if colname not in colnames:
                 yield colname, self[colname].copy()
 
     @deco.new_from_generator
     def update(self, other):
+        """
+        """
         for colname, column in self.items():
             if colname in other: continue
             yield colname, column.copy()
@@ -470,14 +560,20 @@ class DataFrame(dict):
             yield colname, column.copy()
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
+        """
+        """
         pddf = self.to_pandas()
         util.makedirs_for_file(fname)
         pddf.to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
+        """
+        """
         return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)
 
     def write_pickle(self, fname):
+        """
+        """
         util.makedirs_for_file(fname)
         with open(fname, "wb") as f:
             out = {k: np.array(v, v.dtype) for k, v in self.items()}

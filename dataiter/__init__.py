@@ -39,7 +39,11 @@ PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
 
 def ncol(data):
+    """
+    """
     return data.ncol
 
 def nrow(data):
+    """
+    """
     return data.nrow

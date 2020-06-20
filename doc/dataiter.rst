@@ -1,0 +1,5 @@
+dataiter
+========
+
+.. automodule:: dataiter
+   :members:

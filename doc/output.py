@@ -23,6 +23,7 @@ def get_output(lines):
     ).splitlines()
 
 def on_autodoc_process_docstring(app, what, name, obj, options, lines):
+    print(f"Processing {name}...")
     # Intercept all ">>>" lines in docstring, run the corresponding code
     # and inject any possible output into the docstring.
     code = CODE.strip().splitlines()
