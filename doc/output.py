@@ -8,7 +8,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath("."))
 import dataiter as di
-di.PRINT_MAX_WIDTH = 64
+di.PRINT_MAX_WIDTH = 72
 """
 
 def get_output(lines):

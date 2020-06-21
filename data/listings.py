@@ -3,7 +3,7 @@
 import dataiter as di
 
 # Same as for documentation.
-di.PRINT_MAX_WIDTH = 64
+di.PRINT_MAX_WIDTH = 72
 
 def parse_price(price):
     return int(float(price.lstrip("$").replace(",", "")))
