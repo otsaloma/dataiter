@@ -23,7 +23,8 @@ copyright = '2020 Osmo Salomaa'
 author = 'Osmo Salomaa'
 
 # The full version, including alpha/beta/rc tags
-release = '0.11'
+import dataiter
+release = dataiter.__version__
 
 
 # -- General configuration ---------------------------------------------------
