@@ -8,19 +8,24 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath("."))
 import dataiter as di
+import numpy as np
 di.PRINT_MAX_WIDTH = 72
 """
 
 def get_output(lines):
-    return subprocess.check_output(
-        args=["python3", "-c", ";".join(lines)],
-        cwd=os.path.abspath(".."),
-        encoding="utf_8",
-        errors="replace",
-        universal_newlines=True,
-        text=True,
-        timeout=30,
-    ).splitlines()
+    try:
+        return subprocess.check_output(
+            args=["python3", "-c", "\n".join(lines)],
+            stderr=subprocess.STDOUT,
+            cwd=os.path.abspath(".."),
+            encoding="utf_8",
+            errors="replace",
+            universal_newlines=True,
+            text=True,
+            timeout=30,
+        ).splitlines()
+    except subprocess.CalledProcessError as e:
+        return e.output.splitlines()
 
 def on_autodoc_process_docstring(app, what, name, obj, options, lines):
     print(f"Processing {name}...")
@@ -31,9 +36,12 @@ def on_autodoc_process_docstring(app, what, name, obj, options, lines):
     for i, line in enumerate(lines):
         if not line.startswith(">>>"): continue
         line = line.lstrip("> ")
-        code.append(line)
+        # Some docstrings will, on purpose, have lines of code that raise
+        # errors. Wrap lines in try-except so that all lines will always be
+        # executed and output from only the last line will be used.
+        code.append(f"try: {line}\nexcept Exception: pass")
         if " = " in line: continue
-        blob = get_output(code[:-1] + [f"print({code[-1]})"])
+        blob = get_output(code[:-1] + [f"print({line})"])
         for j in range(len(blob)):
             # Avoid a paragraph change on blank lines.
             if not blob[j].strip():
