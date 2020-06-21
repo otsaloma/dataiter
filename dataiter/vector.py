@@ -58,6 +58,19 @@ class Vector(np.ndarray):
 
     def __init__(self, object, dtype=None):
         """
+        Return a new vector.
+
+        `object` can be any one-dimensional sequence, such as a NumPy array,
+        Python list or tuple. Creating a vector from a NumPy array will be
+        fast, from other types slower as data types and special values will be
+        converted.
+
+        `dtype` is the NumPy-compatible data type for the vector. Providing
+        `dtype` will make creating the vector faster, otherwise the appropriate
+        data type will be guessed by introspecting the elements of `object`,
+        which is potentially slow, especially for large objects.
+
+        >>> di.Vector([1, 2, 3], int)
         """
         self._check_dimensions()
 
@@ -74,11 +87,19 @@ class Vector(np.ndarray):
 
     def as_boolean(self):
         """
+        Return vector converted to boolean data type.
+
+        >>> vector = di.Vector([0, 1])
+        >>> vector.as_boolean()
         """
         return self.astype(bool)
 
     def as_bytes(self):
         """
+        Return vector converted to bytes data type.
+
+        >>> vector = di.Vector(["a", "b"])
+        >>> vector.as_bytes()
         """
         if self.is_string:
             array = np.char.encode(self, "UTF-8")
@@ -87,26 +108,46 @@ class Vector(np.ndarray):
 
     def as_date(self):
         """
+        Return vector converted to date data type.
+
+        >>> vector = di.Vector(["2020-01-01"])
+        >>> vector.as_date()
         """
         return self.astype(np.dtype("datetime64[D]"))
 
     def as_datetime(self):
         """
+        Return vector converted to datetime data type.
+
+        >>> vector = di.Vector(["2020-01-01T12:00:00"])
+        >>> vector.as_datetime()
         """
         return self.astype(np.dtype("datetime64[us]"))
 
     def as_float(self):
         """
+        Return vector converted to float data type.
+
+        >>> vector = di.Vector([1, 2, 3])
+        >>> vector.as_float()
         """
         return self.astype(float)
 
     def as_integer(self):
         """
+        Return vector converted to integer data type.
+
+        >>> vector = di.Vector([1.0, 2.0, 3.0])
+        >>> vector.as_integer()
         """
         return self.astype(int)
 
     def as_string(self):
         """
+        Return vector converted to string data type.
+
+        >>> vector = di.Vector([1, 2, 3])
+        >>> vector.as_string()
         """
         return self.astype(str)
 
@@ -116,6 +157,16 @@ class Vector(np.ndarray):
 
     def equal(self, other):
         """
+        Return whether vectors are equal.
+
+        Equality is tested with ``==``. As an exception, two missing values are
+        considered equal as well.
+
+        >>> a = di.Vector([1, 2, 3, None])
+        >>> b = di.Vector([1, 2, 3, None])
+        >>> a
+        >>> b
+        >>> a.equal(b)
         """
         if not (isinstance(other, Vector) and
                 self.length == other.length and
@@ -129,6 +180,11 @@ class Vector(np.ndarray):
     @classmethod
     def fast(cls, object, dtype=None):
         """
+        Return a new vector.
+
+        Unlike :meth:`__init__`, this will not convert special values in
+        `object`. Use this only if you know `object` doesn't contain special
+        values or if they are already of the correct type.
         """
         return np.array(object, dtype).view(cls)
 
@@ -147,35 +203,47 @@ class Vector(np.ndarray):
     @property
     def is_boolean(self):
         """
+        Return whether vector data type is boolean.
         """
         return np.issubdtype(self.dtype, np.bool_)
 
     @property
     def is_bytes(self):
         """
+        Return whether vector data type is bytes.
         """
         return np.issubdtype(self.dtype, np.bytes_)
 
     @property
     def is_datetime(self):
         """
+        Return whether vector data type is datetime.
+
+        Note that dates are datetimes as well.
         """
         return np.issubdtype(self.dtype, np.datetime64)
 
     @property
     def is_float(self):
         """
+        Return whether vector data type is float.
         """
         return np.issubdtype(self.dtype, np.floating)
 
     @property
     def is_integer(self):
         """
+        Return whether vector data type is integer.
         """
         return np.issubdtype(self.dtype, np.integer)
 
     def is_missing(self):
         """
+        Return a boolean vector indicating missing data elements.
+
+        >>> vector = di.Vector([1, 2, 3, None])
+        >>> vector
+        >>> vector.is_missing()
         """
         if self.is_datetime:
             return np.isnat(self)
@@ -188,25 +256,28 @@ class Vector(np.ndarray):
     @property
     def is_number(self):
         """
+        Return whether vector data type is number.
         """
         return np.issubdtype(self.dtype, np.number)
 
     @property
     def is_object(self):
         """
+        Return whether vector data type is object.
         """
         return np.issubdtype(self.dtype, np.object_)
 
     @property
     def is_string(self):
         """
+        Return whether vector data type is string.
         """
         return np.issubdtype(self.dtype, np.unicode_)
 
     @property
     def length(self):
         """
-        Get the amount of elements.
+        Return the amount of elements.
 
         >>> vector = di.Vector(range(100))
         >>> vector.length
@@ -217,9 +288,18 @@ class Vector(np.ndarray):
     @property
     def missing_dtype(self):
         """
+        Return the corresponding data type that can handle missing data.
+
+        You might need this for upcasting when missing data is first introduced.
+
+        >>> vector = di.Vector([1, 2, 3])
+        >>> vector
+        >>> vector.put([2], vector.missing_value)
+        >>> vector = vector.astype(vector.missing_dtype)
+        >>> vector
+        >>> vector.put([2], vector.missing_value)
+        >>> vector
         """
-        # Return corresponding dtype that can handle missing data.
-        # Needed for upcasting when missing data is first introduced.
         if self.is_datetime:
             return self.dtype
         if self.is_float:
@@ -233,8 +313,25 @@ class Vector(np.ndarray):
     @property
     def missing_value(self):
         """
+        Return the corresponding value to use to represent missing data.
+
+        dataiter is built on top of NumPy. NumPy doesn't support a proper
+        missing value ("NA"), only two data type specific values: ``np.nan``
+        and ``np.datetime64("NaT")``. dataiter recommends the following values
+        be used and internally supports them to an extent.
+
+        ======== ========================
+        datetime ``np.datetime64("NaT")``
+        float    ``np.nan``
+        integer  ``np.nan``
+        string   ``""``
+        other    ``None``
+        ======== ========================
+
+        Note that actually using these might require upcasting the vector.
+        Integer will need to be upcast to float to contain ``np.nan``. Other,
+        such as boolean, will need to be upcast to object to contain ``None``.
         """
-        # Return value to use to represent missing values.
         if self.is_datetime:
             return np.datetime64("NaT")
         if self.is_float:
@@ -249,7 +346,7 @@ class Vector(np.ndarray):
 
     def range(self):
         """
-        Return minimum and maximum values as a two-element vector.
+        Return the minimum and maximum values as a two-element vector.
 
         >>> vector = di.Vector(range(100))
         >>> vector.range()
@@ -259,6 +356,12 @@ class Vector(np.ndarray):
 
     def rank(self):
         """
+        Return the order of elements in a sorted vector.
+
+        Note that these are not unique indices as ties result in duplicates.
+
+        >>> vector = di.Vector([1, 2, 1, 2, 3])
+        >>> vector.rank()
         """
         rank = np.unique(self, return_inverse=True)[1]
         return rank.view(self.__class__)
@@ -339,6 +442,10 @@ class Vector(np.ndarray):
 
     def to_string(self, max_elements=None):
         """
+        Return vector as a string formatted for display.
+
+        >>> vector = di.Vector([1/2, 1/3, 1/4])
+        >>> vector.to_string()
         """
         def add_string_element(string, rows):
             if len(rows[-1]) <= 1:
@@ -359,10 +466,15 @@ class Vector(np.ndarray):
         if len(rows) == 1:
             # Drop padding for single-line output.
             rows[0] = [x.strip() for x in rows[0]]
+        rows.append([f"dtype: {self.dtype}"])
         return "\n".join(" ".join(x) for x in rows)
 
     def to_strings(self, quote=True, pad=False):
         """
+        Return vector as strings formatted for display.
+
+        >>> vector = di.Vector([1/2, 1/3, 1/4])
+        >>> vector.to_strings()
         """
         if self.length == 0:
             return self.__class__.fast([], str)
@@ -383,6 +495,9 @@ class Vector(np.ndarray):
 
     def tolist(self):
         """
+        Return vector as a list with elements of matching Python builtin type.
+
+        Missing values are replaced with ``None``.
         """
         return np.where(self.is_missing(), None, self).tolist()
 
