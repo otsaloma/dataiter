@@ -18,6 +18,14 @@ clean:
 	rm -rf */.pytest_cache
 	rm -rf */*/.pytest_cache
 
+# Watch files for changes, rebuild html.
+# https://gist.github.com/senko/1154509
+doc:
+	onchange $(MAKE) -C doc html
+
+doc-open:
+	xdg-open doc/_build/html/index.html
+
 install:
 	./setup.py install --prefix=$(PREFIX)
 
@@ -54,4 +62,4 @@ test-installed:
 	cd && python3 -c "import dataiter; dataiter.DataFrame()"
 	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
 
-.PHONY: check clean install publish release test test-installed
+.PHONY: check clean doc doc-open install publish release test test-installed
