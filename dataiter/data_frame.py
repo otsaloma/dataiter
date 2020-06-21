@@ -403,7 +403,7 @@ class DataFrame(dict):
 
     def sample(self, n=None):
         """
-        Return random `n` rows.
+        Return randomly chosen `n` rows.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.sample(5)

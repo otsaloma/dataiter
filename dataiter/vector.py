@@ -35,6 +35,14 @@ TYPE_CONVERSIONS = {
 class Vector(np.ndarray):
 
     """
+    A one-dimensional array.
+
+    Vector is a subclass of NumPy ``ndarray``. Note that not all ``ndarray``
+    methods are overridden and thus by careless use of baseclass in-place
+    methods you might manage to twist the data into multi-dimensional or other
+    non-vector form, causing unexpected results.
+
+    https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html
     """
 
     def __new__(cls, object, dtype=None):
@@ -126,6 +134,10 @@ class Vector(np.ndarray):
 
     def head(self, n=None):
         """
+        Return the first `n` elements.
+
+        >>> vector = di.Vector(range(100))
+        >>> vector.head(10)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
@@ -194,6 +206,10 @@ class Vector(np.ndarray):
     @property
     def length(self):
         """
+        Get the amount of elements.
+
+        >>> vector = di.Vector(range(100))
+        >>> vector.length
         """
         self._check_dimensions()
         return self.size
@@ -233,6 +249,10 @@ class Vector(np.ndarray):
 
     def range(self):
         """
+        Return minimum and maximum values as a two-element vector.
+
+        >>> vector = di.Vector(range(100))
+        >>> vector.range()
         """
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
@@ -245,6 +265,10 @@ class Vector(np.ndarray):
 
     def sample(self, n=None):
         """
+        Return randomly chosen `n` elements.
+
+        >>> vector = di.Vector(range(100))
+        >>> vector.sample(10)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
@@ -254,6 +278,15 @@ class Vector(np.ndarray):
 
     def sort(self, dir=1):
         """
+        Return elements in sorted order.
+
+        `dir` should be ``1`` for ascending sort, ``-1`` for descending.
+
+        Missing values are sorted last, regardless of `dir`.
+
+        >>> vector = di.Vector([1, 2, 3, None])
+        >>> vector.sort(dir=1)
+        >>> vector.sort(dir=-1)
         """
         vector = self.copy()
         np.ndarray.sort(vector)
@@ -294,6 +327,10 @@ class Vector(np.ndarray):
 
     def tail(self, n=None):
         """
+        Return the last `n` elements.
+
+        >>> vector = di.Vector(range(100))
+        >>> vector.tail(10)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
@@ -319,6 +356,9 @@ class Vector(np.ndarray):
         if max_elements < self.length:
             add_string_element("...", rows)
         add_string_element("]", rows)
+        if len(rows) == 1:
+            # Drop padding for single-line output.
+            rows[0] = [x.strip() for x in rows[0]]
         return "\n".join(" ".join(x) for x in rows)
 
     def to_strings(self, quote=True, pad=False):
@@ -348,6 +388,10 @@ class Vector(np.ndarray):
 
     def unique(self):
         """
+        Return unique elements.
+
+        >>> vector = di.Vector([1, 1, 1, 2, 2, 3])
+        >>> vector.unique()
         """
         u, indices = np.unique(self, return_index=True)
         return self[indices.sort()].copy()

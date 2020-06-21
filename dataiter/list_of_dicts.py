@@ -340,7 +340,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def sample(self, n=None):
         """
-        Return random `n` items.
+        Return randomly chosen `n` items.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.sample(3)
