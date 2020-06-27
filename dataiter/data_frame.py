@@ -192,6 +192,8 @@ class DataFrame(dict):
     def filter(self, rows):
         """
         """
+        if callable(rows):
+            rows = rows(self)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.take(column, rows)
@@ -200,6 +202,8 @@ class DataFrame(dict):
     def filter_out(self, rows):
         """
         """
+        if callable(rows):
+            rows = rows(self)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.delete(column, rows)
