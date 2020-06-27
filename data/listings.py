@@ -25,3 +25,17 @@ data = (
 print(data.head())
 data.write_csv("listings.csv")
 data.write_json("listings.json")
+
+data = (
+    di.DataFrame.read_csv("orig/listings.csv")
+    .select("id",
+            "number_of_reviews",
+            "review_scores_rating")
+    .rename(reviews="number_of_reviews")
+    .rename(rating="review_scores_rating")
+    .filter(lambda x: x.reviews >= 10)
+)
+
+print(data.head())
+data.write_csv("listings-reviews.csv")
+data.write_json("listings-reviews.json")
