@@ -37,14 +37,31 @@ from dataiter import util
 class ListOfDicts(list):
 
     """
+    A class for data as a list of dicts.
+
+    Most of the data-modifying methods return **shallow** copies, that is a new
+    list of dicts that contains the same dict objects. To avoid surprises with
+    modifying the same dicts in different objects, list of dicts marks the
+    previous object "obsolete" upon returning a copy. Any attempted operations
+    on the obsolete object will raise ``ObsoleteError``. Sometimes you might
+    need to break this tracking, for that, use :meth:`deepcopy`.
     """
 
-    def __init__(self, dicts=(), group_keys=None, predecessor=None, as_is=False):
+    def __init__(self, dicts=(), as_is=False):
         """
+        Return a new list of dicts.
+
+        `dicts` is the data to hold, any kind of a sequence of dicts.
+
+        `as_is` can be set to ``True`` to not convert the dicts to
+        ``attd.AttributeDict``. This conversion can be skipped for a small
+        speed gain if you know that `dicts` are already attribute dicts. Note
+        that regular dicts will not work, the conversion needs to be done at
+        some point.
         """
         super().__init__(dicts if as_is else map(AttributeDict, dicts))
-        self._group_keys = tuple(group_keys or ())
-        self._predecessor = predecessor
+        self._group_keys = ()
+        self._predecessor = None
 
     @deco.new_from_generator
     def __add__(self, other):
@@ -56,10 +73,9 @@ class ListOfDicts(list):
         return self._new(self)
 
     def __deepcopy__(self, memo=None):
-        return self.__class__(map(copy.deepcopy, self),
-                              group_keys=self._group_keys,
-                              predecessor=None,
-                              as_is=True)
+        new = self.__class__(map(copy.deepcopy, self), as_is=True)
+        new._group_keys = self._group_keys
+        return new
 
     def __getitem__(self, index):
         # Needed so that slicing gives a ListOfDicts, not a list.
@@ -90,6 +106,18 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def aggregate(self, **key_function_pairs):
         """
+        Return group-wise calculated summaries.
+
+        Usually aggregation is preceded by grouping, which can be conveniently
+        written via method chaining as ``data.group_by(...).aggregate(...)``.
+
+        In `key_function_pairs`, `function` receives as an argument a list of
+        dicts object, a group-wise subset of all items. It can return any kind
+        of value, it will end up as-is in the output.
+
+        >>> from statistics import mean
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.group_by("hood").aggregate(n=len, price=lambda x: mean(x.pluck("price")))
         """
         by = self._group_keys
         groups = self.unique(*by).deepcopy().select(*by)
@@ -109,6 +137,14 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def anti_join(self, other, *by):
         """
+        Return items with no matches in `other`.
+
+        `by` should be a list of keys, by which to look for matching items.
+
+        >>> # All listings that don't have reviews
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> data.anti_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_ids = set(map(extract, other))
@@ -119,6 +155,11 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def append(self, item):
         """
+        Return list with `item` added to the end.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = data.append(dict.fromkeys(data[0].keys()))
+        >>> data.tail()
         """
         if not isinstance(item, AttributeDict):
             item = AttributeDict(item)
@@ -126,22 +167,33 @@ class ListOfDicts(list):
 
     def clear(self):
         """
+        Return list with all items removed.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.clear()
         """
         return self._new([])
 
     def copy(self):
         """
+        Return a shallow copy.
         """
         return self.__copy__()
 
     def deepcopy(self):
         """
+        Return a deep copy.
         """
         return self.__deepcopy__()
 
     @deco.new_from_generator
     def extend(self, other):
         """
+        Return list with items from `other` added to the end.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = data.extend([dict.fromkeys(data[0].keys())])
+        >>> data.tail()
         """
         if not isinstance(other, self.__class__):
             other = self.__class__(other)
@@ -150,6 +202,16 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def filter(self, function=None, **key_value_pairs):
         """
+        Return items that match given condition.
+
+        Filtering can be done either by `function`, which receives an
+        individual item as its argument and returns ``True`` or ``False``, or
+        by `key_value_pairs`, which are a shorthand to check against a fixed
+        value. See the example below of equivalent filtering with both ways.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.filter(lambda x: x.hood == "Manhattan" and x.guests == 2)
+        >>> data.filter(hood="Manhattan", guests=2)
         """
         if callable(function):
             for item in self:
@@ -166,6 +228,16 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def filter_out(self, function=None, **key_value_pairs):
         """
+        Return items that don't match given condition.
+
+        Filtering can be done either by `function`, which receives an
+        individual item as its argument and returns ``True`` or ``False``, or
+        by `key_value_pairs`, which are a shorthand to check against a fixed
+        value. See the example below of equivalent filtering with both ways.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.filter_out(lambda x: x.hood == "Manhattan")
+        >>> data.filter_out(hood="Manhattan")
         """
         if callable(function):
             for item in self:
@@ -182,6 +254,7 @@ class ListOfDicts(list):
     @classmethod
     def from_json(cls, string, **kwargs):
         """
+        Return a new list of dicts from JSON `string`.
         """
         obj = json.loads(string, **kwargs)
         if not isinstance(obj, list):
@@ -190,6 +263,17 @@ class ListOfDicts(list):
 
     def full_join(self, other, *by):
         """
+        Return list with matching items merged from `self` and `other`.
+
+        `full_join` keeps all items from both lists, merging matching ones. If
+        there are multiple matches, the first one will be used. For items, for
+        which matches are not found, no keys are added.
+
+        `by` should be a list of keys, by which to look for matching items.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> data.full_join(reviews, "id")
         """
         counter = itertools.count(start=1)
         other = other.deepcopy().modify(_id_=lambda x: next(counter))
@@ -201,6 +285,7 @@ class ListOfDicts(list):
 
     def group_by(self, *keys):
         """
+        Return list with `keys` set for grouped operations, such as :meth:`aggregate`.
         """
         self._group_keys = tuple(keys)
         return self
@@ -221,6 +306,16 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def inner_join(self, other, *by):
         """
+        Return list with matching items merged from `self` and `other`.
+
+        `inner_join` keeps only items found in both lists, merging matching
+        ones. If there are multiple matches, the first one will be used.
+
+        `by` should be a list of keys, by which to look for matching items.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> data.inner_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_by_id = {extract(x): x for x in reversed(other)}
@@ -233,6 +328,11 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def insert(self, index, item):
         """
+        Return list with `item` inserted at `index`.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = data.insert(0, dict.fromkeys(data[0].keys()))
+        >>> data.head()
         """
         if not isinstance(item, AttributeDict):
             item = AttributeDict(item)
@@ -245,6 +345,17 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def left_join(self, other, *by):
         """
+        Return list with matching items merged from `self` and `other`.
+
+        `left_join` keeps all items in `self`, merging matching ones from
+        `other`. If there are multiple matches, the first one will be used. For
+        items, for which matches are not found, no keys are added.
+
+        `by` should be a list of keys, by which to look for matching items.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> data.left_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_by_id = {extract(x): x for x in reversed(other)}
@@ -261,6 +372,13 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def modify(self, **key_function_pairs):
         """
+        Return list with items modified.
+
+        In `key_function_pairs`, `function` receives as an argument an
+        individual item.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.modify(price_per_guest=lambda x: x.price / x.guests)
         """
         key_function_pairs = key_function_pairs.items()
         for item in self:
@@ -272,6 +390,16 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def modify_if(self, predicate, **key_function_pairs):
         """
+        Return list with items matching `predicate` modified.
+
+        `predicate` is a function that receives an individual item as argument
+        and returns ``True`` to modify or ``False`` to not modify.
+
+        In `key_function_pairs`, `function` receives as an argument an
+        individual item.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.modify_if(lambda x: x.sqft, price_per_sqft=lambda x: x.price / x.sqft)
         """
         key_function_pairs = key_function_pairs.items()
         for item in self:
@@ -281,24 +409,38 @@ class ListOfDicts(list):
             yield item
 
     def _new(self, dicts):
-        return self.__class__(dicts,
-                              group_keys=self._group_keys,
-                              predecessor=self,
-                              as_is=True)
+        new = self.__class__(dicts, as_is=True)
+        new._group_keys = self._group_keys
+        new._predecessor = self
+        return new
 
     def pluck(self, key, default=None):
         """
+        Return a list of the values of `key` in all items.
+
+        `default` is used for items in which `key` is not found.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.pluck("id")[:10]
         """
         return [x.get(key, default) for x in self]
 
     def print_(self, max_items=None):
         """
+        Print list to ``sys.stdout``.
+
+        `print_` does the same as calling Python's builtin ``print`` function,
+        but since it's a method, you can use it at the end of a method chain
+        instead of wrapping a ``print`` call around the whole chain.
+
+        >>> di.ListOfDicts.read_json("data/listings.json").print_()
         """
         print(self.to_string(max_items))
 
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         """
+        Return a new list from CSV file `fname`.
         """
         with open(fname, "r", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
@@ -309,6 +451,9 @@ class ListOfDicts(list):
     @classmethod
     def read_json(cls, fname, encoding="utf_8", **kwargs):
         """
+        Return a new list from JSON file `fname`.
+
+        `kwargs` are passed to :meth:`from_json`.
         """
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
@@ -316,6 +461,7 @@ class ListOfDicts(list):
     @classmethod
     def read_pickle(cls, fname):
         """
+        Return a new list from Pickle file `fname`.
         """
         with open(fname, "rb") as f:
             return cls(pickle.load(f))
@@ -324,16 +470,20 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def rename(self, **to_from_pairs):
         """
+        Return items with keys renamed.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.rename(listing_id="id")
         """
-        to_from_pairs = to_from_pairs.items()
+        renames = {v: k for k, v in to_from_pairs.items()}
         for item in self:
-            for to, fm in to_from_pairs:
-                item[to] = item.pop(fm)
-            yield item
+            keys = [renames.get(x, x) for x in item.keys()]
+            yield AttributeDict(zip(keys, item.values()))
 
     @deco.new_from_generator
     def reverse(self):
         """
+        Return items in reverse order.
         """
         yield from reversed(self)
 
@@ -355,6 +505,10 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def select(self, *keys):
         """
+        Return items, keeping only given `keys`.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.select("id", "hood", "zipcode")
         """
         for item in self:
             yield AttributeDict({x: item[x] for x in keys if x in item})
@@ -362,6 +516,14 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def semi_join(self, other, *by):
         """
+        Return items with matches in `other`.
+
+        `by` should be a list of keys, by which to look for matching items.
+
+        >>> # All listings that have reviews
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> data.semi_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_ids = set(map(extract, other))
@@ -371,6 +533,13 @@ class ListOfDicts(list):
 
     def sort(self, **key_dir_pairs):
         """
+        Return items in sorted order.
+
+        `key_dir_pairs` defines the sort order by key. `dir` should be ``1``
+        for ascending sort, ``-1`` for descending.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.sort(hood=1, zipcode=1)
         """
         key_dir_pairs = key_dir_pairs.items()
         for key, dir in key_dir_pairs:
@@ -404,12 +573,22 @@ class ListOfDicts(list):
 
     def to_data_frame(self):
         """
+        Return list converted to a :class:`dataiter.DataFrame`.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.to_data_frame()
         """
         from dataiter import DataFrame
         return DataFrame(**self._to_columns())
 
     def to_json(self, **kwargs):
         """
+        Return list converted to a JSON string.
+
+        `kwargs` are passed to ``json.dumps``.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.to_json()[:100]
         """
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
@@ -418,12 +597,20 @@ class ListOfDicts(list):
 
     def to_pandas(self):
         """
+        Return list converted to a ``pandas.DataFrame``.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.to_pandas()
         """
         import pandas as pd
         return pd.DataFrame(self._to_columns())
 
     def to_string(self, max_items=None):
         """
+        Return list as a string formatted for display.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.to_string()
         """
         if max_items is None:
             max_items = dataiter.PRINT_MAX_ITEMS
@@ -435,6 +622,10 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def unique(self, *keys):
         """
+        Return unique items by `keys`.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.unique("hood")
         """
         if not self: return
         if not keys:
@@ -454,6 +645,10 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def unselect(self, *keys):
         """
+        Return items, dropping given `keys`.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.unselect("guests", "sqft", "price")
         """
         for item in self:
             for key in keys:
@@ -463,6 +658,7 @@ class ListOfDicts(list):
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         """
+        Write list to CSV file `fname`.
         """
         if not self:
             raise ValueError("Cannot write empty CSV file")
@@ -478,6 +674,9 @@ class ListOfDicts(list):
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
         """
+        Write list to JSON file `fname`.
+
+        `kwargs` are passed to ``json.JSONEncoder``.
         """
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
@@ -491,6 +690,7 @@ class ListOfDicts(list):
 
     def write_pickle(self, fname):
         """
+        Write list to Pickle file `fname`.
         """
         util.makedirs_for_file(fname)
         with open(fname, "wb") as f:

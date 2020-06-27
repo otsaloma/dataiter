@@ -9,6 +9,8 @@ import sys
 sys.path.insert(0, os.path.abspath("."))
 import dataiter as di
 import numpy as np
+di.PRINT_MAX_ITEMS = 3
+di.PRINT_MAX_ROWS = 10
 di.PRINT_MAX_WIDTH = 72
 """
 
@@ -36,11 +38,13 @@ def on_autodoc_process_docstring(app, what, name, obj, options, lines):
     for i, line in enumerate(lines):
         if not line.startswith(">>>"): continue
         line = line.lstrip("> ")
+        if line.startswith("#"): continue
         # Some docstrings will, on purpose, have lines of code that raise
         # errors. Wrap lines in try-except so that all lines will always be
         # executed and output from only the last line will be used.
         code.append(f"try: {line}\nexcept Exception: pass")
         if " = " in line: continue
+        if line.startswith(("from ", "import ")): continue
         blob = get_output(code[:-1] + [f"print({line})"])
         for j in range(len(blob)):
             # Avoid a paragraph change on blank lines.
