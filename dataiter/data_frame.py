@@ -34,6 +34,10 @@ from dataiter import Vector
 class DataFrameColumn(Vector):
 
     """
+    A column in a data frame.
+
+    DataFrameColumn is a subclass of :class:`Vector`. See the vector
+    documentation for relevant properties and methods.
     """
 
     def __new__(cls, object, dtype=None, nrow=None):
@@ -47,12 +51,25 @@ class DataFrameColumn(Vector):
 
     def __init__(self, object, dtype=None, nrow=None):
         """
+        Return a new data frame column.
+
+        `dtype` is the NumPy-compatible data type for the vector. Providing
+        `dtype` will make creating the vector faster, otherwise the appropriate
+        data type will be guessed by introspecting the elements of `object`,
+        which is potentially slow, especially for large objects.
+
+        If provided, `nrow` is the row count to produce, i.e. the length to
+        which `object` will be broadcast.
+
+        >>> di.DataFrameColumn([1, 2, 3], int)
+        >>> di.DataFrameColumn([1], int, nrow=10)
         """
         super().__init__(object, dtype)
 
     @property
     def nrow(self):
         """
+        Return the amount of rows.
         """
         return self.length
 
@@ -60,6 +77,14 @@ class DataFrameColumn(Vector):
 class DataFrame(dict):
 
     """
+    A class for tabular data.
+
+    DataFrame is a subclass of ``dict``, with columns being
+    :class:`DataFrameColumn`, which are :class:`Vector`, which are NumPy
+    ``ndarray``. This means that basic ``dict`` methods, such as ``items()``,
+    ``keys()`` and ``values()`` can be used iterate over and manage the data as
+    a whole and NumPy functions and array methods can be used for fast
+    vectorized computations on the data.
     """
 
     # List of names that are actual attributes, not columns
@@ -67,6 +92,11 @@ class DataFrame(dict):
 
     def __init__(self, *args, **kwargs):
         """
+        Return a new data frame.
+
+        `args` and `kwargs` are like for ``dict``.
+
+        https://docs.python.org/3/library/stdtypes.html#dict
         """
         super().__init__(*args, **kwargs)
         nrow = max(map(util.length, self.values()), default=0)
@@ -119,6 +149,17 @@ class DataFrame(dict):
 
     def aggregate(self, **colname_function_pairs):
         """
+        Return group-wise calculated summaries.
+
+        Usually aggregation is preceded by grouping, which can be conveniently
+        written via method chaining as ``data.group_by(...).aggregate(...)``.
+
+        In `colname_function_pairs`, `function` receives as an argument a data
+        frame object, a group-wise subset of all rows. It should return a
+        scalar value.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.group_by("hood").aggregate(n=di.nrow, price=lambda x: np.nanmean(x.price))
         """
         by = np.column_stack([self[x].as_bytes() for x in self._group_colnames])
         values, ui, inv = np.unique(by, return_index=True, return_inverse=True, axis=0)
@@ -134,6 +175,15 @@ class DataFrame(dict):
     @deco.new_from_generator
     def anti_join(self, other, *by):
         """
+        Return rows with no matches in `other`.
+
+        `by` should be a list of column names, by which to look for matching
+        rows.
+
+        >>> # All listings that don't have reviews
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data.anti_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -143,6 +193,10 @@ class DataFrame(dict):
     @deco.new_from_generator
     def cbind(self, *others):
         """
+        Return data frame with columns from `others` added.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.cbind(di.DataFrame(x=1))
         """
         found_colnames = set()
         data_frames = [self] + list(others)
@@ -162,35 +216,52 @@ class DataFrame(dict):
     @property
     def colnames(self):
         """
+        Get or set column names as a list.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.head()
+        >>> data.colnames
+        >>> data.colnames = ["a", "b", "c", "d", "e", "f"]
+        >>> data.head()
         """
         return list(self)
 
     @colnames.setter
     def colnames(self, colnames):
-        """
-        """
         for fm, to in zip(list(self.keys()), colnames):
             self[to] = self.pop(fm)
 
     @property
     def columns(self):
         """
+        Return columns as a list.
         """
         return list(self.values())
 
     def copy(self):
         """
+        Return a shallow copy.
         """
         return self.__copy__()
 
     def deepcopy(self):
         """
+        Return a deep copy.
         """
         return self.__deepcopy__()
 
     @deco.new_from_generator
     def filter(self, rows):
         """
+        Return rows that match given condition.
+
+        `rows` can be either a boolean vector or a function that receives the
+        data frame as argument and returns a boolean vector. See the example
+        below of equivalent filtering with both ways.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
+        >>> data.filter(lambda x: (x.hood == "Manhattan") & (x.guests == 2))
         """
         if callable(rows):
             rows = rows(self)
@@ -201,6 +272,15 @@ class DataFrame(dict):
     @deco.new_from_generator
     def filter_out(self, rows):
         """
+        Return rows that don't match given condition.
+
+        `rows` can be either a boolean vector or a function that receives the
+        data frame as argument and returns a boolean vector. See the example
+        below of equivalent filtering with both ways.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.filter_out(data.hood == "Manhattan")
+        >>> data.filter_out(lambda x: x.hood == "Manhattan")
         """
         if callable(rows):
             rows = rows(self)
@@ -211,6 +291,7 @@ class DataFrame(dict):
     @classmethod
     def from_json(cls, string, **kwargs):
         """
+        Return a new data frame from JSON `string`.
         """
         obj = json.loads(string, **kwargs)
         if not isinstance(obj, list):
@@ -222,6 +303,7 @@ class DataFrame(dict):
     @classmethod
     def from_pandas(cls, data):
         """
+        Return a new data frame from ``pandas.DataFrame`` `data`.
         """
         # It would be a lot faster to skip tolist here,
         # but then we'd need to map some Pandas dtype oddities.
@@ -229,6 +311,18 @@ class DataFrame(dict):
 
     def full_join(self, other, *by):
         """
+        Return data frame with matching rows merged from `self` and `other`.
+
+        `full_join` keeps all rows from both data frames, merging matching
+        ones. If there are multiple matches, the first one will be used. For
+        rows, for which matches are not found, missing values are added.
+
+        `by` should be a list of column names, by which to look for matching
+        rows.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data.full_join(reviews, "id")
         """
         other = other.modify(_id_=np.arange(other.nrow))
         a = self.left_join(other, *by)
@@ -246,6 +340,7 @@ class DataFrame(dict):
 
     def group_by(self, *colnames):
         """
+        Return data frame with `colnames` set for grouped operations, such as :meth:`aggregate`.
         """
         self._group_colnames = tuple(colnames)
         return self
@@ -265,6 +360,18 @@ class DataFrame(dict):
     @deco.new_from_generator
     def inner_join(self, other, *by):
         """
+        Return data frame with matching rows merged from `self` and `other`.
+
+        `inner_join` keeps only rows found in both data frames, merging
+        matching ones. If there are multiple matches, the first one will be
+        used.
+
+        `by` should be a list of column names, by which to look for matching
+        rows.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data.inner_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -277,6 +384,18 @@ class DataFrame(dict):
     @deco.new_from_generator
     def left_join(self, other, *by):
         """
+        Return data frame with matching rows merged from `self` and `other`.
+
+        `left_join` keeps all rows in `self`, merging matching ones. If there
+        are multiple matches, the first one will be used. For rows, for which
+        matches are not found, missing values are added.
+
+        `by` should be a list of column names, by which to look for matching
+        rows.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data.left_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -293,6 +412,19 @@ class DataFrame(dict):
     @deco.new_from_generator
     def modify(self, **colname_value_pairs):
         """
+        Return data frame with columns modified.
+
+        In `colname_value_pairs`, `value` can be either a vector or a function
+        that receives the data frame as argument and returns a vector. See the
+        example below of equivalent modification with both ways.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.modify(price_per_guest=data.price/data.guests)
+        >>> data.modify(price_per_guest=lambda x: x.price / x.guests)
+
+        Note that the same can often be done simpler with a plain assignment,
+        such as ``data.price_per_guest = data.price / data.guests``. `modify`
+        just allows you to do the same in a method chain context.
         """
         for colname, column in self.items():
             yield colname, column.copy()
@@ -303,6 +435,10 @@ class DataFrame(dict):
     @property
     def ncol(self):
         """
+        Return the amount of columns.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.ncol
         """
         self._check_dimensions()
         return len(self)
@@ -313,6 +449,10 @@ class DataFrame(dict):
     @property
     def nrow(self):
         """
+        Return the amount of rows.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.nrow
         """
         if not self: return 0
         self._check_dimensions()
@@ -338,12 +478,23 @@ class DataFrame(dict):
 
     def print_(self, max_rows=None, max_width=None):
         """
+        Print data frame to ``sys.stdout``.
+
+        `print_` does the same as calling Python's builtin ``print`` function,
+        but since it's a method, you can use it at the end of a method chain
+        instead of wrapping a ``print`` call around the whole chain.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv").print_()
         """
         print(self.to_string(max_rows, max_width))
 
     @deco.new_from_generator
     def rbind(self, *others):
         """
+        Return data frame with rows from `others` added.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.rbind(data)
         """
         data_frames = [self] + list(others)
         colnames = util.unique_keys(itertools.chain(*data_frames))
@@ -363,6 +514,7 @@ class DataFrame(dict):
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         """
+        Return a new data frame from CSV file `fname`.
         """
         import pandas as pd
         data = pd.read_csv(fname,
@@ -378,6 +530,7 @@ class DataFrame(dict):
     @classmethod
     def read_json(cls, fname, encoding="utf_8", **kwargs):
         """
+        Return a new data frame from JSON file `fname`.
         """
         with open(fname, "r", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
@@ -385,6 +538,7 @@ class DataFrame(dict):
     @classmethod
     def read_pickle(cls, fname):
         """
+        Return a new data frame from Pickle file `fname`.
         """
         with open(fname, "rb") as f:
             return cls(pickle.load(f))
@@ -399,6 +553,10 @@ class DataFrame(dict):
     @deco.new_from_generator
     def rename(self, **to_from_pairs):
         """
+        Return data frame with columns renamed.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.rename(listing_id="id")
         """
         from_to_pairs = {v: k for k, v in to_from_pairs.items()}
         for fm in self.colnames:
@@ -421,6 +579,10 @@ class DataFrame(dict):
     @deco.new_from_generator
     def select(self, *colnames):
         """
+        Return data frame, keeping only given `colnames`.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.select("id", "hood", "zipcode")
         """
         for colname in colnames:
             yield colname, self[colname].copy()
@@ -428,6 +590,15 @@ class DataFrame(dict):
     @deco.new_from_generator
     def semi_join(self, other, *by):
         """
+        Return rows with matches in `other`.
+
+        `by` should be a list of column names, by which to look for matching
+        rows.
+
+        >>> # All listings that have reviews
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data.semi_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -437,6 +608,15 @@ class DataFrame(dict):
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
         """
+        Return a row-wise and/or column-wise subset of data frame.
+
+        Both `rows` and `cols` should be integer vectors correspoding to the
+        indices of the rows or columns to keep.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.slice(rows=[0, 1, 2])
+        >>> data.slice(cols=[0, 1, 2])
+        >>> data.slice(rows=[0, 1, 2], cols=[0, 1, 2])
         """
         rows = np.arange(self.nrow) if rows is None else rows
         cols = np.arange(self.ncol) if cols is None else cols
@@ -448,6 +628,13 @@ class DataFrame(dict):
     @deco.new_from_generator
     def sort(self, **colname_dir_pairs):
         """
+        Return rows in sorted order.
+
+        `colname_dir_pairs` defines the sort order by column name. `dir` should
+        be ``1`` for ascending sort, ``-1`` for descending.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.sort(hood=1, zipcode=1)
         """
         @deco.tuplefy
         def sort_key():
@@ -478,11 +665,21 @@ class DataFrame(dict):
 
     def to_json(self, **kwargs):
         """
+        Return data frame converted to a JSON string.
+
+        `kwargs` are passed to ``json.dumps``.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.to_json()[:100]
         """
-        return json.dumps(self.to_list_of_dicts(), **kwargs)
+        return self.to_list_of_dicts().to_json(**kwargs)
 
     def to_list_of_dicts(self):
         """
+        Return data frame converted to a :class:`dataiter.ListOfDicts`.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.to_list_of_dicts()
         """
         from dataiter import ListOfDicts
         data = [{} for i in range(self.nrow)]
@@ -493,12 +690,20 @@ class DataFrame(dict):
 
     def to_pandas(self):
         """
+        Return data frame converted to a ``pandas.DataFrame``.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.to_pandas()
         """
         import pandas as pd
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
     def to_string(self, max_rows=None, max_width=None):
         """
+        Return data frame as a string formatted for display.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.to_string()
         """
         if not self: return ""
         max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
@@ -537,6 +742,10 @@ class DataFrame(dict):
     @deco.new_from_generator
     def unique(self, *colnames):
         """
+        Return unique rows by `colnames`.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.unique("hood")
         """
         colnames = colnames or self.colnames
         by = np.column_stack([self[x].as_bytes() for x in colnames])
@@ -547,6 +756,10 @@ class DataFrame(dict):
     @deco.new_from_generator
     def unselect(self, *colnames):
         """
+        Return data frame, dropping given `colnames`.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.unselect("guests", "sqft", "price")
         """
         for colname in self.colnames:
             if colname not in colnames:
@@ -555,6 +768,10 @@ class DataFrame(dict):
     @deco.new_from_generator
     def update(self, other):
         """
+        Return data frame with columns from `other` added.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.update(di.DataFrame(x=1))
         """
         for colname, column in self.items():
             if colname in other: continue
@@ -565,6 +782,7 @@ class DataFrame(dict):
 
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         """
+        Write data frame to CSV file `fname`.
         """
         pddf = self.to_pandas()
         util.makedirs_for_file(fname)
@@ -572,11 +790,15 @@ class DataFrame(dict):
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
         """
+        Write data frame to JSON file `fname`.
+
+        `kwargs` are passed to ``json.JSONEncoder``.
         """
         return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)
 
     def write_pickle(self, fname):
         """
+        Write data frame to Pickle file `fname`.
         """
         util.makedirs_for_file(fname)
         with open(fname, "wb") as f:
