@@ -38,7 +38,7 @@ class Vector(np.ndarray):
     A one-dimensional array.
 
     Vector is a subclass of NumPy ``ndarray``. Note that not all ``ndarray``
-    methods are overridden and thus by careless use of baseclass in-place
+    methods have been overridden and thus by careless use of baseclass in-place
     methods you might manage to twist the data into multi-dimensional or other
     non-vector form, causing unexpected results.
 
@@ -62,8 +62,8 @@ class Vector(np.ndarray):
 
         `object` can be any one-dimensional sequence, such as a NumPy array,
         Python list or tuple. Creating a vector from a NumPy array will be
-        fast, from other types slower as data types and special values will be
-        converted.
+        fast, from other types slower as data types and special values will
+        need to be converted.
 
         `dtype` is the NumPy-compatible data type for the vector. Providing
         `dtype` will make creating the vector faster, otherwise the appropriate
@@ -159,8 +159,8 @@ class Vector(np.ndarray):
         """
         Return whether vectors are equal.
 
-        Equality is tested with ``==``. As an exception, two missing values are
-        considered equal as well.
+        Equality is tested with ``==``. As an exception, corresponding missing
+        values are considered equal as well.
 
         >>> a = di.Vector([1, 2, 3, None])
         >>> b = di.Vector([1, 2, 3, None])
@@ -182,9 +182,9 @@ class Vector(np.ndarray):
         """
         Return a new vector.
 
-        Unlike :meth:`__init__`, this will not convert special values in
+        Unlike :meth:`__init__`, this will **not** convert special values in
         `object`. Use this only if you know `object` doesn't contain special
-        values or if they are already of the correct type.
+        values or if you know they are already of the correct type.
         """
         return np.array(object, dtype).view(cls)
 
@@ -219,7 +219,7 @@ class Vector(np.ndarray):
         """
         Return whether vector data type is datetime.
 
-        Note that dates are datetimes as well.
+        Dates are considered datetimes as well.
         """
         return np.issubdtype(self.dtype, np.datetime64)
 
@@ -383,7 +383,7 @@ class Vector(np.ndarray):
         """
         Return elements in sorted order.
 
-        `dir` should be ``1`` for ascending sort, ``-1`` for descending.
+        `dir` is ``1`` for ascending sort, ``-1`` for descending.
 
         Missing values are sorted last, regardless of `dir`.
 
