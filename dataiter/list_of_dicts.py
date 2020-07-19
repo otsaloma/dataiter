@@ -42,9 +42,20 @@ class ListOfDicts(list):
     Most of the data-modifying methods return **shallow** copies, that is a new
     list of dicts that contains the same dict objects. To avoid surprises with
     modifying the same dicts in different objects, list of dicts marks the
-    previous object "obsolete" upon returning a copy. Any attempted operations
-    on the obsolete object will raise ``ObsoleteError``. Sometimes you might
-    need to break this tracking, for that, use :meth:`deepcopy`.
+    previous object "obsolete" upon returning a modified copy. Any attempted
+    operations on the obsolete object will raise :class:`ObsoleteError`.
+    Sometimes you might need to break this tracking, for that, use
+    :meth:`deepcopy`.
+
+    Contained dicts are upon initialization converted to
+    ``attd.AttributeDict``, which is a simple subclass of ``dict`` that
+    provides attribute access to dict keys. This means that you can access keys
+    as e.g. ``data[0].x`` in addition to ``data[0]["x"]``. In most cases,
+    attribute access should be more convenient and is the way recommended by
+    dataiter. You'll still need to use the bracket notation for any keys that
+    conflict with dict methods, such as "items".
+
+    https://github.com/otsaloma/attd
     """
 
     def __init__(self, dicts=(), as_is=False):
@@ -139,12 +150,12 @@ class ListOfDicts(list):
         """
         Return items with no matches in `other`.
 
-        `by` should be a list of keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items.
 
         >>> # All listings that don't have reviews
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
-        >>> data.anti_join(reviews, "id")
+        >>> listings.anti_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_ids = set(map(extract, other))
@@ -202,7 +213,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def filter(self, function=None, **key_value_pairs):
         """
-        Return items that match given condition.
+        Return items that match condition.
 
         Filtering can be done either by `function`, which receives an
         individual item as its argument and returns ``True`` or ``False``, or
@@ -228,7 +239,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def filter_out(self, function=None, **key_value_pairs):
         """
-        Return items that don't match given condition.
+        Return items that don't match condition.
 
         Filtering can be done either by `function`, which receives an
         individual item as its argument and returns ``True`` or ``False``, or
@@ -269,11 +280,11 @@ class ListOfDicts(list):
         there are multiple matches, the first one will be used. For items, for
         which matches are not found, no keys are added.
 
-        `by` should be a list of keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
-        >>> data.full_join(reviews, "id")
+        >>> listings.full_join(reviews, "id")
         """
         counter = itertools.count(start=1)
         other = other.deepcopy().modify(_id_=lambda x: next(counter))
@@ -311,11 +322,11 @@ class ListOfDicts(list):
         `inner_join` keeps only items found in both lists, merging matching
         ones. If there are multiple matches, the first one will be used.
 
-        `by` should be a list of keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
-        >>> data.inner_join(reviews, "id")
+        >>> listings.inner_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_by_id = {extract(x): x for x in reversed(other)}
@@ -351,11 +362,11 @@ class ListOfDicts(list):
         `other`. If there are multiple matches, the first one will be used. For
         items, for which matches are not found, no keys are added.
 
-        `by` should be a list of keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
-        >>> data.left_join(reviews, "id")
+        >>> listings.left_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_by_id = {extract(x): x for x in reversed(other)}
@@ -505,7 +516,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def select(self, *keys):
         """
-        Return items, keeping only given `keys`.
+        Return items, keeping only `keys`.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.select("id", "hood", "zipcode")
@@ -518,12 +529,12 @@ class ListOfDicts(list):
         """
         Return items with matches in `other`.
 
-        `by` should be a list of keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items.
 
         >>> # All listings that have reviews
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
-        >>> data.semi_join(reviews, "id")
+        >>> listings.semi_join(reviews, "id")
         """
         extract = operator.itemgetter(*by)
         other_ids = set(map(extract, other))
@@ -535,7 +546,7 @@ class ListOfDicts(list):
         """
         Return items in sorted order.
 
-        `key_dir_pairs` defines the sort order by key. `dir` should be ``1``
+        `key_dir_pairs` defines the sort order by key with `dir` being ``1``
         for ascending sort, ``-1`` for descending.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
@@ -645,7 +656,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def unselect(self, *keys):
         """
-        Return items, dropping given `keys`.
+        Return items, dropping `keys`.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.unselect("guests", "sqft", "price")
