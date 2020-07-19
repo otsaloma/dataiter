@@ -48,8 +48,8 @@ def nrow(data):
     """
     Return the amount of rows in `data`.
 
-    This is a useful shorthand in contexts where you don't have direct access
-    to the data frame in question, e.g. in group-by-aggregate
+    This is a useful shorthand for `data.nrow` in contexts where you don't have
+    direct access to the data frame in question, e.g. in group-by-aggregate
 
     >>> data = di.DataFrame.read_csv("data/listings.csv")
     >>> data.group_by("hood").aggregate(n=di.nrow)
