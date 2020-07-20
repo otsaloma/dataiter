@@ -85,6 +85,18 @@ class DataFrame(dict):
     ``keys()`` and ``values()`` can be used iterate over and manage the data as
     a whole and NumPy functions and array methods can be used for fast
     vectorized computations on the data.
+
+    Columns can be accessed by attribute notation, e.g. ``data.x`` in addition
+    to ``data["x"]``. In most cases, attribute access should be more convenient
+    and is the way recommended by dataiter. You'll still need to use the
+    bracket notation for any column names that are not valid identifiers, such
+    as ones with spaces, or ones that conflict with dict methods, such as
+    "items".
+
+    DataFrame does not support indexing directly as the bracket notation is
+    used to refer to dict keys, i.e. columns by name. If you want to index the
+    whole data frame object, use the method :meth:`slice`. Individual columns
+    are indexed the same as NumPy arrays.
     """
 
     # List of names that are actual attributes, not columns
@@ -177,13 +189,12 @@ class DataFrame(dict):
         """
         Return rows with no matches in `other`.
 
-        `by` should be a list of column names, by which to look for matching
-        rows.
+        `by` are column names, by which to look for matching rows.
 
         >>> # All listings that don't have reviews
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
-        >>> data.anti_join(reviews, "id")
+        >>> listings.anti_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -253,11 +264,13 @@ class DataFrame(dict):
     @deco.new_from_generator
     def filter(self, rows):
         """
-        Return rows that match given condition.
+        Return rows that match condition.
 
         `rows` can be either a boolean vector or a function that receives the
-        data frame as argument and returns a boolean vector. See the example
-        below of equivalent filtering with both ways.
+        data frame as argument and returns a boolean vector. The latter is
+        especially useful in a method chaining context where you don't have
+        direct access to the data frame in question. See the example below of
+        equivalent filtering with both ways.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
@@ -272,11 +285,13 @@ class DataFrame(dict):
     @deco.new_from_generator
     def filter_out(self, rows):
         """
-        Return rows that don't match given condition.
+        Return rows that don't match condition.
 
         `rows` can be either a boolean vector or a function that receives the
-        data frame as argument and returns a boolean vector. See the example
-        below of equivalent filtering with both ways.
+        data frame as argument and returns a boolean vector. The latter is
+        especially useful in a method chaining context where you don't have
+        direct access to the data frame in question. See the example below of
+        equivalent filtering with both ways.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.filter_out(data.hood == "Manhattan")
@@ -317,12 +332,11 @@ class DataFrame(dict):
         ones. If there are multiple matches, the first one will be used. For
         rows, for which matches are not found, missing values are added.
 
-        `by` should be a list of column names, by which to look for matching
-        rows.
+        `by` are column names, by which to look for matching rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
-        >>> data.full_join(reviews, "id")
+        >>> listings.full_join(reviews, "id")
         """
         other = other.modify(_id_=np.arange(other.nrow))
         a = self.left_join(other, *by)
@@ -366,12 +380,11 @@ class DataFrame(dict):
         matching ones. If there are multiple matches, the first one will be
         used.
 
-        `by` should be a list of column names, by which to look for matching
-        rows.
+        `by` are column names, by which to look for matching rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
-        >>> data.inner_join(reviews, "id")
+        >>> listings.inner_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -390,12 +403,11 @@ class DataFrame(dict):
         are multiple matches, the first one will be used. For rows, for which
         matches are not found, missing values are added.
 
-        `by` should be a list of column names, by which to look for matching
-        rows.
+        `by` are column names, by which to look for matching rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
-        >>> data.left_join(reviews, "id")
+        >>> listings.left_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -418,13 +430,14 @@ class DataFrame(dict):
         that receives the data frame as argument and returns a vector. See the
         example below of equivalent modification with both ways.
 
+        Note that column modification can often be done simpler with a plain
+        assignment, such as ``data.price_per_guest = data.price /
+        data.guests``. `modify` just allows you to do the same in a method
+        chain context.
+
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.modify(price_per_guest=data.price/data.guests)
         >>> data.modify(price_per_guest=lambda x: x.price / x.guests)
-
-        Note that the same can often be done simpler with a plain assignment,
-        such as ``data.price_per_guest = data.price / data.guests``. `modify`
-        just allows you to do the same in a method chain context.
         """
         for colname, column in self.items():
             yield colname, column.copy()
@@ -579,7 +592,7 @@ class DataFrame(dict):
     @deco.new_from_generator
     def select(self, *colnames):
         """
-        Return data frame, keeping only given `colnames`.
+        Return data frame, keeping only `colnames`.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.select("id", "hood", "zipcode")
@@ -592,13 +605,12 @@ class DataFrame(dict):
         """
         Return rows with matches in `other`.
 
-        `by` should be a list of column names, by which to look for matching
-        rows.
+        `by` are column names, by which to look for matching rows.
 
         >>> # All listings that have reviews
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
-        >>> data.semi_join(reviews, "id")
+        >>> listings.semi_join(reviews, "id")
         """
         other = other.unique(*by)
         found, src = self._get_join_indices(other, *by)
@@ -630,8 +642,8 @@ class DataFrame(dict):
         """
         Return rows in sorted order.
 
-        `colname_dir_pairs` defines the sort order by column name. `dir` should
-        be ``1`` for ascending sort, ``-1`` for descending.
+        `colname_dir_pairs` defines the sort order by column name with `dir`
+        being ``1`` for ascending sort, ``-1`` for descending.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.sort(hood=1, zipcode=1)
@@ -756,7 +768,7 @@ class DataFrame(dict):
     @deco.new_from_generator
     def unselect(self, *colnames):
         """
-        Return data frame, dropping given `colnames`.
+        Return data frame, dropping `colnames`.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.unselect("guests", "sqft", "price")
