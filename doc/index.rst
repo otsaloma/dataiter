@@ -22,11 +22,9 @@ Currently included classes are ``DataFrame`` and ``ListOfDicts``.
 
 .. warning:: dataiter is experimental and the API subject to change.
 
-.. note:: This documentation is a work in progress.
-
 .. toctree::
    :maxdepth: 1
-   :caption: General
+   :caption: Tutorials
 
    quick-start
 
