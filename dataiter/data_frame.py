@@ -262,43 +262,59 @@ class DataFrame(dict):
         return self.__deepcopy__()
 
     @deco.new_from_generator
-    def filter(self, rows):
+    def filter(self, rows=None, **colname_value_pairs):
         """
         Return rows that match condition.
 
-        `rows` can be either a boolean vector or a function that receives the
-        data frame as argument and returns a boolean vector. The latter is
+        Filtering can be done by either `rows` or `colname_value_pairs`. `rows`
+        can be either a boolean vector or a function that receives the data
+        frame as argument and returns a boolean vector. The latter is
         especially useful in a method chaining context where you don't have
-        direct access to the data frame in question. See the example below of
-        equivalent filtering with both ways.
+        direct access to the data frame in question. Alternatively,
+        `colname_value_pairs` provides a shorthand to check against a fixed
+        value. See the example below of equivalent filtering all three ways.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
         >>> data.filter(lambda x: (x.hood == "Manhattan") & (x.guests == 2))
+        >>> data.filter(hood="Manhattan", guests=2)
         """
-        if callable(rows):
-            rows = rows(self)
+        if rows is not None:
+            if callable(rows):
+                rows = rows(self)
+        elif colname_value_pairs:
+            rows = Vector.fast([True], bool).repeat(self.nrow)
+            for colname, value in colname_value_pairs.items():
+                rows = rows & (self[colname] == value)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.take(column, rows)
 
     @deco.new_from_generator
-    def filter_out(self, rows):
+    def filter_out(self, rows=None, **colname_value_pairs):
         """
         Return rows that don't match condition.
 
-        `rows` can be either a boolean vector or a function that receives the
-        data frame as argument and returns a boolean vector. The latter is
+        Filtering can be done by either `rows` or `colname_value_pairs`. `rows`
+        can be either a boolean vector or a function that receives the data
+        frame as argument and returns a boolean vector. The latter is
         especially useful in a method chaining context where you don't have
-        direct access to the data frame in question. See the example below of
-        equivalent filtering with both ways.
+        direct access to the data frame in question. Alternatively,
+        `colname_value_pairs` provides a shorthand to check against a fixed
+        value. See the example below of equivalent filtering all three ways.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.filter_out(data.hood == "Manhattan")
         >>> data.filter_out(lambda x: x.hood == "Manhattan")
+        >>> data.filter_out(hood="Manhattan")
         """
-        if callable(rows):
-            rows = rows(self)
+        if rows is not None:
+            if callable(rows):
+                rows = rows(self)
+        elif colname_value_pairs:
+            rows = Vector.fast([True], bool).repeat(self.nrow)
+            for colname, value in colname_value_pairs.items():
+                rows = rows & (self[colname] == value)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.delete(column, rows)

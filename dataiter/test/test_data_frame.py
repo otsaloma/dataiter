@@ -170,16 +170,30 @@ class TestDataFrame:
         assert data == orig
         assert data is not orig
 
-    def test_filter(self):
+    def test_filter_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter(data.make == "Saab")
         assert data.nrow == 424
         assert np.all(data.make == "Saab")
         assert np.sum(data.hwy) == 10672
 
-    def test_filter_out(self):
+    def test_filter_given_colname_value_pairs(self):
+        data = test.data_frame("vehicles.csv")
+        data = data.filter(make="Saab")
+        assert data.nrow == 424
+        assert np.all(data.make == "Saab")
+        assert np.sum(data.hwy) == 10672
+
+    def test_filter_out_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter_out(data.make == "Saab")
+        assert data.nrow == 33018
+        assert np.all(data.make != "Saab")
+        assert np.sum(data.hwy) == 776930
+
+    def test_filter_out_given_colname_value_pairs(self):
+        data = test.data_frame("vehicles.csv")
+        data = data.filter_out(make="Saab")
         assert data.nrow == 33018
         assert np.all(data.make != "Saab")
         assert np.sum(data.hwy) == 776930
