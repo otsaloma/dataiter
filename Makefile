@@ -21,6 +21,7 @@ clean:
 # Watch files for changes, rebuild html.
 # https://gist.github.com/senko/1154509
 doc:
+	$(MAKE) -C doc clean html
 	onchange $(MAKE) -C doc html
 
 doc-open:
