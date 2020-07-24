@@ -5,8 +5,8 @@ Introduction
 ------------
 
 DataFrame is a dict of NumPy arrays. You can create a new data frame the
-various ways you would a regular dict. Keys here are column names and
-values are column vectors. Columns can be given as any kind of a
+various ways you would create a regular dict. Keys here are column names
+and values are column vectors. Columns can be given as any kind of a
 sequence, they will be converted to the proper type automatically. Any
 scalar values will be broadcast so that the dimensions are consistent.
 
