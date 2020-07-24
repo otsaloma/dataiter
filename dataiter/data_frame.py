@@ -513,7 +513,7 @@ class DataFrame(dict):
         but since it's a method, you can use it at the end of a method chain
         instead of wrapping a ``print`` call around the whole chain.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv").print_()
+        >>> di.DataFrame.read_csv("data/listings.csv").print_()
         """
         print(self.to_string(max_rows, max_width))
 
