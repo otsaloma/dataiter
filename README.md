@@ -11,7 +11,8 @@ dataiter currently includes classes `DataFrame` and `ListOfDicts`.
 or `pandas.DataFrame`. It is under the hood a dictionary of NumPy arrays
 and thus capable of fast vectorized operations. You can consider this to
 be a very experimental, very light-weight alternative to Pandas with a
-simple and consistent API.
+simple and consistent API. Performance-wise dataiter relies on NumPy and
+is likely to be at best speed-wise comparable to Pandas.
 
 **`ListOfDicts`** is a class useful for manipulating data from JSON
 APIs. It provides functionality similar to libraries such as
