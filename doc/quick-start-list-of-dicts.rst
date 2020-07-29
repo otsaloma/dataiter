@@ -60,7 +60,7 @@ Method Chaining
 Most of the data-modifying methods return copies, which means that you
 can use method chaining to carry out any multi-step data processing.
 
->>> # The cheapest two-guest AirBnbs in Manhattan
+>>> # The cheapest two-guest Airbnbs in Manhattan
 >>> data = di.ListOfDicts.read_json("data/listings.json")
 >>> data.filter(hood="Manhattan").filter(guests=2).sort(price=1).head()
 [
