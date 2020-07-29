@@ -13,7 +13,7 @@ Currently included classes are ``DataFrame`` and ``ListOfDicts``.
    consider this to be a very experimental, very light-weight
    alternative to Pandas with a simple and consistent API.
    Performance-wise dataiter relies on NumPy and is likely to be at
-   best speed-wise comparable to Pandas.
+   best comparable to Pandas.
 
 :class:`dataiter.ListOfDicts`
    A class useful for manipulating data from JSON APIs. It provides
