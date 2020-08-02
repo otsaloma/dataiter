@@ -1,8 +1,8 @@
 2020-07-25: dataiter 0.12
 =========================
 
-* `DataFrame.filter` Add `colname_value_pairs` argument
-* `DataFrame.filter_out` Add `colname_value_pairs` argument
+* `DataFrame.filter`: Add `colname_value_pairs` argument
+* `DataFrame.filter_out`: Add `colname_value_pairs` argument
 * `ListOfDicts.__init__`: Remove arguments not intended for external use
 * `ListOfDicts.rename`: Preserve order of keys
 * Add documentation: https://dataiter.readthedocs.io/
