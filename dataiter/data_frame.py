@@ -740,7 +740,7 @@ class DataFrame(dict):
         columns = {colname: util.pad(
             [colname] +
             [str(column.dtype)] +
-            column[:n].to_strings(quote=False, pad=True).tolist()
+            [str(x) for x in column[:n].to_strings(quote=False, pad=True)]
         ) for colname, column in self.items()}
         for column in columns.values():
             column.insert(2, "-" * len(column[0]))
