@@ -1,5 +1,5 @@
-PENDING: dataiter 0.13
-======================
+2020-08-15: dataiter 0.13
+=========================
 
 * `DataFrame`: Fix error printing blank strings (#8)
 
