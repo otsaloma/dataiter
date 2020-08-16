@@ -24,8 +24,6 @@ import tempfile
 
 from attd import AttributeDict
 from dataiter import ListOfDicts
-from dataiter import ObsoleteError
-from dataiter import ObsoleteListOfDicts
 from dataiter import test
 
 
@@ -257,7 +255,7 @@ class TestListOfDicts:
         assert len(data) == len(orig)
         assert all("year" in x for x in data)
         assert sum(data.pluck("year")) == 1827565
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert orig._obsolete
 
     def test_modify_if(self):
         orig = test.list_of_dicts("downloads.json")
@@ -266,7 +264,7 @@ class TestListOfDicts:
         assert len(data) == len(orig)
         assert sum("year" in x for x in data) == 181
         assert sum(data.pluck("year", 0)) == 365513
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert orig._obsolete
 
     def test_pluck(self):
         data = test.list_of_dicts("downloads.json")
@@ -304,7 +302,7 @@ class TestListOfDicts:
         assert len(data) == len(orig)
         assert all("ymd" in x for x in data)
         assert all("date" not in x for x in data)
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert orig._obsolete
 
     def test_reverse(self):
         orig = test.list_of_dicts("downloads.json")
@@ -323,7 +321,7 @@ class TestListOfDicts:
         assert all(len(x) == 2 for x in data)
         assert all("date" in x for x in data)
         assert all("downloads" in x for x in data)
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert orig._obsolete
 
     def test_select_order(self):
         data1 = test.list_of_dicts("downloads.json").select("date", "downloads")
@@ -410,7 +408,7 @@ class TestListOfDicts:
         assert all(len(x) == 1 for x in data)
         assert all("date" not in x for x in data)
         assert all("downloads" not in x for x in data)
-        assert isinstance(orig, ObsoleteListOfDicts)
+        assert orig._obsolete
 
     def test_write_csv(self):
         orig = test.list_of_dicts("vehicles.csv")
@@ -432,15 +430,3 @@ class TestListOfDicts:
         orig.write_pickle(fname)
         data = ListOfDicts.read_pickle(fname)
         assert data == orig
-
-
-class TestObsoleteListOfDicts:
-
-    def test___getattr__(self):
-        orig = test.list_of_dicts("downloads.json")
-        data = orig.select("date") # noqa
-        try:
-            orig.select("date")
-            raise Exception("Expected ObsoleteError")
-        except ObsoleteError:
-            pass

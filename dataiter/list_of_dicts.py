@@ -43,9 +43,9 @@ class ListOfDicts(list):
     list of dicts that contains the same dict objects. To avoid surprises with
     modifying the same dicts in different objects, list of dicts marks the
     previous object "obsolete" upon returning a modified copy. Any attempted
-    operations on the obsolete object will raise :class:`ObsoleteError`.
-    Sometimes you might need to break this tracking, for that, use
-    :meth:`deepcopy`.
+    operations on the obsolete object will print a warning once per object.
+    Usually, if you seen this warning, you'll want to call :meth:`deepcopy`
+    to create a new, completely independent object.
 
     Contained dicts are upon initialization converted to
     ``attd.AttributeDict``, which is a simple subclass of ``dict`` that
@@ -73,6 +73,8 @@ class ListOfDicts(list):
         """
         super().__init__(dicts if as_is else map(AttributeDict, dicts))
         self._group_keys = ()
+        self._obsolete = False
+        self._obsolete_warned = False
         self._predecessor = None
 
     @deco.new_from_generator
@@ -88,6 +90,12 @@ class ListOfDicts(list):
         new = self.__class__(map(copy.deepcopy, self), as_is=True)
         new._group_keys = self._group_keys
         return new
+
+    def __getattr__(self, name):
+        if self._obsolete and not self._obsolete_warned:
+            print("Warning: A successor has modified the shared dicts")
+            self._obsolete_warned = True
+        return super().__getattr__(name)
 
     def __getitem__(self, index):
         # Needed so that slicing gives a ListOfDicts, not a list.
@@ -378,7 +386,7 @@ class ListOfDicts(list):
     def _mark_obsolete(self):
         if isinstance(self._predecessor, ListOfDicts):
             self._predecessor._mark_obsolete()
-        self.__class__ = ObsoleteListOfDicts
+        self._obsolete = True
 
     @deco.obsoletes
     @deco.new_from_generator
@@ -708,14 +716,3 @@ class ListOfDicts(list):
         with open(fname, "wb") as f:
             out = [dict(x) for x in self]
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
-
-
-class ObsoleteError(Exception):
-
-    pass
-
-
-class ObsoleteListOfDicts(list):
-
-    def __getattr__(self, name):
-        raise ObsoleteError("Cannot act on a ListOfDicts object whose successor has modified the shared dicts")

@@ -24,8 +24,6 @@ from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
-from dataiter.list_of_dicts import ObsoleteError # noqa
-from dataiter.list_of_dicts import ObsoleteListOfDicts # noqa
 
 __version__ = "0.13"
 
