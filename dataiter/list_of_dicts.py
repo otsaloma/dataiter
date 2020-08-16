@@ -44,7 +44,7 @@ class ListOfDicts(list):
     modifying the same dicts in different objects, list of dicts marks the
     previous object "obsolete" upon returning a modified copy. Any attempted
     operations on the obsolete object will print a warning once per object.
-    Usually, if you seen this warning, you'll want to call :meth:`deepcopy`
+    Usually, if you see this warning, you'll want to call :meth:`deepcopy`
     to create a new, completely independent object.
 
     Contained dicts are upon initialization converted to
