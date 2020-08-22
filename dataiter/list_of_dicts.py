@@ -91,11 +91,15 @@ class ListOfDicts(list):
         new._group_keys = self._group_keys
         return new
 
-    def __getattr__(self, name):
-        if self._obsolete and not self._obsolete_warned:
+    def __getattribute__(self, name):
+        value = super().__getattribute__(name)
+        if ("obsolete" not in name and
+            callable(value) and
+            self._obsolete and
+            not self._obsolete_warned):
             print("Warning: A successor has modified the shared dicts")
             self._obsolete_warned = True
-        return super().__getattr__(name)
+        return value
 
     def __getitem__(self, index):
         # Needed so that slicing gives a ListOfDicts, not a list.
