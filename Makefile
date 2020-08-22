@@ -42,8 +42,8 @@ publish:
 	ls -l dist
 	@printf "Press Enter to upload or Ctrl+C to abort: "; read _
 	twine upload dist/*
-	sudo pip3 uninstall dataiter || true
-	sudo pip3 uninstall dataiter || true
+	sudo pip3 uninstall -y dataiter || true
+	sudo pip3 uninstall -y dataiter || true
 	sudo pip3 install dataiter
 	$(MAKE) test-installed
 
