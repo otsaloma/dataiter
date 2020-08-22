@@ -1,5 +1,5 @@
-PENDING: dataiter 0.14
-======================
+2020-08-22: dataiter 0.14
+=========================
 
 * `ListOfDicts`: Make obsoletion a warning instead of an error
 
