@@ -568,7 +568,7 @@ class ListOfDicts(list):
         data = self
         # Sort one key at a time to handle reverse and Nones correct.
         # https://stackoverflow.com/a/55866810
-        for key, dir in reversed(key_dir_pairs.items()):
+        for key, dir in list(key_dir_pairs.items())[::-1]:
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
             def sort_key(item):
