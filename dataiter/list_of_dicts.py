@@ -565,20 +565,17 @@ class ListOfDicts(list):
         >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.sort(hood=1, zipcode=1)
         """
-        key_dir_pairs = key_dir_pairs.items()
-        for key, dir in key_dir_pairs:
+        data = self
+        # Sort one key at a time to handle reverse and Nones correct.
+        # https://stackoverflow.com/a/55866810
+        for key, dir in reversed(key_dir_pairs.items()):
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
-        def flip(value, dir):
-            # XXX: This only supports numeric types of value.
-            if dir < 0 and isinstance(value, (bool, int, float)):
-                return -value
-            return value
-        @deco.tuplefy
-        def sort_key(item):
-            for key, dir in key_dir_pairs:
-                yield (item[key] is None, flip(item[key], dir))
-        return self._new(sorted(self, key=sort_key))
+            def sort_key(item):
+                return ((item[key] is None, item[key]) if dir > 0 else
+                        (item[key] is not None, item[key]))
+            data = sorted(data, key=sort_key, reverse=dir < 0)
+        return self._new(data)
 
     def tail(self, n=None):
         """

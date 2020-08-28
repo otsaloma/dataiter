@@ -1,3 +1,8 @@
+PENDING: dataiter 0.15
+======================
+
+* `ListOfDicts.sort`: Handle descending sort for all types
+
 2020-08-22: dataiter 0.14
 =========================
 
