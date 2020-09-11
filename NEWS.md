@@ -1,5 +1,5 @@
-PENDING: dataiter 0.15
-======================
+2020-09-12: dataiter 0.15
+=========================
 
 * `ListOfDicts.sort`: Handle descending sort for all types
 
