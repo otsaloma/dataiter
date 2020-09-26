@@ -1,5 +1,5 @@
-PENDING: dataiter 0.16
-======================
+2020-09-26: dataiter 0.16
+=========================
 
 * `GeoJSON`: New class
 
