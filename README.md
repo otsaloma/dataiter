@@ -29,7 +29,11 @@ special geometric operations are currently supported.
 ## Installation
 
 ```bash
-pip install dataiter
+# Latest stable version
+pip install -U dataiter
+
+# Latest development version
+pip install -U git+https://github.com/otsaloma/dataiter#egg=dataiter
 ```
 
 ## Documentation
