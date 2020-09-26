@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import json
+import warnings
 
 from attd import AttributeDict
 from dataiter import DataFrame
@@ -73,7 +74,7 @@ class GeoJSON(DataFrame):
         if feature.type not in cls.FEATURE_TYPES:
             raise Exception(f"Feature type {feature.type!r} not supported")
         for key in set(feature) - set(cls.FEATURE_KEYS):
-            raise Exception(f"Feature key {key!r} not supported")
+            warnings.warn(f"Ignoring feature key {key!r}")
         for key, value in feature.properties.items():
             if isinstance(value, tuple(cls.PROPERTY_TYPES)): continue
             raise Exception(f"Property type {type(value)} of {key!r} not supported")
