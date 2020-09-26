@@ -20,37 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from dataiter.vector import Vector # noqa
-from dataiter.data_frame import DataFrame # noqa
-from dataiter.data_frame import DataFrameColumn # noqa
-from dataiter.geojson import GeoJSON # noqa
-from dataiter.list_of_dicts import ListOfDicts # noqa
+import tempfile
 
-__version__ = "0.15"
+from dataiter import GeoJSON
+from dataiter import test
 
-DEFAULT_PEEK_ELEMENTS = 10
-DEFAULT_PEEK_ITEMS = 3
-DEFAULT_PEEK_ROWS = 10
-PRINT_FLOAT_PRECISION = 6
-PRINT_MAX_ELEMENTS = 100
-PRINT_MAX_ITEMS = 10
-PRINT_MAX_ROWS = 100
-PRINT_MAX_WIDTH = 80
 
-def ncol(data):
-    """
-    Return the amount of columns in `data`.
-    """
-    return data.ncol
+class TestGeoJSON:
 
-def nrow(data):
-    """
-    Return the amount of rows in `data`.
+    fname = "neighbourhoods.geojson"
 
-    This is a useful shorthand for `data.nrow` in contexts where you don't have
-    direct access to the data frame in question, e.g. in group-by-aggregate
+    def test_read(self):
+        data = test.geojson(self.fname)
+        assert data.nrow == 233
+        assert data.ncol == 3
 
-    >>> data = di.DataFrame.read_csv("data/listings.csv")
-    >>> data.group_by("hood").aggregate(n=di.nrow)
-    """
-    return data.nrow
+    def test_write(self):
+        orig = test.geojson(self.fname)
+        handle, fname = tempfile.mkstemp(".geojson")
+        orig.write(fname)
+        data = GeoJSON.read(fname)
+        assert data == orig
+        assert data.metadata == orig.metadata

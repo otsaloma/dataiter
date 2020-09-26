@@ -23,6 +23,7 @@
 import os
 
 from dataiter import DataFrame
+from dataiter import GeoJSON
 from dataiter import ListOfDicts
 
 
@@ -31,6 +32,10 @@ def data_frame(fname):
     extension = fname.split(".")[-1]
     read = getattr(DataFrame, f"read_{extension}")
     return read(fname)
+
+def geojson(fname):
+    fname = get_data_filename(fname)
+    return GeoJSON.read(fname)
 
 def get_data_filename(fname):
     directory = os.path.dirname(__file__)

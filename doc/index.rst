@@ -4,7 +4,7 @@ dataiter Documentation
 dataiter is a Python package of classes for data manipulation. dataiter
 is intended for practical data science and data engineering work with a
 focus on providing a simple and consistent API for common operations.
-Currently included classes are ``DataFrame`` and ``ListOfDicts``.
+Currently included are the following classes.
 
 :class:`dataiter.DataFrame`
    A class for tabular data similar to R's ``data.frame`` or
@@ -22,6 +22,13 @@ Currently included classes are ``DataFrame`` and ``ListOfDicts``.
    shallow modified copy of the original. ``attd.AttributeDict`` is used
    to provide convenient access to dictionary keys.
 
+:class:`dataiter.GeoJSON`
+   A simple wrapper class that allows reading a GeoJSON file into a
+   :class:`dataiter.DataFrame` and writing a data frame to a GeoJSON
+   file. Any operations on the data are thus done with methods provided
+   by the data frame class. Geometry is read as-is into the "geometry"
+   column, but no special geometric operations are currently supported.
+
 .. warning:: dataiter is experimental and the API subject to change.
 
 .. toctree::
@@ -37,5 +44,6 @@ Currently included classes are ``DataFrame`` and ``ListOfDicts``.
    dataiter
    data-frame
    data-frame-column
+   geojson
    list-of-dicts
    vector
