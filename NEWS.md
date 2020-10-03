@@ -1,3 +1,8 @@
+2020-10-03: dataiter 0.16.1
+===========================
+
+* `GeoJSON.read`: Use warnings, not errors for ignored excess feature keys
+
 2020-09-26: dataiter 0.16
 =========================
 
