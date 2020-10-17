@@ -25,6 +25,7 @@ import warnings
 
 from attd import AttributeDict
 from dataiter import DataFrame
+from dataiter import Vector
 from dataiter import util
 
 
@@ -103,7 +104,8 @@ class GeoJSON(DataFrame):
         return data
 
     def to_string(self, max_rows=None, max_width=None):
-        data = self.modify(geometry=[f"<{x['type']}>" for x in self.geometry])
+        geometry = [f"<{x['type']}>" for x in self.geometry]
+        data = self.modify(geometry=Vector.fast(geometry, object))
         return DataFrame.to_string(data, max_rows, max_width)
 
     def write(self, fname, encoding="utf_8", **kwargs):
