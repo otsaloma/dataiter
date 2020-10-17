@@ -132,6 +132,11 @@ class TestVector:
         assert a.is_integer
         assert np.all(a == [1, 2])
 
+    def test_as_object(self):
+        a = Vector([1, 2]).as_object()
+        assert a.is_object
+        assert np.all(a == [1, 2])
+
     def test_as_string(self):
         a = Vector([1, 2]).as_string()
         assert a.is_string

@@ -142,6 +142,15 @@ class Vector(np.ndarray):
         """
         return self.astype(int)
 
+    def as_object(self):
+        """
+        Return vector converted to object data type.
+
+        >>> vector = di.Vector([1, 2, 3])
+        >>> vector.as_object()
+        """
+        return self.__class__(self.tolist(), object)
+
     def as_string(self):
         """
         Return vector converted to string data type.

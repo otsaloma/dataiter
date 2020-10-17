@@ -8,6 +8,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.as_datetime`
 :meth:`~dataiter.Vector.as_float`
 :meth:`~dataiter.Vector.as_integer`
+:meth:`~dataiter.Vector.as_object`
 :meth:`~dataiter.Vector.as_string`
 :meth:`~dataiter.Vector.equal`
 :meth:`~dataiter.Vector.fast`
