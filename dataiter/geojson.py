@@ -95,9 +95,13 @@ class GeoJSON(DataFrame):
         cls._check_raw_data(raw)
         data = {}
         for feature in raw.features:
-            for key, value in feature.properties.items():
-                data.setdefault(key, []).append(value)
-            data.setdefault("geometry", []).append(feature.geometry)
+            for key in feature.properties:
+                data.setdefault(key, [])
+        for feature in raw.features:
+            for key in data:
+                value = feature.properties.get(key, None)
+                data[key].append(value)
+        data["geometry"] = [x.geometry for x in raw.features]
         data = cls(**data)
         del raw.features
         data.metadata = raw

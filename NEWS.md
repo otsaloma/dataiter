@@ -1,6 +1,7 @@
 PENDING: dataiter 0.17
 ======================
 
+* `GeoJSON.read`: Handle properties differing between features
 * `Vector.as_object`: New method
 
 2020-10-03: dataiter 0.16.1
