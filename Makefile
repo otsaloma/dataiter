@@ -6,6 +6,7 @@ PREFIX = /usr/local
 
 check:
 	flake8 .
+	flake8 bin/*
 
 clean:
 	rm -rf build

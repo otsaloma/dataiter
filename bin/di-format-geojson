@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+import click
+import dataiter as di
+import shutil
+import time
+
+@click.command()
+@click.option("-i", "--indent", default=2, help="Indent level")
+@click.option("-p", "--precision", default=6, help="Coordinate precision")
+@click.argument("file", nargs=-1, type=click.Path(exists=True))
+def main(indent, precision, file):
+    """Rewrite GeoJSON file with proper formatting."""
+    for fname in file:
+        click.echo(fname)
+        data = di.GeoJSON.read(fname)
+        for i in range(data.nrow):
+            coords = data.geometry[i].coordinates
+            data.geometry[i].coordinates = round_recursive(coords, precision)
+        backup = fname + ".bak" + str(int(time.time()))
+        shutil.copyfile(fname, backup)
+        data.write(fname, indent=indent)
+
+def round_recursive(value, precision):
+    if isinstance(value, list):
+        return [round_recursive(x, precision) for x in value]
+    return round(value, precision)
+
+if __name__ == "__main__":
+    main()
