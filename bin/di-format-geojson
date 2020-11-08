@@ -7,7 +7,7 @@ import time
 
 @click.command()
 @click.option("-i", "--indent", default=2, help="Indent level")
-@click.option("-p", "--precision", default=6, help="Coordinate precision")
+@click.option("-p", "--precision", default=9, help="Coordinate precision")
 @click.argument("file", nargs=-1, type=click.Path(exists=True))
 def main(indent, precision, file):
     """Rewrite GeoJSON file with proper formatting."""
