@@ -1,7 +1,7 @@
 Python Classes for Data Manipulation
 ====================================
 
-[![Build Status](https://travis-ci.org/otsaloma/dataiter.svg)](https://travis-ci.org/otsaloma/dataiter)
+[![Test](https://github.com/otsaloma/dataiter/workflows/Test/badge.svg)](https://github.com/otsaloma/dataiter/actions)
 [![Documentation Status](https://readthedocs.org/projects/dataiter/badge/?version=latest)](https://dataiter.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/dataiter.svg)](https://pypi.org/project/dataiter/)
 
