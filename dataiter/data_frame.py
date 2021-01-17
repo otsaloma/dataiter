@@ -517,6 +517,20 @@ class DataFrame(dict):
         """
         print(self.to_string(max_rows, max_width))
 
+    def print_missing_counts(self):
+        """
+        Print counts of missing values by column.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.print_missing_counts()
+        """
+        print("Missing counts:")
+        for name in self.colnames:
+            n = self[name].is_missing().sum()
+            if n == 0: continue
+            pc = 100 * n / self.nrow
+            print(f"... {name}: {n} ({pc:.1f}%)")
+
     @deco.new_from_generator
     def rbind(self, *others):
         """

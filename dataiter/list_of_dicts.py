@@ -461,6 +461,23 @@ class ListOfDicts(list):
         """
         print(self.to_string(max_items))
 
+    def print_missing_counts(self):
+        """
+        Print counts of missing values by key.
+
+        Both keys entirely missing and keys with a value of ``None`` are
+        considered missing.
+
+        >>> data = di.ListOfDicts.read_csv("data/listings.json")
+        >>> data.print_missing_counts()
+        """
+        print("Missing counts:")
+        for key in util.unique_keys(list(itertools.chain(*self))):
+            n = sum(x.get(key, None) is None for x in self)
+            if n == 0: continue
+            pc = 100 * n / len(self)
+            print(f"... {key}: {n} ({pc:.1f}%)")
+
     @classmethod
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
         """

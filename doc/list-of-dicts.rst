@@ -22,6 +22,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.modify_if`
 :meth:`~dataiter.ListOfDicts.pluck`
 :meth:`~dataiter.ListOfDicts.print_`
+:meth:`~dataiter.ListOfDicts.print_missing_counts`
 :meth:`~dataiter.ListOfDicts.read_csv`
 :meth:`~dataiter.ListOfDicts.read_json`
 :meth:`~dataiter.ListOfDicts.read_pickle`

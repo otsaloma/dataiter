@@ -1,7 +1,9 @@
 PENDING: dataiter 0.17
 ======================
 
+* `DataFrame.print_missing_counts`: New method
 * `GeoJSON.read`: Handle properties differing between features
+* `ListOfDicts.print_missing_counts`: New method
 * `Vector.as_object`: New method
 
 2020-10-03: dataiter 0.16.1
