@@ -47,6 +47,12 @@ class ListOfDicts(list):
     Usually, if you see this warning, you'll want to call :meth:`deepcopy`
     to create a new, completely independent object.
 
+    List of dicts is a subclass of list. This means that if you need fast
+    in-place methods instead of the regular ones that return shallow copies,
+    you can use those from the list baseclass. A common example is appending
+    items one by one in a for loop: instead of ``data = data.append(item)``,
+    you can do ``list.append(data, item)``.
+
     Contained dicts are upon initialization converted to
     ``attd.AttributeDict``, which is a simple subclass of ``dict`` that
     provides attribute access to dict keys. This means that you can access keys
