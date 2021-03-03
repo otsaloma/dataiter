@@ -41,7 +41,6 @@ class DataFrameColumn(Vector):
     """
 
     def __new__(cls, object, dtype=None, nrow=None):
-        object = [object] if np.isscalar(object) else object
         column = Vector(object, dtype)
         if nrow is not None and nrow != column.length:
             if column.length != 1 or nrow < 1:

@@ -32,6 +32,15 @@ DATETIME = datetime.datetime.now()
 
 class TestVector:
 
+    def test___new___iterator(self):
+        a = Vector(list(range(10)))
+        b = Vector(range(10))
+        c = Vector(x for x in range(10))
+        d = Vector(map(lambda x: x, range(10)))
+        assert a.equal(b)
+        assert a.equal(c)
+        assert a.equal(d)
+
     def test___new___missing(self):
         Vector([None])
         Vector([np.nan])
@@ -183,6 +192,15 @@ class TestVector:
         b = Vector([1, 2, 3], int)
         assert a.is_integer
         assert a.equal(b)
+
+    def test_fast_iterator(self):
+        a = Vector.fast(list(range(10)))
+        b = Vector.fast(range(10))
+        c = Vector.fast(x for x in range(10))
+        d = Vector.fast(map(lambda x: x, range(10)))
+        assert a.equal(b)
+        assert a.equal(c)
+        assert a.equal(d)
 
     def test_head(self):
         a = Vector([1, 2, 3, 4, 5])

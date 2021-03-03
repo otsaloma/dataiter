@@ -1,3 +1,8 @@
+PENDING: dataiter 0.18
+======================
+
+* `Vector.__init__`: Accept generators/iterators
+
 2021-02-27: dataiter 0.17
 =========================
 

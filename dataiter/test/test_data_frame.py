@@ -34,6 +34,14 @@ class TestDataFrameColumn:
         column = DataFrameColumn(np.array([1, 2, 3]))
         assert column.tolist() == [1, 2, 3]
 
+    def test___init___given_iterator(self):
+        column = DataFrameColumn(range(3))
+        assert column.tolist() == [0, 1, 2]
+        column = DataFrameColumn(x for x in range(3))
+        assert column.tolist() == [0, 1, 2]
+        column = DataFrameColumn(map(lambda x: x, range(3)))
+        assert column.tolist() == [0, 1, 2]
+
     def test___init___given_list(self):
         column = DataFrameColumn([1, 2, 3])
         assert column.tolist() == [1, 2, 3]
