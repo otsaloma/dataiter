@@ -1,5 +1,5 @@
-PENDING: dataiter 0.18
-======================
+2021-03-03: dataiter 0.18
+=========================
 
 * `Vector.__init__`: Accept generators/iterators
 * `Vector.map`: New method
