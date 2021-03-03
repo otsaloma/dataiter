@@ -23,6 +23,7 @@ dataiter.Vector
 :attr:`~dataiter.Vector.is_object`
 :attr:`~dataiter.Vector.is_string`
 :attr:`~dataiter.Vector.length`
+:meth:`~dataiter.Vector.map`
 :attr:`~dataiter.Vector.missing_dtype`
 :attr:`~dataiter.Vector.missing_value`
 :meth:`~dataiter.Vector.range`

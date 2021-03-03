@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import datetime
+import math
 import numpy as np
 
 from dataiter import Vector
@@ -305,6 +306,10 @@ class TestVector:
         assert not Vector([DATE]).is_string
         assert not Vector([DATETIME]).is_string
         assert not Vector([self]).is_string
+
+    def test_map(self):
+        a = Vector([1, 2, 3, 4, 5])
+        assert a.map(math.pow, 2).tolist() == [1, 4, 9, 16, 25]
 
     def test_range(self):
         a = Vector([1, 2, 3, 4, 5, None])
