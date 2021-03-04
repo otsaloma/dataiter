@@ -53,10 +53,9 @@ class Vector(np.ndarray):
         # If given a Python list, or something else generic, we need
         # to convert certain types and special values. This is really
         # slow, see Vector.fast for faster initialization.
-        if np.isscalar(object):
-            object = [object]
-        elif not isinstance(object, (list, tuple)):
-            # Evaluate generator or iterator.
+        if (hasattr(object, "__iter__") and
+            not isinstance(object, (list, tuple))):
+            # Evaluate generator/iterator.
             object = list(object)
         return cls._std_to_np(object, dtype).view(cls)
 
@@ -199,10 +198,9 @@ class Vector(np.ndarray):
         `object`. Use this only if you know `object` doesn't contain special
         values or if you know they are already of the correct type.
         """
-        if np.isscalar(object):
-            object = [object]
-        elif not isinstance(object, (list, tuple)):
-            # Evaluate generator or iterator.
+        if (hasattr(object, "__iter__") and
+            not isinstance(object, (list, tuple))):
+            # Evaluate generator/iterator.
             object = list(object)
         return np.array(object, dtype).view(cls)
 
