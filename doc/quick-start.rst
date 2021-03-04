@@ -4,6 +4,7 @@ Quick Start
 DataFrame
 ---------
 
+>>> import dataiter as di
 >>> data = di.DataFrame.read_csv("data/listings.csv")
 >>> data.price_per_guest = data.price / data.guests
 >>> data.head()
@@ -42,6 +43,7 @@ DataFrame
 GeoJSON
 -------
 
+>>> import dataiter as di
 >>> data = di.GeoJSON.read("data/neighbourhoods.geojson")
 >>> data.head()
 .
@@ -63,6 +65,7 @@ GeoJSON
 ListOfDicts
 -----------
 
+>>> import dataiter as di
 >>> data = di.ListOfDicts.read_json("data/listings.json")
 >>> data = data.modify(price_per_guest=lambda x: x.price / x.guests)
 >>> data.head()
