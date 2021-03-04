@@ -35,6 +35,8 @@ PRINT_FLOAT_PRECISION = 6
 PRINT_MAX_ELEMENTS = 100
 PRINT_MAX_ITEMS = 10
 PRINT_MAX_ROWS = 100
+
+# Only used as a fallback, see util.get_print_width.
 PRINT_MAX_WIDTH = 80
 
 def ncol(data):

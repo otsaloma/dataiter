@@ -78,6 +78,9 @@ class TestUtil:
         assert len(colnames) == 1000
         assert len(set(colnames)) == 1000
 
+    def test_get_print_width(self):
+        assert 0 < util.get_print_width() < 1000
+
     def test_length(self):
         assert util.length(1) == 1
         assert util.length([1]) == 1

@@ -748,7 +748,7 @@ class DataFrame(dict):
         """
         if not self: return ""
         max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
-        max_width = dataiter.PRINT_MAX_WIDTH if max_width is None else max_width
+        max_width = util.get_print_width() if max_width is None else max_width
         n = min(self.nrow, max_rows)
         columns = {colname: util.pad(
             [colname] +

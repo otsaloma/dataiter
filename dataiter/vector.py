@@ -475,11 +475,12 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1/2, 1/3, 1/4])
         >>> vector.to_string()
         """
+        print_width = util.get_print_width()
         def add_string_element(string, rows):
             if len(rows[-1]) <= 1:
                 return rows[-1].append(string)
             row = " ".join(rows[-1] + [string])
-            if len(row) < dataiter.PRINT_MAX_WIDTH:
+            if len(row) < print_width:
                 return rows[-1].append(string)
             # Start a new row with padding and string.
             return rows.append([" ", string])

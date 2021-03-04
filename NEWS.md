@@ -1,3 +1,8 @@
+PENDING: dataiter 0.19
+======================
+
+* Use terminal window width as maximum print width
+
 2021-03-03: dataiter 0.18
 =========================
 
