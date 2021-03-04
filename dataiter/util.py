@@ -56,7 +56,7 @@ def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 
 def get_print_width():
-    return shutil.get_terminal_size((dataiter.PRINT_MAX_WIDTH, 24))[0]
+    return shutil.get_terminal_size((dataiter.PRINT_MAX_WIDTH, 24))[0] - 1
 
 def length(value):
     return 1 if np.isscalar(value) else len(value)
