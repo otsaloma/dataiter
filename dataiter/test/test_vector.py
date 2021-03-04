@@ -51,24 +51,24 @@ class TestVector:
     def test___new___missing_boolean(self):
         # Should be upcast to object.
         # Missing values should be None.
-        a = Vector([True, False, None])
-        b = Vector([True, False, None])
+        a = Vector([True, False, np.nan, None])
+        b = Vector([True, False, None, None])
         assert a.is_object
         assert a.equal(b)
 
     def test___new___missing_date(self):
         # Should be converted to np.datetime64.
         # Missing values should be NaT.
-        a = Vector([DATE, NaT, None])
-        b = Vector([DATE, NaT, NaT])
+        a = Vector([DATE, NaT, np.nan, None])
+        b = Vector([DATE, NaT, NaT, NaT])
         assert a.is_datetime
         assert a.equal(b)
 
     def test___new___missing_datetime(self):
         # Should be converted to np.datetime64.
         # Missing values should be NaT.
-        a = Vector([DATETIME, NaT, None])
-        b = Vector([DATETIME, NaT, NaT])
+        a = Vector([DATETIME, np.nan, NaT, None])
+        b = Vector([DATETIME, NaT, NaT, NaT])
         assert a.is_datetime
         assert a.equal(b)
 
@@ -89,8 +89,8 @@ class TestVector:
 
     def test___new___missing_string(self):
         # Missing values should be blank strings.
-        a = Vector(["a", "b", "", None])
-        b = Vector(["a", "b", "", ""])
+        a = Vector(["a", "b", "", np.nan, None])
+        b = Vector(["a", "b", "", "", ""])
         assert a.is_string
         assert a.equal(b)
 

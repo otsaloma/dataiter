@@ -2,6 +2,7 @@ PENDING: dataiter 0.19
 ======================
 
 * Use terminal window width as maximum print width
+* `Vector.__init__`: Handle NaN values in non-float vectors
 
 2021-03-03: dataiter 0.18
 =========================

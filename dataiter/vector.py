@@ -431,7 +431,7 @@ class Vector(np.ndarray):
         # Convert missing values in seq to NumPy equivalents.
         types = util.unique_types(seq)
         missing = cls._std_to_np_missing_value(types)
-        seq = [missing if x is None else x for x in seq]
+        seq = [missing if x in [None, np.nan] else x for x in seq]
         if dtype is not None:
             return np.array(seq, dtype)
         # NaT values bring in np.datetime64 to types.
