@@ -253,6 +253,16 @@ class TestDataFrame:
         assert sum(data.holiday != "") == 35
         assert np.sum(data.downloads) == 541335745
 
+    def test_left_join_by_tuple(self):
+        orig = test.data_frame("downloads.csv")
+        holidays = test.data_frame("holidays.csv")
+        holidays = holidays.rename(holiday_date="date")
+        data = orig.left_join(holidays, ("date", "holiday_date"))
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol + 1
+        assert sum(data.holiday != "") == 35
+        assert np.sum(data.downloads) == 541335745
+
     def test_modify(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.modify(test=1)

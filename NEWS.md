@@ -1,3 +1,9 @@
+PENDING: dataiter 0.20
+======================
+
+* `DataFrame.*_join`: Handle differing by names via tuple argument
+* `ListOfDicts.*_join`: Handle differing by names via tuple argument
+
 2021-03-04: dataiter 0.19
 =========================
 

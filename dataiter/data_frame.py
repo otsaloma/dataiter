@@ -203,15 +203,18 @@ class DataFrame(dict):
         """
         Return rows with no matches in `other`.
 
-        `by` are column names, by which to look for matching rows.
+        `by` are column names, by which to look for matching rows, or tuples of
+        column names if the correspoding column name differs between `self` and
+        `other`.
 
         >>> # All listings that don't have reviews
         >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
         >>> listings.anti_join(reviews, "id")
         """
-        other = other.unique(*by)
-        found, src = self._get_join_indices(other, *by)
+        by1, by2 = self._split_by(*by)
+        other = other.unique(*by2)
+        found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, np.delete(column, found)
 
@@ -362,7 +365,9 @@ class DataFrame(dict):
         ones. If there are multiple matches, the first one will be used. For
         rows, for which matches are not found, missing values are added.
 
-        `by` are column names, by which to look for matching rows.
+        `by` are column names, by which to look for matching rows, or tuples of
+        column names if the correspoding column name differs between `self` and
+        `other`.
 
         >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
@@ -373,10 +378,10 @@ class DataFrame(dict):
         b = other.filter_out(np.isin(other._id_, a._id_))
         return a.rbind(b).unselect("_id_")
 
-    def _get_join_indices(self, other, *by):
-        other_ids = list(zip(*[other[x] for x in by]))
+    def _get_join_indices(self, other, by1, by2):
+        other_ids = list(zip(*[other[x] for x in by2]))
         other_by_id = {other_ids[i]: i for i in range(other.nrow)}
-        self_ids = zip(*[self[x] for x in by])
+        self_ids = zip(*[self[x] for x in by1])
         src = map(lambda x: other_by_id.get(x, -1), self_ids)
         src = np.fromiter(src, np.int, count=self.nrow)
         found = np.where(src > -1)
@@ -410,17 +415,21 @@ class DataFrame(dict):
         matching ones. If there are multiple matches, the first one will be
         used.
 
-        `by` are column names, by which to look for matching rows.
+        `by` are column names, by which to look for matching rows, or tuples of
+        column names if the correspoding column name differs between `self` and
+        `other`.
 
         >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
         >>> listings.inner_join(reviews, "id")
         """
-        other = other.unique(*by)
-        found, src = self._get_join_indices(other, *by)
+        by1, by2 = self._split_by(*by)
+        other = other.unique(*by2)
+        found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column[found].copy()
         for colname, column in other.items():
+            if colname in by2: continue
             if colname in self: continue
             yield colname, column[src[found]].copy()
 
@@ -433,17 +442,21 @@ class DataFrame(dict):
         are multiple matches, the first one will be used. For rows, for which
         matches are not found, missing values are added.
 
-        `by` are column names, by which to look for matching rows.
+        `by` are column names, by which to look for matching rows, or tuples of
+        column names if the correspoding column name differs between `self` and
+        `other`.
 
         >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
         >>> listings.left_join(reviews, "id")
         """
-        other = other.unique(*by)
-        found, src = self._get_join_indices(other, *by)
+        by1, by2 = self._split_by(*by)
+        other = other.unique(*by2)
+        found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column.copy()
         for colname, column in other.items():
+            if colname in by2: continue
             if colname in self: continue
             value = column.missing_value
             dtype = column.missing_dtype
@@ -649,15 +662,18 @@ class DataFrame(dict):
         """
         Return rows with matches in `other`.
 
-        `by` are column names, by which to look for matching rows.
+        `by` are column names, by which to look for matching rows, or tuples of
+        column names if the correspoding column name differs between `self` and
+        `other`.
 
         >>> # All listings that have reviews
         >>> listings = di.DataFrame.read_csv("data/listings.csv")
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
         >>> listings.semi_join(reviews, "id")
         """
-        other = other.unique(*by)
-        found, src = self._get_join_indices(other, *by)
+        by1, by2 = self._split_by(*by)
+        other = other.unique(*by2)
+        found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column[found].copy()
 
@@ -706,6 +722,11 @@ class DataFrame(dict):
         indices = np.lexsort(sort_key())
         for colname, column in self.items():
             yield colname, column[indices].copy()
+
+    def _split_by(self, *by):
+        by1 = [x if isinstance(x, str) else x[0] for x in by]
+        by2 = [x if isinstance(x, str) else x[1] for x in by]
+        return by1, by2
 
     def tail(self, n=None):
         """

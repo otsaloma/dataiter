@@ -169,17 +169,20 @@ class ListOfDicts(list):
         """
         Return items with no matches in `other`.
 
-        `by` are keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items, or tuples of keys
+        if the correspoding key differs between `self` and `other`.
 
         >>> # All listings that don't have reviews
         >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
         >>> listings.anti_join(reviews, "id")
         """
-        extract = operator.itemgetter(*by)
-        other_ids = set(map(extract, other))
+        by1, by2 = self._split_by(*by)
+        extract1 = operator.itemgetter(*by1)
+        extract2 = operator.itemgetter(*by2)
+        other_ids = set(map(extract2, other))
         for item in self:
-            if extract(item) not in other_ids:
+            if extract1(item) not in other_ids:
                 yield item
 
     @deco.new_from_generator
@@ -299,7 +302,8 @@ class ListOfDicts(list):
         there are multiple matches, the first one will be used. For items, for
         which matches are not found, no keys are added.
 
-        `by` are keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items, or tuples of keys
+        if the correspoding key differs between `self` and `other`.
 
         >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
@@ -341,18 +345,23 @@ class ListOfDicts(list):
         `inner_join` keeps only items found in both lists, merging matching
         ones. If there are multiple matches, the first one will be used.
 
-        `by` are keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items, or tuples of keys
+        if the correspoding key differs between `self` and `other`.
 
         >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
         >>> listings.inner_join(reviews, "id")
         """
-        extract = operator.itemgetter(*by)
-        other_by_id = {extract(x): x for x in reversed(other)}
+        by1, by2 = self._split_by(*by)
+        extract1 = operator.itemgetter(*by1)
+        extract2 = operator.itemgetter(*by2)
+        other_by_id = {extract2(x): x for x in reversed(other)}
         for item in self:
-            id = extract(item)
+            id = extract1(item)
             if id in other_by_id:
-                item.update(other_by_id[id])
+                new = other_by_id[id]
+                new = {k: v for k, v in new.items() if k not in by2}
+                item.update(new)
                 yield item
 
     @deco.new_from_generator
@@ -381,16 +390,21 @@ class ListOfDicts(list):
         `other`. If there are multiple matches, the first one will be used. For
         items, for which matches are not found, no keys are added.
 
-        `by` are keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items, or tuples of keys
+        if the correspoding key differs between `self` and `other`.
 
         >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
         >>> listings.left_join(reviews, "id")
         """
-        extract = operator.itemgetter(*by)
-        other_by_id = {extract(x): x for x in reversed(other)}
+        by1, by2 = self._split_by(*by)
+        extract1 = operator.itemgetter(*by1)
+        extract2 = operator.itemgetter(*by2)
+        other_by_id = {extract2(x): x for x in reversed(other)}
         for item in self:
-            item.update(other_by_id.get(extract(item), {}))
+            new = other_by_id.get(extract1(item), {})
+            new = {k: v for k, v in new.items() if k not in by2}
+            item.update(new)
             yield item
 
     def _mark_obsolete(self):
@@ -565,17 +579,20 @@ class ListOfDicts(list):
         """
         Return items with matches in `other`.
 
-        `by` are keys, by which to look for matching items.
+        `by` are keys, by which to look for matching items, or tuples of keys
+        if the correspoding key differs between `self` and `other`.
 
         >>> # All listings that have reviews
         >>> listings = di.ListOfDicts.read_json("data/listings.json")
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
         >>> listings.semi_join(reviews, "id")
         """
-        extract = operator.itemgetter(*by)
-        other_ids = set(map(extract, other))
+        by1, by2 = self._split_by(*by)
+        extract1 = operator.itemgetter(*by1)
+        extract2 = operator.itemgetter(*by2)
+        other_ids = set(map(extract2, other))
         for item in self:
-            if extract(item) in other_ids:
+            if extract1(item) in other_ids:
                 yield item
 
     def sort(self, **key_dir_pairs):
@@ -599,6 +616,11 @@ class ListOfDicts(list):
                         (item[key] is not None, item[key]))
             data = sorted(data, key=sort_key, reverse=dir < 0)
         return self._new(data)
+
+    def _split_by(self, *by):
+        by1 = [x if isinstance(x, str) else x[0] for x in by]
+        by2 = [x if isinstance(x, str) else x[1] for x in by]
+        return by1, by2
 
     def tail(self, n=None):
         """
