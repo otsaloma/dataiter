@@ -582,7 +582,7 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
+    def read_csv(cls, fname, encoding="utf_8", header=True, columns=None, sep=","):
         """
         Return a new data frame from CSV file `fname`.
         """
@@ -590,6 +590,7 @@ class DataFrame(dict):
         data = pd.read_csv(fname,
                            sep=sep,
                            header=0 if header else None,
+                           usecols=columns,
                            parse_dates=False,
                            encoding=encoding)
 
