@@ -312,6 +312,11 @@ class TestDataFrame:
         assert data.nrow == 33442
         assert data.ncol == 12
 
+    def test_read_csv_columns(self):
+        fname = test.get_data_filename("vehicles.csv")
+        data = DataFrame.read_csv(fname, columns=["make", "model"])
+        assert data.colnames == ["make", "model"]
+
     def test_read_json(self):
         data = test.data_frame("downloads.json")
         assert data.nrow == 905

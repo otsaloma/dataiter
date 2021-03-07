@@ -2,6 +2,7 @@ PENDING: dataiter 0.21
 ======================
 
 * `DataFrame.read_csv`: Add `columns` argument
+* `ListOfDicts.read_csv`: Add `columns` argument
 
 2021-03-06: dataiter 0.20
 =========================

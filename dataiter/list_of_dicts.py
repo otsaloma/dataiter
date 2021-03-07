@@ -499,7 +499,7 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, fname, encoding="utf_8", header=True, sep=","):
+    def read_csv(cls, fname, encoding="utf_8", header=True, sep=",", columns=None):
         """
         Return a new list from CSV file `fname`.
         """
@@ -507,6 +507,15 @@ class ListOfDicts(list):
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
             if not rows: return cls([])
             keys = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
+            if columns:
+                # Limit to requested columns.
+                indices = list(reversed(range(len(rows[0]))))
+                keep = set(keys.index(x) for x in columns)
+                for row in rows:
+                    for i in indices:
+                        if i not in keep:
+                            del row[i]
+                keys = columns
             return cls(dict(zip(keys, x)) for x in rows)
 
     @classmethod

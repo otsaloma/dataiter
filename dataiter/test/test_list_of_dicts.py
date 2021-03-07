@@ -294,6 +294,11 @@ class TestListOfDicts:
         assert len(data) == 33442
         assert all(len(x) == 12 for x in data)
 
+    def test_read_csv_columns(self):
+        fname = test.get_data_filename("vehicles.csv")
+        data = ListOfDicts.read_csv(fname, columns=["make", "model"])
+        assert list(data[0].keys()) == ["make", "model"]
+
     def test_read_json(self):
         data = test.list_of_dicts("downloads.json")
         assert len(data) == 905
