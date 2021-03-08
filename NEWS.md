@@ -1,5 +1,5 @@
-PENDING: dataiter 0.21
-======================
+2021-03-08: dataiter 0.21
+=========================
 
 * `DataFrame.read_csv`: Add `columns` argument
 * `ListOfDicts.read_csv`: Add `columns` argument
