@@ -1,5 +1,5 @@
-PENDING: dataiter 0.22
-======================
+2021-05-13: dataiter 0.22
+=========================
 
 * `ListOfDicts.map`: New method
 
