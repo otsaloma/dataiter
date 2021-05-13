@@ -253,6 +253,13 @@ class TestListOfDicts:
         assert sum("holiday" in x for x in data) == 35
         assert sum(data.pluck("downloads")) == 541335745
 
+    def test_map(self):
+        orig = test.list_of_dicts("downloads.json")
+        data = orig.map(lambda x: {**x, "year": int(x.date[:4])})
+        assert len(data) == len(orig)
+        assert all("year" in x for x in data)
+        assert sum(data.pluck("year")) == 1827565
+
     def test__mark_obsolete_after_multiple_modify(self):
         data = test.list_of_dicts("downloads.json")
         data = data.modify(a=lambda x: 1)

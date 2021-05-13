@@ -18,6 +18,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.inner_join`
 :meth:`~dataiter.ListOfDicts.insert`
 :meth:`~dataiter.ListOfDicts.left_join`
+:meth:`~dataiter.ListOfDicts.map`
 :meth:`~dataiter.ListOfDicts.modify`
 :meth:`~dataiter.ListOfDicts.modify_if`
 :meth:`~dataiter.ListOfDicts.pluck`

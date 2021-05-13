@@ -407,6 +407,21 @@ class ListOfDicts(list):
             item.update(new)
             yield item
 
+    def map(self, function):
+        """
+        Apply `function` to each item in list.
+
+        If `function` returns a dict, then the return value will be coerced to
+        a :class:`ListOfDicts` instance, otherwise the return value will be a
+        list of whatever `function` returns.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data.map(lambda x: {**x, "price_per_guest": x.price / x.guests})
+        """
+        new = list(map(function, self))
+        coerce = all(isinstance(x, dict) for x in new)
+        return self.__class__(new) if coerce else new
+
     def _mark_obsolete(self):
         if isinstance(self._predecessor, ListOfDicts):
             self._predecessor._mark_obsolete()
