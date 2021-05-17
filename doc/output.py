@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import os
 import subprocess
 
+from pathlib import Path
+
 CODE = """
-import os
 import sys
-sys.path.insert(0, os.path.abspath("."))
+from pathlib import Path
+sys.path.insert(0, str(Path(".")))
 import dataiter as di
 import numpy as np
 di.PRINT_MAX_ITEMS = 3
@@ -19,7 +20,7 @@ def get_output(lines):
         return subprocess.check_output(
             args=["python3", "-c", "\n".join(lines)],
             stderr=subprocess.STDOUT,
-            cwd=os.path.abspath(".."),
+            cwd=Path("..").resolve(),
             encoding="utf_8",
             errors="replace",
             universal_newlines=True,

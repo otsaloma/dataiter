@@ -25,6 +25,7 @@ import tempfile
 from attd import AttributeDict
 from dataiter import ListOfDicts
 from dataiter import test
+from pathlib import Path
 
 
 class TestListOfDicts:
@@ -301,8 +302,11 @@ class TestListOfDicts:
         assert len(data) == 33442
         assert all(len(x) == 12 for x in data)
 
+    def test_read_csv_path(self):
+        ListOfDicts.read_csv(test.get_data_path("vehicles.csv"))
+
     def test_read_csv_columns(self):
-        fname = test.get_data_filename("vehicles.csv")
+        fname = str(test.get_data_path("vehicles.csv"))
         data = ListOfDicts.read_csv(fname, columns=["make", "model"])
         assert list(data[0].keys()) == ["make", "model"]
 
@@ -311,12 +315,21 @@ class TestListOfDicts:
         assert len(data) == 905
         assert all(len(x) == 3 for x in data)
 
+    def test_read_json_path(self):
+        ListOfDicts.read_csv(test.get_data_path("vehicles.json"))
+
     def test_read_pickle(self):
         orig = test.list_of_dicts("downloads.json")
         handle, fname = tempfile.mkstemp(".pkl")
         orig.write_pickle(fname)
         data = ListOfDicts.read_pickle(fname)
         assert data == orig
+
+    def test_read_pickle_path(self):
+        orig = test.list_of_dicts("downloads.json")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(fname)
+        ListOfDicts.read_pickle(Path(fname))
 
     def test_rename(self):
         orig = test.list_of_dicts("downloads.json")
@@ -474,6 +487,11 @@ class TestListOfDicts:
         data = ListOfDicts.read_csv(fname)
         assert data == orig
 
+    def test_write_csv_path(self):
+        orig = test.list_of_dicts("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".csv")
+        orig.write_csv(Path(fname))
+
     def test_write_json(self):
         orig = test.list_of_dicts("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
@@ -481,9 +499,19 @@ class TestListOfDicts:
         data = ListOfDicts.read_json(fname)
         assert data == orig
 
+    def test_write_json_path(self):
+        orig = test.list_of_dicts("downloads.json")
+        handle, fname = tempfile.mkstemp(".json")
+        orig.write_json(Path(fname))
+
     def test_write_pickle(self):
         orig = test.list_of_dicts("downloads.json")
         handle, fname = tempfile.mkstemp(".pkl")
         orig.write_pickle(fname)
         data = ListOfDicts.read_pickle(fname)
         assert data == orig
+
+    def test_write_pickle_path(self):
+        orig = test.list_of_dicts("downloads.json")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(Path(fname))

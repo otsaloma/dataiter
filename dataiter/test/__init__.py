@@ -20,29 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import os
-
 from dataiter import DataFrame
 from dataiter import GeoJSON
 from dataiter import ListOfDicts
+from pathlib import Path
 
 
 def data_frame(fname):
-    fname = get_data_filename(fname)
+    fname = str(get_data_path(fname))
     extension = fname.split(".")[-1]
     read = getattr(DataFrame, f"read_{extension}")
     return read(fname)
 
 def geojson(fname):
-    fname = get_data_filename(fname)
+    fname = str(get_data_path(fname))
     return GeoJSON.read(fname)
 
-def get_data_filename(fname):
-    directory = os.path.dirname(__file__)
-    return os.path.join(directory, "..", "..", "data", fname)
+def get_data_path(fname):
+    root = Path(__file__).parent.parent.parent.resolve()
+    return root / "data" / str(fname)
 
 def list_of_dicts(fname):
-    fname = get_data_filename(fname)
+    fname = str(get_data_path(fname))
     extension = fname.split(".")[-1]
     read = getattr(ListOfDicts, f"read_{extension}")
     return read(fname)

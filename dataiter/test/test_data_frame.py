@@ -26,6 +26,7 @@ import tempfile
 from dataiter import DataFrame
 from dataiter import DataFrameColumn
 from dataiter import test
+from pathlib import Path
 
 
 class TestDataFrameColumn:
@@ -313,14 +314,20 @@ class TestDataFrame:
         assert data.ncol == 12
 
     def test_read_csv_columns(self):
-        fname = test.get_data_filename("vehicles.csv")
+        fname = str(test.get_data_path("vehicles.csv"))
         data = DataFrame.read_csv(fname, columns=["make", "model"])
         assert data.colnames == ["make", "model"]
+
+    def test_read_csv_path(self):
+        DataFrame.read_csv(test.get_data_path("vehicles.csv"))
 
     def test_read_json(self):
         data = test.data_frame("downloads.json")
         assert data.nrow == 905
         assert data.ncol == 3
+
+    def test_read_json_path(self):
+        DataFrame.read_json(test.get_data_path("vehicles.json"))
 
     def test_read_pickle(self):
         orig = test.data_frame("vehicles.csv")
@@ -328,6 +335,12 @@ class TestDataFrame:
         orig.write_pickle(fname)
         data = DataFrame.read_pickle(fname)
         assert data == orig
+
+    def test_read_pickle_path(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(fname)
+        DataFrame.read_pickle(Path(fname))
 
     def test_rename(self):
         orig = test.data_frame("downloads.csv")
@@ -448,6 +461,11 @@ class TestDataFrame:
         data = DataFrame.read_csv(fname)
         assert data == orig
 
+    def test_write_csv_path(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".csv")
+        orig.write_csv(Path(fname))
+
     def test_write_json(self):
         orig = test.data_frame("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
@@ -455,9 +473,19 @@ class TestDataFrame:
         data = DataFrame.read_json(fname)
         assert data == orig
 
+    def test_write_json_path(self):
+        orig = test.data_frame("downloads.json")
+        handle, fname = tempfile.mkstemp(".json")
+        orig.write_json(Path(fname))
+
     def test_write_pickle(self):
         orig = test.data_frame("vehicles.csv")
         handle, fname = tempfile.mkstemp(".pkl")
         orig.write_pickle(fname)
         data = DataFrame.read_pickle(fname)
         assert data == orig
+
+    def test_write_pickle_path(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".pkl")
+        orig.write_pickle(Path(fname))

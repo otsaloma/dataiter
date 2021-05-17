@@ -24,6 +24,7 @@ import tempfile
 
 from dataiter import GeoJSON
 from dataiter import test
+from pathlib import Path
 
 
 class TestGeoJSON:
@@ -35,6 +36,9 @@ class TestGeoJSON:
         assert data.nrow == 233
         assert data.ncol == 3
 
+    def test_read_path(self):
+        GeoJSON.read(test.get_data_path(self.fname))
+
     def test_write(self):
         orig = test.geojson(self.fname)
         handle, fname = tempfile.mkstemp(".geojson")
@@ -42,3 +46,8 @@ class TestGeoJSON:
         data = GeoJSON.read(fname)
         assert data == orig
         assert data.metadata == orig.metadata
+
+    def test_write_path(self):
+        orig = test.geojson(self.fname)
+        handle, fname = tempfile.mkstemp(".geojson")
+        orig.write(Path(fname))
