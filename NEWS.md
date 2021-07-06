@@ -1,3 +1,8 @@
+PENDING: dataiter 0.23
+======================
+
+* `Vector.is_*`: Change to be methods instead of properties
+
 2021-05-13: dataiter 0.22
 =========================
 

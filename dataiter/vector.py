@@ -104,7 +104,7 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(["a", "b"])
         >>> vector.as_bytes()
         """
-        if self.is_string:
+        if self.is_string():
             array = np.char.encode(self, "UTF-8")
             return array.view(self.__class__)
         return self.astype(bytes)
@@ -216,21 +216,18 @@ class Vector(np.ndarray):
         n = min(self.length, n)
         return self[np.arange(n)].copy()
 
-    @property
     def is_boolean(self):
         """
         Return whether vector data type is boolean.
         """
         return np.issubdtype(self.dtype, np.bool_)
 
-    @property
     def is_bytes(self):
         """
         Return whether vector data type is bytes.
         """
         return np.issubdtype(self.dtype, np.bytes_)
 
-    @property
     def is_datetime(self):
         """
         Return whether vector data type is datetime.
@@ -239,14 +236,12 @@ class Vector(np.ndarray):
         """
         return np.issubdtype(self.dtype, np.datetime64)
 
-    @property
     def is_float(self):
         """
         Return whether vector data type is float.
         """
         return np.issubdtype(self.dtype, np.floating)
 
-    @property
     def is_integer(self):
         """
         Return whether vector data type is integer.
@@ -261,29 +256,26 @@ class Vector(np.ndarray):
         >>> vector
         >>> vector.is_missing()
         """
-        if self.is_datetime:
+        if self.is_datetime():
             return np.isnat(self)
-        if self.is_float:
+        if self.is_float():
             return np.isnan(self)
-        if self.is_string:
+        if self.is_string():
             return self == ""
         return np.isin(self, [None])
 
-    @property
     def is_number(self):
         """
         Return whether vector data type is number.
         """
         return np.issubdtype(self.dtype, np.number)
 
-    @property
     def is_object(self):
         """
         Return whether vector data type is object.
         """
         return np.issubdtype(self.dtype, np.object_)
 
-    @property
     def is_string(self):
         """
         Return whether vector data type is string.
@@ -326,13 +318,13 @@ class Vector(np.ndarray):
         >>> vector.put([2], vector.missing_value)
         >>> vector
         """
-        if self.is_datetime:
+        if self.is_datetime():
             return self.dtype
-        if self.is_float:
+        if self.is_float():
             return self.dtype
-        if self.is_integer:
+        if self.is_integer():
             return float
-        if self.is_string:
+        if self.is_string():
             return self.dtype
         return object
 
@@ -358,13 +350,13 @@ class Vector(np.ndarray):
         Integer will need to be upcast to float to contain ``np.nan``. Other,
         such as boolean, will need to be upcast to object to contain ``None``.
         """
-        if self.is_datetime:
+        if self.is_datetime():
             return np.datetime64("NaT")
-        if self.is_float:
+        if self.is_float():
             return np.nan
-        if self.is_integer:
+        if self.is_integer():
             return np.nan
-        if self.is_string:
+        if self.is_string():
             return ""
         # Note that using None, e.g. for a boolean vector,
         # might not work directly as it requires upcasting to object.
@@ -508,13 +500,13 @@ class Vector(np.ndarray):
         identity = lambda x, *args, **kwargs: x
         quote = util.quote if quote else identity
         pad = util.pad if pad else identity
-        if self.is_float:
+        if self.is_float():
             strings = util.format_floats(self)
             return self.__class__.fast(pad(strings), str)
-        if self.is_integer:
+        if self.is_integer():
             strings = ["{:d}".format(x) for x in self]
             return self.__class__.fast(pad(strings), str)
-        if self.is_string:
+        if self.is_string():
             strings = [quote(x) for x in self]
             return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]

@@ -53,7 +53,7 @@ class TestDataFrameColumn:
 
     def test___init___with_dtype(self):
         column = DataFrameColumn([1, 2, 3], dtype=float)
-        assert column.is_float
+        assert column.is_float()
 
     def test__init___with_nrow(self):
         column = DataFrameColumn([1], nrow=3)
