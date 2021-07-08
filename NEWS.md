@@ -2,6 +2,8 @@ PENDING: dataiter 0.23
 ======================
 
 * `Vector.is_*`: Change to be methods instead of properties
+* Drop deprecated use of `np.int`
+* Drop deprecated comparisons against NaN
 
 2021-05-13: dataiter 0.22
 =========================
