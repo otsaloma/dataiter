@@ -1,5 +1,5 @@
-PENDING: dataiter 0.23
-======================
+2021-07-08: dataiter 0.23
+=========================
 
 * `Vector.is_*`: Change to be methods instead of properties
 * Drop deprecated use of `np.int`
