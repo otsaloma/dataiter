@@ -383,7 +383,7 @@ class DataFrame(dict):
         other_by_id = {other_ids[i]: i for i in range(other.nrow)}
         self_ids = zip(*[self[x] for x in by1])
         src = map(lambda x: other_by_id.get(x, -1), self_ids)
-        src = np.fromiter(src, np.int, count=self.nrow)
+        src = np.fromiter(src, int, count=self.nrow)
         found = np.where(src > -1)
         return found, src
 
