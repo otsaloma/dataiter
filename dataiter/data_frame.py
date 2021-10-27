@@ -554,7 +554,7 @@ class DataFrame(dict):
         """
         mem = DataFrame()
         for name, column in self.items():
-            new = DataFrame(name=name)
+            new = DataFrame(column=name)
             new.dtype = str(column.dtype)
             new.item_size = column.itemsize
             if column.is_object():
@@ -562,7 +562,7 @@ class DataFrame(dict):
             else:
                 new.total_size = column.nbytes
             mem = mem.rbind(new)
-        new = DataFrame(name="TOTAL")
+        new = DataFrame(column="TOTAL")
         new.dtype = "--"
         new.item_size = mem.item_size.sum()
         new.total_size = mem.total_size.sum()
@@ -570,6 +570,7 @@ class DataFrame(dict):
         # Format sizes into sensible values for display.
         mem.item_size = [f"{x:.0f} B" for x in mem.item_size]
         mem.total_size = [f"{x/1024**2:,.0f} MB" for x in mem.total_size]
+        mem.colnames = [x.upper() for x in mem.colnames]
         print(mem)
 
     def print_missing_counts(self):
@@ -579,12 +580,14 @@ class DataFrame(dict):
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.print_missing_counts()
         """
-        print("Missing counts:")
+        nas = DataFrame()
         for name in self.colnames:
             n = self[name].is_missing().sum()
             if n == 0: continue
-            pc = 100 * n / self.nrow
-            print(f"... {name}: {n} ({pc:.1f}%)")
+            nas = nas.rbind(DataFrame(column=name, nna=n))
+        nas.pna = [f"{100*x/self.nrow:.1f}%" for x in nas.nna]
+        nas.colnames = [x.upper() for x in nas.colnames]
+        print(nas)
 
     @deco.new_from_generator
     def rbind(self, *others):
