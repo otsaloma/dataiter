@@ -26,6 +26,7 @@ from attd import AttributeDict
 from dataiter import ListOfDicts
 from dataiter import test
 from pathlib import Path
+from unittest.mock import patch
 
 
 class TestListOfDicts:
@@ -296,6 +297,12 @@ class TestListOfDicts:
         downloads = data.pluck("downloads", 0)
         assert len(downloads) == len(data)
         assert sum(downloads) == 541300639
+
+    @patch("builtins.print")
+    def test_print_missing_counts(self, mock_print):
+        data = test.list_of_dicts("vehicles.json")
+        data.print_missing_counts()
+        mock_print.assert_called()
 
     def test_read_csv(self):
         data = test.list_of_dicts("vehicles.csv")

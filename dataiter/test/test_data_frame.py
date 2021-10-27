@@ -27,6 +27,7 @@ from dataiter import DataFrame
 from dataiter import DataFrameColumn
 from dataiter import test
 from pathlib import Path
+from unittest.mock import patch
 
 
 class TestDataFrameColumn:
@@ -285,6 +286,18 @@ class TestDataFrame:
     def test_nrow(self):
         data = test.data_frame("vehicles.csv")
         assert data.nrow == 33442
+
+    @patch("builtins.print")
+    def test_print_memory_use(self, mock_print):
+        data = test.data_frame("vehicles.csv")
+        data.print_memory_use()
+        mock_print.assert_called()
+
+    @patch("builtins.print")
+    def test_print_missing_counts(self, mock_print):
+        data = test.data_frame("vehicles.csv")
+        data.print_missing_counts()
+        mock_print.assert_called()
 
     def test_rbind(self):
         orig = test.data_frame("vehicles.csv")
