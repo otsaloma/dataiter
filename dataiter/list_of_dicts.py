@@ -503,7 +503,7 @@ class ListOfDicts(list):
         Both keys entirely missing and keys with a value of ``None`` are
         considered missing.
 
-        >>> data = di.ListOfDicts.read_csv("data/listings.json")
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.print_missing_counts()
         """
         print("Missing counts:")
