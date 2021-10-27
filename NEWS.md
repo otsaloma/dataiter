@@ -1,3 +1,8 @@
+PENDING: dataiter 0.24
+======================
+
+* `ListOfDicts.write_csv`: Use less memory
+
 2021-07-08: dataiter 0.23
 =========================
 

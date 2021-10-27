@@ -507,7 +507,7 @@ class ListOfDicts(list):
         >>> data.print_missing_counts()
         """
         print("Missing counts:")
-        for key in util.unique_keys(list(itertools.chain(*self))):
+        for key in util.unique_keys(itertools.chain(*self)):
             n = sum(x.get(key, None) is None for x in self)
             if n == 0: continue
             pc = 100 * n / len(self)
@@ -752,14 +752,15 @@ class ListOfDicts(list):
         """
         if not self:
             raise ValueError("Cannot write empty CSV file")
-        # Take a superset of all keys and fill in missing as None.
-        keys = util.unique_keys(list(itertools.chain(*self)))
-        data = [{**dict.fromkeys(keys), **x} for x in self]
+        # Take a superset of all keys.
+        keys = util.unique_keys(itertools.chain(*self))
         util.makedirs_for_file(fname)
         with open(fname, "w", encoding=encoding) as f:
             writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
             writer.writeheader() if header else None
-            for item in data:
+            for item in self:
+                # Fill in missing as None.
+                item = {**dict.fromkeys(keys), **item}
                 writer.writerow(item)
 
     def write_json(self, fname, encoding="utf_8", **kwargs):
