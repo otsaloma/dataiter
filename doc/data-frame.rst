@@ -22,6 +22,7 @@ dataiter.DataFrame
 :attr:`~dataiter.DataFrame.ncol`
 :attr:`~dataiter.DataFrame.nrow`
 :meth:`~dataiter.DataFrame.print_`
+:meth:`~dataiter.DataFrame.print_memory_use`
 :meth:`~dataiter.DataFrame.print_missing_counts`
 :meth:`~dataiter.DataFrame.rbind`
 :meth:`~dataiter.DataFrame.read_csv`

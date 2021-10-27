@@ -26,6 +26,7 @@ import itertools
 import json
 import numpy as np
 import pickle
+import sys
 
 from dataiter import deco
 from dataiter import util
@@ -543,6 +544,33 @@ class DataFrame(dict):
         >>> di.DataFrame.read_csv("data/listings.csv").print_()
         """
         print(self.to_string(max_rows, max_width))
+
+    def print_memory_use(self):
+        """
+        Print memory use by column and total.
+
+        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data.print_memory_use()
+        """
+        mem = DataFrame()
+        for name, column in self.items():
+            new = DataFrame(name=name)
+            new.dtype = str(column.dtype)
+            new.item_size = column.itemsize
+            if column.is_object():
+                new.total_size = sum(sys.getsizeof(x) for x in column)
+            else:
+                new.total_size = column.nbytes
+            mem = mem.rbind(new)
+        new = DataFrame(name="TOTAL")
+        new.dtype = "--"
+        new.item_size = mem.item_size.sum()
+        new.total_size = mem.total_size.sum()
+        mem = mem.rbind(new)
+        # Format sizes into sensible values for display.
+        mem.item_size = [f"{x:.0f} B" for x in mem.item_size]
+        mem.total_size = [f"{x/1024**2:,.0f} MB" for x in mem.total_size]
+        print(mem)
 
     def print_missing_counts(self):
         """

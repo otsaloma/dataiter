@@ -1,6 +1,7 @@
 PENDING: dataiter 0.24
 ======================
 
+* `DataFrame.print_memory_use`: New method
 * `ListOfDicts.write_csv`: Use less memory
 
 2021-07-08: dataiter 0.23
