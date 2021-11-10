@@ -384,6 +384,17 @@ class Vector(np.ndarray):
         rank = np.unique(self, return_inverse=True)[1]
         return rank.view(self.__class__)
 
+    def replace_missing(self, value):
+        """
+        Return vector with missing values replaced with `value`.
+
+        >>> vector = di.Vector([1, 2, 3, None])
+        >>> vector.replace_missing(0)
+        """
+        vector = self.copy()
+        vector[vector.is_missing()] = value
+        return vector
+
     def sample(self, n=None):
         """
         Return randomly chosen `n` elements.

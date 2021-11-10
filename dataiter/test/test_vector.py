@@ -326,6 +326,10 @@ class TestVector:
         assert (a.rank().tolist() == [3, 0, 1, 2, 4] or
                 a.rank().tolist() == [3, 0, 1, 2, 3])
 
+    def test_replace_missing(self):
+        a = Vector([1, 2, 3, None])
+        assert a.replace_missing(0).tolist() == [1, 2, 3, 0]
+
     def test_sample(self):
         a = Vector([1, 2, 3, 4, 5])
         assert np.all(np.isin(a.sample(3), a))

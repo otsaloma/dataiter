@@ -28,6 +28,7 @@ dataiter.Vector
 :attr:`~dataiter.Vector.missing_value`
 :meth:`~dataiter.Vector.range`
 :meth:`~dataiter.Vector.rank`
+:meth:`~dataiter.Vector.replace_missing`
 :meth:`~dataiter.Vector.sample`
 :meth:`~dataiter.Vector.sort`
 :meth:`~dataiter.Vector.tail`
