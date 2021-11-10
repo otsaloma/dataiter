@@ -299,6 +299,13 @@ class TestDataFrame:
         data.print_missing_counts()
         mock_print.assert_called()
 
+    @patch("builtins.print")
+    def test_print_missing_counts_none(self, mock_print):
+        data = test.data_frame("vehicles.csv")
+        data = data.select("id", "make", "model")
+        data.print_missing_counts()
+        mock_print.assert_not_called()
+
     def test_rbind(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.rbind(orig, orig)

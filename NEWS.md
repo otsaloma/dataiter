@@ -1,3 +1,8 @@
+PENDING: dataiter 0.24.1/0.25
+=============================
+
+* `DataFrame.print_missing_counts`: Fix when nothing missing
+
 2021-10-27: dataiter 0.24
 =========================
 
