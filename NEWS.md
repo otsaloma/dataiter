@@ -1,5 +1,5 @@
-PENDING: dataiter 0.25
-======================
+2021-11-13: dataiter 0.25
+=========================
 
 * `DataFrame.print_missing_counts`: Fix when nothing missing
 * `Vector.replace_missing`: New method
