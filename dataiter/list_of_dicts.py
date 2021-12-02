@@ -517,8 +517,10 @@ class ListOfDicts(list):
     def read_csv(cls, fname, encoding="utf_8", header=True, sep=",", columns=None):
         """
         Return a new list from CSV file `fname`.
+
+        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
         """
-        with open(fname, "r", encoding=encoding) as f:
+        with util.xopen(fname, "rt", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
             if not rows: return cls([])
             keys = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
@@ -538,17 +540,21 @@ class ListOfDicts(list):
         """
         Return a new list from JSON file `fname`.
 
+        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+
         `kwargs` are passed to :meth:`from_json`.
         """
-        with open(fname, "r", encoding=encoding) as f:
+        with util.xopen(fname, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
     @classmethod
     def read_pickle(cls, fname):
         """
         Return a new list from Pickle file `fname`.
+
+        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
         """
-        with open(fname, "rb") as f:
+        with util.xopen(fname, "rb") as f:
             return cls(pickle.load(f))
 
     @deco.obsoletes
@@ -749,13 +755,15 @@ class ListOfDicts(list):
     def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
         """
         Write list to CSV file `fname`.
+
+        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
         """
         if not self:
             raise ValueError("Cannot write empty CSV file")
         # Take a superset of all keys.
         keys = util.unique_keys(itertools.chain(*self))
         util.makedirs_for_file(fname)
-        with open(fname, "w", encoding=encoding) as f:
+        with util.xopen(fname, "wt", encoding=encoding) as f:
             writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
             writer.writeheader() if header else None
             for item in self:
@@ -767,13 +775,15 @@ class ListOfDicts(list):
         """
         Write list to JSON file `fname`.
 
+        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
         kwargs.setdefault("indent", 2)
         util.makedirs_for_file(fname)
-        with open(fname, "w", encoding=encoding) as f:
+        with util.xopen(fname, "wt", encoding=encoding) as f:
             encoder = json.JSONEncoder(**kwargs)
             for chunk in encoder.iterencode(self):
                 f.write(chunk)
@@ -782,8 +792,10 @@ class ListOfDicts(list):
     def write_pickle(self, fname):
         """
         Write list to Pickle file `fname`.
+
+        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
         """
         util.makedirs_for_file(fname)
-        with open(fname, "wb") as f:
+        with util.xopen(fname, "wb") as f:
             out = [dict(x) for x in self]
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)

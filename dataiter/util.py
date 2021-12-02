@@ -20,8 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import bz2
 import dataiter
+import gzip
 import itertools
+import lzma
 import math
 import numpy as np
 import shutil
@@ -83,6 +86,19 @@ def unique_types(seq):
     return set(x.__class__ for x in seq if
                x is not None and
                not (isinstance(x, float) and np.isnan(x)))
+
+def xopen(fname, mode="r", **kwargs):
+    if "b" not in mode:
+        kwargs.setdefault("encoding", "utf-8")
+    if str(fname).endswith(".bz2"):
+        kwargs.setdefault("compresslevel", 6)
+        return bz2.open(fname, mode, **kwargs)
+    if str(fname).endswith(".gz"):
+        kwargs.setdefault("compresslevel", 6)
+        return gzip.open(fname, mode, **kwargs)
+    if str(fname).endswith(".xz"):
+        return lzma.open(fname, mode)
+    return open(fname, mode, **kwargs)
 
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...

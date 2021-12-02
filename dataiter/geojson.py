@@ -85,12 +85,14 @@ class GeoJSON(DataFrame):
         """
         Return data from GeoJSON file `fname`.
 
+        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+
         `kwargs` are passed to ``json.load``.
 
         >>> data = di.GeoJSON.read("data/neighbourhoods.geojson")
         >>> data.head()
         """
-        with open(fname, "r", encoding=encoding) as f:
+        with util.xopen(fname, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))
         cls._check_raw_data(raw)
         data = {}
@@ -116,6 +118,8 @@ class GeoJSON(DataFrame):
         """
         Write data to GeoJSON file `fname`.
 
+        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+
         `kwargs` are passed to ``json.dumps``.
         """
         kwargs.setdefault("default", str)
@@ -127,7 +131,7 @@ class GeoJSON(DataFrame):
             raise Exception("Geometry missing")
         data = self.to_list_of_dicts()
         util.makedirs_for_file(fname)
-        with open(fname, "w", encoding=encoding) as f:
+        with util.xopen(fname, "wt", encoding=encoding) as f:
             f.write("{\n")
             for key, value in self.metadata.items():
                 blob = json.dumps(value, **kwargs)

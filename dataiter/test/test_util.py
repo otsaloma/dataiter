@@ -22,6 +22,7 @@
 
 import math
 import numpy as np
+import tempfile
 
 from dataiter import util
 
@@ -100,3 +101,35 @@ class TestUtil:
 
     def test_unique_types(self):
         assert util.unique_types([1, 2, 3.3, np.nan, None]) == set((int, float))
+
+    def test_xopen_bz2(self):
+        text = "test åäö"
+        handle, fname = tempfile.mkstemp(".bz2")
+        with util.xopen(fname, "wt") as f:
+            f.write(text)
+        with util.xopen(fname, "rt") as f:
+            assert f.read() == text
+
+    def test_xopen_gz(self):
+        text = "test åäö"
+        handle, fname = tempfile.mkstemp(".gz")
+        with util.xopen(fname, "wt") as f:
+            f.write(text)
+        with util.xopen(fname, "rt") as f:
+            assert f.read() == text
+
+    def test_xopen_txt(self):
+        text = "test åäö"
+        handle, fname = tempfile.mkstemp(".txt")
+        with util.xopen(fname, "wt") as f:
+            f.write(text)
+        with util.xopen(fname, "rt") as f:
+            assert f.read() == text
+
+    def test_xopen_xz(self):
+        text = "test åäö"
+        handle, fname = tempfile.mkstemp(".xz")
+        with util.xopen(fname, "wt") as f:
+            f.write(text)
+        with util.xopen(fname, "rt") as f:
+            assert f.read() == text

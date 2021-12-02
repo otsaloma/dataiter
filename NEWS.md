@@ -3,6 +3,8 @@ PENDING: dataiter 0.26
 
 * `DataFrame.read_npz`: New method
 * `DataFrame.write_npz`: New method
+* `*.read_*`: Decompress `.bz2|.gz|.xz` automatically
+* `*.write_*`: Compress `.bz2|.gz|.xz` automatically
 
 2021-11-13: dataiter 0.25
 =========================
