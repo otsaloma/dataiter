@@ -1,3 +1,9 @@
+PENDING: dataiter 0.26
+======================
+
+* `DataFrame.read_npz`: New method
+* `DataFrame.write_npz`: New method
+
 2021-11-13: dataiter 0.25
 =========================
 

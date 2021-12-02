@@ -639,6 +639,14 @@ class DataFrame(dict):
             return cls.from_json(f.read(), **kwargs)
 
     @classmethod
+    def read_npz(cls, fname):
+        """
+        Return a new data frame from NumPy file `fname`.
+        """
+        with np.load(fname) as data:
+            return cls(**data)
+
+    @classmethod
     def read_pickle(cls, fname):
         """
         Return a new data frame from Pickle file `fname`.
@@ -905,6 +913,14 @@ class DataFrame(dict):
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)
+
+    def write_npz(self, fname, compress=False):
+        """
+        Write data frame to NumPy file `fname`.
+        """
+        util.makedirs_for_file(fname)
+        savez = np.savez_compressed if compress else np.savez
+        savez(fname, **self)
 
     def write_pickle(self, fname):
         """

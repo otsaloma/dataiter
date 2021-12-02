@@ -27,6 +27,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.rbind`
 :meth:`~dataiter.DataFrame.read_csv`
 :meth:`~dataiter.DataFrame.read_json`
+:meth:`~dataiter.DataFrame.read_npz`
 :meth:`~dataiter.DataFrame.read_pickle`
 :meth:`~dataiter.DataFrame.rename`
 :meth:`~dataiter.DataFrame.sample`
@@ -44,6 +45,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.update`
 :meth:`~dataiter.DataFrame.write_csv`
 :meth:`~dataiter.DataFrame.write_json`
+:meth:`~dataiter.DataFrame.write_npz`
 :meth:`~dataiter.DataFrame.write_pickle`
 
 .. autoclass:: dataiter.DataFrame

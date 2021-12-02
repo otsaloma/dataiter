@@ -349,6 +349,19 @@ class TestDataFrame:
     def test_read_json_path(self):
         DataFrame.read_json(test.get_data_path("vehicles.json"))
 
+    def test_read_npz(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".npz")
+        orig.write_npz(fname)
+        data = DataFrame.read_npz(fname)
+        assert data == orig
+
+    def test_read_npz_path(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".npz")
+        orig.write_npz(fname)
+        DataFrame.read_npz(Path(fname))
+
     def test_read_pickle(self):
         orig = test.data_frame("vehicles.csv")
         handle, fname = tempfile.mkstemp(".pkl")
@@ -497,6 +510,18 @@ class TestDataFrame:
         orig = test.data_frame("downloads.json")
         handle, fname = tempfile.mkstemp(".json")
         orig.write_json(Path(fname))
+
+    def test_write_npz(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".npz")
+        orig.write_npz(fname)
+        data = DataFrame.read_npz(fname)
+        assert data == orig
+
+    def test_write_npz_path(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, fname = tempfile.mkstemp(".npz")
+        orig.write_npz(Path(fname))
 
     def test_write_pickle(self):
         orig = test.data_frame("vehicles.csv")
