@@ -639,11 +639,15 @@ class DataFrame(dict):
             return cls.from_json(f.read(), **kwargs)
 
     @classmethod
-    def read_npz(cls, fname):
+    def read_npz(cls, fname, allow_pickle=True):
         """
         Return a new data frame from NumPy file `fname`.
+
+        See `numpy.load` for an explanation of `allow_pickle`.
+
+        https://numpy.org/doc/stable/reference/generated/numpy.load.html
         """
-        with np.load(fname) as data:
+        with np.load(fname, allow_pickle=allow_pickle) as data:
             return cls(**data)
 
     @classmethod
