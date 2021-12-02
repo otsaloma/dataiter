@@ -1,5 +1,5 @@
-PENDING: dataiter 0.26
-======================
+2021-12-02: dataiter 0.26
+=========================
 
 * `DataFrame.read_npz`: New method to read NumPy npz format
 * `DataFrame.write_npz`: New method to write NumPy npz format
