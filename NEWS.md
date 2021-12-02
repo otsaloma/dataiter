@@ -1,8 +1,8 @@
 PENDING: dataiter 0.26
 ======================
 
-* `DataFrame.read_npz`: New method
-* `DataFrame.write_npz`: New method
+* `DataFrame.read_npz`: New method to read NumPy npz format
+* `DataFrame.write_npz`: New method to write NumPy npz format
 * `*.read_*`: Decompress `.bz2|.gz|.xz` automatically
 * `*.write_*`: Compress `.bz2|.gz|.xz` automatically
 
