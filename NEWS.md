@@ -1,3 +1,8 @@
+PENDING: dataiter 0.27
+======================
+
+* `DataFrame.__getattr__`: Fix error message when attribute not found
+
 2021-12-02: dataiter 0.26
 =========================
 

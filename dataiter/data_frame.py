@@ -157,7 +157,7 @@ class DataFrame(dict):
     def __getattr__(self, name):
         if name in self:
             return self.__getitem__(name)
-        return super().__getattr__(name)
+        raise AttributeError(name)
 
     def __setattr__(self, name, value):
         if name in self.ATTRIBUTES:
