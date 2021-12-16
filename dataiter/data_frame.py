@@ -626,7 +626,8 @@ class DataFrame(dict):
                            header=0 if header else None,
                            usecols=columns,
                            parse_dates=False,
-                           encoding=encoding)
+                           encoding=encoding,
+                           low_memory=False)
 
         if not header:
             data.columns = util.generate_colnames(len(data.columns))
