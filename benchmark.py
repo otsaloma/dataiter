@@ -8,8 +8,8 @@ import time
 
 from dataiter import test
 
-def data_frame(fname, nrow=1000000):
-    data = test.data_frame(fname)
+def data_frame(path, nrow=1000000):
+    data = test.data_frame(path)
     n = nrow // data.nrow
     data = data.rbind(*([data] * n))
     return data.head(nrow)
@@ -85,8 +85,8 @@ def data_frame_sort():
     data.sort(year=-1, make=1, model=1)
     return time.time() - start
 
-def list_of_dicts(fname, length=100000):
-    data = test.list_of_dicts(fname)
+def list_of_dicts(path, length=100000):
+    data = test.list_of_dicts(path)
     n = length // len(data) + 1
     data = data * n
     return data.head(length)

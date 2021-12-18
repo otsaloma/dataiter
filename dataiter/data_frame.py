@@ -614,14 +614,14 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, fname, encoding="utf_8", header=True, columns=None, sep=","):
+    def read_csv(cls, path, encoding="utf_8", header=True, columns=None, sep=","):
         """
-        Return a new data frame from CSV file `fname`.
+        Return a new data frame from CSV file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         """
         import pandas as pd
-        data = pd.read_csv(fname,
+        data = pd.read_csv(path,
                            sep=sep,
                            header=0 if header else None,
                            usecols=columns,
@@ -634,35 +634,35 @@ class DataFrame(dict):
         return cls.from_pandas(data)
 
     @classmethod
-    def read_json(cls, fname, encoding="utf_8", **kwargs):
+    def read_json(cls, path, encoding="utf_8", **kwargs):
         """
-        Return a new data frame from JSON file `fname`.
+        Return a new data frame from JSON file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        with util.xopen(fname, "rt", encoding=encoding) as f:
+        with util.xopen(path, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
     @classmethod
-    def read_npz(cls, fname, allow_pickle=True):
+    def read_npz(cls, path, allow_pickle=True):
         """
-        Return a new data frame from NumPy file `fname`.
+        Return a new data frame from NumPy file `path`.
 
         See `numpy.load` for an explanation of `allow_pickle`.
 
         https://numpy.org/doc/stable/reference/generated/numpy.load.html
         """
-        with np.load(fname, allow_pickle=allow_pickle) as data:
+        with np.load(path, allow_pickle=allow_pickle) as data:
             return cls(**data)
 
     @classmethod
-    def read_pickle(cls, fname):
+    def read_pickle(cls, path):
         """
-        Return a new data frame from Pickle file `fname`.
+        Return a new data frame from Pickle file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        with util.xopen(fname, "rb") as f:
+        with util.xopen(path, "rb") as f:
             return cls(pickle.load(f))
 
     def _reconcile_column(self, column):
@@ -909,41 +909,41 @@ class DataFrame(dict):
             column = self._reconcile_column(column)
             yield colname, column.copy()
 
-    def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
+    def write_csv(self, path, encoding="utf_8", header=True, sep=","):
         """
-        Write data frame to CSV file `fname`.
+        Write data frame to CSV file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
         pddf = self.to_pandas()
-        util.makedirs_for_file(fname)
-        pddf.to_csv(fname, sep=sep, header=header, index=False, encoding=encoding)
+        util.makedirs_for_file(path)
+        pddf.to_csv(path, sep=sep, header=header, index=False, encoding=encoding)
 
-    def write_json(self, fname, encoding="utf_8", **kwargs):
+    def write_json(self, path, encoding="utf_8", **kwargs):
         """
-        Write data frame to JSON file `fname`.
+        Write data frame to JSON file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
 
         `kwargs` are passed to ``json.JSONEncoder``.
         """
-        return self.to_list_of_dicts().write_json(fname, encoding=encoding, **kwargs)
+        return self.to_list_of_dicts().write_json(path, encoding=encoding, **kwargs)
 
-    def write_npz(self, fname, compress=False):
+    def write_npz(self, path, compress=False):
         """
-        Write data frame to NumPy file `fname`.
+        Write data frame to NumPy file `path`.
         """
-        util.makedirs_for_file(fname)
+        util.makedirs_for_file(path)
         savez = np.savez_compressed if compress else np.savez
-        savez(fname, **self)
+        savez(path, **self)
 
-    def write_pickle(self, fname):
+    def write_pickle(self, path):
         """
-        Write data frame to Pickle file `fname`.
+        Write data frame to Pickle file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        util.makedirs_for_file(fname)
-        with util.xopen(fname, "wb") as f:
+        util.makedirs_for_file(path)
+        with util.xopen(path, "wb") as f:
             out = {k: np.array(v, v.dtype) for k, v in self.items()}
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)

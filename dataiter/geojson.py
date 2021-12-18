@@ -81,18 +81,18 @@ class GeoJSON(DataFrame):
             raise Exception(f"Property type {type(value)} of {key!r} not supported")
 
     @classmethod
-    def read(cls, fname, encoding="utf_8", **kwargs):
+    def read(cls, path, encoding="utf_8", **kwargs):
         """
-        Return data from GeoJSON file `fname`.
+        Return data from GeoJSON file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
         `kwargs` are passed to ``json.load``.
 
         >>> data = di.GeoJSON.read("data/neighbourhoods.geojson")
         >>> data.head()
         """
-        with util.xopen(fname, "rt", encoding=encoding) as f:
+        with util.xopen(path, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))
         cls._check_raw_data(raw)
         data = {}
@@ -114,11 +114,11 @@ class GeoJSON(DataFrame):
         data = self.modify(geometry=Vector.fast(geometry, object))
         return DataFrame.to_string(data, max_rows, max_width)
 
-    def write(self, fname, encoding="utf_8", **kwargs):
+    def write(self, path, encoding="utf_8", **kwargs):
         """
-        Write data to GeoJSON file `fname`.
+        Write data to GeoJSON file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
 
         `kwargs` are passed to ``json.dumps``.
         """
@@ -130,8 +130,8 @@ class GeoJSON(DataFrame):
         if "geometry" not in self:
             raise Exception("Geometry missing")
         data = self.to_list_of_dicts()
-        util.makedirs_for_file(fname)
-        with util.xopen(fname, "wt", encoding=encoding) as f:
+        util.makedirs_for_file(path)
+        with util.xopen(path, "wt", encoding=encoding) as f:
             f.write("{\n")
             for key, value in self.metadata.items():
                 blob = json.dumps(value, **kwargs)

@@ -514,13 +514,13 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, fname, encoding="utf_8", header=True, sep=",", columns=None):
+    def read_csv(cls, path, encoding="utf_8", header=True, sep=",", columns=None):
         """
-        Return a new list from CSV file `fname`.
+        Return a new list from CSV file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        with util.xopen(fname, "rt", encoding=encoding) as f:
+        with util.xopen(path, "rt", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
             if not rows: return cls([])
             keys = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
@@ -536,25 +536,25 @@ class ListOfDicts(list):
             return cls(dict(zip(keys, x)) for x in rows)
 
     @classmethod
-    def read_json(cls, fname, encoding="utf_8", **kwargs):
+    def read_json(cls, path, encoding="utf_8", **kwargs):
         """
-        Return a new list from JSON file `fname`.
+        Return a new list from JSON file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
         `kwargs` are passed to :meth:`from_json`.
         """
-        with util.xopen(fname, "rt", encoding=encoding) as f:
+        with util.xopen(path, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), **kwargs)
 
     @classmethod
-    def read_pickle(cls, fname):
+    def read_pickle(cls, path):
         """
-        Return a new list from Pickle file `fname`.
+        Return a new list from Pickle file `path`.
 
-        Will automatically decompress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        with util.xopen(fname, "rb") as f:
+        with util.xopen(path, "rb") as f:
             return cls(pickle.load(f))
 
     @deco.obsoletes
@@ -752,18 +752,18 @@ class ListOfDicts(list):
                     del item[key]
             yield item
 
-    def write_csv(self, fname, encoding="utf_8", header=True, sep=","):
+    def write_csv(self, path, encoding="utf_8", header=True, sep=","):
         """
-        Write list to CSV file `fname`.
+        Write list to CSV file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
         if not self:
             raise ValueError("Cannot write empty CSV file")
         # Take a superset of all keys.
         keys = util.unique_keys(itertools.chain(*self))
-        util.makedirs_for_file(fname)
-        with util.xopen(fname, "wt", encoding=encoding) as f:
+        util.makedirs_for_file(path)
+        with util.xopen(path, "wt", encoding=encoding) as f:
             writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
             writer.writeheader() if header else None
             for item in self:
@@ -771,31 +771,31 @@ class ListOfDicts(list):
                 item = {**dict.fromkeys(keys), **item}
                 writer.writerow(item)
 
-    def write_json(self, fname, encoding="utf_8", **kwargs):
+    def write_json(self, path, encoding="utf_8", **kwargs):
         """
-        Write list to JSON file `fname`.
+        Write list to JSON file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
 
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)
         kwargs.setdefault("indent", 2)
-        util.makedirs_for_file(fname)
-        with util.xopen(fname, "wt", encoding=encoding) as f:
+        util.makedirs_for_file(path)
+        with util.xopen(path, "wt", encoding=encoding) as f:
             encoder = json.JSONEncoder(**kwargs)
             for chunk in encoder.iterencode(self):
                 f.write(chunk)
             f.write("\n")
 
-    def write_pickle(self, fname):
+    def write_pickle(self, path):
         """
-        Write list to Pickle file `fname`.
+        Write list to Pickle file `path`.
 
-        Will automatically compress if `fname` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        util.makedirs_for_file(fname)
-        with util.xopen(fname, "wb") as f:
+        util.makedirs_for_file(path)
+        with util.xopen(path, "wb") as f:
             out = [dict(x) for x in self]
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)

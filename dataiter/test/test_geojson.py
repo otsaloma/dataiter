@@ -29,25 +29,25 @@ from pathlib import Path
 
 class TestGeoJSON:
 
-    fname = "neighbourhoods.geojson"
+    path = "neighbourhoods.geojson"
 
     def test_read(self):
-        data = test.geojson(self.fname)
+        data = test.geojson(self.path)
         assert data.nrow == 233
         assert data.ncol == 3
 
     def test_read_path(self):
-        GeoJSON.read(test.get_data_path(self.fname))
+        GeoJSON.read(test.get_data_path(self.path))
 
     def test_write(self):
-        orig = test.geojson(self.fname)
-        handle, fname = tempfile.mkstemp(".geojson")
-        orig.write(fname)
-        data = GeoJSON.read(fname)
+        orig = test.geojson(self.path)
+        handle, path = tempfile.mkstemp(".geojson")
+        orig.write(path)
+        data = GeoJSON.read(path)
         assert data == orig
         assert data.metadata == orig.metadata
 
     def test_write_path(self):
-        orig = test.geojson(self.fname)
-        handle, fname = tempfile.mkstemp(".geojson")
-        orig.write(Path(fname))
+        orig = test.geojson(self.path)
+        handle, path = tempfile.mkstemp(".geojson")
+        orig.write(Path(path))

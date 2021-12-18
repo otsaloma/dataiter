@@ -6,8 +6,8 @@ import pstats
 
 from dataiter import test
 
-def data_frame(fname, nrow=1000000):
-    data = test.data_frame(fname)
+def data_frame(path, nrow=1000000):
+    data = test.data_frame(path)
     n = nrow // data.nrow
     data = data.rbind(*([data] * n))
     return data.head(nrow)

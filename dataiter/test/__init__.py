@@ -26,22 +26,22 @@ from dataiter import ListOfDicts
 from pathlib import Path
 
 
-def data_frame(fname):
-    fname = str(get_data_path(fname))
-    extension = fname.split(".")[-1]
+def data_frame(path):
+    path = str(get_data_path(path))
+    extension = path.split(".")[-1]
     read = getattr(DataFrame, f"read_{extension}")
-    return read(fname)
+    return read(path)
 
-def geojson(fname):
-    fname = str(get_data_path(fname))
-    return GeoJSON.read(fname)
+def geojson(path):
+    path = str(get_data_path(path))
+    return GeoJSON.read(path)
 
-def get_data_path(fname):
+def get_data_path(path):
     root = Path(__file__).parent.parent.parent.resolve()
-    return root / "data" / str(fname)
+    return root / "data" / str(path)
 
-def list_of_dicts(fname):
-    fname = str(get_data_path(fname))
-    extension = fname.split(".")[-1]
+def list_of_dicts(path):
+    path = str(get_data_path(path))
+    extension = path.split(".")[-1]
     read = getattr(ListOfDicts, f"read_{extension}")
-    return read(fname)
+    return read(path)

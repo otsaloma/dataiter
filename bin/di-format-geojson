@@ -11,15 +11,15 @@ import time
 @click.argument("file", nargs=-1, type=click.Path(exists=True))
 def main(indent, precision, file):
     """Rewrite GeoJSON file with proper formatting."""
-    for fname in file:
-        click.echo(fname)
-        data = di.GeoJSON.read(fname)
+    for path in file:
+        click.echo(path)
+        data = di.GeoJSON.read(path)
         for i in range(data.nrow):
             coords = data.geometry[i].coordinates
             data.geometry[i].coordinates = round_recursive(coords, precision)
-        backup = fname + ".bak" + str(int(time.time()))
-        shutil.copyfile(fname, backup)
-        data.write(fname, indent=indent)
+        backup = path + ".bak" + str(int(time.time()))
+        shutil.copyfile(path, backup)
+        data.write(path, indent=indent)
 
 def round_recursive(value, precision):
     if isinstance(value, list):

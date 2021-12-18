@@ -104,32 +104,32 @@ class TestUtil:
 
     def test_xopen_bz2(self):
         text = "test åäö"
-        handle, fname = tempfile.mkstemp(".bz2")
-        with util.xopen(fname, "wt") as f:
+        handle, path = tempfile.mkstemp(".bz2")
+        with util.xopen(path, "wt") as f:
             f.write(text)
-        with util.xopen(fname, "rt") as f:
+        with util.xopen(path, "rt") as f:
             assert f.read() == text
 
     def test_xopen_gz(self):
         text = "test åäö"
-        handle, fname = tempfile.mkstemp(".gz")
-        with util.xopen(fname, "wt") as f:
+        handle, path = tempfile.mkstemp(".gz")
+        with util.xopen(path, "wt") as f:
             f.write(text)
-        with util.xopen(fname, "rt") as f:
+        with util.xopen(path, "rt") as f:
             assert f.read() == text
 
     def test_xopen_txt(self):
         text = "test åäö"
-        handle, fname = tempfile.mkstemp(".txt")
-        with util.xopen(fname, "wt") as f:
+        handle, path = tempfile.mkstemp(".txt")
+        with util.xopen(path, "wt") as f:
             f.write(text)
-        with util.xopen(fname, "rt") as f:
+        with util.xopen(path, "rt") as f:
             assert f.read() == text
 
     def test_xopen_xz(self):
         text = "test åäö"
-        handle, fname = tempfile.mkstemp(".xz")
-        with util.xopen(fname, "wt") as f:
+        handle, path = tempfile.mkstemp(".xz")
+        with util.xopen(path, "wt") as f:
             f.write(text)
-        with util.xopen(fname, "rt") as f:
+        with util.xopen(path, "rt") as f:
             assert f.read() == text

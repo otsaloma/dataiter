@@ -64,8 +64,8 @@ def get_print_width():
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
-def makedirs_for_file(fname):
-    return Path(fname).parent.mkdir(parents=True, exist_ok=True)
+def makedirs_for_file(path):
+    return Path(path).parent.mkdir(parents=True, exist_ok=True)
 
 @deco.listify
 def pad(strings, align="right"):
@@ -87,18 +87,18 @@ def unique_types(seq):
                x is not None and
                not (isinstance(x, float) and np.isnan(x)))
 
-def xopen(fname, mode="r", **kwargs):
+def xopen(path, mode="r", **kwargs):
     if "b" not in mode:
         kwargs.setdefault("encoding", "utf-8")
-    if str(fname).endswith(".bz2"):
+    if str(path).endswith(".bz2"):
         kwargs.setdefault("compresslevel", 6)
-        return bz2.open(fname, mode, **kwargs)
-    if str(fname).endswith(".gz"):
+        return bz2.open(path, mode, **kwargs)
+    if str(path).endswith(".gz"):
         kwargs.setdefault("compresslevel", 6)
-        return gzip.open(fname, mode, **kwargs)
-    if str(fname).endswith(".xz"):
-        return lzma.open(fname, mode)
-    return open(fname, mode, **kwargs)
+        return gzip.open(path, mode, **kwargs)
+    if str(path).endswith(".xz"):
+        return lzma.open(path, mode)
+    return open(path, mode, **kwargs)
 
 def yield_colnames():
     # Like Excel: a, b, c, ..., aa, bb, cc, ...
