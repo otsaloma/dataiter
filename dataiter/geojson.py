@@ -25,8 +25,8 @@ import warnings
 
 from attd import AttributeDict
 from dataiter import DataFrame
-from dataiter import Vector
 from dataiter import util
+from dataiter import Vector
 
 
 class GeoJSON(DataFrame):
