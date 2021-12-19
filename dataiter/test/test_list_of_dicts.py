@@ -240,19 +240,19 @@ class TestListOfDicts:
     def test_left_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
-        holidays = holidays.rename(holiday_date="date")
-        data = orig.left_join(holidays, ("date", "holiday_date"))
+        data = orig.left_join(holidays, "date")
         assert len(data) == 905
         assert sum("holiday" in x for x in data) == 35
-        assert sum("holiday_date" in x for x in data) == 0
         assert sum(data.pluck("downloads")) == 541335745
 
     def test_left_join_by_tuple(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
-        data = orig.left_join(holidays, "date")
+        holidays = holidays.rename(holiday_date="date")
+        data = orig.left_join(holidays, ("date", "holiday_date"))
         assert len(data) == 905
         assert sum("holiday" in x for x in data) == 35
+        assert sum("holiday_date" in x for x in data) == 0
         assert sum(data.pluck("downloads")) == 541335745
 
     def test_map(self):
