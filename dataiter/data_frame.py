@@ -769,7 +769,7 @@ class DataFrame(dict):
                 column = self[colname]
                 if dir < 0 and not (column.is_boolean() or column.is_number()):
                     # Use rank for non-numeric types so that we can sort descending.
-                    column = column.rank()
+                    column = column.rank("min")
                 yield column if dir >= 0 else -column
         indices = np.lexsort(sort_key())
         for colname, column in self.items():
