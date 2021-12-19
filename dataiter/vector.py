@@ -372,17 +372,42 @@ class Vector(np.ndarray):
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
 
-    def rank(self):
+    def rank(self, method="ordinal"):
         """
         Return the order of elements in a sorted vector.
 
-        Note that these are not unique indices as ties result in duplicates.
+        `method` determines how ties are resolved. **"min"**: Each of equal
+        values are given the same rank (also called "competition ranking").
+        **"ordinal"**: All values are given a distinct rank with equal values
+        ranked by their order in `self`.
+
+        Ranks begin at 1. Missing values are ranked last.
+
+        For comparison, see ``scipy.stats.rankdata``:
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rankdata.html
 
         >>> vector = di.Vector([1, 2, 1, 2, 3])
-        >>> vector.rank()
+        >>> vector.rank("min")
+        >>> vector.rank("ordinal")
         """
-        rank = np.unique(self, return_inverse=True)[1]
-        return rank.view(self.__class__)
+        if method not in ["min", "ordinal"]:
+            raise ValueError(f"Unexpected method: {method!r}")
+        missing = self.is_missing()
+        if method == "min":
+            # https://stackoverflow.com/a/14672797/16369038
+            inv = np.unique(self[~missing], return_inverse=True)[1]
+            arank = np.concatenate(([0], np.bincount(inv))).cumsum()[inv]
+            zrank = arank.max() + 1
+        if method == "ordinal":
+            # https://stackoverflow.com/a/5284703/16369038
+            indices = self[~missing].argsort()
+            arank = np.empty_like(indices)
+            arank[indices] = np.arange(len(indices))
+            zrank = arank.max() + 1 + np.arange(missing.sum())
+        out = np.zeros_like(self, int)
+        out[~missing] = arank + 1
+        out[missing] = zrank + 1
+        return self.__class__(out)
 
     def replace_missing(self, value):
         """

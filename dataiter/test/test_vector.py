@@ -315,16 +315,25 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5, None])
         assert a.range().tolist() == [1, 5]
 
-    def test_rank(self):
+    def test_rank_min(self):
         a = Vector([1, 2, 1, 2, 3])
-        assert a.rank().tolist() == [0, 1, 0, 1, 2]
+        b = a.rank(method="min")
+        assert b.tolist() == [1, 3, 1, 3, 5]
 
-    def test_rank_missing(self):
-        # This seems to have changed in some version of NumPy,
-        # probably doesn't matter, allow two different results.
+    def test_rank_min_missing(self):
         a = Vector([np.nan, 1, 2, 3, np.nan])
-        assert (a.rank().tolist() == [3, 0, 1, 2, 4] or
-                a.rank().tolist() == [3, 0, 1, 2, 3])
+        b = a.rank(method="min")
+        assert b.tolist() == [4, 1, 2, 3, 4]
+
+    def test_rank_ordinal(self):
+        a = Vector([1, 2, 1, 2, 3])
+        b = a.rank(method="ordinal")
+        assert b.tolist() == [1, 3, 2, 4, 5]
+
+    def test_rank_ordinal_missing(self):
+        a = Vector([np.nan, 1, 2, 3, np.nan])
+        b = a.rank(method="ordinal")
+        assert b.tolist() == [4, 1, 2, 3, 5]
 
     def test_replace_missing(self):
         a = Vector([1, 2, 3, None])
