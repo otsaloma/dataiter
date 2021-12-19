@@ -1,3 +1,4 @@
+*.lprof
 .pytest_cache
 __pycache__
 build
@@ -5,3 +6,4 @@ data/orig
 dataiter.egg-info
 dist
 doc/_build
+test.py

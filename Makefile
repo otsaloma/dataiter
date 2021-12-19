@@ -34,6 +34,11 @@ doc-watch:
 install:
 	./setup.py install --prefix=$(PREFIX)
 
+# Use @profile decorator from line-profiler.
+# https://github.com/pyutils/line_profiler
+profile:
+	kernprof -lvu 1e-3 test.py
+
 # Interactive!
 publish:
 	$(MAKE) check test clean
@@ -67,4 +72,4 @@ test-installed:
 	cd && python3 -c "import dataiter; dataiter.DataFrame()"
 	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
 
-.PHONY: check clean doc doc-open doc-watch install publish release test test-installed
+.PHONY: check clean doc doc-open doc-watch install profile publish release test test-installed
