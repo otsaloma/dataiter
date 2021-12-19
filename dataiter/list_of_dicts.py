@@ -514,7 +514,7 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, path, encoding="utf_8", header=True, sep=",", columns=None):
+    def read_csv(cls, path, encoding="utf-8", header=True, sep=",", columns=None):
         """
         Return a new list from CSV file `path`.
 
@@ -536,7 +536,7 @@ class ListOfDicts(list):
             return cls(dict(zip(keys, x)) for x in rows)
 
     @classmethod
-    def read_json(cls, path, encoding="utf_8", **kwargs):
+    def read_json(cls, path, encoding="utf-8", **kwargs):
         """
         Return a new list from JSON file `path`.
 
@@ -752,7 +752,7 @@ class ListOfDicts(list):
                     del item[key]
             yield item
 
-    def write_csv(self, path, encoding="utf_8", header=True, sep=","):
+    def write_csv(self, path, encoding="utf-8", header=True, sep=","):
         """
         Write list to CSV file `path`.
 
@@ -771,7 +771,7 @@ class ListOfDicts(list):
                 item = {**dict.fromkeys(keys), **item}
                 writer.writerow(item)
 
-    def write_json(self, path, encoding="utf_8", **kwargs):
+    def write_json(self, path, encoding="utf-8", **kwargs):
         """
         Write list to JSON file `path`.
 

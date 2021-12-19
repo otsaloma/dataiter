@@ -21,7 +21,7 @@ def get_output(lines):
             args=["python3", "-c", "\n".join(lines)],
             stderr=subprocess.STDOUT,
             cwd=Path("..").resolve(),
-            encoding="utf_8",
+            encoding="utf-8",
             errors="replace",
             universal_newlines=True,
             text=True,

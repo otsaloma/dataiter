@@ -614,7 +614,7 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, encoding="utf_8", header=True, columns=None, sep=","):
+    def read_csv(cls, path, encoding="utf-8", header=True, columns=None, sep=","):
         """
         Return a new data frame from CSV file `path`.
 
@@ -634,7 +634,7 @@ class DataFrame(dict):
         return cls.from_pandas(data)
 
     @classmethod
-    def read_json(cls, path, encoding="utf_8", **kwargs):
+    def read_json(cls, path, encoding="utf-8", **kwargs):
         """
         Return a new data frame from JSON file `path`.
 
@@ -917,7 +917,7 @@ class DataFrame(dict):
             column = self._reconcile_column(column)
             yield colname, column.copy()
 
-    def write_csv(self, path, encoding="utf_8", header=True, sep=","):
+    def write_csv(self, path, encoding="utf-8", header=True, sep=","):
         """
         Write data frame to CSV file `path`.
 
@@ -927,7 +927,7 @@ class DataFrame(dict):
         util.makedirs_for_file(path)
         pddf.to_csv(path, sep=sep, header=header, index=False, encoding=encoding)
 
-    def write_json(self, path, encoding="utf_8", **kwargs):
+    def write_json(self, path, encoding="utf-8", **kwargs):
         """
         Write data frame to JSON file `path`.
 

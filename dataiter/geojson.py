@@ -81,7 +81,7 @@ class GeoJSON(DataFrame):
             raise Exception(f"Property type {type(value)} of {key!r} not supported")
 
     @classmethod
-    def read(cls, path, encoding="utf_8", **kwargs):
+    def read(cls, path, encoding="utf-8", **kwargs):
         """
         Return data from GeoJSON file `path`.
 
@@ -114,7 +114,7 @@ class GeoJSON(DataFrame):
         data = self.modify(geometry=Vector.fast(geometry, object))
         return DataFrame.to_string(data, max_rows, max_width)
 
-    def write(self, path, encoding="utf_8", **kwargs):
+    def write(self, path, encoding="utf-8", **kwargs):
         """
         Write data to GeoJSON file `path`.
 

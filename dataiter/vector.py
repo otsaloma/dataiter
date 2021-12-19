@@ -105,7 +105,7 @@ class Vector(np.ndarray):
         >>> vector.as_bytes()
         """
         if self.is_string():
-            array = np.char.encode(self, "UTF-8")
+            array = np.char.encode(self, "utf-8")
             return array.view(self.__class__)
         return self.astype(bytes)
 
