@@ -886,7 +886,7 @@ class DataFrame(dict):
         else:
             # Use rank for differing dtypes.
             by = np.column_stack([self[x].rank("min") for x in colnames])
-        indices = np.unique(by, return_index=True, axis=0)[1]
+        indices = np.sort(np.unique(by, return_index=True, axis=0)[1])
         for colname, column in self.items():
             yield colname, column[indices].copy()
 

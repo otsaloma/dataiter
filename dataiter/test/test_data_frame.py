@@ -486,6 +486,14 @@ class TestDataFrame:
         by = list(zip(data.make, data.model))
         assert len(set(by)) == len(by)
 
+    def test_unique_preserve_order(self):
+        orig = test.data_frame("vehicles.csv")
+        orig.order = np.arange(orig.nrow)
+        assert not orig.year.sort().equal(orig.year)
+        assert not orig.cyl.sort().equal(orig.cyl)
+        data = orig.unique("year", "cyl")
+        assert np.all(np.diff(data.order) > 0)
+
     def test_unselect(self):
         orig = test.data_frame("vehicles.csv")
         orig_colnames = list(orig.colnames)
