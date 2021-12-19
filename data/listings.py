@@ -19,7 +19,7 @@ data = (
     .rename(hood="neighbourhood_group_cleansed")
     .rename(guests="accommodates")
     .rename(sqft="square_feet")
-    .modify(price=lambda data: [parse_price(x) for x in data.price])
+    .modify(price=lambda x: x.price.map(parse_price))
 )
 
 print(data.head())

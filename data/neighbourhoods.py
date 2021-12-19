@@ -3,5 +3,5 @@
 import dataiter as di
 
 # Rewrite to have one line per feature.
-data = di.GeoJSON.read("input/neighbourhoods.geojson")
+data = di.GeoJSON.read("orig/neighbourhoods.geojson")
 data.write("neighbourhoods.geojson")
