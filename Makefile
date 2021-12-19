@@ -9,6 +9,7 @@ check:
 	flake8 bin/*
 
 clean:
+	rm -rf *.lprof
 	rm -rf build
 	rm -rf dataiter.egg-info
 	rm -rf dist
