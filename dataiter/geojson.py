@@ -66,19 +66,19 @@ class GeoJSON(DataFrame):
     @classmethod
     def _check_raw_data(cls, data):
         if data.type not in cls.TOP_LEVEL_TYPES:
-            raise Exception(f"Top-level type {data.type!r} not supported")
+            raise TypeError(f"Top-level type {data.type!r} not supported")
         for feature in data.features:
             cls._check_raw_feature(feature)
 
     @classmethod
     def _check_raw_feature(cls, feature):
         if feature.type not in cls.FEATURE_TYPES:
-            raise Exception(f"Feature type {feature.type!r} not supported")
+            raise TypeError(f"Feature type {feature.type!r} not supported")
         for key in set(feature) - set(cls.FEATURE_KEYS):
             warnings.warn(f"Ignoring feature key {key!r}")
         for key, value in feature.properties.items():
             if isinstance(value, tuple(cls.PROPERTY_TYPES)): continue
-            raise Exception(f"Property type {type(value)} of {key!r} not supported")
+            raise TypeError(f"Property type {type(value)} of {key!r} not supported")
 
     @classmethod
     def read(cls, path, encoding="utf-8", **kwargs):
@@ -128,7 +128,7 @@ class GeoJSON(DataFrame):
         indent1 = " " * indent_width * 1
         indent2 = " " * indent_width * 2
         if "geometry" not in self:
-            raise Exception("Geometry missing")
+            raise ValueError("Geometry missing")
         data = self.to_list_of_dicts()
         util.makedirs_for_file(path)
         with util.xopen(path, "wt", encoding=encoding) as f:
