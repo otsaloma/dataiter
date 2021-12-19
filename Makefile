@@ -73,4 +73,7 @@ test-installed:
 	cd && python3 -c "import dataiter; dataiter.DataFrame()"
 	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
 
-.PHONY: check clean doc doc-open doc-watch install profile publish release test test-installed
+validate:
+	cd validation && ./validate.sh
+
+.PHONY: check clean doc doc-open doc-watch install profile publish release test test-installed validate

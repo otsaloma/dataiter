@@ -7,3 +7,4 @@ dataiter.egg-info
 dist
 doc/_build
 test.py
+validation/*.csv
