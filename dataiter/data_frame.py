@@ -877,8 +877,16 @@ class DataFrame(dict):
         >>> data.unique("hood")
         """
         colnames = colnames or self.colnames
-        by = np.column_stack([self[x].as_bytes() for x in colnames])
-        values, indices = np.unique(by, return_index=True, axis=0)
+        if len(colnames) == 1:
+            # Use a single column directly.
+            by = self[colnames[0]]
+        elif len(set(self[x].dtype for x in colnames)) == 1:
+            # Stack matching dtypes directly in a new array.
+            by = np.column_stack([self[x] for x in colnames])
+        else:
+            # Use rank for differing dtypes.
+            by = np.column_stack([self[x].rank("min") for x in colnames])
+        indices = np.unique(by, return_index=True, axis=0)[1]
         for colname, column in self.items():
             yield colname, column[indices].copy()
 

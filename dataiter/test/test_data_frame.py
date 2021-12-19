@@ -468,9 +468,23 @@ class TestDataFrame:
 
     def test_unique_by_all(self):
         orig = test.data_frame("vehicles.csv")
-        orig = orig.rbind(orig.tail(1))
+        orig = orig.rbind(orig.tail(100))
         data = orig.unique()
-        assert data.nrow == orig.nrow - 1
+        assert data.nrow == orig.nrow - 100
+
+    def test_unique_by_one(self):
+        orig = test.data_frame("vehicles.csv")
+        data = orig.unique("make")
+        assert data.nrow == 128
+        by = list(zip(data.make))
+        assert len(set(by)) == len(by)
+
+    def test_unique_by_same_dtype(self):
+        orig = test.data_frame("vehicles.csv")
+        data = orig.unique("make", "model")
+        assert data.nrow == 3264
+        by = list(zip(data.make, data.model))
+        assert len(set(by)) == len(by)
 
     def test_unselect(self):
         orig = test.data_frame("vehicles.csv")
