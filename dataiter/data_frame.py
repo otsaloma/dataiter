@@ -188,16 +188,15 @@ class DataFrame(dict):
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.group_by("hood").aggregate(n=di.nrow, price=lambda x: np.nanmean(x.price))
         """
-        by = np.column_stack([self[x].as_bytes() for x in self._group_colnames])
-        values, ui, inv = np.unique(by, return_index=True, return_inverse=True, axis=0)
-        stat = self.slice(ui).select(*self._group_colnames)
-        slice_indices = {}
-        for i in range(self.nrow):
-            slice_indices.setdefault(inv[i], []).append(i)
-        slices = [self.slice(slice_indices[i]) for i in range(stat.nrow)]
+        group_colnames = self._group_colnames
+        data = self.sort(**dict.fromkeys(group_colnames, 1))
+        data._index_ = np.arange(data.nrow)
+        stat = data.unique(*group_colnames).select("_index_", *group_colnames)
+        indices = np.split(data._index_, stat._index_[1:])
+        slices = [data._view_rows(x) for x in indices]
         for colname, function in colname_function_pairs.items():
             stat[colname] = [function(x) for x in slices]
-        return stat.sort(**dict.fromkeys(self._group_colnames, 1))
+        return stat.unselect("_index_")
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
@@ -916,6 +915,13 @@ class DataFrame(dict):
         for colname, column in other.items():
             column = self._reconcile_column(column)
             yield colname, column.copy()
+
+    def _view_rows(self, rows):
+        # Initialize a blank instance and use base class update
+        # to bypass __init__ and __setitem__ checks for speed.
+        data = self.__class__()
+        dict.update(data, {x: self[x][rows] for x in self})
+        return data
 
     def write_csv(self, path, encoding="utf-8", header=True, sep=","):
         """
