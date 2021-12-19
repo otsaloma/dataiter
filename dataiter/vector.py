@@ -445,14 +445,14 @@ class Vector(np.ndarray):
         >>> vector.sort(dir=1)
         >>> vector.sort(dir=-1)
         """
-        vector = self.copy()
-        np.ndarray.sort(vector)
+        missing = self.is_missing()
+        a = self[~missing].copy()
+        z = self[missing].copy()
+        np.ndarray.sort(a)
         if dir < 0:
-            # Flip order, but keep missing last.
-            na = vector.is_missing()
-            ok = np.nonzero(~na)
-            np.put(vector, ok, vector[ok][::-1])
-        return vector
+            a = a[::-1]
+        vector = np.concatenate((a, z))
+        return self.__class__(vector)
 
     @classmethod
     def _std_to_np(cls, seq, dtype=None):

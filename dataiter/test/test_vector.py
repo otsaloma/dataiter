@@ -345,9 +345,14 @@ class TestVector:
         assert a.sample(5).tolist() == [1, 2, 3, 4, 5]
 
     def test_sort(self):
-        a = Vector([1, 2, 3, 4, 5, None])
-        assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5, None]
-        assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1, None]
+        a = Vector([3, 4, 2, 1, 5])
+        assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5]
+        assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1]
+
+    def test_sort_missing(self):
+        a = Vector([None, 1, 2, 3, 4, 5, None])
+        assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5, None, None]
+        assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1, None, None]
 
     def test_tail(self):
         a = Vector([1, 2, 3, 4, 5])
