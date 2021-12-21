@@ -117,8 +117,8 @@ class TestDataFrame:
     def test_aggregate(self):
         data = test.data_frame("vehicles.csv")
         # Avoid RuntimeWarning: All-NaN slice encountered.
-        data = data.filter_out(np.isnan(data.cyl))
-        data = data.filter_out(np.isnan(data.displ))
+        data = data.filter_out(data.cyl.is_missing())
+        data = data.filter_out(data.displ.is_missing())
         stat = (data
                 .group_by("make", "model")
                 .aggregate(cyl=lambda x: np.median(x.cyl),
