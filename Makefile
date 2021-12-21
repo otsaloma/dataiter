@@ -10,6 +10,7 @@ check:
 
 clean:
 	rm -rf *.lprof
+	rm -rf *.prof
 	rm -rf build
 	rm -rf dataiter.egg-info
 	rm -rf dist
