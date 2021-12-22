@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, "..")
 
 import dataiter as di
 import numpy as np
@@ -17,25 +14,43 @@ def read_csv(path):
         data = data.filter_out(data[name].is_missing())
         if data[name].is_string():
             # Use all lower case for strings to avoid differing
-            # sorting lower vs. upper case characters.
+            # sorting of lower vs. upper case characters.
             data[name] = np.char.lower(data[name])
     return data
 
-# 1. Aggregate
+# AGGREGATE
 (read_csv("../data/vehicles.csv")
  .group_by("make", "model")
  .aggregate(
      n=di.nrow,
      cyl_min=lambda x: x.cyl.min(),
      cyl_max=lambda x: x.cyl.max())
- .write_csv("1.py.csv"))
+ .write_csv("aggregate.py.csv"))
 
-# 2. Sort
+# FILTER
 (read_csv("../data/vehicles.csv")
- .sort(make=1, model=1, year=1)
- .write_csv("2.py.csv"))
+ .filter(lambda x: x.year < 2000)
+ .filter(lambda x: x.cyl < 10)
+ .write_csv("filter.R.csv"))
 
-# 3. Unique
+# INNER JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+(read_csv("../data/listings.csv")
+ .inner_join(reviews, "id")
+ .write_csv("inner_join.py.csv"))
+
+# LEFT JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+(read_csv("../data/listings.csv")
+ .left_join(reviews, "id")
+ .write_csv("left_join.py.csv"))
+
+# SORT
+(read_csv("../data/vehicles.csv")
+ .sort(make=1, model=1, year=-1)
+ .write_csv("sort.py.csv"))
+
+# UNIQUE
 (read_csv("../data/vehicles.csv")
  .unique("make", "model", "year")
- .write_csv("3.py.csv"))
+ .write_csv("unique.py.csv"))

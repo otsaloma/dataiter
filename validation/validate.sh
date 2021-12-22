@@ -1,4 +1,6 @@
 #!/bin/sh
+rm -f *.py.csv
+rm -f *.R.csv
 echo "Generating data..."
 python3 generate.py
 Rscript generate.R
