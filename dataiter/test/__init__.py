@@ -27,13 +27,13 @@ from pathlib import Path
 
 
 def data_frame(path):
-    path = str(get_data_path(path))
-    extension = path.split(".")[-1]
+    path = get_data_path(path)
+    extension = path.suffix.lstrip(".")
     read = getattr(DataFrame, f"read_{extension}")
     return read(path)
 
 def geojson(path):
-    path = str(get_data_path(path))
+    path = get_data_path(path)
     return GeoJSON.read(path)
 
 def get_data_path(path):
@@ -41,7 +41,7 @@ def get_data_path(path):
     return root / "data" / str(path)
 
 def list_of_dicts(path):
-    path = str(get_data_path(path))
-    extension = path.split(".")[-1]
+    path = get_data_path(path)
+    extension = path.suffix.lstrip(".")
     read = getattr(ListOfDicts, f"read_{extension}")
     return read(path)
