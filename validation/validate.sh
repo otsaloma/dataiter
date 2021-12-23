@@ -5,7 +5,7 @@ echo "Generating data..."
 python3 generate.py
 Rscript generate.R
 # Remove trailing zero decimals.
-sed -ri "s|\.0*(,\|$)|\1|g" *.csv
+sed -ri "s/\.0*(,|$)/\1/g" *.csv
 EXIT_STATUS=0
 for NUM in $(ls *.py.csv | cut -d. -f1); do
     printf "Checking $NUM... "
