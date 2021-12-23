@@ -21,7 +21,6 @@
 # THE SOFTWARE.
 
 import json
-import warnings
 
 from attd import AttributeDict
 from dataiter import DataFrame
@@ -67,15 +66,18 @@ class GeoJSON(DataFrame):
     def _check_raw_data(cls, data):
         if data.type not in cls.TOP_LEVEL_TYPES:
             raise TypeError(f"Top-level type {data.type!r} not supported")
+        warned_feature_keys = []
         for feature in data.features:
-            cls._check_raw_feature(feature)
+            cls._check_raw_feature(feature, warned_feature_keys)
 
     @classmethod
-    def _check_raw_feature(cls, feature):
+    def _check_raw_feature(cls, feature, warned_feature_keys):
         if feature.type not in cls.FEATURE_TYPES:
             raise TypeError(f"Feature type {feature.type!r} not supported")
         for key in set(feature) - set(cls.FEATURE_KEYS):
-            warnings.warn(f"Ignoring feature key {key!r}")
+            if key in warned_feature_keys: continue
+            print(f"Warning: Ignoring feature key {key!r}")
+            warned_feature_keys.append(key)
         for key, value in feature.properties.items():
             if isinstance(value, tuple(cls.PROPERTY_TYPES)): continue
             raise TypeError(f"Property type {type(value)} of {key!r} not supported")
