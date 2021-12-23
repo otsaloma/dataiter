@@ -309,13 +309,17 @@ class ListOfDicts(list):
         >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
         >>> listings.full_join(reviews, "id")
         """
-        counter = itertools.count(start=1)
-        other = other.deepcopy().modify(_id_=lambda x: next(counter))
-        # This obsoletes self, @deco.obsoletes not needed.
-        a = self.left_join(other, *by)
-        found_ids = set(x.get("_id_", -1) for x in a)
-        b = other.filter_out(lambda x: x._id_ in found_ids)
-        return (a + b).unselect("_id_")
+        acounter = itertools.count(start=1)
+        bcounter = itertools.count(start=1)
+        a = self.deepcopy().modify(_aid_=lambda x: next(acounter))
+        b = other.deepcopy().modify(_bid_=lambda x: next(bcounter))
+        ab = a.deepcopy().left_join(b, *by)
+        ba = b.deepcopy().left_join(a, *by)
+        # Fill in missing _aid_ and _bid_ with bogus values.
+        ab = ab.modify(_bid_=lambda x: x.get("_bid_", next(bcounter)))
+        ba = ba.modify(_aid_=lambda x: x.get("_aid_", next(acounter)))
+        ba = ba.anti_join(ab, "_aid_", "_bid_")
+        return (ab + ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def group_by(self, *keys):
         """

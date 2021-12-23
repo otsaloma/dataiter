@@ -228,9 +228,10 @@ class TestDataFrame:
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")
         data = orig.full_join(holidays, "date")
-        assert data.nrow > orig.nrow
-        assert data.ncol == orig.ncol + 1
+        assert data.nrow == 930
+        assert data.ncol == 4
         assert sum(data.holiday != "") == 60
+        assert sum(data.downloads.is_missing()) == 25
         assert np.nansum(data.downloads) == 541335745
 
     def test_head(self):

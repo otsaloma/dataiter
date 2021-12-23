@@ -373,10 +373,11 @@ class DataFrame(dict):
         >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
         >>> listings.full_join(reviews, "id")
         """
-        other = other.modify(_id_=np.arange(other.nrow))
-        a = self.left_join(other, *by)
-        b = other.filter_out(np.isin(other._id_, a._id_))
-        return a.rbind(b).unselect("_id_")
+        a = self.modify(_aid_=np.arange(self.nrow))
+        b = other.modify(_bid_=np.arange(other.nrow))
+        ab = a.left_join(b, *by)
+        ba = b.left_join(a, *by).anti_join(ab, "_aid_", "_bid_")
+        return ab.rbind(ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def _get_join_indices(self, other, by1, by2):
         other_ids = list(zip(*[other[x] for x in by2]))

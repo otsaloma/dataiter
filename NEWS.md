@@ -3,7 +3,9 @@ PENDING: dataiter 0.27
 
 * `DataFrame`: Fix error message when column not found
 * `DataFrame.aggregate`: Speed up
+* `DataFrame.full_join`: Fix to join all possible columns
 * `DataFrame.read_csv`: Try to avoid mixed types
+* `ListOfDicts.full_join`: Fix to join all possible keys
 * `ListOfDicts.write_csv`: Use minimal quoting
 * `Vector.rank`: Rewrite, add `method` argument
 * `*.read_*`: Rename fname argument path

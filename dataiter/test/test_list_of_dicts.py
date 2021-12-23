@@ -214,7 +214,9 @@ class TestListOfDicts:
         holidays = test.list_of_dicts("holidays.json")
         data = orig.full_join(holidays, "date")
         assert len(data) == 930
+        assert max(len(x) for x in data) == 4
         assert sum("holiday" in x for x in data) == 60
+        assert sum("downloads" not in x for x in data) == 25
         assert sum(data.pluck("downloads", 0)) == 541335745
 
     def test_head(self):
