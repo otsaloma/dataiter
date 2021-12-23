@@ -8,7 +8,7 @@ Rscript generate.R
 sed -ri "s/\.0*(,|$)/\1/g" *.csv
 EXIT_STATUS=0
 for NUM in $(ls *.df.csv | cut -d. -f1); do
-    printf "Checking $NUM... "
+    printf "%-23s" "Checking $NUM... "
     NLINES=$(diff -y --suppress-common-lines $NUM.df.csv $NUM.R.csv | wc -l)
     if [ $NLINES -gt 0 ]; then
         echo "$NLINES lines differ"
