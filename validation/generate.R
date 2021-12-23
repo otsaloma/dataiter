@@ -29,11 +29,30 @@ read_csv("../data/vehicles.csv") %>%
         cyl_max=max(cyl)) %>%
     write_csv("aggregate.R.csv")
 
+# ANTI JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+read_csv("../data/listings.csv") %>%
+    anti_join(reviews, by="id") %>%
+    write_csv("anti_join.R.csv")
+
 # FILTER
 read_csv("../data/vehicles.csv") %>%
     filter(year < 2000) %>%
     filter(cyl < 10) %>%
     write_csv("filter.R.csv")
+
+# FILTER OUT
+read_csv("../data/vehicles.csv") %>%
+    filter(!(year < 2000)) %>%
+    filter(!(cyl < 10)) %>%
+    write_csv("filter_out.R.csv")
+
+# FULL JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+reviews = bind_rows(reviews, reviews)
+read_csv("../data/listings.csv") %>%
+    full_join(reviews, by="id") %>%
+    write_csv("full_join.R.csv")
 
 # INNER JOIN
 reviews = read_csv("../data/listings-reviews.csv")
@@ -46,6 +65,12 @@ reviews = read_csv("../data/listings-reviews.csv")
 read_csv("../data/listings.csv") %>%
     left_join(reviews, by="id") %>%
     write_csv("left_join.R.csv")
+
+# SEMI JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+read_csv("../data/listings.csv") %>%
+    semi_join(reviews, by="id") %>%
+    write_csv("semi_join.R.csv")
 
 # SORT
 read_csv("../data/vehicles.csv") %>%

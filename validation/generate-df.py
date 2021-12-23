@@ -27,11 +27,30 @@ def read_csv(path):
      cyl_max=lambda x: x.cyl.max())
  .write_csv("aggregate.df.csv"))
 
+# ANTI JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+(read_csv("../data/listings.csv")
+ .anti_join(reviews, "id")
+ .write_csv("anti_join.df.csv"))
+
 # FILTER
 (read_csv("../data/vehicles.csv")
  .filter(lambda x: x.year < 2000)
  .filter(lambda x: x.cyl < 10)
  .write_csv("filter.df.csv"))
+
+# FILTER OUT
+(read_csv("../data/vehicles.csv")
+ .filter_out(lambda x: x.year < 2000)
+ .filter_out(lambda x: x.cyl < 10)
+ .write_csv("filter_out.df.csv"))
+
+# FULL JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+reviews = reviews.rbind(reviews)
+(read_csv("../data/listings.csv")
+ .full_join(reviews, "id")
+ .write_csv("full_join.df.csv"))
 
 # INNER JOIN
 reviews = read_csv("../data/listings-reviews.csv")
@@ -44,6 +63,12 @@ reviews = read_csv("../data/listings-reviews.csv")
 (read_csv("../data/listings.csv")
  .left_join(reviews, "id")
  .write_csv("left_join.df.csv"))
+
+# SEMI JOIN
+reviews = read_csv("../data/listings-reviews.csv")
+(read_csv("../data/listings.csv")
+ .semi_join(reviews, "id")
+ .write_csv("semi_join.df.csv"))
 
 # SORT
 (read_csv("../data/vehicles.csv")

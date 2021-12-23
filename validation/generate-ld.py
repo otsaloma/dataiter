@@ -27,11 +27,30 @@ def read_json(path):
      cyl_max=lambda x: max(x.pluck("cyl")))
  .write_csv("aggregate.ld.csv"))
 
+# ANTI JOIN
+reviews = read_json("../data/listings-reviews.json")
+(read_json("../data/listings.json")
+ .anti_join(reviews, "id")
+ .write_csv("anti_join.ld.csv"))
+
 # FILTER
 (read_json("../data/vehicles.json")
  .filter(lambda x: x.year < 2000)
  .filter(lambda x: x.cyl < 10)
  .write_csv("filter.ld.csv"))
+
+# FILTER OUT
+(read_json("../data/vehicles.json")
+ .filter_out(lambda x: x.year < 2000)
+ .filter_out(lambda x: x.cyl < 10)
+ .write_csv("filter_out.ld.csv"))
+
+# FULL JOIN
+reviews = read_json("../data/listings-reviews.json")
+reviews = reviews + reviews
+(read_json("../data/listings.json")
+ .full_join(reviews, "id")
+ .write_csv("full_join.ld.csv"))
 
 # INNER JOIN
 reviews = read_json("../data/listings-reviews.json")
@@ -44,6 +63,12 @@ reviews = read_json("../data/listings-reviews.json")
 (read_json("../data/listings.json")
  .left_join(reviews, "id")
  .write_csv("left_join.ld.csv"))
+
+# SEMI JOIN
+reviews = read_json("../data/listings-reviews.json")
+(read_json("../data/listings.json")
+ .semi_join(reviews, "id")
+ .write_csv("semi_join.ld.csv"))
 
 # SORT
 (read_json("../data/vehicles.json")
