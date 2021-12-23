@@ -764,7 +764,12 @@ class ListOfDicts(list):
         keys = util.unique_keys(itertools.chain(*self))
         util.makedirs_for_file(path)
         with util.xopen(path, "wt", encoding=encoding) as f:
-            writer = csv.DictWriter(f, keys, dialect="unix", delimiter=sep)
+            writer = csv.DictWriter(f,
+                                    keys,
+                                    dialect="unix",
+                                    delimiter=sep,
+                                    quoting=csv.QUOTE_MINIMAL)
+
             writer.writeheader() if header else None
             for item in self:
                 # Fill in missing as None.
