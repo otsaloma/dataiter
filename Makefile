@@ -14,6 +14,7 @@ clean:
 	rm -rf build
 	rm -rf dataiter.egg-info
 	rm -rf dist
+	rm -rf validation/*.csv
 	rm -rf __pycache__
 	rm -rf */__pycache__
 	rm -rf */*/__pycache__
@@ -57,7 +58,7 @@ publish:
 
 # Interactive!
 release:
-	$(MAKE) check test clean
+	$(MAKE) check test validate clean
 	@echo "BUMP VERSION NUMBERS"
 	$(EDITOR) dataiter/__init__.py
 	$(EDITOR) setup.py
@@ -75,6 +76,7 @@ test-installed:
 	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
 
 validate:
-	cd validation && ./validate.sh
+	cd validation && ./validate-df.sh
+	cd validation && ./validate-ld.sh
 
 .PHONY: check clean doc doc-open doc-watch install profile publish release test test-installed validate
