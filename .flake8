@@ -1,3 +1,4 @@
 [flake8]
 select = E1,E9,F
 ignore = E129
+exclude = test.py
