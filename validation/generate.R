@@ -32,7 +32,7 @@ read_csv("../data/vehicles.csv") %>%
 # FILTER
 read_csv("../data/vehicles.csv") %>%
     filter(year < 2000) %>%
-    filter(cyl < 20) %>%
+    filter(cyl < 10) %>%
     write_csv("filter.R.csv")
 
 # INNER JOIN

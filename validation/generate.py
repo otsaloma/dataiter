@@ -31,7 +31,7 @@ def read_csv(path):
 (read_csv("../data/vehicles.csv")
  .filter(lambda x: x.year < 2000)
  .filter(lambda x: x.cyl < 10)
- .write_csv("filter.R.csv"))
+ .write_csv("filter.py.csv"))
 
 # INNER JOIN
 reviews = read_csv("../data/listings-reviews.csv")
