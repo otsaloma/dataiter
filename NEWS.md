@@ -1,7 +1,7 @@
 PENDING: dataiter 0.27
 ======================
 
-* `DataFrame.__getattr__`: Fix error message when attribute not found
+* `DataFrame`: Fix error message when column not found
 * `DataFrame.aggregate`: Speed up
 * `DataFrame.read_csv`: Try to avoid mixed types
 * `Vector.rank`: Rewrite, add `method` argument
