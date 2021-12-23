@@ -315,6 +315,26 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5, None])
         assert a.range().tolist() == [1, 5]
 
+    def test_rank_average(self):
+        a = Vector([3, 1, 1, 1, 2, 2])
+        b = a.rank(method="average")
+        assert b.tolist() == [6, 2, 2, 2, 4.5, 4.5]
+
+    def test_rank_average_missing(self):
+        a = Vector([np.nan, 1, 2, 3, np.nan])
+        b = a.rank(method="average")
+        assert b.tolist() == [4.5, 1, 2, 3, 4.5]
+
+    def test_rank_max(self):
+        a = Vector([1, 2, 1, 2, 3])
+        b = a.rank(method="max")
+        assert b.tolist() == [2, 4, 2, 4, 5]
+
+    def test_rank_max_missing(self):
+        a = Vector([np.nan, 1, 2, 3, np.nan])
+        b = a.rank(method="max")
+        assert b.tolist() == [5, 1, 2, 3, 5]
+
     def test_rank_min(self):
         a = Vector([1, 2, 1, 2, 3])
         b = a.rank(method="min")

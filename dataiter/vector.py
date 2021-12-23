@@ -372,32 +372,48 @@ class Vector(np.ndarray):
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
 
-    def rank(self, method="ordinal"):
+    def rank(self, method="average"):
         """
         Return the order of elements in a sorted vector.
 
-        `method` determines how ties are resolved. **"min"**: Each of equal
-        values are given the same rank (also called "competition ranking").
-        **"ordinal"**: All values are given a distinct rank with equal values
-        ranked by their order in `self`.
+        `method` determines how ties are resolved. **'min'** assigns each of
+        equal values the same rank, the minimum of the set (also called
+        "competition ranking"). **'max'** is the same, but assigning the
+        maximum of the set. **'average'** is the mean of 'min' and 'max'.
+        **'ordinal'** gives each element a distinct rank with equal values
+        ranked by their order in input.
 
         Ranks begin at 1. Missing values are ranked last.
 
-        For comparison, see ``scipy.stats.rankdata``:
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rankdata.html
+        **References**
 
-        >>> vector = di.Vector([1, 2, 1, 2, 3])
+        * https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rankdata.html
+        * https://www.rdocumentation.org/packages/base/topics/rank
+
+        >>> vector = di.Vector([3, 1, 1, 1, 2, 2])
         >>> vector.rank("min")
+        >>> vector.rank("max")
+        >>> vector.rank("average")
         >>> vector.rank("ordinal")
         """
-        if method not in ["min", "ordinal"]:
+        if method not in ["min", "max", "average", "ordinal"]:
             raise ValueError(f"Unexpected method: {method!r}")
         missing = self.is_missing()
+        if method == "average":
+            rank_min = self.rank("min")
+            rank_max = self.rank("max")
+            rank = np.mean([rank_min, rank_max], axis=0)
+            return self.__class__(rank)
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
             inv = np.unique(self[~missing], return_inverse=True)[1]
             arank = np.concatenate(([0], np.bincount(inv))).cumsum()[inv]
             zrank = arank.max() + 1
+        if method == "max":
+            # https://stackoverflow.com/a/14672797/16369038
+            inv = np.unique(self[~missing], return_inverse=True)[1]
+            arank = np.bincount(inv).cumsum()[inv] - 1
+            zrank = len(self) - 1
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
             indices = self[~missing].argsort()
