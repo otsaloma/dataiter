@@ -1,6 +1,11 @@
 # -*- coding: utf-8-unix -*-
 
-library(tidyverse)
+suppressPackageStartupMessages({
+    library(dplyr)
+    library(readr)
+})
+
+options(dplyr.summarise.inform=FALSE)
 
 read_csv = function(path) {
     data = readr::read_csv(path, show_col_types=FALSE, lazy=FALSE)
@@ -11,7 +16,7 @@ read_csv = function(path) {
         if (is.character(data[[name]]))
             # Use all lower case for strings to avoid differing
             # sorting of lower vs. upper case characters.
-            data[[name]] = str_to_lower(data[[name]])
+            data[[name]] = tolower(data[[name]])
     }
     return(data)
 }
