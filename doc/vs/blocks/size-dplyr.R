@@ -1,0 +1,2 @@
+nrow(data)
+ncol(data)

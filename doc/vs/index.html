@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compare basic data frame operations in dplyr vs. dataiter vs. pandas">
+    <title>Comparison Table of Basic Data Frame Operations in dplyr vs. dataiter vs. pandas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      div.grid-row { @apply gap-x-5 gap-y-1 grid grid-cols-3 items-start max-w-7xl mx-auto my-1; }
+      div.grid-row-6 { @apply gap-x-5 gap-y-1 grid grid-cols-6 items-start max-w-7xl mx-auto my-1; }
+      #search { @apply border-2 border-slate-300 font-mono mb-6 outline-0 px-4 py-2 rounded-lg w-full; }
+      h1 { @apply font-bold leading-normal mb-6 text-3xl text-slate-900 tracking-wide; }
+      h2 { @apply font-bold max-w-7xl mx-auto my-3 text-xl text-slate-900 tracking-wide; }
+      h3 { @apply text-center text-slate-500 text-sm tracking-wide; }
+      pre { @apply p-6 rounded-lg text-slate-900 text-sm; }
+      pre:nth-child(1) { @apply bg-stone-100; }
+      pre:nth-child(2) { @apply bg-slate-100; }
+      pre:nth-child(3) { @apply bg-stone-100; }
+      code { @apply text-slate-900 text-sm !important; }
+      code * { @apply bg-inherit !important; }
+      p.note { @apply mb-6 mx-1 text-sm text-slate-700; }
+      p.note code { @apply bg-stone-100 p-1 rounded text-emerald-700 !important; }
+      a { @apply text-blue-500; }
+      a:hover { @apply border-b-2 border-blue-500; }
+    </style>
+    <link rel="stylesheet" href="prism.css">
+  </head>
+
+  <body class="pb-48 pt-6 px-6">
+
+    <div class="grid-row">
+      <h1 class="col-span-2">Comparison Table of Basic Data Frame Operations in dplyr vs. dataiter vs. pandas</h1>
+      <input type="search" id="search" placeholder="Search" autofocus>
+    </div>
+
+    <div class="grid-row">
+      <h3>dplyr</h3>
+      <h3>dataiter</h3>
+      <h3>pandas</h3>
+    </div>
+
+    <h2>Imports & Configuration</h2>
+    <div class="grid-row" search-terms="import library">
+      <pre data-src="blocks/import-dplyr.R"></pre>
+      <pre data-src="blocks/import-dataiter.py"></pre>
+      <pre data-src="blocks/import-pandas.py"></pre>
+      <p class="note">Some of the below code uses other parts of tidyverse besides dplyr too, such
+        as readr. For simplicity, you can load them all via the tidyverse metapackage.</p>
+      <p class="note">We often need NumPy too for group-by-aggregate calculations etc.</p>
+      <p class="note"></p>
+    </div>
+
+    <h2>Input/Output</h2>
+    <div class="grid-row" search-terms="read write csv">
+      <pre data-src="blocks/io-csv-dplyr.R"></pre>
+      <pre data-src="blocks/io-csv-dataiter.py"></pre>
+      <pre data-src="blocks/io-csv-pandas.py"></pre>
+    </div>
+    <div class="grid-row" search-terms="read write binary rds pickle pkl npz">
+      <pre data-src="blocks/io-binary-dplyr.R"></pre>
+      <pre data-src="blocks/io-binary-dataiter.py"></pre>
+      <pre data-src="blocks/io-binary-pandas.py"></pre>
+    </div>
+    <div class="grid-row-6" search-terms="read write binary rds pickle pkl npz">
+      <p class="col-start-2 col-span-4 note">
+        All three support multiple binary formats, the above are sensible defaults (assuming you
+        don't need interoperability) that work out of the box.
+      </p>
+    </div>
+
+    <h2>Structure</h2>
+    <div class="grid-row" search-terms="nrow ncol length shape">
+      <pre data-src="blocks/size-dplyr.R"></pre>
+      <pre data-src="blocks/size-dataiter.py"></pre>
+      <pre data-src="blocks/size-pandas.py"></pre>
+    </div>
+
+    <h2>Indexing</h2>
+    <div class="grid-row" search-terms="index loc iloc">
+      <pre data-src="blocks/index-dplyr.R"></pre>
+      <pre data-src="blocks/index-dataiter.py"></pre>
+      <pre data-src="blocks/index-pandas.py"></pre>
+      <p class="note"></p>
+      <p class="note">Attribute access to columns (dot notation) is preferred.</p>
+      <p class="note">Attribute access to columns (dot notation) does not work in all contexts,
+        bracket notation is more common. Pandas uses terms "axis=0" to refer to rows, "axis=1" to
+        refer to columns, "index" to refer to row names and "labels" to refer to row and column
+        names. Certain operations use the "index" for implicit joins called "alignment".</p>
+    </div>
+
+    <h2>Chaining/Piping</h2>
+    <div class="grid-row" search-terms="chain chaining pipe piping">
+      <pre data-src="blocks/chain-dplyr.R"></pre>
+      <pre data-src="blocks/chain-dataiter.py"></pre>
+      <pre data-src="blocks/chain-pandas.py"></pre>
+      <p class="note">Since 4.1.0 R has a native pipe as well <code>|></code>, which is mostly
+        interchangeable with the above magrittr pipe.</p>
+      <p class="note"></p>
+      <p class="note">Pandas is not really designed for method chaining but it mostly works these
+        days. Note also that the "inplace" arguments that many methods take, which if used are
+        incompatible with method chaining,
+        are <a href="https://github.com/pandas-dev/pandas/issues/16529">apparently</a> not
+        useful.</p>
+    </div>
+
+    <h2>Column Operations</h2>
+    <div class="grid-row" search-terms="colnames columns">
+      <pre data-src="blocks/colnames-dplyr.R"></pre>
+      <pre data-src="blocks/colnames-dataiter.py"></pre>
+      <pre data-src="blocks/colnames-pandas.py"></pre>
+    </div>
+    <div class="grid-row" search-terms="rename">
+      <pre data-src="blocks/rename-dplyr.R"></pre>
+      <pre data-src="blocks/rename-dataiter.py"></pre>
+      <pre data-src="blocks/rename-pandas.py"></pre>
+    </div>
+    <div class="grid-row" search-terms="select unselect drop">
+      <pre data-src="blocks/select-dplyr.R"></pre>
+      <pre data-src="blocks/select-dataiter.py"></pre>
+      <pre data-src="blocks/select-pandas.py"></pre>
+    </div>
+    <div class="grid-row" search-terms="modify mutate assign">
+      <pre data-src="blocks/modify-dplyr.R"></pre>
+      <pre data-src="blocks/modify-dataiter.py"></pre>
+      <pre data-src="blocks/modify-pandas.py"></pre>
+    </div>
+
+    <h2>Sorting</h2>
+    <div class="grid-row" search-terms="sort arrange values">
+      <pre data-src="blocks/sort-dplyr.R"></pre>
+      <pre data-src="blocks/sort-dataiter.py"></pre>
+      <pre data-src="blocks/sort-pandas.py"></pre>
+    </div>
+
+    <h2>Subsetting by Row</h2>
+    <div class="grid-row" search-terms="head tail sample slice">
+      <pre data-src="blocks/head-dplyr.R"></pre>
+      <pre data-src="blocks/head-dataiter.py"></pre>
+      <pre data-src="blocks/head-pandas.py"></pre>
+    </div>
+    <div class="grid-row" search-terms="filter out">
+      <pre data-src="blocks/filter-dplyr.R"></pre>
+      <pre data-src="blocks/filter-dataiter.py"></pre>
+      <pre data-src="blocks/filter-pandas.py"></pre>
+      <p class="note"></p>
+      <p class="note">dataiter also has <code>filter_out</code> as a shorthand to negate the given
+        condition.</p>
+      <p class="note"></p>
+    </div>
+    <div class="grid-row" search-terms="unique distinct drop duplicates">
+      <pre data-src="blocks/unique-dplyr.R"></pre>
+      <pre data-src="blocks/unique-dataiter.py"></pre>
+      <pre data-src="blocks/unique-pandas.py"></pre>
+    </div>
+
+    <h2>Concatenation</h2>
+    <div class="grid-row" search-terms="rbind bind rows concat append">
+      <pre data-src="blocks/rbind-dplyr.R"></pre>
+      <pre data-src="blocks/rbind-dataiter.py"></pre>
+      <pre data-src="blocks/rbind-pandas.py"></pre>
+      <p class="note"></p>
+      <p class="note"></p>
+      <p class="note"><code>append</code>
+        is <a href="https://github.com/pandas-dev/pandas/issues/35407">being deprecated</a>.</p>
+    </div>
+    <div class="grid-row" search-terms="cbind bind cols concat">
+      <pre data-src="blocks/cbind-dplyr.R"></pre>
+      <pre data-src="blocks/cbind-dataiter.py"></pre>
+      <pre data-src="blocks/cbind-pandas.py"></pre>
+      <p class="note"></p>
+      <p class="note"></p>
+      <p class="note">Pandas wants to do "alignment" by "index" here. Resetting the indices prior to
+        concatenation should give the same result as the plain concatenation in dplyr and
+        dataiter.</p>
+    </div>
+
+    <h2>Joins</h2>
+    <div class="grid-row" search-terms="join left inner full merge outer">
+      <pre data-src="blocks/join-dplyr.R"></pre>
+      <pre data-src="blocks/join-dataiter.py"></pre>
+      <pre data-src="blocks/join-pandas.py"></pre>
+    </div>
+    <div class="grid-row-6" search-terms="join left inner full merge outer">
+      <p class="col-start-2 col-span-4 note">
+        dplyr and pandas follow the SQL convention of joining all matching rows, e.g. if doing a
+        left join with ten rows on the left side, the result will have ten or more rows – ten if all
+        keys had zero or one match on the right side, twenty if all had two matches etc. dataiter
+        differs by only joining the first match, on account of it usually being more practical and
+        less prone to produce unpleasant surprises. If dataiter's <code>a.left_join(b)</code>
+        doesn't give you all the results you're looking for, you probably want to do
+        either <code>b.left_join(a)</code> or <code>a.full_join(b)</code>. SQL-style joins are
+        currently unsupported, but may be added in the future.
+      </p>
+    </div>
+    <div class="grid-row" search-terms="join semi anti">
+      <pre data-src="blocks/non-join-dplyr.R"></pre>
+      <pre data-src="blocks/non-join-dataiter.py"></pre>
+      <pre data-src="blocks/non-join-pandas.py"></pre>
+    </div>
+
+    <h2>Grouping & Aggregation</h2>
+    <div class="grid-row" search-terms="group by aggregate groupby agg apply">
+      <pre data-src="blocks/aggregate-dplyr.R"></pre>
+      <pre data-src="blocks/aggregate-dataiter.py"></pre>
+      <pre data-src="blocks/aggregate-pandas.py"></pre>
+      <p class="note"></p>
+      <p class="note"></p>
+      <p class="note"><code>agg</code> function arguments can take very many forms, the above is
+        called "named aggregation". <code>agg</code> only supports single-column calculation. To
+        access multiple columns, like in dplyr and dataiter, <code>apply</code> is needed
+        instead.</p>
+    </div>
+
+    <script src="prism.js"></script>
+
+    <script>
+      function matches(query, terms) {
+          if (query.length === 0) return true;
+          return query.split(/[ _]+/).every(q => terms.includes(q));
+      }
+      document.getElementById("search").addEventListener("input", () => {
+          const query = document.getElementById("search").value.trim().toLowerCase();
+          document.querySelectorAll("div[search-terms]").forEach(div => {
+              const terms = div.getAttribute("search-terms");
+              const show = matches(query, terms);
+              div.style.display = show ? "" : "none";
+          });
+          const show = query.length === 0;
+          document.querySelectorAll("h2").forEach(h => {
+              h.style.display = show ? "" : "none";
+          });
+      });
+    </script>
+
+  </body>
+</html>
