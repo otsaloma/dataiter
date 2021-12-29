@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-print("Compiling index.html + blocks → vs.html...")
+print("Compiling index.html + blocks → comparison.html...")
 
 lines = []
 index = Path("index.html").read_text("utf-8")
@@ -19,4 +19,4 @@ for line in index.splitlines():
         lines.append(line)
 
 text = "\n".join(lines) + "\n"
-Path("vs.html").write_text(text, "utf-8")
+Path("comparison.html").write_text(text, "utf-8")

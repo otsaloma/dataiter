@@ -63,7 +63,7 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = [
     '_static',
-    'vs/prism.css',
-    'vs/prism.js',
-    'vs/vs.html',
+    'comparison/prism.css',
+    'comparison/prism.js',
+    'comparison/comparison.html',
 ]
