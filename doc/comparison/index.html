@@ -13,14 +13,14 @@
       h1 { @apply font-bold leading-normal mb-6 text-3xl text-slate-900 tracking-wide; }
       h2 { @apply font-bold max-w-7xl mx-auto my-3 text-xl text-slate-900 tracking-wide; }
       h3 { @apply text-center text-slate-500 text-sm tracking-wide; }
-      pre { @apply p-6 rounded-lg text-slate-900 text-sm; }
+      pre { @apply px-4 py-3 rounded-lg text-slate-900 text-sm !important; }
       pre:nth-child(1) { @apply bg-stone-100; }
       pre:nth-child(2) { @apply bg-slate-100; }
       pre:nth-child(3) { @apply bg-stone-100; }
       code { @apply text-slate-900 text-sm !important; }
       code * { @apply bg-inherit !important; }
       p.note { @apply mb-6 mx-1 text-sm text-slate-700; }
-      p.note code { @apply bg-stone-100 p-1 rounded text-emerald-700 !important; }
+      p.note code { @apply bg-stone-100 p-0.5 rounded text-emerald-700 !important; }
       a { @apply text-blue-500; }
       a:hover { @apply border-b-2 border-blue-500; }
     </style>
@@ -183,12 +183,12 @@
     </div>
     <div class="grid-row-6" search-terms="join left inner full merge outer">
       <p class="col-start-2 col-span-4 note">
-        dplyr and pandas follow the SQL convention of joining all matching rows, e.g. if doing a
+        dplyr and pandas follow the SQL convention of joining all matching rows, i.e. if doing a
         left join with ten rows on the left side, the result will have ten or more rows – ten if all
-        keys had zero or one match on the right side, twenty if all had two matches etc. dataiter
+        keys have zero or one match on the right side, twenty if all have two matches etc. dataiter
         differs by only joining the first match, on account of it usually being more practical and
-        less prone to produce unpleasant surprises. If dataiter's <code>a.left_join(b)</code>
-        doesn't give you all the results you're looking for, you probably want to do
+        less liable to produce unpleasant surprises. If dataiter's <code>a.left_join(b)</code>
+        doesn't give you all the results you're looking for, you might want instead
         either <code>b.left_join(a)</code> or <code>a.full_join(b)</code>. SQL-style joins are
         currently unsupported, but may be added in the future.
       </p>
@@ -208,8 +208,9 @@
       <p class="note"></p>
       <p class="note"><code>agg</code> function arguments can take very many forms, the above is
         called "named aggregation". <code>agg</code> only supports single-column calculation. To
-        access multiple columns, like in dplyr and dataiter, <code>apply</code> is needed
-        instead.</p>
+        access multiple columns, like in dplyr and dataiter, <code>apply</code> is needed instead.
+        Compared to dataiter's <code>aggregate</code>, <code>agg</code> is a lot
+        faster, <code>apply</code> a lot slower.</p>
     </div>
 
     <script src="prism.js"></script>

@@ -1,3 +1,3 @@
 len(data)
 len(data.columns)
-data.shape
+nrow, ncol = data.shape
