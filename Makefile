@@ -37,6 +37,14 @@ doc-watch:
 install:
 	./setup.py install --prefix=$(PREFIX)
 
+# Non-essential scripts, not installed by default.
+install-cli:
+	mkdir -p $(PREFIX)/bin
+	for X in `ls bin | grep di-`; do \
+	cp -fv bin/$$X $(PREFIX)/bin && \
+	chmod +x $(PREFIX)/bin/$$X; \
+	done
+
 # Use @profile decorator from line-profiler.
 # https://github.com/pyutils/line_profiler
 profile:
@@ -79,4 +87,4 @@ validate:
 	cd validation && ./validate-df.sh
 	cd validation && ./validate-ld.sh
 
-.PHONY: check clean doc doc-open doc-watch install profile publish release test test-installed validate
+.PHONY: check clean doc doc-open doc-watch install install-cli profile publish release test test-installed validate
