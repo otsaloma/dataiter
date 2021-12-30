@@ -67,3 +67,12 @@ html_static_path = [
     'comparison/prism.js',
     'comparison/comparison.html',
 ]
+
+def setup(app):
+    # Build comparison/comparison.html. Note that readthedocs.org doesn't
+    # run the Makefile, so anything there doesn't help in production.
+    # https://github.com/readthedocs/readthedocs.org/issues/2276#issuecomment-231899567
+    import subprocess
+    from pathlib import Path
+    cwd = Path(__file__).parent.resolve() / "comparison"
+    subprocess.run([sys.executable, "build.py"], cwd=cwd, check=True)
