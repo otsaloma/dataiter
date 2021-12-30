@@ -7,6 +7,6 @@ data/orig
 dataiter.egg-info
 dist
 doc/_build
-doc/vs/comparison.html
+doc/comparison/comparison.html
 test.py
 validation/*.csv
