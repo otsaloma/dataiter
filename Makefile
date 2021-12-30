@@ -38,6 +38,8 @@ install:
 	./setup.py install --prefix=$(PREFIX)
 
 # Non-essential scripts, not installed by default.
+# Note that these don't go through setuptools rewriting,
+# instead they just do a plain unspecified dataiter import.
 install-cli:
 	mkdir -p $(PREFIX)/bin
 	for X in `ls bin | grep di-`; do \
