@@ -12,6 +12,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.as_string`
 :meth:`~dataiter.Vector.equal`
 :meth:`~dataiter.Vector.fast`
+:meth:`~dataiter.Vector.get_memory_use`
 :meth:`~dataiter.Vector.head`
 :meth:`~dataiter.Vector.is_boolean`
 :meth:`~dataiter.Vector.is_bytes`
