@@ -25,7 +25,7 @@ print(f"comparison.html: {len(text)}")
 Path("comparison.html").write_text(text, "utf-8")
 
 text = Path("prism.css").read_text("utf-8").strip()
-if "font-family:" in text or "font-size" in text:
+if "font-family:" in text or "font-size:" in text:
     # Strip Prism font rules so that they don't override
     # Tailwind CSS's better-thought-out default system font stack.
     # https://tailwindcss.com/docs/font-family
