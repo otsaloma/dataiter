@@ -39,3 +39,9 @@ pip install -U git+https://github.com/otsaloma/dataiter#egg=dataiter
 ## Documentation
 
 https://dataiter.readthedocs.io/
+
+If you're familiar with either R's dplyr or Python's Pandas, the
+comparison table in the documentation will give you a quick overview of
+the differences and similarities.
+
+https://dataiter.readthedocs.io/en/latest/comparison.html
