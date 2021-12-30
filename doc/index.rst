@@ -36,6 +36,7 @@ Currently included are the following classes.
    :caption: Tutorials
 
    quick-start
+   comparison
 
 .. toctree::
    :maxdepth: 1
