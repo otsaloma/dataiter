@@ -7,6 +7,7 @@ PENDING: dataiter 0.27
 * `DataFrame.read_csv`: Try to avoid mixed types
 * `ListOfDicts.full_join`: Fix to join all possible keys
 * `ListOfDicts.write_csv`: Use minimal quoting
+* `Vector.get_memory_use`: New method
 * `Vector.rank`: Rewrite, add `method` argument
 * `*.read_*`: Rename fname argument path
 * `*.write_*`: Rename fname argument path

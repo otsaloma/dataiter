@@ -203,6 +203,14 @@ class TestVector:
         assert a.equal(c)
         assert a.equal(d)
 
+    def test_get_memory_use(self):
+        a = Vector(range(100))
+        assert a.get_memory_use() > 100
+
+    def test_get_memory_use_object(self):
+        a = Vector(["1", "12", "123"], object)
+        assert a.get_memory_use() > 3
+
     def test_head(self):
         a = Vector([1, 2, 3, 4, 5])
         assert a.head(3).tolist() == [1, 2, 3]

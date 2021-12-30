@@ -23,6 +23,7 @@
 import dataiter
 import datetime
 import numpy as np
+import sys
 
 from dataiter import util
 
@@ -203,6 +204,17 @@ class Vector(np.ndarray):
             # Evaluate generator/iterator.
             object = list(object)
         return np.array(object, dtype).view(cls)
+
+    def get_memory_use(self):
+        """
+        Return memory use in bytes.
+
+        >>> vector = di.Vector(range(100))
+        >>> vector.get_memory_use()
+        """
+        if self.is_object():
+            return sum(sys.getsizeof(x) for x in self)
+        return self.nbytes
 
     def head(self, n=None):
         """

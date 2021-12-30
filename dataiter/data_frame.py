@@ -26,7 +26,6 @@ import itertools
 import json
 import numpy as np
 import pickle
-import sys
 
 from dataiter import deco
 from dataiter import util
@@ -557,10 +556,7 @@ class DataFrame(dict):
             new = DataFrame(column=name)
             new.dtype = str(column.dtype)
             new.item_size = column.itemsize
-            if column.is_object():
-                new.total_size = sum(sys.getsizeof(x) for x in column)
-            else:
-                new.total_size = column.nbytes
+            new.total_size = column.get_memory_use()
             mem = mem.rbind(new)
         new = DataFrame(column="TOTAL")
         new.dtype = "--"
