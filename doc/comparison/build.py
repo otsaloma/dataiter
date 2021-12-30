@@ -31,7 +31,7 @@ if "font-family:" in text or "font-size" in text:
     # https://tailwindcss.com/docs/font-family
     text_length_prior = len(text)
     print("Patching prims.css... ", end="")
-    text = re.sub(r"font-family:[^;]+", "", text)
-    text = re.sub(r"font-size:[^;]+", "", text)
+    text = re.sub(r"font-family:.+?;", "", text)
+    text = re.sub(r"font-size:.+?;", "", text)
     print(len(text) - text_length_prior)
     Path("prism.css").write_text(text + "\n", "utf-8")
