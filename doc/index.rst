@@ -10,10 +10,9 @@ Currently included are the following classes.
    A class for tabular data similar to R's ``data.frame`` or
    ``pandas.DataFrame``. It is under the hood a dictionary of NumPy
    arrays and thus capable of fast vectorized operations. You can
-   consider this to be a very experimental, very light-weight
-   alternative to Pandas with a simple and consistent API.
-   Performance-wise dataiter relies on NumPy and is likely to be at
-   best comparable to Pandas.
+   consider this to be a light-weight alternative to Pandas with a
+   simple and consistent API. Performance-wise dataiter relies on NumPy
+   and is likely to be at best comparable to Pandas.
 
 :class:`dataiter.ListOfDicts`
    A class useful for manipulating data from JSON APIs. It provides
@@ -29,7 +28,7 @@ Currently included are the following classes.
    by the data frame class. Geometry is read as-is into the "geometry"
    column, but no special geometric operations are currently supported.
 
-.. warning:: dataiter is experimental and the API subject to change.
+.. warning:: dataiter is still evolving and the API subject to change.
 
 .. toctree::
    :maxdepth: 1
