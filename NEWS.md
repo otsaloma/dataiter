@@ -11,6 +11,8 @@ PENDING: dataiter 0.27
 * `Vector.rank`: Rewrite, add `method` argument
 * `*.read_*`: Rename `fname` argument `path`
 * `*.write_*`: Rename `fname` argument `path`
+* Add comparison table dplyr vs. dataiter vs. pandas to documentation:
+  <https://dataiter.readthedocs.io/en/latest/comparison.html>
 
 2021-12-02: dataiter 0.26
 =========================
