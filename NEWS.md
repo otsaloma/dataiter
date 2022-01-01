@@ -1,5 +1,5 @@
-PENDING: dataiter 0.27
-======================
+2022-01-01: dataiter 0.27
+=========================
 
 * `DataFrame`: Fix error message when column not found
 * `DataFrame.aggregate`: Speed up
