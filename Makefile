@@ -54,7 +54,7 @@ profile:
 
 # Interactive!
 publish:
-	$(MAKE) check test clean
+	$(MAKE) check test validate clean
 	./setup.py sdist bdist_wheel
 	test -s dist/dataiter-*-py3-none-any.whl
 	test -s dist/dataiter-*.tar.gz
