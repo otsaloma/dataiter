@@ -348,7 +348,9 @@ class TestListOfDicts:
 
     def test_read_json_types(self):
         path = str(test.get_data_path("downloads.json"))
-        types = {"date": datetime.date.fromisoformat, "downloads": int}
+        # datetime.date.fromisoformat requires Python >= 3.7.
+        date = lambda x: datetime.date(*map(int, x.split("-")))
+        types = {"date": date, "downloads": int}
         data = ListOfDicts.read_json(path, types=types)
         assert isinstance(data[0].date, datetime.date)
         assert isinstance(data[0].downloads, int)
