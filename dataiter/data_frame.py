@@ -791,7 +791,7 @@ class DataFrame(dict):
                 column = self[colname]
                 if dir < 0 and not (column.is_boolean() or column.is_number()):
                     # Use rank for non-numeric types so that we can sort descending.
-                    column = column.rank("min")
+                    column = column.rank(method="min")
                 yield column if dir >= 0 else -column
         indices = np.lexsort(sort_key())
         for colname, column in self.items():
@@ -907,7 +907,7 @@ class DataFrame(dict):
             by = np.column_stack([self[x] for x in colnames])
         else:
             # Use rank for differing dtypes.
-            by = np.column_stack([self[x].rank("min") for x in colnames])
+            by = np.column_stack([self[x].rank(method="min") for x in colnames])
         indices = np.sort(np.unique(by, return_index=True, axis=0)[1])
         for colname, column in self.items():
             yield colname, column[indices].copy()

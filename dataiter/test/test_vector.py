@@ -325,51 +325,51 @@ class TestVector:
 
     def test_rank_average(self):
         a = Vector([3, 1, 1, 1, 2, 2])
-        b = a.rank("average")
+        b = a.rank(method="average")
         assert b.tolist() == [6, 2, 2, 2, 4.5, 4.5]
 
     def test_rank_average_missing(self):
         a = Vector([np.nan, 1, 2, 3, np.nan])
-        b = a.rank("average")
+        b = a.rank(method="average")
         assert b.tolist() == [4.5, 1, 2, 3, 4.5]
 
     def test_rank_max(self):
         a = Vector([1, 2, 1, 2, 3])
-        b = a.rank("max")
+        b = a.rank(method="max")
         assert b.tolist() == [2, 4, 2, 4, 5]
 
     def test_rank_max_missing(self):
         a = Vector([np.nan, 1, 2, 3, np.nan])
-        b = a.rank("max")
+        b = a.rank(method="max")
         assert b.tolist() == [5, 1, 2, 3, 5]
 
     def test_rank_min(self):
         a = Vector([1, 2, 1, 2, 3])
-        b = a.rank("min")
+        b = a.rank(method="min")
         assert b.tolist() == [1, 3, 1, 3, 5]
 
     def test_rank_min_missing(self):
         a = Vector([np.nan, 1, 2, 3, np.nan])
-        b = a.rank("min")
+        b = a.rank(method="min")
         assert b.tolist() == [4, 1, 2, 3, 4]
 
     def test_rank_ordinal(self):
         a = Vector([1, 2, 1, 2, 3])
-        b = a.rank("ordinal")
+        b = a.rank(method="ordinal")
         assert b.tolist() == [1, 3, 2, 4, 5]
 
     def test_rank_ordinal_missing(self):
         a = Vector([np.nan, 1, 2, 3, np.nan])
-        b = a.rank("ordinal")
+        b = a.rank(method="ordinal")
         assert b.tolist() == [4, 1, 2, 3, 5]
 
     def test_rank_without_ties(self):
         # Without ties, all methods should give the same result.
         a = Vector([np.nan, 3, 2, 4, 5, 1])
-        assert a.rank("min").equal(a.rank("average"))
-        assert a.rank("min").equal(a.rank("max"))
-        assert a.rank("min").equal(a.rank("min"))
-        assert a.rank("min").equal(a.rank("ordinal"))
+        assert a.rank(method="min").equal(a.rank(method="average"))
+        assert a.rank(method="min").equal(a.rank(method="max"))
+        assert a.rank(method="min").equal(a.rank(method="min"))
+        assert a.rank(method="min").equal(a.rank(method="ordinal"))
 
     def test_replace_missing(self):
         a = Vector([1, 2, 3, None])

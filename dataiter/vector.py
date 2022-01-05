@@ -403,17 +403,17 @@ class Vector(np.ndarray):
         * https://www.rdocumentation.org/packages/base/topics/rank
 
         >>> vector = di.Vector([3, 1, 1, 1, 2, 2])
-        >>> vector.rank("min")
-        >>> vector.rank("max")
-        >>> vector.rank("average")
-        >>> vector.rank("ordinal")
+        >>> vector.rank(method="min")
+        >>> vector.rank(method="max")
+        >>> vector.rank(method="average")
+        >>> vector.rank(method="ordinal")
         """
         if method not in ["min", "max", "average", "ordinal"]:
             raise ValueError(f"Unexpected method: {method!r}")
         missing = self.is_missing()
         if method == "average":
-            rank_min = self.rank("min")
-            rank_max = self.rank("max")
+            rank_min = self.rank(method="min")
+            rank_max = self.rank(method="max")
             rank = np.mean([rank_min, rank_max], axis=0)
             return self.__class__(rank)
         if method == "min":
