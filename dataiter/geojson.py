@@ -24,6 +24,7 @@ import json
 
 from attd import AttributeDict
 from dataiter import DataFrame
+from dataiter import DataFrameColumn
 from dataiter import util
 from dataiter import Vector
 
@@ -83,16 +84,17 @@ class GeoJSON(DataFrame):
             raise TypeError(f"Property type {type(value)} of {key!r} not supported")
 
     @classmethod
-    def read(cls, path, encoding="utf-8", **kwargs):
+    def read(cls, path, encoding="utf-8", columns=[], dtypes={}, **kwargs):
         """
         Return data from GeoJSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `kwargs` are passed to ``json.load``.
+        `columns` is an optional list of columns to limit to.
 
-        >>> data = di.GeoJSON.read("data/neighbourhoods.geojson")
-        >>> data.head()
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+
+        `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))
@@ -101,11 +103,15 @@ class GeoJSON(DataFrame):
         for feature in raw.features:
             for key in feature.properties:
                 data.setdefault(key, [])
+        if columns:
+            data = {k: v for k, v in data.items() if k in columns}
         for feature in raw.features:
             for key in data:
                 value = feature.properties.get(key, None)
                 data[key].append(value)
         data["geometry"] = [x.geometry for x in raw.features]
+        for name, dtype in dtypes.items():
+            data[name] = DataFrameColumn(data[name], dtype)
         data = cls(**data)
         del raw.features
         data.metadata = raw
@@ -122,7 +128,7 @@ class GeoJSON(DataFrame):
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `kwargs` are passed to ``json.dumps``.
+        `kwargs` are passed to ``json.dump``.
         """
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)

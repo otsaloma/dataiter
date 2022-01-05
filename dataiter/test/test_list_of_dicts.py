@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import datetime
 import tempfile
 
 from attd import AttributeDict
@@ -307,25 +308,52 @@ class TestListOfDicts:
         mock_print.assert_called()
 
     def test_read_csv(self):
-        data = test.list_of_dicts("vehicles.csv")
+        path = str(test.get_data_path("vehicles.csv"))
+        data = ListOfDicts.read_csv(path)
         assert len(data) == 33442
         assert all(len(x) == 12 for x in data)
+
+    def test_read_csv_keys(self):
+        path = str(test.get_data_path("vehicles.csv"))
+        data = ListOfDicts.read_csv(path, keys=["make", "model"])
+        assert list(data[0].keys()) == ["make", "model"]
+        assert list(data[100].keys()) == ["make", "model"]
 
     def test_read_csv_path(self):
         ListOfDicts.read_csv(test.get_data_path("vehicles.csv"))
 
-    def test_read_csv_columns(self):
+    def test_read_csv_types(self):
         path = str(test.get_data_path("vehicles.csv"))
-        data = ListOfDicts.read_csv(path, columns=["make", "model"])
-        assert list(data[0].keys()) == ["make", "model"]
+        types = {"hwy": int, "cty": int}
+        data = ListOfDicts.read_csv(path, types=types)
+        assert isinstance(data[0].hwy, int)
+        assert isinstance(data[0].cty, int)
+        assert isinstance(data[100].hwy, int)
+        assert isinstance(data[100].cty, int)
 
     def test_read_json(self):
-        data = test.list_of_dicts("downloads.json")
+        path = str(test.get_data_path("downloads.json"))
+        data = ListOfDicts.read_json(path)
         assert len(data) == 905
         assert all(len(x) == 3 for x in data)
 
+    def test_read_json_keys(self):
+        path = str(test.get_data_path("downloads.json"))
+        data = ListOfDicts.read_json(path, keys=["date", "downloads"])
+        assert list(data[0].keys()) == ["date", "downloads"]
+        assert list(data[100].keys()) == ["date", "downloads"]
+
     def test_read_json_path(self):
         ListOfDicts.read_csv(test.get_data_path("vehicles.json"))
+
+    def test_read_json_types(self):
+        path = str(test.get_data_path("downloads.json"))
+        types = {"date": datetime.date.fromisoformat, "downloads": int}
+        data = ListOfDicts.read_json(path, types=types)
+        assert isinstance(data[0].date, datetime.date)
+        assert isinstance(data[0].downloads, int)
+        assert isinstance(data[100].date, datetime.date)
+        assert isinstance(data[100].downloads, int)
 
     def test_read_pickle(self):
         orig = test.list_of_dicts("downloads.json")

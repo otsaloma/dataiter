@@ -285,14 +285,29 @@ class ListOfDicts(list):
                     yield item
 
     @classmethod
-    def from_json(cls, string, **kwargs):
+    def from_json(cls, string, keys=[], types={}, **kwargs):
         """
         Return a new list of dicts from JSON `string`.
+
+        `keys` is an optional list of keys to limit to.
+
+        `types` is an optional dict mapping keys to datatypes.
+
+        `kwargs` are passed to ``json.load``.
         """
-        obj = json.loads(string, **kwargs)
-        if not isinstance(obj, list):
+        data = json.loads(string, **kwargs)
+        if not isinstance(data, list):
             raise TypeError("Not a list")
-        return cls(obj)
+        if keys:
+            keys = set(keys)
+            for item in data:
+                for key in set(item) - keys:
+                    del item[key]
+        for key, type in types.items():
+            for item in data:
+                if key in item:
+                    item[key] = type(item[key])
+        return cls(data)
 
     def full_join(self, other, *by):
         """
@@ -518,38 +533,49 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, path, encoding="utf-8", header=True, sep=",", columns=None):
+    def read_csv(cls, path, encoding="utf-8", sep=",", header=True, keys=[], types={}):
         """
         Return a new list from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+
+        `keys` is an optional list of keys to limit to.
+
+        `types` is an optional dict mapping keys to datatypes.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
             if not rows: return cls([])
-            keys = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
-            if columns:
-                # Limit to requested columns.
-                indices = list(reversed(range(len(rows[0]))))
-                keep = set(keys.index(x) for x in columns)
+            colnames = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
+            if keys:
+                # Drop all keys except the requested ones.
+                drop = [i for i in range(len(rows[0])) if colnames[i] not in keys]
                 for row in rows:
-                    for i in indices:
-                        if i not in keep:
-                            del row[i]
-                keys = columns
-            return cls(dict(zip(keys, x)) for x in rows)
+                    for i in reversed(drop):
+                        del row[i]
+                colnames = keys
+            data = cls(dict(zip(colnames, x)) for x in rows)
+            for key, type in types.items():
+                for item in data:
+                    if key in item:
+                        item[key] = type(item[key])
+            return data
 
     @classmethod
-    def read_json(cls, path, encoding="utf-8", **kwargs):
+    def read_json(cls, path, encoding="utf-8", keys=[], types={}, **kwargs):
         """
         Return a new list from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `kwargs` are passed to :meth:`from_json`.
+        `keys` is an optional list of keys to limit to.
+
+        `types` is an optional dict mapping keys to datatypes.
+
+        `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
-            return cls.from_json(f.read(), **kwargs)
+            return cls.from_json(f.read(), keys, types, **kwargs)
 
     @classmethod
     def read_pickle(cls, path):
@@ -685,7 +711,7 @@ class ListOfDicts(list):
         """
         Return list converted to a JSON string.
 
-        `kwargs` are passed to ``json.dumps``.
+        `kwargs` are passed to ``json.dump``.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.to_json()[:100]

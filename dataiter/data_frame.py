@@ -336,25 +336,40 @@ class DataFrame(dict):
             yield colname, np.delete(column, rows)
 
     @classmethod
-    def from_json(cls, string, **kwargs):
+    def from_json(cls, string, columns=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON `string`.
+
+        `columns` is an optional list of columns to limit to.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+
+        `kwargs` are passed to ``json.load``.
         """
-        obj = json.loads(string, **kwargs)
-        if not isinstance(obj, list):
+        data = json.loads(string, **kwargs)
+        if not isinstance(data, list):
             raise TypeError("Not a list")
-        keys = util.unique_keys(itertools.chain(*obj))
-        columns = {k: [x.get(k, None) for x in obj] for k in keys}
-        return cls(**columns)
+        keys = util.unique_keys(itertools.chain(*data))
+        if columns:
+            keys = [x for x in keys if x in columns]
+        data = {k: [x.get(k, None) for x in data] for k in keys}
+        for name, dtype in dtypes.items():
+            data[name] = DataFrameColumn(data[name], dtype)
+        return cls(**data)
 
     @classmethod
-    def from_pandas(cls, data):
+    def from_pandas(cls, data, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
         # It would be a lot faster to skip tolist here,
         # but then we'd need to map some Pandas dtype oddities.
-        return cls(**{x: data[x].to_numpy().tolist() for x in data.columns})
+        data = {x: data[x].to_numpy().tolist() for x in data.columns}
+        for name, dtype in dtypes.items():
+            data[name] = DataFrameColumn(data[name], dtype)
+        return cls(**data)
 
     def full_join(self, other, *by):
         """
@@ -610,34 +625,45 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, encoding="utf-8", header=True, columns=None, sep=","):
+    def read_csv(cls, path, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+
+        `columns` is an optional list of columns to limit to.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
         import pandas as pd
         data = pd.read_csv(path,
                            sep=sep,
                            header=0 if header else None,
-                           usecols=columns,
+                           usecols=columns or None,
+                           dtype=dtypes,
                            parse_dates=False,
                            encoding=encoding,
                            low_memory=False)
 
         if not header:
             data.columns = util.generate_colnames(len(data.columns))
-        return cls.from_pandas(data)
+        return cls.from_pandas(data, dtypes)
 
     @classmethod
-    def read_json(cls, path, encoding="utf-8", **kwargs):
+    def read_json(cls, path, encoding="utf-8", columns=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+
+        `columns` is an optional list of columns to limit to.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+
+        `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
-            return cls.from_json(f.read(), **kwargs)
+            return cls.from_json(f.read(), columns, dtypes, **kwargs)
 
     @classmethod
     def read_npz(cls, path, allow_pickle=True):
@@ -792,7 +818,7 @@ class DataFrame(dict):
         """
         Return data frame converted to a JSON string.
 
-        `kwargs` are passed to ``json.dumps``.
+        `kwargs` are passed to ``json.dump``.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.to_json()[:100]

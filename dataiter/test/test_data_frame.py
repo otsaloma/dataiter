@@ -330,7 +330,8 @@ class TestDataFrame:
         assert np.all(data.test2[-3:] == 2)
 
     def test_read_csv(self):
-        data = test.data_frame("vehicles.csv")
+        path = str(test.get_data_path("vehicles.csv"))
+        data = DataFrame.read_csv(path)
         assert data.nrow == 33442
         assert data.ncol == 12
 
@@ -339,13 +340,33 @@ class TestDataFrame:
         data = DataFrame.read_csv(path, columns=["make", "model"])
         assert data.colnames == ["make", "model"]
 
+    def test_read_csv_dtypes(self):
+        path = str(test.get_data_path("vehicles.csv"))
+        dtypes = {"make": object, "model": object}
+        data = DataFrame.read_csv(path, dtypes=dtypes)
+        assert data.make.is_object()
+        assert data.model.is_object()
+
     def test_read_csv_path(self):
         DataFrame.read_csv(test.get_data_path("vehicles.csv"))
 
     def test_read_json(self):
-        data = test.data_frame("downloads.json")
+        path = str(test.get_data_path("downloads.json"))
+        data = DataFrame.read_json(path)
         assert data.nrow == 905
         assert data.ncol == 3
+
+    def test_read_json_columns(self):
+        path = str(test.get_data_path("vehicles.json"))
+        data = DataFrame.read_json(path, columns=["make", "model"])
+        assert data.colnames == ["make", "model"]
+
+    def test_read_json_dtypes(self):
+        path = str(test.get_data_path("vehicles.json"))
+        dtypes = {"make": object, "model": object}
+        data = DataFrame.read_json(path, dtypes=dtypes)
+        assert data.make.is_object()
+        assert data.model.is_object()
 
     def test_read_json_path(self):
         DataFrame.read_json(test.get_data_path("vehicles.json"))
