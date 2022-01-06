@@ -329,11 +329,16 @@ class ListOfDicts(list):
         a = self.deepcopy().modify(_aid_=lambda x: next(acounter))
         b = other.deepcopy().modify(_bid_=lambda x: next(bcounter))
         ab = a.deepcopy().left_join(b, *by)
-        ba = b.deepcopy().left_join(a, *by)
-        # Fill in missing _aid_ and _bid_ with bogus values.
+        # Fill in missing _bid_ with bogus values.
         ab = ab.modify(_bid_=lambda x: x.get("_bid_", next(bcounter)))
+        # Check which items of b were not joined into a,
+        # if no items remain, full join is the same as left join ab.
+        b = b.anti_join(ab, "_bid_")
+        if len(b) == 0:
+            return ab.unselect("_aid_", "_bid_")
+        ba = b.left_join(a, *by)
+        # Fill in missing _aid_ with bogus values.
         ba = ba.modify(_aid_=lambda x: x.get("_aid_", next(acounter)))
-        ba = ba.anti_join(ab, "_aid_", "_bid_")
         return (ab + ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def group_by(self, *keys):

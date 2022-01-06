@@ -3,10 +3,12 @@ PENDING: dataiter 0.28
 
 * `DataFrame.from_json`: Add arguments `columns` and `dtypes`
 * `DataFrame.from_pandas`: Add argument `dtypes`
+* `DataFrame.full_join`: Speed up
 * `DataFrame.read_csv`: Add argument `dtypes`
 * `DataFrame.read_json`: Add arguments `columns` and `dtypes`
 * `GeoJSON.read`: Add arguments `columns` and `dtypes`
 * `ListOfDicts.from_json`: Add arguments `keys` and `types`
+* `ListOfDicts.full_join`: Speed up
 * `ListOfDicts.read_csv`: Add argument `types`, rename `columns` to `keys`
 * `ListOfDicts.read_json`: Add arguments `keys` and `types`
 

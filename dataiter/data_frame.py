@@ -390,7 +390,12 @@ class DataFrame(dict):
         a = self.modify(_aid_=np.arange(self.nrow))
         b = other.modify(_bid_=np.arange(other.nrow))
         ab = a.left_join(b, *by)
-        ba = b.left_join(a, *by).anti_join(ab, "_aid_", "_bid_")
+        # Check which rows of b were not joined into a,
+        # if no rows remain, full join is the same as left join ab.
+        b = b.anti_join(ab, "_bid_")
+        if b.nrow == 0:
+            return ab.unselect("_aid_", "_bid_")
+        ba = b.left_join(a, *by)
         return ab.rbind(ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def _get_join_indices(self, other, by1, by2):
