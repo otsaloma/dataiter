@@ -9,6 +9,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.copy`
 :meth:`~dataiter.ListOfDicts.deepcopy`
 :meth:`~dataiter.ListOfDicts.extend`
+:meth:`~dataiter.ListOfDicts.fill_missing`
 :meth:`~dataiter.ListOfDicts.filter`
 :meth:`~dataiter.ListOfDicts.filter_out`
 :meth:`~dataiter.ListOfDicts.from_json`
