@@ -232,6 +232,28 @@ class ListOfDicts(list):
             other = self.__class__(other)
         yield from itertools.chain(self, other)
 
+    @deco.obsoletes
+    @deco.new_from_generator
+    def fill_missing(self, **key_value_pairs):
+        """
+        Return list with missing keys added.
+
+        If `key_value_pairs` not given, fill all missing keys with ``None``.
+
+        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = data.fill_missing(price=None)
+        >>> data = data.fill_missing()
+        """
+        if not key_value_pairs:
+            keys = util.unique_keys(itertools.chain(*self))
+            key_value_pairs = dict.fromkeys(keys, None)
+        key_value_pairs = key_value_pairs.items()
+        for item in self:
+            for key, value in key_value_pairs:
+                if key not in item:
+                    item[key] = value
+            yield item
+
     @deco.new_from_generator
     def filter(self, function=None, **key_value_pairs):
         """
@@ -330,7 +352,7 @@ class ListOfDicts(list):
         b = other.deepcopy().modify(_bid_=lambda x: next(bcounter))
         ab = a.deepcopy().left_join(b, *by)
         # Fill in missing _bid_ with bogus values.
-        ab = ab.modify(_bid_=lambda x: x.get("_bid_", next(bcounter)))
+        ab = ab.fill_missing(_bid_=next(bcounter))
         # Check which items of b were not joined into a,
         # if no items remain, full join is the same as left join ab.
         b = b.anti_join(ab, "_bid_")
@@ -338,7 +360,7 @@ class ListOfDicts(list):
             return ab.unselect("_aid_", "_bid_")
         ba = b.left_join(a, *by)
         # Fill in missing _aid_ with bogus values.
-        ba = ba.modify(_aid_=lambda x: x.get("_aid_", next(acounter)))
+        ba = ba.fill_missing(_aid_=next(acounter))
         return (ab + ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def group_by(self, *keys):

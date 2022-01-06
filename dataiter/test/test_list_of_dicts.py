@@ -180,6 +180,27 @@ class TestListOfDicts:
         assert data[:len(orig)] == orig
         assert data[-len(orig):] == orig
 
+    def test_fill_missing(self):
+        orig = test.list_of_dicts("downloads.json")
+        for i, item in enumerate(orig):
+            if i % 2 == 0:
+                del item.downloads
+        data = orig.deepcopy().fill_missing(downloads=0)
+        assert sum("downloads" in x for x in orig) == len(orig) // 2
+        assert sum("downloads" in x for x in data) == len(orig)
+
+    def test_fill_missing_all(self):
+        orig = test.list_of_dicts("downloads.json")
+        for i, item in enumerate(orig):
+            if i % 2 == 0: del item.category
+            if i % 4 == 0: del item.date
+            if i % 8 == 0: del item.downloads
+        data = orig.deepcopy().fill_missing()
+        for item in data:
+            assert "category" in item
+            assert "date" in item
+            assert "downloads" in item
+
     def test_filter_given_function(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.filter(lambda x: x.category == "Linux")
