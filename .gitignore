@@ -2,6 +2,8 @@
 *.prof
 .pytest_cache
 __pycache__
+benchmark*.csv
+benchmark-head.py
 build
 data/orig
 dataiter.egg-info
@@ -9,4 +11,5 @@ dist
 doc/_build
 doc/comparison/comparison.html
 test.py
+tmp.csv
 validation/*.csv

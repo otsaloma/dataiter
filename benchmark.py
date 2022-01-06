@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
+import click
 import dataiter as di
 import numpy as np
 import random
-import sys
 import time
 
 from dataiter import test
+from statistics import mean
+from statistics import stdev
+
 
 def data_frame(path, nrow=1000000):
     data = test.data_frame(path)
@@ -17,27 +20,47 @@ def data_frame(path, nrow=1000000):
 def data_frame_full_join():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "model").unique()
+    meta = meta.rbind(meta.modify(model="X"))
     meta.random = np.random.random(meta.nrow)
+    assert meta.anti_join(data, "make", "model").nrow > 0
     start = time.time()
     data.full_join(meta, "make", "model")
     return time.time() - start
 
-def data_frame_group_by_aggregate_000128():
+def data_frame_group_by_aggregate_128():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.group_by("make").aggregate(n=di.nrow)
+    (data
+     .group_by("make")
+     .aggregate(
+         n=di.nrow,
+         hwy=lambda x: x.hwy.mean(),
+         cty=lambda x: x.cty.mean(),
+     ))
     return time.time() - start
 
-def data_frame_group_by_aggregate_003264():
+def data_frame_group_by_aggregate_3264():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.group_by("make", "model").aggregate(n=di.nrow)
+    (data
+     .group_by("make", "model")
+     .aggregate(
+         n=di.nrow,
+         hwy=lambda x: x.hwy.mean(),
+         cty=lambda x: x.cty.mean(),
+     ))
     return time.time() - start
 
-def data_frame_group_by_aggregate_014668():
+def data_frame_group_by_aggregate_14668():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.group_by("make", "model", "year").aggregate(n=di.nrow)
+    (data
+     .group_by("make", "model", "year")
+     .aggregate(
+         n=di.nrow,
+         hwy=lambda x: x.hwy.mean(),
+         cty=lambda x: x.cty.mean(),
+     ))
     return time.time() - start
 
 def data_frame_group_by_aggregate_100000():
@@ -46,10 +69,12 @@ def data_frame_group_by_aggregate_100000():
         b=np.random.normal(10, 2, 1000000),
     )
     start = time.time()
-    data.group_by("a").aggregate(
-        b_mean=lambda x: np.mean(x.b),
-        b_std= lambda x: np.std(x.b),
-    )
+    (data
+     .group_by("a")
+     .aggregate(
+         b_mean=lambda x: np.mean(x.b),
+         b_std= lambda x: np.std(x.b),
+     ))
     return time.time() - start
 
 def data_frame_left_join():
@@ -70,14 +95,14 @@ def data_frame_read_json():
     test.data_frame("vehicles.json")
     return time.time() - start
 
-def data_frame_rbind_000002():
+def data_frame_rbind_2():
     # 2 * 500,000 = 1,000,000
     data = data_frame("vehicles.csv", 500000)
     start = time.time()
     data.rbind(data)
     return time.time() - start
 
-def data_frame_rbind_000100():
+def data_frame_rbind_100():
     # 100 * 10,000 = 1,000,000
     data = data_frame("vehicles.csv", 10000)
     start = time.time()
@@ -94,7 +119,7 @@ def data_frame_rbind_100000():
 def data_frame_sort():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.sort(year=-1, make=1, model=1)
+    data.sort(make=1, model=1, year=-1)
     return time.time() - start
 
 def list_of_dicts(path, length=100000):
@@ -106,27 +131,61 @@ def list_of_dicts(path, length=100000):
 def list_of_dicts_full_join():
     data = list_of_dicts("vehicles.json")
     meta = data.deepcopy().select("make", "model").unique()
+    meta = meta + meta.deepcopy().modify(model=lambda x: "X")
     meta = meta.modify(random=lambda x: random.random())
+    assert len(meta.anti_join(data, "make", "model")) > 0
     start = time.time()
     data.full_join(meta, "make", "model")
     return time.time() - start
 
-def list_of_dicts_group_by_aggregate_00128():
+def list_of_dicts_group_by_aggregate_128():
     data = list_of_dicts("vehicles.json")
     start = time.time()
-    data.group_by("make").aggregate(n=len)
+    (data
+     .group_by("make")
+     .aggregate(
+         n=len,
+         hwy=lambda x: mean(x.pluck("hwy")),
+         cty=lambda x: mean(x.pluck("cty")),
+     ))
     return time.time() - start
 
-def list_of_dicts_group_by_aggregate_03264():
+def list_of_dicts_group_by_aggregate_3264():
     data = list_of_dicts("vehicles.json")
     start = time.time()
-    data.group_by("make", "model").aggregate(n=len)
+    (data
+     .group_by("make", "model")
+     .aggregate(
+         n=len,
+         hwy=lambda x: mean(x.pluck("hwy")),
+         cty=lambda x: mean(x.pluck("cty")),
+     ))
     return time.time() - start
 
 def list_of_dicts_group_by_aggregate_14668():
     data = list_of_dicts("vehicles.json")
     start = time.time()
-    data.group_by("make", "model", "year").aggregate(n=len)
+    (data
+     .group_by("make", "model", "year")
+     .aggregate(
+         n=len,
+         hwy=lambda x: mean(x.pluck("hwy")),
+         cty=lambda x: mean(x.pluck("cty")),
+     ))
+    return time.time() - start
+
+def list_of_dicts_group_by_aggregate_100000():
+    data = di.DataFrame(
+        a=np.random.choice(100000, 1000000, replace=True),
+        b=np.random.normal(10, 2, 1000000),
+    ).to_list_of_dicts()
+    start = time.time()
+    (data
+     .group_by("a")
+     .aggregate(
+         b_mean=lambda x: mean(x.pluck("b")),
+         b_std= lambda x: stdev(x.pluck("b")) if len(x) > 1 else None,
+     ))
     return time.time() - start
 
 def list_of_dicts_left_join():
@@ -150,7 +209,7 @@ def list_of_dicts_read_json():
 def list_of_dicts_sort():
     data = list_of_dicts("vehicles.csv")
     start = time.time()
-    data.sort(year=-1, make=1, model=1)
+    data.sort(make=1, model=1, year=-1)
     return time.time() - start
 
 def vector_fast_list():
@@ -179,16 +238,45 @@ def vector_new_np():
     di.Vector(seq)
     return time.time() - start
 
-is_benchmark = lambda x: x.startswith(("data_frame_", "list_of_dicts_", "vector_"))
-benchmarks = list(filter(is_benchmark, dir()))
-if sys.argv[1:]:
-    # If arguments given, limit to matching benchmarks.
-    f = lambda x: any(y in x for y in sys.argv[1:])
-    benchmarks = list(filter(f, benchmarks))
-for i, benchmark in enumerate(benchmarks):
-    width = max(map(len, benchmarks))
-    padding = "." * (width + 1 - len(benchmark))
-    label = f"{benchmark} {padding}"
-    print(f"{i+1:2d}/{len(benchmarks)}. {label} ", end="", flush=True)
-    elapsed = globals()[benchmark]()
-    print("{:5.0f} ms".format(elapsed * 1000), flush=True)
+
+BENCHMARKS = sorted([
+    x for x in dir() if
+    x.startswith(("data_frame_", "list_of_dicts_", "vector_"))
+], key=lambda x: (
+    [int(x) if x.isdigit() else x for x in x.split("_")]
+))
+
+@click.command()
+@click.option("-o", "--output", help="Filename for optional CSV output")
+@click.argument("pattern", nargs=-1)
+def main(output, pattern):
+    """Benchmark dataiter functions."""
+    benchmarks = BENCHMARKS.copy()
+    if pattern:
+        f = lambda x: any(y in x for y in pattern)
+        benchmarks = list(filter(f, benchmarks))
+    results = di.ListOfDicts()
+    for i, benchmark in enumerate(benchmarks):
+        width = max(map(len, benchmarks))
+        padding = "." * (width + 1 - len(benchmark))
+        print(f"{i+1:2d}/{len(benchmarks)}. {benchmark} {padding} ", end="", flush=True)
+        try:
+            elapsed = globals()[benchmark]() * 1000 # ms
+            print("{:5.0f} ms".format(elapsed), flush=True)
+        except Exception as e:
+            elapsed = -1
+            print(e.__class__.__name__)
+            if not output: raise
+        list.append(results, {
+            "name":    benchmark,
+            "version": di.__version__,
+            "elapsed": round(elapsed),
+        })
+    if output:
+        assert output.endswith(".csv")
+        print(f"Writing {output}...")
+        results.write_csv(output)
+
+
+if __name__ == "__main__":
+    main()
