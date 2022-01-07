@@ -1,7 +1,7 @@
 PENDING: dataiter 0.28
 ======================
 
-* `DataFrame`: Make object columns in various operations
+* `DataFrame`: Make object columns work in various operations
 * `DataFrame.from_json`: Add arguments `columns` and `dtypes`
 * `DataFrame.from_pandas`: Add argument `dtypes`
 * `DataFrame.full_join`: Speed up
