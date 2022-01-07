@@ -87,6 +87,22 @@ class TestVector:
         assert a.is_float()
         assert a.equal(b)
 
+    def test___new___missing_object(self):
+        # Missing values should be None.
+        a = Vector(["a", "b", "", np.nan, None], object)
+        assert a.is_object()
+        assert a[0] == "a"
+        assert a[1] == "b"
+        assert a[2] == ""
+        assert a[3] is None
+        assert a[4] is None
+
+    def test___new___missing_object_single(self):
+        # Missing values should be None.
+        a = Vector([None], object)
+        assert a.is_object()
+        assert a[0] is None
+
     def test___new___missing_string(self):
         # Missing values should be blank strings.
         a = Vector(["a", "b", "", np.nan, None])

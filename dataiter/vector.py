@@ -485,13 +485,21 @@ class Vector(np.ndarray):
     @classmethod
     def _std_to_np(cls, seq, dtype=None):
         # Convert missing values in seq to NumPy equivalents.
+        # Can be empty if all of seq are missing values.
         types = util.unique_types(seq)
-        missing = cls._std_to_np_missing_value(types)
+        if dtype is not None:
+            missing = Vector.fast([], dtype).missing_value
+        else:
+            # Guess the missing value based on types in seq.
+            missing = cls._std_to_np_missing_value(types)
         seq = [missing if
                x is None or
                (isinstance(x, float) and np.isnan(x))
                else x for x in seq]
         if dtype is not None:
+            if np.issubdtype(dtype, np.integer) and np.nan in seq:
+                # Upcast from integer to float as required.
+                dtype = float
             return np.array(seq, dtype)
         # NaT values bring in np.datetime64 to types.
         types.discard(np.datetime64)
@@ -503,6 +511,8 @@ class Vector(np.ndarray):
 
     @classmethod
     def _std_to_np_missing_value(cls, types):
+        if not types:
+            return None
         if str in types:
             return ""
         if all(x in [float, int] for x in types):

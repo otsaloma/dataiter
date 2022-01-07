@@ -230,7 +230,7 @@ class TestDataFrame:
         data = orig.full_join(holidays, "date")
         assert data.nrow == 930
         assert data.ncol == 4
-        assert sum(data.holiday != "") == 60
+        assert sum(~data.holiday.is_missing()) == 60
         assert sum(data.downloads.is_missing()) == 25
         assert np.nansum(data.downloads) == 541335745
 
@@ -244,7 +244,7 @@ class TestDataFrame:
         data = orig.inner_join(holidays, "date")
         assert data.nrow == 35
         assert data.ncol == orig.ncol + 1
-        assert all(data.holiday != "")
+        assert np.sum(data.holiday.is_missing()) == 0
         assert np.sum(data.downloads) == 18226489
 
     def test_left_join(self):
@@ -253,7 +253,7 @@ class TestDataFrame:
         data = orig.left_join(holidays, "date")
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
-        assert sum(data.holiday != "") == 35
+        assert np.sum(~data.holiday.is_missing()) == 35
         assert np.sum(data.downloads) == 541335745
 
     def test_left_join_by_tuple(self):
@@ -263,7 +263,7 @@ class TestDataFrame:
         data = orig.left_join(holidays, ("date", "holiday_date"))
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
-        assert sum(data.holiday != "") == 35
+        assert np.sum(~data.holiday.is_missing()) == 35
         assert np.sum(data.downloads) == 541335745
 
     def test_modify(self):

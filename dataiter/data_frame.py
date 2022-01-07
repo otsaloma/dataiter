@@ -904,10 +904,12 @@ class DataFrame(dict):
         >>> data.unique("hood")
         """
         colnames = colnames or self.colnames
-        if len(colnames) == 1:
+        if (len(colnames) == 1 and
+            not self[colnames[0]].is_object()):
             # Use a single column directly.
             by = self[colnames[0]]
-        elif len(set(self[x].dtype for x in colnames)) == 1:
+        elif (len(set(self[x].dtype for x in colnames)) == 1 and
+              not self[colnames[0]].is_object()):
             # Stack matching dtypes directly in a new array.
             by = np.column_stack([self[x] for x in colnames])
         else:
