@@ -20,7 +20,7 @@ set -e
 rm -f $OUTPUT_FILE
 echo "name,version,elapsed" > $OUTPUT_FILE
 cp -fv benchmark.py $SCRIPT
-for TAG in 0.12 0.13 0.14 0.15 0.16.1 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27; do
+for TAG in 0.12 0.13 0.14 0.15 0.16.1 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28; do
     benchmark $TAG
 done
 benchmark master

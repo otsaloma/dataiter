@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name="dataiter",
-    version="0.27",
+    version="0.28",
     author="Osmo Salomaa",
     author_email="otsaloma@iki.fi",
     description="Classes for data manipulation",

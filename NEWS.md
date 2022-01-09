@@ -1,5 +1,5 @@
-PENDING: dataiter 0.28
-======================
+2022-01-09: dataiter 0.28
+=========================
 
 * `DataFrame`: Make object columns work in various operations
 * `DataFrame.from_json`: Add arguments `columns` and `dtypes`
