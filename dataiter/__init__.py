@@ -20,11 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import numpy as np
+
 from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.geojson import GeoJSON # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
+from dataiter import aggregate
+
+try:
+    import numba # noqa
+    USE_NUMBA = True
+except Exception:
+    USE_NUMBA = False
 
 __version__ = "0.28"
 
@@ -38,6 +47,26 @@ PRINT_MAX_ROWS = 100
 
 # Only used as a fallback, see util.get_print_width.
 PRINT_MAX_WIDTH = 80
+
+def mean(x, dropna=True):
+    """
+    Return the arithmetic mean of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.mean(di.Vector(range(10)))
+    >>> di.mean("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.ff(x, np.mean, dropna)
+        return lambda data: mean(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        return np.nan
+    return np.mean(x)
 
 def ncol(data):
     """

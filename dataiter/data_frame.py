@@ -192,10 +192,17 @@ class DataFrame(dict):
         data._index_ = np.arange(data.nrow)
         stat = data.unique(*group_colnames).select("_index_", *group_colnames)
         indices = np.split(data._index_, stat._index_[1:])
-        slices = [data._view_rows(x) for x in indices]
+        uses_numba = [getattr(x, "numba", False) for x in colname_function_pairs.values()]
+        if any(uses_numba):
+            groups = Vector.fast(range(len(indices)), int)
+            n = Vector.fast(map(len, indices), int)
+            data._group_ = np.repeat(groups, n)
+        if not all(uses_numba):
+            slices = [data._view_rows(x) for x in indices]
         for colname, function in colname_function_pairs.items():
-            stat[colname] = [function(x) for x in slices]
-        return stat.unselect("_index_")
+            uses_numba = getattr(function, "numba", False)
+            stat[colname] = function(data) if uses_numba else [function(x) for x in slices]
+        return stat.unselect("_index_", "_group_")
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
