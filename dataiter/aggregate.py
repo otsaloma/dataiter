@@ -41,7 +41,7 @@ def ff(name, function, dropna):
     aggregate.numba = True
     return aggregate
 
-@functools.cache
+@functools.lru_cache(256)
 def ff_numba(function):
     import numba
     @numba.njit
