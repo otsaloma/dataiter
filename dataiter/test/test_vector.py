@@ -42,6 +42,15 @@ class TestVector:
         assert a.equal(c)
         assert a.equal(d)
 
+    def test___new___list_of_numpy(self):
+        assert Vector([np.bool_(True)]).is_boolean()
+        assert Vector([np.datetime64(DATE)]).is_datetime()
+        assert Vector([np.datetime64(DATETIME)]).is_datetime()
+        assert Vector([np.float_(0.5)]).is_float()
+        assert Vector([np.int_(1)]).is_integer()
+        assert Vector([np.object_(np)]).is_object()
+        assert Vector([np.str_("")]).is_string()
+
     def test___new___missing(self):
         Vector([None])
         Vector([np.nan])
