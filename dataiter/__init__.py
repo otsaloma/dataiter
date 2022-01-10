@@ -66,7 +66,7 @@ def mean(x, dropna=True):
         x = x[~np.isnan(x)]
     if len(x) == 0:
         return np.nan
-    return np.mean(x)
+    return float(np.mean(x))
 
 def ncol(data):
     """
