@@ -48,6 +48,7 @@ def ff_numba(function):
     def aggregate(x, group, dropna):
         # Calculate function group-wise for x.
         # Groups are expected to be contiguous.
+        any_nan = np.isnan(x).any()
         out = np.zeros(len(np.unique(group)))
         g = 0
         i = 0
@@ -55,7 +56,7 @@ def ff_numba(function):
         for j in range(1, n + 1):
             if j == n or group[j] != group[i]:
                 xij = x[i:j]
-                if dropna:
+                if any_nan and dropna:
                     xij = xij[~np.isnan(xij)]
                 # Return NaN for all-NaN slices of x.
                 out[g] = function(xij) if len(xij) > 0 else np.nan
