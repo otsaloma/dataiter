@@ -71,7 +71,7 @@ def mean(x, dropna=True):
         x = x[~np.isnan(x)]
     if len(x) == 0:
         return np.nan
-    return float(np.mean(x))
+    return np.mean(x).item()
 
 def median(x, dropna=True):
     """
@@ -91,7 +91,7 @@ def median(x, dropna=True):
         x = x[~np.isnan(x)]
     if len(x) == 0:
         return np.nan
-    return float(np.median(x))
+    return np.median(x).item()
 
 def ncol(data):
     """
