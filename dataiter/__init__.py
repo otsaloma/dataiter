@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import numpy as np
+import os
 
 from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
@@ -35,6 +36,9 @@ try:
 except Exception:
     USE_NUMBA = False
 
+if os.getenv("DATAITER_DONT_USE_NUMBA", ""):
+    USE_NUMBA = False
+
 __version__ = "0.28"
 
 DEFAULT_PEEK_ELEMENTS = 10
@@ -47,6 +51,7 @@ PRINT_MAX_ROWS = 100
 
 # Only used as a fallback, see util.get_print_width.
 PRINT_MAX_WIDTH = 80
+
 
 def mean(x, dropna=True):
     """

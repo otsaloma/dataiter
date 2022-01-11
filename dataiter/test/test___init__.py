@@ -22,14 +22,17 @@
 
 import dataiter as di
 import numpy as np
+import pytest
+import unittest.mock
 
-from unittest.mock import patch
+patch = unittest.mock.patch
+skipif = pytest.mark.skipif
+
+def isclose(a, b):
+    return np.isclose(a, b, equal_nan=True).all()
 
 
 class TestUtil:
-
-    def assert_close(self, a, b):
-        assert np.isclose(a, b, equal_nan=True).all()
 
     def setup_method(self, method):
         self.g = di.Vector([1, 1, 2, 2, 3, 3, 4, 4, 5, 5], int)
@@ -37,18 +40,18 @@ class TestUtil:
         self.data = di.DataFrame(g=self.g, a=self.a)
 
     def test_mean(self):
-        self.assert_close(di.mean(self.a), 0.4)
+        assert isclose(di.mean(self.a), 0.4)
         assert np.isnan(di.mean(self.a, dropna=False))
 
     @patch("dataiter.USE_NUMBA", False)
     def test_mean_aggregate(self):
         stat = self.data.group_by("g").aggregate(a=di.mean("a"))
-        self.assert_close(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
 
-    @patch("dataiter.USE_NUMBA", True)
+    @skipif(not di.USE_NUMBA, reason="No Numba")
     def test_mean_aggregate_numba(self):
         stat = self.data.group_by("g").aggregate(a=di.mean("a"))
-        self.assert_close(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
 
     def test_ncol(self):
         assert di.ncol(self.data) == 2
