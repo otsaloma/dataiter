@@ -150,3 +150,23 @@ def nrow(data):
     >>> data.group_by("hood").aggregate(n=di.nrow)
     """
     return data.nrow
+
+def sum(x, dropna=True):
+    """
+    Return the sum of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.sum(di.Vector(range(10)))
+    >>> di.sum("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.ff(x, np.sum, dropna)
+        return lambda data: sum(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        return np.nan
+    return np.sum(x).item()
