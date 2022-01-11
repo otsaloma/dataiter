@@ -53,6 +53,20 @@ class TestUtil:
         stat = self.data.group_by("g").aggregate(a=di.mean("a"))
         assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
 
+    def test_median(self):
+        assert isclose(di.median(self.a), 0.4)
+        assert np.isnan(di.median(self.a, dropna=False))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_median_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.median("a"))
+        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_median_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.median("a"))
+        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+
     def test_ncol(self):
         assert di.ncol(self.data) == 2
 

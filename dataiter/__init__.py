@@ -73,6 +73,26 @@ def mean(x, dropna=True):
         return np.nan
     return float(np.mean(x))
 
+def median(x, dropna=True):
+    """
+    Return the median of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.median(di.Vector(range(10)))
+    >>> di.median("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.ff(x, np.median, dropna)
+        return lambda data: median(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        return np.nan
+    return float(np.median(x))
+
 def ncol(data):
     """
     Return the amount of columns in `data`.
