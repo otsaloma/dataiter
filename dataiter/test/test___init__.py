@@ -39,6 +39,20 @@ class TestUtil:
         self.a = di.Vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, np.nan, np.nan, np.nan], float)
         self.data = di.DataFrame(g=self.g, a=self.a)
 
+    def test_max(self):
+        assert isclose(di.max(self.a), 0.7)
+        assert np.isnan(di.max(self.a, dropna=False))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_max_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.max("a"))
+        assert isclose(stat.a, [0.2, 0.4, 0.6, 0.7, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_max_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.max("a"))
+        assert isclose(stat.a, [0.2, 0.4, 0.6, 0.7, np.nan])
+
     def test_mean(self):
         assert isclose(di.mean(self.a), 0.4)
         assert np.isnan(di.mean(self.a, dropna=False))
@@ -66,6 +80,20 @@ class TestUtil:
     def test_median_aggregate_numba(self):
         stat = self.data.group_by("g").aggregate(a=di.median("a"))
         assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+
+    def test_min(self):
+        assert isclose(di.min(self.a), 0.1)
+        assert np.isnan(di.min(self.a, dropna=False))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_min_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.min("a"))
+        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_min_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.min("a"))
+        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
 
     def test_ncol(self):
         assert di.ncol(self.data) == 2

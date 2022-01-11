@@ -53,6 +53,26 @@ PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
 
 
+def max(x, dropna=True):
+    """
+    Return the maximum of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.max(di.Vector(range(10)))
+    >>> di.max("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.ff(x, np.amax, dropna)
+        return lambda data: max(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        return np.nan
+    return np.amax(x).item()
+
 def mean(x, dropna=True):
     """
     Return the arithmetic mean of `x`.
@@ -92,6 +112,26 @@ def median(x, dropna=True):
     if len(x) == 0:
         return np.nan
     return np.median(x).item()
+
+def min(x, dropna=True):
+    """
+    Return the minimum of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.min(di.Vector(range(10)))
+    >>> di.min("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.ff(x, np.amin, dropna)
+        return lambda data: min(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        return np.nan
+    return np.amin(x).item()
 
 def ncol(data):
     """
