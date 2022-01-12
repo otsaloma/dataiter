@@ -37,7 +37,34 @@ class TestUtil:
     def setup_method(self, method):
         self.g = di.Vector([1, 1, 2, 2, 3, 3, 4, 4, 5, 5], int)
         self.a = di.Vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, np.nan, np.nan, np.nan], float)
-        self.data = di.DataFrame(g=self.g, a=self.a)
+        self.b = di.Vector([True, True, True, True, True, False, False, False, False, False], bool)
+        self.data = di.DataFrame(g=self.g, a=self.a, b=self.b)
+
+    def test_all(self):
+        assert not di.all(self.b)
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_all_aggregate(self):
+        stat = self.data.group_by("g").aggregate(b=di.all("b"))
+        assert stat.b.equal(di.Vector([True, True, False, False, False]))
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_all_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(b=di.all("b"))
+        assert stat.b.equal(di.Vector([True, True, False, False, False]))
+
+    def test_any(self):
+        assert di.any(self.b)
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_any_aggregate(self):
+        stat = self.data.group_by("g").aggregate(b=di.any("b"))
+        assert stat.b.equal(di.Vector([True, True, True, False, False]))
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_any_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(b=di.any("b"))
+        assert stat.b.equal(di.Vector([True, True, True, False, False]))
 
     def test_max(self):
         assert isclose(di.max(self.a), 0.7)
@@ -96,7 +123,7 @@ class TestUtil:
         assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
 
     def test_ncol(self):
-        assert di.ncol(self.data) == 2
+        assert di.ncol(self.data) == 3
 
     def test_nrow(self):
         assert di.nrow(self.data) == 10

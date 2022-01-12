@@ -28,38 +28,39 @@ import numpy as np
 # uses the 'numba' attribute of functions to figure out how to apply them.
 
 
-def ff(name, function, dropna):
+def generic(name, function, dropna, default):
     # Since Numba doesn't understand what a dataiter.DataFrame is,
     # we need the accelerated function to be separate,
     # operating only on NumPy arrays.
-    aggregate_numba = ff_numba(function)
+    aggregate_numba = generic_numba(function)
     def aggregate(data):
         return aggregate_numba(data[name],
                                data._group_,
-                               dropna)
+                               dropna,
+                               default)
 
     aggregate.numba = True
     return aggregate
 
 @functools.lru_cache(256)
-def ff_numba(function):
+def generic_numba(function):
     import numba
     @numba.njit
-    def aggregate(x, group, dropna):
+    def aggregate(x, group, dropna, default):
         # Calculate function group-wise for x.
         # Groups are expected to be contiguous.
-        any_nan = np.isnan(x).any()
-        out = np.zeros(len(np.unique(group)))
+        dropna = dropna and np.isnan(x).any()
+        out = np.repeat(default, len(np.unique(group)))
         g = 0
         i = 0
         n = len(x)
         for j in range(1, n + 1):
             if j == n or group[j] != group[i]:
                 xij = x[i:j]
-                if any_nan and dropna:
+                if dropna:
                     xij = xij[~np.isnan(xij)]
-                # Return NaN for all-NaN slices of x.
-                out[g] = function(xij) if len(xij) > 0 else np.nan
+                # Return default for all-NaN slices of x.
+                out[g] = function(xij) if len(xij) > 0 else default
                 g += 1
                 i = j
         return out

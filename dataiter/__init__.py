@@ -53,6 +53,42 @@ PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
 
 
+def all(x):
+    """
+    Return whether all elements of `x` evaluate to ``True``.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.all(di.Vector(range(10)))
+    >>> di.all("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.generic(x, np.all, False, True)
+        return lambda data: all(data[x])
+    if len(x) == 0:
+        return True
+    return np.all(x).item()
+
+def any(x):
+    """
+    Return whether any element of `x` evaluates to ``True``.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.any(di.Vector(range(10)))
+    >>> di.any("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.generic(x, np.any, False, False)
+        return lambda data: any(data[x])
+    if len(x) == 0:
+        return False
+    return np.any(x).item()
+
 def max(x, dropna=True):
     """
     Return the maximum of `x`.
@@ -65,7 +101,7 @@ def max(x, dropna=True):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.ff(x, np.amax, dropna)
+            return aggregate.generic(x, np.amax, dropna, np.nan)
         return lambda data: max(data[x], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
@@ -85,7 +121,7 @@ def mean(x, dropna=True):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.ff(x, np.mean, dropna)
+            return aggregate.generic(x, np.mean, dropna, np.nan)
         return lambda data: mean(data[x], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
@@ -105,7 +141,7 @@ def median(x, dropna=True):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.ff(x, np.median, dropna)
+            return aggregate.generic(x, np.median, dropna, np.nan)
         return lambda data: median(data[x], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
@@ -125,7 +161,7 @@ def min(x, dropna=True):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.ff(x, np.amin, dropna)
+            return aggregate.generic(x, np.amin, dropna, np.nan)
         return lambda data: min(data[x], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
@@ -163,7 +199,7 @@ def sum(x, dropna=True):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.ff(x, np.sum, dropna)
+            return aggregate.generic(x, np.sum, dropna, np.nan)
         return lambda data: sum(data[x], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
