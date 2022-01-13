@@ -23,6 +23,15 @@
 import functools
 import numpy as np
 
+try:
+    import numba
+except Exception:
+    class numba:
+        @classmethod
+        def njit(cls, function):
+            print("Using dummy njit, this shouldn't happen")
+            return function
+
 # The below functions are designed solely to be used in conjunction with
 # DataFrame.aggregate, which temporarily adds a '_group_' column and
 # uses the 'numba' attribute of functions to figure out how to apply them.
@@ -65,3 +74,34 @@ def generic_numba(function):
                 i = j
         return out
     return aggregate
+
+def nth(name, index):
+    # Since Numba doesn't understand what a dataiter.DataFrame is,
+    # we need the accelerated function to be separate,
+    # operating only on NumPy arrays.
+    def aggregate(data):
+        return nth_numba(data[name],
+                         data._group_,
+                         index,
+                         data[name].missing_value)
+
+    aggregate.numba = True
+    return aggregate
+
+@numba.njit
+def nth_numba(x, group, index, default):
+    # Calculate nth group-wise for x.
+    # Groups are expected to be contiguous.
+    out = np.repeat(default, len(np.unique(group)))
+    g = 0
+    i = 0
+    n = len(x)
+    for j in range(1, n + 1):
+        if j == n or group[j] != group[i]:
+            try:
+                out[g] = x[i:j][index]
+            except Exception:
+                out[g] = default
+            g += 1
+            i = j
+    return out

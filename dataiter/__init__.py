@@ -89,6 +89,30 @@ def any(x):
         return False
     return np.any(x).item()
 
+def first(x):
+    """
+    Return the first element of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.first(di.Vector(range(10)))
+    >>> di.first("x")
+    """
+    return nth(x, 0)
+
+def last(x):
+    """
+    Return the last element of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.last(di.Vector(range(10)))
+    >>> di.last("x")
+    """
+    return nth(x, -1)
+
 def max(x, dropna=True):
     """
     Return the maximum of `x`.
@@ -186,6 +210,27 @@ def nrow(data):
     >>> data.group_by("hood").aggregate(n=di.nrow)
     """
     return data.nrow
+
+def nth(x, index):
+    """
+    Return the nth element of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.nth(di.Vector(range(10)))
+    >>> di.nth("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.nth(x, index)
+        return lambda data: nth(data[x], index)
+    try:
+        return x[index].item()
+    except IndexError:
+        if not isinstance(x, Vector):
+            raise TypeError("Not a dataiter.Vector")
+        return x.missing_value
 
 def sum(x, dropna=True):
     """

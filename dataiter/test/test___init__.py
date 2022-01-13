@@ -66,6 +66,32 @@ class TestUtil:
         stat = self.data.group_by("g").aggregate(b=di.any("b"))
         assert stat.b.equal(di.Vector([True, True, True, False, False]))
 
+    def test_first(self):
+        assert isclose(di.first(self.a), 0.1)
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_first_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.first("a"))
+        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_first_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.first("a"))
+        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+
+    def test_last(self):
+        assert np.isnan(di.last(self.a))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_last_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.last("a"))
+        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_last_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.last("a"))
+        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
+
     def test_max(self):
         assert isclose(di.max(self.a), 0.7)
         assert np.isnan(di.max(self.a, dropna=False))
@@ -127,6 +153,20 @@ class TestUtil:
 
     def test_nrow(self):
         assert di.nrow(self.data) == 10
+
+    def test_nth(self):
+        assert isclose(di.nth(self.a, 1), 0.2)
+        assert np.isnan(di.nth(self.a, 999))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_nth_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.nth("a", 1))
+        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_nth_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.nth("a", 1))
+        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
 
     def test_sum(self):
         assert isclose(di.sum(self.a), 2.8)
