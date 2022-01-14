@@ -232,6 +232,29 @@ def nth(x, index):
             raise TypeError("Not a dataiter.Vector")
         return x.missing_value
 
+def std(x, dropna=True):
+    """
+    Return the standard deviation of `x`.
+
+    Uses ``numpy.std``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.std.html
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.std(di.Vector(range(10)))
+    >>> di.std("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.generic(x, np.std, dropna, np.nan, nrequired=2)
+        return lambda data: std(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) < 2:
+        return np.nan
+    return np.std(x).item()
+
 def sum(x, dropna=True):
     """
     Return the sum of `x`.
@@ -251,3 +274,26 @@ def sum(x, dropna=True):
     if len(x) == 0:
         return np.nan
     return np.sum(x).item()
+
+def var(x, dropna=True):
+    """
+    Return the variance of `x`.
+
+    Uses ``numpy.var``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.var.html
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.var(di.Vector(range(10)))
+    >>> di.var("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.generic(x, np.var, dropna, np.nan, nrequired=2)
+        return lambda data: var(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) < 2:
+        return np.nan
+    return np.var(x).item()

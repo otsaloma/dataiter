@@ -37,7 +37,7 @@ except Exception:
 # uses the 'numba' attribute of functions to figure out how to apply them.
 
 
-def generic(name, function, dropna, default):
+def generic(name, function, dropna, default, nrequired=1):
     # Since Numba doesn't understand what a dataiter.DataFrame is,
     # we need the accelerated function to be separate,
     # operating only on NumPy arrays.
@@ -46,7 +46,8 @@ def generic(name, function, dropna, default):
         return aggregate_numba(data[name],
                                data._group_,
                                dropna,
-                               default)
+                               default,
+                               nrequired)
 
     aggregate.numba = True
     return aggregate
@@ -55,7 +56,7 @@ def generic(name, function, dropna, default):
 def generic_numba(function):
     import numba
     @numba.njit
-    def aggregate(x, group, dropna, default):
+    def aggregate(x, group, dropna, default, nrequired):
         # Calculate function group-wise for x.
         # Groups are expected to be contiguous.
         dropna = dropna and np.isnan(x).any()
@@ -68,8 +69,8 @@ def generic_numba(function):
                 xij = x[i:j]
                 if dropna:
                     xij = xij[~np.isnan(xij)]
-                # Return default for all-NaN slices of x.
-                out[g] = function(xij) if len(xij) > 0 else default
+                if len(xij) >= nrequired:
+                    out[g] = function(xij)
                 g += 1
                 i = j
         return out
@@ -101,7 +102,7 @@ def nth_numba(x, group, index, default):
             try:
                 out[g] = x[i:j][index]
             except Exception:
-                out[g] = default
+                pass
             g += 1
             i = j
     return out

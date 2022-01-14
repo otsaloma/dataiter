@@ -168,6 +168,20 @@ class TestUtil:
         stat = self.data.group_by("g").aggregate(a=di.nth("a", 1))
         assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
 
+    def test_std(self):
+        assert isclose(di.std(self.a), 0.2)
+        assert np.isnan(di.std(self.a, dropna=False))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_std_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.std("a"))
+        assert isclose(stat.a, [0.05, 0.05, 0.05, np.nan, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_std_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.std("a"))
+        assert isclose(stat.a, [0.05, 0.05, 0.05, np.nan, np.nan])
+
     def test_sum(self):
         assert isclose(di.sum(self.a), 2.8)
         assert np.isnan(di.sum(self.a, dropna=False))
@@ -181,3 +195,17 @@ class TestUtil:
     def test_sum_aggregate_numba(self):
         stat = self.data.group_by("g").aggregate(a=di.sum("a"))
         assert isclose(stat.a, [0.3, 0.7, 1.1, 0.7, np.nan])
+
+    def test_var(self):
+        assert isclose(di.var(self.a), 0.04)
+        assert np.isnan(di.var(self.a, dropna=False))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_var_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.var("a"))
+        assert isclose(stat.a, [0.0025, 0.0025, 0.0025, np.nan, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_var_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.var("a"))
+        assert isclose(stat.a, [0.0025, 0.0025, 0.0025, np.nan, np.nan])
