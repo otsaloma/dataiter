@@ -218,8 +218,8 @@ def nth(x, index):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.nth(di.Vector(range(10)))
-    >>> di.nth("x")
+    >>> di.nth(di.Vector(range(10)), 2)
+    >>> di.nth("x", 2)
     """
     if isinstance(x, str):
         if USE_NUMBA:
