@@ -110,6 +110,46 @@ def generic_numba(function):
         return out
     return aggregate
 
+def mode(name, dropna):
+    # Since Numba doesn't understand what a dataiter.DataFrame is,
+    # we need the accelerated function to be separate,
+    # operating only on NumPy arrays.
+    def aggregate(data):
+        return mode_numba(data[name],
+                          data._group_,
+                          dropna,
+                          data[name].missing_value)
+
+    aggregate.numba = True
+    return aggregate
+
+@numba.njit
+def mode_numba(x, group, dropna, default):
+    # Calculate mode group-wise for x.
+    # Groups are expected to be contiguous.
+    dropna = dropna and np.isnan(x).any()
+    out = np.repeat(default, len(np.unique(group)))
+    g = 0
+    i = 0
+    n = len(x)
+    for j in range(1, n + 1):
+        if j == n or group[j] != group[i]:
+            xij = x[i:j]
+            if dropna:
+                xij = xij[~np.isnan(xij)]
+            if len(xij) > 0:
+                # XXX: Numba doesn't support np.unique's 'return_counts' argument.
+                max_value = xij[0]
+                max_count = 1
+                for k in range(1, len(xij)):
+                    count = np.nansum(xij == xij[k])
+                    if count > max_count:
+                        max_value = xij[k]
+                out[g] = max_value
+            g += 1
+            i = j
+    return out
+
 def nth(name, index):
     # Since Numba doesn't understand what a dataiter.DataFrame is,
     # we need the accelerated function to be separate,

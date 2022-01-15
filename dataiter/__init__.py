@@ -193,6 +193,29 @@ def min(x, dropna=True):
         return np.nan
     return np.amin(x).item()
 
+def mode(x, dropna=True):
+    """
+    Return the most common value in `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.mode(di.Vector(range(10)))
+    >>> di.mode("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.mode(x, dropna)
+        return lambda data: mode(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        if not isinstance(x, Vector):
+            raise TypeError("Not a dataiter.Vector")
+        return x.missing_value
+    values, counts = np.unique(x, return_counts=True)
+    return values[counts.argmax()]
+
 def n(x="", dropna=False):
     """
     Return the amount of elements in `x`.

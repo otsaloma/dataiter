@@ -148,6 +148,20 @@ class TestUtil:
         stat = self.data.group_by("g").aggregate(a=di.min("a"))
         assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
 
+    def test_mode(self):
+        assert isclose(di.mode(self.a), 0.1)
+        assert isclose(di.mode(self.a, dropna=False), 0.1)
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_mode_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.mode("a"))
+        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_mode_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.mode("a"))
+        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+
     def test_n(self):
         assert di.n(self.a) == 10
         assert di.n(self.a, dropna=True) == 7
