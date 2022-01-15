@@ -193,6 +193,24 @@ def min(x, dropna=True):
         return np.nan
     return np.amin(x).item()
 
+def n(x="", dropna=False):
+    """
+    Return the amount of elements in `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.n(di.Vector(range(10)))
+    >>> di.n("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.count(x, dropna)
+        return lambda data: n(data[x or data.colnames[0]], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    return len(x)
+
 def ncol(data):
     """
     Return the amount of columns in `data`.
@@ -231,6 +249,24 @@ def nth(x, index):
         if not isinstance(x, Vector):
             raise TypeError("Not a dataiter.Vector")
         return x.missing_value
+
+def nunique(x, dropna=False):
+    """
+    Return the amount of elements in `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.nunique(di.Vector(range(10)))
+    >>> di.nunique("x")
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.count(x, dropna, True)
+        return lambda data: nunique(data[x], dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    return len(x)
 
 def std(x, dropna=True):
     """

@@ -37,6 +37,40 @@ except Exception:
 # uses the 'numba' attribute of functions to figure out how to apply them.
 
 
+def count(name, dropna, unique=False):
+    # Since Numba doesn't understand what a dataiter.DataFrame is,
+    # we need the accelerated function to be separate,
+    # operating only on NumPy arrays.
+    def aggregate(data):
+        return count_numba(data[name or data.colnames[0]],
+                           data._group_,
+                           dropna,
+                           unique)
+
+    aggregate.numba = True
+    return aggregate
+
+@numba.njit
+def count_numba(x, group, dropna, unique):
+    # Calculate count group-wise for x.
+    # Groups are expected to be contiguous.
+    dropna = dropna and np.isnan(x).any()
+    out = np.repeat(0, len(np.unique(group)))
+    g = 0
+    i = 0
+    n = len(x)
+    for j in range(1, n + 1):
+        if j == n or group[j] != group[i]:
+            xij = x[i:j]
+            if dropna:
+                xij = xij[~np.isnan(xij)]
+            if unique:
+                xij = np.unique(xij)
+            out[g] = len(xij)
+            g += 1
+            i = j
+    return out
+
 def generic(name, function, dropna, default, nrequired=1):
     # Since Numba doesn't understand what a dataiter.DataFrame is,
     # we need the accelerated function to be separate,

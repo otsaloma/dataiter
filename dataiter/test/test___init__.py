@@ -148,6 +148,20 @@ class TestUtil:
         stat = self.data.group_by("g").aggregate(a=di.min("a"))
         assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
 
+    def test_n(self):
+        assert di.n(self.a) == 10
+        assert di.n(self.a, dropna=True) == 7
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_n_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.n())
+        assert isclose(stat.a, [2, 2, 2, 2, 2])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_n_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.n())
+        assert isclose(stat.a, [2, 2, 2, 2, 2])
+
     def test_ncol(self):
         assert di.ncol(self.data) == 3
 
@@ -167,6 +181,20 @@ class TestUtil:
     def test_nth_aggregate_numba(self):
         stat = self.data.group_by("g").aggregate(a=di.nth("a", 1))
         assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
+
+    def test_nunique(self):
+        assert di.nunique(self.a) == 10
+        assert di.nunique(self.a, dropna=True) == 7
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_nunique_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.nunique("a"))
+        assert isclose(stat.a, [2, 2, 2, 2, 2])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_nunique_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.nunique("a"))
+        assert isclose(stat.a, [2, 2, 2, 2, 2])
 
     def test_std(self):
         assert isclose(di.std(self.a), 0.2)
