@@ -33,183 +33,148 @@ except Exception:
             return function
 
 # The below functions are designed solely to be used in conjunction with
-# DataFrame.aggregate, which temporarily adds a '_group_' column and
-# uses the 'numba' attribute of functions to figure out how to apply them.
+# DataFrame.aggregate, which temporarily adds a '_group_' column and uses
+# the 'numba' attribute of functions to figure out how to apply them. All
+# '*_numba' aggregation functions require that the 'group' argument has
+# contiguous groups and will not work right if that doesn't hold.
+
+# There's a confusing amount of nested functions below. This is mostly due to
+# two reasons: (1) Numba doesn't understand what a dataiter.DataFrame is, so
+# the accelerated functions need to operate only on NumPy arrays and (2) Numba
+# doesn't directly accept functions as arguments, but needs a wrapper instead.
 
 
-def count(name, dropna, unique=False):
-    # Since Numba doesn't understand what a dataiter.DataFrame is,
-    # we need the accelerated function to be separate,
-    # operating only on NumPy arrays.
-    def aggregate(data):
-        return count_numba(data[name or data.colnames[0]],
-                           data._group_,
-                           dropna,
-                           unique)
+def mark_numba(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        aggregate = function(*args, **kwargs)
+        aggregate.numba = True
+        return aggregate
+    return wrapper
 
-    aggregate.numba = True
-    return aggregate
+@mark_numba
+def count(dropna):
+    f = generic_numba(len)
+    return lambda data: f(
+        data.columns[0],
+        data._group_,
+        dropna=dropna,
+        default=0,
+        nrequired=0) if data.columns else 0
+
+@mark_numba
+def count_unique(name, dropna):
+    f = generic_numba(count_unique1)
+    return lambda data: f(
+        data[name],
+        data._group_,
+        dropna=dropna,
+        default=0,
+        nrequired=0)
 
 @numba.njit
-def count_numba(x, group, dropna, unique):
-    # Calculate count group-wise for x.
-    # Groups are expected to be contiguous.
-    dropna = dropna and np.isnan(x).any()
-    out = np.repeat(0, len(np.unique(group)))
-    g = 0
-    i = 0
-    n = len(x)
-    for j in range(1, n + 1):
-        if j == n or group[j] != group[i]:
-            xij = x[i:j]
-            if dropna:
-                xij = xij[~np.isnan(xij)]
-            if unique:
-                xij = np.unique(xij)
-            out[g] = len(xij)
-            g += 1
-            i = j
-    return out
+def count_unique1(x):
+    return len(np.unique(x))
 
+@mark_numba
 def generic(name, function, dropna, default, nrequired=1):
-    # Since Numba doesn't understand what a dataiter.DataFrame is,
-    # we need the accelerated function to be separate,
-    # operating only on NumPy arrays.
-    aggregate_numba = generic_numba(function)
-    def aggregate(data):
-        return aggregate_numba(data[name],
-                               data._group_,
-                               dropna,
-                               default,
-                               nrequired)
-
-    aggregate.numba = True
-    return aggregate
+    f = generic_numba(function)
+    return lambda data: f(
+        data[name],
+        data._group_,
+        dropna=dropna,
+        default=default,
+        nrequired=nrequired)
 
 @functools.lru_cache(256)
 def generic_numba(function):
     import numba
     @numba.njit
     def aggregate(x, group, dropna, default, nrequired):
-        # Calculate function group-wise for x.
-        # Groups are expected to be contiguous.
         dropna = dropna and np.isnan(x).any()
         out = np.repeat(default, len(np.unique(group)))
-        g = 0
-        i = 0
+        g = i = 0
         n = len(x)
         for j in range(1, n + 1):
-            if j == n or group[j] != group[i]:
-                xij = x[i:j]
-                if dropna:
-                    xij = xij[~np.isnan(xij)]
-                if len(xij) >= nrequired:
-                    out[g] = function(xij)
-                g += 1
-                i = j
+            if j < n and group[j] == group[i]: continue
+            xij = x[i:j]
+            if dropna:
+                xij = xij[~np.isnan(xij)]
+            if len(xij) >= nrequired:
+                out[g] = function(xij)
+            g += 1
+            i = j
         return out
     return aggregate
 
+@mark_numba
 def mode(name, dropna):
-    # Since Numba doesn't understand what a dataiter.DataFrame is,
-    # we need the accelerated function to be separate,
-    # operating only on NumPy arrays.
-    def aggregate(data):
-        return mode_numba(data[name],
-                          data._group_,
-                          dropna,
-                          data[name].missing_value)
-
-    aggregate.numba = True
-    return aggregate
+    f = generic_numba(mode1)
+    return lambda data: f(
+        data[name],
+        data._group_,
+        dropna=dropna,
+        default=data[name].missing_value,
+        nrequired=1)
 
 @numba.njit
-def mode_numba(x, group, dropna, default):
-    # Calculate mode group-wise for x.
-    # Groups are expected to be contiguous.
-    dropna = dropna and np.isnan(x).any()
-    out = np.repeat(default, len(np.unique(group)))
-    g = 0
-    i = 0
-    n = len(x)
-    for j in range(1, n + 1):
-        if j == n or group[j] != group[i]:
-            xij = x[i:j]
-            if dropna:
-                xij = xij[~np.isnan(xij)]
-            if len(xij) > 0:
-                # XXX: Numba doesn't support np.unique's 'return_counts' argument.
-                max_value = xij[0]
-                max_count = 1
-                for k in range(1, len(xij)):
-                    count = np.nansum(xij == xij[k])
-                    if count > max_count:
-                        max_value = xij[k]
-                out[g] = max_value
-            g += 1
-            i = j
-    return out
+def mode1(x):
+    # Numba doesn't support all np.unique's arguments,
+    # so we can't do the usual below, but want to match it.
+    # > values, counts = np.unique(x, return_counts=True)
+    # > return values[counts.argmax()]
+    max_value = x[0]
+    max_count = 1
+    for i in range(1, len(x)):
+        count = np.nansum(x == x[i])
+        if count > max_count:
+            max_value = x[i]
+    return max_value
 
+@mark_numba
 def nth(name, index):
-    # Since Numba doesn't understand what a dataiter.DataFrame is,
-    # we need the accelerated function to be separate,
-    # operating only on NumPy arrays.
-    def aggregate(data):
-        return nth_numba(data[name],
-                         data._group_,
-                         index,
-                         data[name].missing_value)
-
-    aggregate.numba = True
-    return aggregate
+    return lambda data: nth_numba(
+        data[name],
+        data._group_,
+        index=index,
+        default=data[name].missing_value)
 
 @numba.njit
 def nth_numba(x, group, index, default):
-    # Calculate nth group-wise for x.
-    # Groups are expected to be contiguous.
     out = np.repeat(default, len(np.unique(group)))
-    g = 0
-    i = 0
+    g = i = 0
     n = len(x)
     for j in range(1, n + 1):
-        if j == n or group[j] != group[i]:
-            try:
-                out[g] = x[i:j][index]
-            except Exception:
-                pass
-            g += 1
-            i = j
+        if j < n and group[j] == group[i]: continue
+        xij = x[i:j]
+        if (0 <= index < len(xij) or
+            -len(xij) <= index < 0):
+            out[g] = xij[index]
+        g += 1
+        i = j
     return out
 
+@mark_numba
 def quantile(name, q, dropna):
-    # Since Numba doesn't understand what a dataiter.DataFrame is,
-    # we need the accelerated function to be separate,
-    # operating only on NumPy arrays.
-    def aggregate(data):
-        return quantile_numba(data[name],
-                              data._group_,
-                              q,
-                              dropna)
-
-    aggregate.numba = True
-    return aggregate
+    return lambda data: quantile_numba(
+        data[name],
+        data._group_,
+        q=q,
+        dropna=dropna)
 
 @numba.njit
 def quantile_numba(x, group, q, dropna):
-    # Calculate quantile group-wise for x.
-    # Groups are expected to be contiguous.
     dropna = dropna and np.isnan(x).any()
     out = np.repeat(np.nan, len(np.unique(group)))
-    g = 0
-    i = 0
+    g = i = 0
     n = len(x)
     for j in range(1, n + 1):
-        if j == n or group[j] != group[i]:
-            xij = x[i:j]
-            if dropna:
-                xij = xij[~np.isnan(xij)]
-            if len(xij) > 0:
-                out[g] = np.quantile(xij, q)
-            g += 1
-            i = j
+        if j < n and group[j] == group[i]: continue
+        xij = x[i:j]
+        if dropna:
+            xij = xij[~np.isnan(xij)]
+        if len(xij) > 0:
+            out[g] = np.quantile(xij, q)
+        g += 1
+        i = j
     return out

@@ -228,7 +228,7 @@ def n(x="", dropna=False):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.count(x, dropna)
+            return aggregate.count(dropna)
         return lambda data: n(data[x or data.colnames[0]], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
@@ -285,7 +285,7 @@ def nunique(x, dropna=False):
     """
     if isinstance(x, str):
         if USE_NUMBA:
-            return aggregate.count(x, dropna, True)
+            return aggregate.count_unique(x, dropna)
         return lambda data: nunique(data[x], dropna=dropna)
     if dropna:
         x = x[~np.isnan(x)]
