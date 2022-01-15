@@ -140,3 +140,36 @@ def nth_numba(x, group, index, default):
             g += 1
             i = j
     return out
+
+def quantile(name, q, dropna):
+    # Since Numba doesn't understand what a dataiter.DataFrame is,
+    # we need the accelerated function to be separate,
+    # operating only on NumPy arrays.
+    def aggregate(data):
+        return quantile_numba(data[name],
+                              data._group_,
+                              q,
+                              dropna)
+
+    aggregate.numba = True
+    return aggregate
+
+@numba.njit
+def quantile_numba(x, group, q, dropna):
+    # Calculate quantile group-wise for x.
+    # Groups are expected to be contiguous.
+    dropna = dropna and np.isnan(x).any()
+    out = np.repeat(np.nan, len(np.unique(group)))
+    g = 0
+    i = 0
+    n = len(x)
+    for j in range(1, n + 1):
+        if j == n or group[j] != group[i]:
+            xij = x[i:j]
+            if dropna:
+                xij = xij[~np.isnan(xij)]
+            if len(xij) > 0:
+                out[g] = np.quantile(xij, q)
+            g += 1
+            i = j
+    return out

@@ -268,6 +268,26 @@ def nunique(x, dropna=False):
         x = x[~np.isnan(x)]
     return len(x)
 
+def quantile(x, q, dropna=True):
+    """
+    Return the `q`th quantile of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.quantile(di.Vector(range(10)), 0.5)
+    >>> di.quantile("x", 0.5)
+    """
+    if isinstance(x, str):
+        if USE_NUMBA:
+            return aggregate.quantile(x, q, dropna)
+        return lambda data: quantile(data[x], q, dropna=dropna)
+    if dropna:
+        x = x[~np.isnan(x)]
+    if len(x) == 0:
+        return np.nan
+    return np.quantile(x, q).item()
+
 def std(x, dropna=True):
     """
     Return the standard deviation of `x`.

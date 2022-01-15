@@ -196,6 +196,20 @@ class TestUtil:
         stat = self.data.group_by("g").aggregate(a=di.nunique("a"))
         assert isclose(stat.a, [2, 2, 2, 2, 2])
 
+    def test_quantile(self):
+        assert isclose(di.quantile(self.a, 0.5), 0.4)
+        assert np.isnan(di.quantile(self.a, 0.5, dropna=False))
+
+    @patch("dataiter.USE_NUMBA", False)
+    def test_quantile_aggregate(self):
+        stat = self.data.group_by("g").aggregate(a=di.quantile("a", 0.5))
+        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+
+    @skipif(not di.USE_NUMBA, reason="No Numba")
+    def test_quantile_aggregate_numba(self):
+        stat = self.data.group_by("g").aggregate(a=di.quantile("a", 0.5))
+        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+
     def test_std(self):
         assert isclose(di.std(self.a), 0.2)
         assert np.isnan(di.std(self.a, dropna=False))
