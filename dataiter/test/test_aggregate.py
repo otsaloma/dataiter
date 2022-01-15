@@ -21,16 +21,22 @@
 # THE SOFTWARE.
 
 import numpy as np
+import pytest
 
 from dataiter import aggregate
+from dataiter import USE_NUMBA
+
+skipif = pytest.mark.skipif
 
 
 class TestAggregate:
 
+    @skipif(not USE_NUMBA, reason="No Numba")
     def test_count_unique1(self):
         assert aggregate.count_unique1(np.array([1, 2, 3, 4, 5])) == 5
         assert aggregate.count_unique1(np.array([1, 2, 3, 3, 3])) == 3
 
+    @skipif(not USE_NUMBA, reason="No Numba")
     def test_mode1(self):
         assert aggregate.mode1(np.array([True, False, False])) == False
         assert aggregate.mode1(np.array([1, 2, 2, 3, 3, 3])) == 3
