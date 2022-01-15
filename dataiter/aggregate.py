@@ -129,6 +129,7 @@ def mode1(x):
         count = np.nansum(x == x[i])
         if count > max_count:
             max_value = x[i]
+            max_count = count
     return max_value
 
 @mark_numba
