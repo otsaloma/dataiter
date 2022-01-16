@@ -33,10 +33,10 @@ except Exception:
             return function
 
 # The below functions are designed solely to be used in conjunction with
-# DataFrame.aggregate, which temporarily adds a '_group_' column and uses
-# the 'numba' attribute of functions to figure out how to apply them. All
-# '*_numba' aggregation functions require that the 'group' argument has
-# contiguous groups and will not work right if that doesn't hold.
+# DataFrame.aggregate, which temporarily adds a '_group_' column and uses the
+# 'numba' attribute of functions to figure out how to apply them. All '*_numba'
+# aggregation functions require that the 'group' argument has contiguous groups
+# and will not work right if that doesn't hold.
 
 # There's a confusing amount of nested functions below. This is mostly due to
 # two reasons: (1) Numba doesn't understand what a dataiter.DataFrame is, so
@@ -56,11 +56,11 @@ def mark_numba(function):
 def count(dropna):
     f = generic_numba(len)
     return lambda data: f(
-        data.columns[0],
+        data._group_,
         data._group_,
         dropna=dropna,
         default=0,
-        nrequired=0) if data.columns else 0
+        nrequired=0)
 
 @mark_numba
 def count_unique(name, dropna):

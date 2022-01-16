@@ -20,24 +20,94 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import datetime
 import numpy as np
 import pytest
 
 from dataiter import aggregate
 from dataiter import USE_NUMBA
 
+try:
+    import numba
+except Exception:
+    pass
+
 skipif = pytest.mark.skipif
+xfail = pytest.mark.xfail
 
 
 class TestAggregate:
 
     @skipif(not USE_NUMBA, reason="No Numba")
-    def test_count_unique1(self):
-        assert aggregate.count_unique1(np.array([1, 2, 3, 4, 5])) == 5
-        assert aggregate.count_unique1(np.array([1, 2, 3, 3, 3])) == 3
+    def test_count_unique1_bool(self):
+        assert aggregate.count_unique1(np.array([True, False])) == 2
+        assert aggregate.count_unique1(np.array([True, True]))  == 1
 
     @skipif(not USE_NUMBA, reason="No Numba")
-    def test_mode1(self):
+    def test_count_unique1_date(self):
+        date1 = datetime.date.today()
+        date2 = datetime.date.today() + datetime.timedelta(days=1)
+        dtype = np.dtype("datetime64[D]")
+        assert aggregate.count_unique1(np.array([date1, date2], dtype)) == 2
+        assert aggregate.count_unique1(np.array([date1, date1], dtype)) == 1
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_count_unique1_datetime(self):
+        datetime1 = datetime.datetime.now()
+        datetime2 = datetime.datetime.now() + datetime.timedelta(days=1)
+        dtype = np.dtype("datetime64[us]")
+        assert aggregate.count_unique1(np.array([datetime1, datetime2], dtype)) == 2
+        assert aggregate.count_unique1(np.array([datetime1, datetime1], dtype)) == 1
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_count_unique1_float(self):
+        assert aggregate.count_unique1(np.array([0.1, 0.2, 0.3])) == 3
+        assert aggregate.count_unique1(np.array([0.1, 0.2, 0.2])) == 2
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_count_unique1_int(self):
+        assert aggregate.count_unique1(np.array([1, 2, 3])) == 3
+        assert aggregate.count_unique1(np.array([1, 2, 2])) == 2
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_count_unique1_str(self):
+        assert aggregate.count_unique1(np.array(["a", "b", "c"])) == 3
+        assert aggregate.count_unique1(np.array(["a", "b", "b"])) == 2
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_mode1_bool(self):
+        assert aggregate.mode1(np.array([True, True, False]))  == True
         assert aggregate.mode1(np.array([True, False, False])) == False
-        assert aggregate.mode1(np.array([1, 2, 2, 3, 3, 3])) == 3
-        assert aggregate.mode1(np.array([0.1, 0.2, 0.2, 0.3, 0.3, 0.3])) == 0.3
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_mode1_date(self):
+        date1 = datetime.date.today()
+        date2 = datetime.date.today() + datetime.timedelta(days=1)
+        dtype = np.dtype("datetime64[D]")
+        assert aggregate.mode1(np.array([date1, date1, date2], dtype)) == date1
+        assert aggregate.mode1(np.array([date1, date2, date2], dtype)) == date2
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_mode1_datetime(self):
+        datetime1 = datetime.datetime.now()
+        datetime2 = datetime.datetime.now() + datetime.timedelta(days=1)
+        dtype = np.dtype("datetime64[us]")
+        assert aggregate.mode1(np.array([datetime1, datetime1, datetime2], dtype)) == datetime1
+        assert aggregate.mode1(np.array([datetime1, datetime2, datetime2], dtype)) == datetime2
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_mode1_float(self):
+        assert aggregate.mode1(np.array([0.1, 0.2, 0.1])) == 0.1
+        assert aggregate.mode1(np.array([0.2, 0.2, 0.1])) == 0.2
+
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_mode1_int(self):
+        assert aggregate.mode1(np.array([1, 2, 1])) == 1
+        assert aggregate.mode1(np.array([2, 2, 1])) == 2
+
+    # XXX: Why does this fail?
+    @xfail(numba.TypingError)
+    @skipif(not USE_NUMBA, reason="No Numba")
+    def test_mode1_str(self):
+        assert aggregate.mode1(np.array(["b", "a", "a"])) == "a"
+        assert aggregate.mode1(np.array(["b", "a", "b"])) == "b"
