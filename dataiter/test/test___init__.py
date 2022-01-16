@@ -25,6 +25,17 @@ import numpy as np
 import pytest
 import unittest.mock
 
+from dataiter import Vector
+
+T = True
+F = False
+NaN = np.nan
+
+# If Numba is available, parametrize tests to run aggregation
+# functions both with and without Numba.
+USE_NUMBA_PARAMS = [False, True] if di.USE_NUMBA else [False]
+
+parametrize = pytest.mark.parametrize
 patch = unittest.mock.patch
 skipif = pytest.mark.skipif
 
@@ -34,234 +45,196 @@ def isclose(a, b):
 
 class TestUtil:
 
-    def setup_method(self, method):
-        self.g = di.Vector([1, 1, 2, 2, 3, 3, 4, 4, 5, 5], int)
-        self.a = di.Vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, np.nan, np.nan, np.nan], float)
-        self.b = di.Vector([True, True, True, True, True, False, False, False, False, False], bool)
-        self.data = di.DataFrame(g=self.g, a=self.a, b=self.b)
+    def get_data(self, a=None, g=None):
+        a = Vector(a or [1, 1, 2, 2, 3, 3, 4, 4, 5, 5])
+        g = Vector(g or [1, 1, 2, 2, 3, 3, 4, 4, 5, 5])
+        return di.DataFrame(g=g, a=a)
 
     def test_all(self):
-        assert not di.all(self.b)
+        assert di.all(Vector([T, T]))
+        assert not di.all(Vector([T, F]))
+        assert not di.all(Vector([F, F]))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_all_aggregate(self):
-        stat = self.data.group_by("g").aggregate(b=di.all("b"))
-        assert stat.b.equal(di.Vector([True, True, False, False, False]))
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_all_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(b=di.all("b"))
-        assert stat.b.equal(di.Vector([True, True, False, False, False]))
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_all_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([T, T, T, T, T, F, F, F, F, F])
+            stat = data.group_by("g").aggregate(a=di.all("a"))
+            assert stat.a.equal(Vector([T, T, F, F, F]))
 
     def test_any(self):
-        assert di.any(self.b)
+        assert di.any(Vector([T, T]))
+        assert di.any(Vector([T, F]))
+        assert not di.any(Vector([F, F]))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_any_aggregate(self):
-        stat = self.data.group_by("g").aggregate(b=di.any("b"))
-        assert stat.b.equal(di.Vector([True, True, True, False, False]))
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_any_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([T, T, T, T, T, F, F, F, F, F])
+            stat = data.group_by("g").aggregate(a=di.any("a"))
+            assert stat.a.equal(Vector([T, T, T, F, F]))
 
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_any_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(b=di.any("b"))
-        assert stat.b.equal(di.Vector([True, True, True, False, False]))
+    def test_count(self):
+        assert di.count(Vector([])) == 0
+        assert di.count(Vector([1])) == 1
+        assert di.count(Vector([1, 2])) == 2
+
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_count_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 1, 2, 3, 4, 4, 5, 6, 7, 7])
+            stat = data.group_by("g").aggregate(a=di.count("a"))
+            assert stat.a.equal(Vector([2, 2, 2, 2, 2]))
+
+    def test_count_unique(self):
+        assert di.count_unique(Vector([1, 2])) == 2
+        assert di.count_unique(Vector([1, 2, 2])) == 2
+        assert di.count_unique(Vector([1, 2, 2, 3])) == 3
+
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_count_unique_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 1, 2, 3, 4, 4, 5, 6, 7, 7])
+            stat = data.group_by("g").aggregate(a=di.count_unique("a"))
+            assert stat.a.equal(Vector([1, 2, 1, 2, 1]))
 
     def test_first(self):
-        assert isclose(di.first(self.a), 0.1)
+        assert di.first(Vector([1, 2, 3])) == 1
+        assert np.isnan(di.first(Vector([])))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_first_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.first("a"))
-        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_first_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.first("a"))
-        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_first_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            stat = data.group_by("g").aggregate(a=di.first("a"))
+            assert stat.a.equal(Vector([1, 3, 5, 7, 9]))
 
     def test_last(self):
-        assert np.isnan(di.last(self.a))
+        assert di.last(Vector([1, 2, 3])) == 3
+        assert np.isnan(di.last(Vector([])))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_last_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.last("a"))
-        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_last_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.last("a"))
-        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_last_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            stat = data.group_by("g").aggregate(a=di.last("a"))
+            assert stat.a.equal(Vector([2, 4, 6, 8, 10]))
 
     def test_max(self):
-        assert isclose(di.max(self.a), 0.7)
-        assert np.isnan(di.max(self.a, dropna=False))
+        assert di.max(Vector([1, 3, 2])) == 3
+        assert di.max(Vector([1, 3, 2, NaN])) == 3
+        assert np.isnan(di.max(Vector([1, 3, 2, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_max_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.max("a"))
-        assert isclose(stat.a, [0.2, 0.4, 0.6, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_max_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.max("a"))
-        assert isclose(stat.a, [0.2, 0.4, 0.6, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_max_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.max("a"))
+            assert stat.a.equal(Vector([2, 4, 6, 7, NaN]))
 
     def test_mean(self):
-        assert isclose(di.mean(self.a), 0.4)
-        assert np.isnan(di.mean(self.a, dropna=False))
+        assert isclose(di.mean(Vector([1, 2, 3, 4])), 2.5)
+        assert np.isnan(di.mean(Vector([1, 2, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_mean_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.mean("a"))
-        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_mean_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.mean("a"))
-        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_mean_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.mean("a"))
+            assert stat.a.equal(Vector([1.5, 3.5, 5.5, 7, NaN]))
 
     def test_median(self):
-        assert isclose(di.median(self.a), 0.4)
-        assert np.isnan(di.median(self.a, dropna=False))
+        assert isclose(di.median(Vector([1, 4, 6, 8, 5])), 5)
+        assert np.isnan(di.median(Vector([1, 2, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_median_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.median("a"))
-        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_median_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.median("a"))
-        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_median_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.median("a"))
+            assert stat.a.equal(Vector([1.5, 3.5, 5.5, 7, NaN]))
 
     def test_min(self):
-        assert isclose(di.min(self.a), 0.1)
-        assert np.isnan(di.min(self.a, dropna=False))
+        assert di.min(Vector([3, 2, 1])) == 1
+        assert di.min(Vector([3, 2, 1, NaN])) == 1
+        assert np.isnan(di.min(Vector([3, 2, 1, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_min_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.min("a"))
-        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_min_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.min("a"))
-        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_min_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.min("a"))
+            assert stat.a.equal(Vector([1, 3, 5, 7, NaN]))
 
     def test_mode(self):
-        assert isclose(di.mode(self.a), 0.1)
-        assert isclose(di.mode(self.a, dropna=False), 0.1)
+        assert di.mode(Vector([1, 2, 2, 2, 3, 3])) == 2
+        assert np.isnan(di.mode(Vector([NaN, 1]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_mode_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.mode("a"))
-        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_mode_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.mode("a"))
-        assert isclose(stat.a, [0.1, 0.3, 0.5, 0.7, np.nan])
-
-    def test_n(self):
-        assert di.n(self.a) == 10
-        assert di.n(self.a, dropna=True) == 7
-
-    @patch("dataiter.USE_NUMBA", False)
-    def test_n_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.n())
-        assert isclose(stat.a, [2, 2, 2, 2, 2])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_n_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.n())
-        assert isclose(stat.a, [2, 2, 2, 2, 2])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_mode_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 1, 3, 4, 5, 5, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.mode("a"))
+            assert stat.a.equal(Vector([1, 3, 5, 7, NaN]))
 
     def test_ncol(self):
-        assert di.ncol(self.data) == 3
+        assert di.ncol(self.get_data()) == 2
 
     def test_nrow(self):
-        assert di.nrow(self.data) == 10
+        assert di.nrow(self.get_data()) == 10
 
     def test_nth(self):
-        assert isclose(di.nth(self.a, 1), 0.2)
-        assert np.isnan(di.nth(self.a, 999))
+        assert di.nth(Vector([1, 2, 3]), 1) == 2
+        assert np.isnan(di.nth(Vector([1, 2, 3]), 3))
+        assert np.isnan(di.nth(Vector([1, 2, 3]), -4))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_nth_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.nth("a", 1))
-        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_nth_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.nth("a", 1))
-        assert isclose(stat.a, [0.2, 0.4, 0.6, np.nan, np.nan])
-
-    def test_nunique(self):
-        assert di.nunique(self.a) == 10
-        assert di.nunique(self.a, dropna=True) == 7
-
-    @patch("dataiter.USE_NUMBA", False)
-    def test_nunique_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.nunique("a"))
-        assert isclose(stat.a, [2, 2, 2, 2, 2])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_nunique_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.nunique("a"))
-        assert isclose(stat.a, [2, 2, 2, 2, 2])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_nth_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            stat = data.group_by("g").aggregate(a=di.nth("a", 1))
+            assert stat.a.equal(Vector([2, 4, 6, 8, 10]))
 
     def test_quantile(self):
-        assert isclose(di.quantile(self.a, 0.5), 0.4)
-        assert np.isnan(di.quantile(self.a, 0.5, dropna=False))
+        assert isclose(di.quantile(Vector([1, 4, 6, 8, 5]), 0.5), 5)
+        assert np.isnan(di.quantile(Vector([1, 2, NaN]), 0.5, dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_quantile_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.quantile("a", 0.5))
-        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_quantile_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.quantile("a", 0.5))
-        assert isclose(stat.a, [0.15, 0.35, 0.55, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_quantile_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.quantile("a", 0.5))
+            assert stat.a.equal(Vector([1.5, 3.5, 5.5, 7, NaN]))
 
     def test_std(self):
-        assert isclose(di.std(self.a), 0.2)
-        assert np.isnan(di.std(self.a, dropna=False))
+        assert isclose(di.std(Vector([1, 2, 2, 3])), 0.707107)
+        assert np.isnan(di.std(Vector([1, 2, 2, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_std_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.std("a"))
-        assert isclose(stat.a, [0.05, 0.05, 0.05, np.nan, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_std_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.std("a"))
-        assert isclose(stat.a, [0.05, 0.05, 0.05, np.nan, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_std_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.std("a"))
+            assert stat.a.equal(Vector([0.5, 0.5, 0.5, NaN, NaN]))
 
     def test_sum(self):
-        assert isclose(di.sum(self.a), 2.8)
-        assert np.isnan(di.sum(self.a, dropna=False))
+        assert di.sum(Vector([1, 2, 3])) == 6
+        assert np.isnan(di.sum(Vector([1, 2, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_sum_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.sum("a"))
-        assert isclose(stat.a, [0.3, 0.7, 1.1, 0.7, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_sum_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.sum("a"))
-        assert isclose(stat.a, [0.3, 0.7, 1.1, 0.7, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_sum_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.sum("a"))
+            assert stat.a.equal(Vector([3, 7, 11, 7, np.nan]))
 
     def test_var(self):
-        assert isclose(di.var(self.a), 0.04)
-        assert np.isnan(di.var(self.a, dropna=False))
+        assert isclose(di.var(Vector([1, 2, 2, 3])), 0.5)
+        assert np.isnan(di.var(Vector([1, 2, 2, NaN]), dropna=False))
 
-    @patch("dataiter.USE_NUMBA", False)
-    def test_var_aggregate(self):
-        stat = self.data.group_by("g").aggregate(a=di.var("a"))
-        assert isclose(stat.a, [0.0025, 0.0025, 0.0025, np.nan, np.nan])
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_var_aggregate_numba(self):
-        stat = self.data.group_by("g").aggregate(a=di.var("a"))
-        assert isclose(stat.a, [0.0025, 0.0025, 0.0025, np.nan, np.nan])
+    @parametrize("use_numba", USE_NUMBA_PARAMS)
+    def test_var_aggregate(self, use_numba):
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
+            stat = data.group_by("g").aggregate(a=di.var("a"))
+            assert stat.a.equal(Vector([0.25, 0.25, 0.25, NaN, NaN]))
