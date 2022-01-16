@@ -28,7 +28,7 @@ from dataiter import aggregate
 from dataiter import USE_NUMBA
 
 try:
-    import numba
+    import numba # noqa
 except Exception:
     pass
 
