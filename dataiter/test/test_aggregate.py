@@ -105,8 +105,7 @@ class TestAggregate:
         assert aggregate.mode1(np.array([1, 2, 1])) == 1
         assert aggregate.mode1(np.array([2, 2, 1])) == 2
 
-    # XXX: Why does this fail?
-    @xfail(Exception)
+    @xfail
     @skipif(not USE_NUMBA, reason="No Numba")
     def test_mode1_str(self):
         assert aggregate.mode1(np.array(["b", "a", "a"])) == "a"
