@@ -51,7 +51,7 @@ class TestUtil:
         return di.DataFrame(g=g, a=a)
 
     def test_all(self):
-        assert di.all(Vector([T, T]))
+        assert     di.all(Vector([T, T]))
         assert not di.all(Vector([T, F]))
         assert not di.all(Vector([F, F]))
 
@@ -63,8 +63,8 @@ class TestUtil:
             assert stat.a.equal(Vector([T, T, F, F, F]))
 
     def test_any(self):
-        assert di.any(Vector([T, T]))
-        assert di.any(Vector([T, F]))
+        assert     di.any(Vector([T, T]))
+        assert     di.any(Vector([T, F]))
         assert not di.any(Vector([F, F]))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
@@ -82,7 +82,9 @@ class TestUtil:
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_count_aggregate(self, use_numba):
         with patch("dataiter.USE_NUMBA", use_numba):
-            data = self.get_data([1, 1, 2, 3, 4, 4, 5, 6, 7, 7])
+            data = self.get_data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            stat = data.group_by("g").aggregate(a=di.count())
+            assert stat.a.equal(Vector([2, 2, 2, 2, 2]))
             stat = data.group_by("g").aggregate(a=di.count("a"))
             assert stat.a.equal(Vector([2, 2, 2, 2, 2]))
 
@@ -122,8 +124,8 @@ class TestUtil:
 
     def test_max(self):
         assert di.max(Vector([1, 3, 2])) == 3
-        assert di.max(Vector([1, 3, 2, NaN])) == 3
-        assert np.isnan(di.max(Vector([1, 3, 2, NaN]), dropna=False))
+        assert di.max(Vector([1, 3, NaN])) == 3
+        assert np.isnan(di.max(Vector([1, 3, NaN]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_max_aggregate(self, use_numba):
@@ -133,7 +135,7 @@ class TestUtil:
             assert stat.a.equal(Vector([2, 4, 6, 7, NaN]))
 
     def test_mean(self):
-        assert isclose(di.mean(Vector([1, 2, 3, 4])), 2.5)
+        assert isclose(di.mean(Vector([1, 2, 10])), 4.333333)
         assert np.isnan(di.mean(Vector([1, 2, NaN]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
@@ -145,7 +147,7 @@ class TestUtil:
 
     def test_median(self):
         assert isclose(di.median(Vector([1, 4, 6, 8, 5])), 5)
-        assert np.isnan(di.median(Vector([1, 2, NaN]), dropna=False))
+        assert np.isnan(di.median(Vector([1, 4, NaN]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_median_aggregate(self, use_numba):
@@ -156,8 +158,8 @@ class TestUtil:
 
     def test_min(self):
         assert di.min(Vector([3, 2, 1])) == 1
-        assert di.min(Vector([3, 2, 1, NaN])) == 1
-        assert np.isnan(di.min(Vector([3, 2, 1, NaN]), dropna=False))
+        assert di.min(Vector([3, 2, NaN])) == 2
+        assert np.isnan(di.min(Vector([3, 2, NaN]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_min_aggregate(self, use_numba):
@@ -167,7 +169,7 @@ class TestUtil:
             assert stat.a.equal(Vector([1, 3, 5, 7, NaN]))
 
     def test_mode(self):
-        assert di.mode(Vector([1, 2, 2, 2, 3, 3])) == 2
+        assert di.mode(Vector([1, 2, 2, 3, 3, 3])) == 3
         assert np.isnan(di.mode(Vector([NaN, 1]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
@@ -196,8 +198,8 @@ class TestUtil:
             assert stat.a.equal(Vector([2, 4, 6, 8, 10]))
 
     def test_quantile(self):
-        assert isclose(di.quantile(Vector([1, 4, 6, 8, 5]), 0.5), 5)
-        assert np.isnan(di.quantile(Vector([1, 2, NaN]), 0.5, dropna=False))
+        assert isclose(di.quantile(Vector([1, 5, 6, 7, 8]), 0.5), 6)
+        assert np.isnan(di.quantile(Vector([1, 5, NaN]), 0.5, dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_quantile_aggregate(self, use_numba):
@@ -207,8 +209,8 @@ class TestUtil:
             assert stat.a.equal(Vector([1.5, 3.5, 5.5, 7, NaN]))
 
     def test_std(self):
-        assert isclose(di.std(Vector([1, 2, 2, 3])), 0.707107)
-        assert np.isnan(di.std(Vector([1, 2, 2, NaN]), dropna=False))
+        assert isclose(di.std(Vector([3, 6, 7])), 1.699673)
+        assert np.isnan(di.std(Vector([3, 6, NaN]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_std_aggregate(self, use_numba):
@@ -229,8 +231,8 @@ class TestUtil:
             assert stat.a.equal(Vector([3, 7, 11, 7, np.nan]))
 
     def test_var(self):
-        assert isclose(di.var(Vector([1, 2, 2, 3])), 0.5)
-        assert np.isnan(di.var(Vector([1, 2, 2, NaN]), dropna=False))
+        assert isclose(di.var(Vector([3, 6, 7])), 2.888889)
+        assert np.isnan(di.var(Vector([3, 6, NaN]), dropna=False))
 
     @parametrize("use_numba", USE_NUMBA_PARAMS)
     def test_var_aggregate(self, use_numba):

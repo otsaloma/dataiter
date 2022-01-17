@@ -33,7 +33,6 @@ except Exception:
     pass
 
 skipif = pytest.mark.skipif
-xfail = pytest.mark.xfail
 
 
 class TestAggregate:
@@ -70,11 +69,6 @@ class TestAggregate:
         assert aggregate.count_unique1(np.array([1, 2, 2])) == 2
 
     @skipif(not USE_NUMBA, reason="No Numba")
-    def test_count_unique1_str(self):
-        assert aggregate.count_unique1(np.array(["a", "b", "c"])) == 3
-        assert aggregate.count_unique1(np.array(["a", "b", "b"])) == 2
-
-    @skipif(not USE_NUMBA, reason="No Numba")
     def test_mode1_bool(self):
         assert aggregate.mode1(np.array([True, True, False]))  == True
         assert aggregate.mode1(np.array([True, False, False])) == False
@@ -104,9 +98,3 @@ class TestAggregate:
     def test_mode1_int(self):
         assert aggregate.mode1(np.array([1, 2, 1])) == 1
         assert aggregate.mode1(np.array([2, 2, 1])) == 2
-
-    @xfail
-    @skipif(not USE_NUMBA, reason="No Numba")
-    def test_mode1_str(self):
-        assert aggregate.mode1(np.array(["b", "a", "a"])) == "a"
-        assert aggregate.mode1(np.array(["b", "a", "b"])) == "b"

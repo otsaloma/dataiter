@@ -20,21 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import contextlib
 import functools
 import numpy as np
 
+from dataiter import aggregate
+from dataiter import util
+
+# API
 from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.geojson import GeoJSON # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
-from dataiter import aggregate
 
 try:
     import numba # noqa
     USE_NUMBA = True
 except Exception:
     USE_NUMBA = False
+
+with contextlib.suppress(LookupError):
+    USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
 
 __version__ = "0.28"
 
@@ -73,9 +80,13 @@ def all(x):
     >>> di.all("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return all(data[x])
         if USE_NUMBA:
-            return aggregate.generic(x, np.all, dropna=False, default=True)
-        return lambda data: all(data[x])
+            f = aggregate.generic(x, np.all, dropna=False, default=True)
+            f.fallback = fallback
+            return f
+        return fallback
     if len(x) < 1:
         return True
     return np.all(x).item()
@@ -93,14 +104,18 @@ def any(x):
     >>> di.any("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return any(data[x])
         if USE_NUMBA:
-            return aggregate.generic(x, np.any, dropna=False, default=False)
-        return lambda data: any(data[x])
+            f = aggregate.generic(x, np.any, dropna=False, default=False)
+            f.fallback = fallback
+            return f
+        return fallback
     if len(x) < 1:
         return False
     return np.any(x).item()
 
-@ensure_x_type
+# @ensure_x_type skipped on purpose due to allowing calls with no x given.
 def count(x="", dropna=False):
     """
     Return the amount of elements in `x`.
@@ -108,15 +123,19 @@ def count(x="", dropna=False):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.count(di.Vector(range(10)))
+    >>> di.count(di.Vector([1, 2, 3]))
     >>> di.count()
     """
     if isinstance(x, str):
+        def fallback(data):
+            if not x:
+                return data.nrow
+            return count(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.count(dropna=dropna)
-        return lambda data: (
-            count(data[x or data.colnames[0]], dropna=dropna)
-            if data.colnames else 0)
+            f = aggregate.count(dropna=dropna)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     return len(x)
@@ -133,9 +152,13 @@ def count_unique(x, dropna=False):
     >>> di.count_unique("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return count_unique(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.count_unique(x, dropna=dropna)
-        return lambda data: count_unique(data[x], dropna=dropna)
+            f = aggregate.count_unique(x, dropna=dropna)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     return len(np.unique(x))
@@ -174,13 +197,17 @@ def max(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.max(di.Vector(range(10)))
+    >>> di.max(di.Vector([4, 5, 6]))
     >>> di.max("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return max(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.amax, dropna=dropna, default=np.nan)
-        return lambda data: max(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.amax, dropna=dropna, default=np.nan)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -195,13 +222,17 @@ def mean(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.mean(di.Vector(range(10)))
+    >>> di.mean(di.Vector([1, 2, 10]))
     >>> di.mean("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return mean(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.mean, dropna=dropna, default=np.nan)
-        return lambda data: mean(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.mean, dropna=dropna, default=np.nan)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -216,13 +247,17 @@ def median(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.median(di.Vector(range(10)))
+    >>> di.median(di.Vector([5, 1, 2]))
     >>> di.median("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return median(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.median, dropna=dropna, default=np.nan)
-        return lambda data: median(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.median, dropna=dropna, default=np.nan)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -237,13 +272,17 @@ def min(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.min(di.Vector(range(10)))
+    >>> di.min(di.Vector([4, 5, 6]))
     >>> di.min("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return min(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.amin, dropna=dropna, default=np.nan)
-        return lambda data: min(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.amin, dropna=dropna, default=np.nan)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -258,13 +297,17 @@ def mode(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.mode(di.Vector([1, 2, 2, 2, 3, 3]))
+    >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.mode("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return mode(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.mode(x, dropna=dropna)
-        return lambda data: mode(data[x], dropna=dropna)
+            f = aggregate.mode(x, dropna=dropna)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -293,7 +336,7 @@ def nrow(data):
 @ensure_x_type
 def nth(x, index):
     """
-    Return the nth element of `x`.
+    Return the element of `x` at `index`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
@@ -302,9 +345,13 @@ def nth(x, index):
     >>> di.nth("x", 1)
     """
     if isinstance(x, str):
+        def fallback(data):
+            return nth(data[x], index)
         if USE_NUMBA:
-            return aggregate.nth(x, index)
-        return lambda data: nth(data[x], index)
+            f = aggregate.nth(x, index)
+            f.fallback = fallback
+            return f
+        return fallback
     try:
         return x[index].item()
     except IndexError:
@@ -318,13 +365,17 @@ def quantile(x, q, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.quantile(di.Vector(range(10)), 0.5)
+    >>> di.quantile(di.Vector([1, 5, 6]), 0.5)
     >>> di.quantile("x", 0.5)
     """
     if isinstance(x, str):
+        def fallback(data):
+            return quantile(data[x], q, dropna=dropna)
         if USE_NUMBA:
-            return aggregate.quantile(x, q, dropna=dropna)
-        return lambda data: quantile(data[x], q, dropna=dropna)
+            f = aggregate.quantile(x, q, dropna=dropna)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -342,13 +393,17 @@ def std(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.std(di.Vector(range(10)))
+    >>> di.std(di.Vector([3, 6, 7]))
     >>> di.std("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return std(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.std, dropna=dropna, default=np.nan, nrequired=2)
-        return lambda data: std(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.std, dropna=dropna, default=np.nan, nrequired=2)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 2:
@@ -363,13 +418,17 @@ def sum(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.sum(di.Vector(range(10)))
+    >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return sum(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.sum, dropna=dropna, default=np.nan)
-        return lambda data: sum(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.sum, dropna=dropna, default=np.nan)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
@@ -387,13 +446,17 @@ def var(x, dropna=True):
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
 
-    >>> di.var(di.Vector(range(10)))
+    >>> di.var(di.Vector([3, 6, 7]))
     >>> di.var("x")
     """
     if isinstance(x, str):
+        def fallback(data):
+            return var(data[x], dropna=dropna)
         if USE_NUMBA:
-            return aggregate.generic(x, np.var, dropna=dropna, default=np.nan, nrequired=2)
-        return lambda data: var(data[x], dropna=dropna)
+            f = aggregate.generic(x, np.var, dropna=dropna, default=np.nan, nrequired=2)
+            f.fallback = fallback
+            return f
+        return fallback
     if dropna:
         x = x[~np.isnan(x)]
     if len(x) < 2:

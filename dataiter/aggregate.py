@@ -44,47 +44,49 @@ except Exception:
 # doesn't directly accept functions as arguments, but needs a wrapper instead.
 
 
-def mark_numba(function):
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        aggregate = function(*args, **kwargs)
-        aggregate.numba = True
-        return aggregate
-    return wrapper
-
-@mark_numba
 def count(dropna):
     f = generic_numba(len)
-    return lambda data: f(
-        data._group_,
-        data._group_,
-        dropna=dropna,
-        default=0,
-        nrequired=0)
+    def aggregate(data):
+        return f(
+            data._group_,
+            data._group_,
+            dropna=dropna,
+            default=0,
+            nrequired=0)
+    aggregate.numba = True
+    return aggregate
 
-@mark_numba
 def count_unique(name, dropna):
     f = generic_numba(count_unique1)
-    return lambda data: f(
-        data[name],
-        data._group_,
-        dropna=dropna,
-        default=0,
-        nrequired=0)
+    def aggregate(data):
+        if not use_numba(data[name]):
+            raise NotImplementedError
+        return f(
+            data[name],
+            data._group_,
+            dropna=dropna,
+            default=0,
+            nrequired=0)
+    aggregate.numba = True
+    return aggregate
 
 @numba.njit
 def count_unique1(x):
     return len(np.unique(x))
 
-@mark_numba
 def generic(name, function, dropna, default, nrequired=1):
     f = generic_numba(function)
-    return lambda data: f(
-        data[name],
-        data._group_,
-        dropna=dropna,
-        default=default,
-        nrequired=nrequired)
+    def aggregate(data):
+        if not use_numba(data[name]):
+            raise NotImplementedError
+        return f(
+            data[name],
+            data._group_,
+            dropna=dropna,
+            default=default,
+            nrequired=nrequired)
+    aggregate.numba = True
+    return aggregate
 
 @functools.lru_cache(256)
 def generic_numba(function):
@@ -107,15 +109,19 @@ def generic_numba(function):
         return out
     return aggregate
 
-@mark_numba
 def mode(name, dropna):
     f = generic_numba(mode1)
-    return lambda data: f(
-        data[name],
-        data._group_,
-        dropna=dropna,
-        default=data[name].missing_value,
-        nrequired=1)
+    def aggregate(data):
+        if not use_numba(data[name]):
+            raise NotImplementedError
+        return f(
+            data[name],
+            data._group_,
+            dropna=dropna,
+            default=data[name].missing_value,
+            nrequired=1)
+    aggregate.numba = True
+    return aggregate
 
 @numba.njit
 def mode1(x):
@@ -132,13 +138,17 @@ def mode1(x):
             max_count = count
     return max_value
 
-@mark_numba
 def nth(name, index):
-    return lambda data: nth_numba(
-        data[name],
-        data._group_,
-        index=index,
-        default=data[name].missing_value)
+    def aggregate(data):
+        if not use_numba(data[name]):
+            raise NotImplementedError
+        return nth_numba(
+            data[name],
+            data._group_,
+            index=index,
+            default=data[name].missing_value)
+    aggregate.numba = True
+    return aggregate
 
 @numba.njit
 def nth_numba(x, group, index, default):
@@ -155,13 +165,17 @@ def nth_numba(x, group, index, default):
         i = j
     return out
 
-@mark_numba
 def quantile(name, q, dropna):
-    return lambda data: quantile_numba(
-        data[name],
-        data._group_,
-        q=q,
-        dropna=dropna)
+    def aggregate(data):
+        if not use_numba(data[name]):
+            raise NotImplementedError
+        return quantile_numba(
+            data[name],
+            data._group_,
+            q=q,
+            dropna=dropna)
+    aggregate.numba = True
+    return aggregate
 
 @numba.njit
 def quantile_numba(x, group, q, dropna):
@@ -179,3 +193,12 @@ def quantile_numba(x, group, q, dropna):
         g += 1
         i = j
     return out
+
+def use_numba(x):
+    # Numba can't handle all dtypes, use conditionally.
+    # XXX: Strings should be supported, but not all functions seem to work.
+    # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#built-in-types
+    return (np.issubdtype(x.dtype, np.bool_) or
+            np.issubdtype(x.dtype, np.datetime64) or
+            np.issubdtype(x.dtype, np.floating) or
+            np.issubdtype(x.dtype, np.integer))

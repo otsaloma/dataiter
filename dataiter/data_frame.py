@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import contextlib
 import dataiter
 import datetime
 import itertools
@@ -197,11 +198,19 @@ class DataFrame(dict):
             groups = Vector.fast(range(len(indices)), int)
             n = Vector.fast(map(len, indices), int)
             data._group_ = np.repeat(groups, n)
-        if not all(uses_numba):
-            slices = [data._view_rows(x) for x in indices]
+        slices = None
         for colname, function in colname_function_pairs.items():
             uses_numba = getattr(function, "numba", False)
-            stat[colname] = function(data) if uses_numba else [function(x) for x in slices]
+            if uses_numba:
+                # Numba-accelerated aggregation functions raise
+                # NotImplementedError if given an unsupported dtype.
+                with contextlib.suppress(NotImplementedError):
+                    stat[colname] = function(data)
+                    continue
+                function = function.fallback
+            if slices is None:
+                slices = [data._view_rows(x) for x in indices]
+            stat[colname] = [function(x) for x in slices]
         return stat.unselect("_index_", "_group_")
 
     @deco.new_from_generator
