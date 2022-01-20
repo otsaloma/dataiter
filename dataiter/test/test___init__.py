@@ -179,9 +179,6 @@ class TestUtil:
             stat = data.group_by("g").aggregate(a=di.mode("a"))
             assert stat.a.equal(Vector([1, 3, 5, 7, NaN]))
 
-    def test_ncol(self):
-        assert di.ncol(self.get_data()) == 2
-
     def test_nrow(self):
         assert di.nrow(self.get_data()) == 10
 

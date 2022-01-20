@@ -315,12 +315,6 @@ def mode(x, dropna=True):
     values, counts = np.unique(x, return_counts=True)
     return values[counts.argmax()]
 
-def ncol(data):
-    """
-    Return the amount of columns in `data`.
-    """
-    return data.ncol
-
 def nrow(data):
     """
     Return the amount of rows in `data`.
@@ -331,6 +325,10 @@ def nrow(data):
     >>> data = di.DataFrame.read_csv("data/listings.csv")
     >>> data.group_by("hood").aggregate(n=di.nrow)
     """
+    if not getattr(nrow, "warning_shown", False):
+        print('Warning: nrow is deprecated, please use count instead')
+        print('e.g. data.group_by("hood").aggregate(n=di.count())')
+        nrow.warning_shown = True
     return data.nrow
 
 @ensure_x_type

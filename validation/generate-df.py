@@ -22,7 +22,7 @@ def read_csv(path):
 (read_csv("../data/vehicles.csv")
  .group_by("make", "model")
  .aggregate(
-     n=di.nrow,
+     n=di.count(),
      cyl_min=lambda x: x.cyl.min(),
      cyl_max=lambda x: x.cyl.max())
  .write_csv("aggregate.df.csv"))

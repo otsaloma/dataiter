@@ -33,7 +33,7 @@ def data_frame_group_by_aggregate_128():
     (data
      .group_by("make")
      .aggregate(
-         n=di.nrow,
+         n=di.count(),
          hwy=lambda x: x.hwy.mean(),
          cty=lambda x: x.cty.mean(),
      ))
@@ -45,7 +45,7 @@ def data_frame_group_by_aggregate_3264():
     (data
      .group_by("make", "model")
      .aggregate(
-         n=di.nrow,
+         n=di.count(),
          hwy=lambda x: x.hwy.mean(),
          cty=lambda x: x.cty.mean(),
      ))
@@ -57,7 +57,7 @@ def data_frame_group_by_aggregate_14668():
     (data
      .group_by("make", "model", "year")
      .aggregate(
-         n=di.nrow,
+         n=di.count(),
          hwy=lambda x: x.hwy.mean(),
          cty=lambda x: x.cty.mean(),
      ))
