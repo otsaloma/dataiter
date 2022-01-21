@@ -28,8 +28,13 @@ try:
 except Exception:
     class numba:
         @classmethod
-        def njit(cls, *args, **kwargs):
-            raise NotImplementedError("No Numba")
+        def njit(cls, cache=False):
+            def outer_wrapper(function):
+                def inner_wrapper(*args, **kwargs):
+                    print("Using dummy njit, this shouldn't happen")
+                    return function(*args, **kwargs)
+                return inner_wrapper
+            return outer_wrapper
 
 # The below functions are designed solely to be used in conjunction with
 # DataFrame.aggregate, which temporarily adds a '_group_' column and uses the
