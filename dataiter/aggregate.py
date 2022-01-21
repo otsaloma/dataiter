@@ -28,9 +28,8 @@ try:
 except Exception:
     class numba:
         @classmethod
-        def njit(cls, function):
-            print("Using dummy njit, this shouldn't happen")
-            return function
+        def njit(cls, *args, **kwargs):
+            raise NotImplementedError("No Numba")
 
 # The below functions are designed solely to be used in conjunction with
 # DataFrame.aggregate, which temporarily adds a '_group_' column and uses the
@@ -57,22 +56,31 @@ def count(dropna):
     return aggregate
 
 def count_unique(name, dropna):
-    f = generic_numba(count_unique1)
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
-        return f(
+        return count_unique_numba(
             data[name],
             data._group_,
-            dropna=dropna,
-            default=0,
-            nrequired=0)
+            dropna=dropna)
     aggregate.numba = True
     return aggregate
 
-@numba.njit
-def count_unique1(x):
-    return len(np.unique(x))
+@numba.njit(cache=True)
+def count_unique_numba(x, group, dropna):
+    dropna = dropna and np.isnan(x).any()
+    out = np.repeat(0, len(np.unique(group)))
+    g = i = 0
+    n = len(x)
+    for j in range(1, n + 1):
+        if j < n and group[j] == group[i]: continue
+        xij = x[i:j]
+        if dropna:
+            xij = xij[~np.isnan(xij)]
+        out[g] = len(np.unique(xij))
+        g += 1
+        i = j
+    return out
 
 def generic(name, function, dropna, default, nrequired=1):
     f = generic_numba(function)
@@ -91,7 +99,7 @@ def generic(name, function, dropna, default, nrequired=1):
 @functools.lru_cache(256)
 def generic_numba(function):
     import numba
-    @numba.njit
+    @numba.njit(cache=True)
     def aggregate(x, group, dropna, default, nrequired):
         dropna = dropna and np.isnan(x).any()
         out = np.repeat(default, len(np.unique(group)))
@@ -110,33 +118,42 @@ def generic_numba(function):
     return aggregate
 
 def mode(name, dropna):
-    f = generic_numba(mode1)
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
-        return f(
+        return mode_numba(
             data[name],
             data._group_,
             dropna=dropna,
-            default=data[name].missing_value,
-            nrequired=1)
+            default=data[name].missing_value)
     aggregate.numba = True
     return aggregate
 
-@numba.njit
-def mode1(x):
-    # Numba doesn't support all np.unique's arguments,
-    # so we can't do the usual below, but want to match it.
-    # > values, counts = np.unique(x, return_counts=True)
-    # > return values[counts.argmax()]
-    max_value = x[0]
-    max_count = 1
-    for i in range(1, len(x)):
-        count = np.nansum(x == x[i])
-        if count > max_count:
-            max_value = x[i]
-            max_count = count
-    return max_value
+@numba.njit(cache=True)
+def mode_numba(x, group, dropna, default):
+    dropna = dropna and np.isnan(x).any()
+    out = np.repeat(default, len(np.unique(group)))
+    g = i = 0
+    n = len(x)
+    for j in range(1, n + 1):
+        if j < n and group[j] == group[i]: continue
+        xij = x[i:j]
+        if dropna:
+            xij = xij[~np.isnan(xij)]
+        if len(xij) == 1:
+            out[g] = xij[0]
+        elif len(xij) > 1:
+            # Numba doesn't support all np.unique's arguments,
+            # so we can't do the usual below, but want to match it.
+            # > values, counts = np.unique(x, return_counts=True)
+            # > return values[counts.argmax()]
+            nij = np.repeat(1, len(xij))
+            for k in range(len(xij)):
+                nij[k] = np.nansum(xij == xij[k])
+            out[g] = xij[np.argmax(nij)]
+        g += 1
+        i = j
+    return out
 
 def nth(name, index):
     def aggregate(data):
@@ -150,7 +167,7 @@ def nth(name, index):
     aggregate.numba = True
     return aggregate
 
-@numba.njit
+@numba.njit(cache=True)
 def nth_numba(x, group, index, default):
     out = np.repeat(default, len(np.unique(group)))
     g = i = 0
@@ -177,7 +194,7 @@ def quantile(name, q, dropna):
     aggregate.numba = True
     return aggregate
 
-@numba.njit
+@numba.njit(cache=True)
 def quantile_numba(x, group, q, dropna):
     dropna = dropna and np.isnan(x).any()
     out = np.repeat(np.nan, len(np.unique(group)))
