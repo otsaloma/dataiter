@@ -186,7 +186,7 @@ class DataFrame(dict):
         scalar value.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
-        >>> data.group_by("hood").aggregate(n=di.nrow, price=lambda x: np.nanmean(x.price))
+        >>> data.group_by("hood").aggregate(n=di.count(), price=lambda x: np.nanmean(x.price))
         """
         group_colnames = self._group_colnames
         data = self.sort(**dict.fromkeys(group_colnames, 1))
