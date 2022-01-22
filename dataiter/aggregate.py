@@ -48,18 +48,6 @@ except Exception:
 # doesn't directly accept functions as arguments, but needs a wrapper instead.
 
 
-def count(dropna):
-    f = generic_numba(len)
-    def aggregate(data):
-        return f(
-            data._group_,
-            data._group_,
-            dropna=dropna,
-            default=0,
-            nrequired=0)
-    aggregate.numba = True
-    return aggregate
-
 def count_unique(name, dropna):
     def aggregate(data):
         if not use_numba(data[name]):
@@ -103,7 +91,6 @@ def generic(name, function, dropna, default, nrequired=1):
 
 @functools.lru_cache(256)
 def generic_numba(function):
-    import numba
     @numba.njit(cache=True)
     def aggregate(x, group, dropna, default, nrequired):
         dropna = dropna and np.isnan(x).any()
@@ -145,9 +132,7 @@ def mode_numba(x, group, dropna, default):
         xij = x[i:j]
         if dropna:
             xij = xij[~np.isnan(xij)]
-        if len(xij) == 1:
-            out[g] = xij[0]
-        elif len(xij) > 1:
+        if len(xij) > 0:
             # Numba doesn't support all np.unique's arguments,
             # so we can't do the usual below, but want to match it.
             # > values, counts = np.unique(x, return_counts=True)

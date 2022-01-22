@@ -57,7 +57,7 @@ PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
 
 
-def ensure_x_type(function):
+def _ensure_x_type(function):
     @functools.wraps(function)
     def wrapper(x, *args, **kwargs):
         if not isinstance(x, (Vector, str)):
@@ -67,13 +67,16 @@ def ensure_x_type(function):
         return function(x, *args, **kwargs)
     return wrapper
 
-@ensure_x_type
+@_ensure_x_type
 def all(x):
     """
     Return whether all elements of `x` evaluate to ``True``.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.all``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.all.html
 
     >>> di.all(di.Vector([True, False])
     >>> di.all(di.Vector([True, True])
@@ -91,13 +94,16 @@ def all(x):
         return True
     return np.all(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def any(x):
     """
     Return whether any element of `x` evaluates to ``True``.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.any``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.any.html
 
     >>> di.any(di.Vector([False, False])
     >>> di.any(di.Vector([True, False])
@@ -115,7 +121,7 @@ def any(x):
         return False
     return np.any(x).item()
 
-# @ensure_x_type skipped on purpose due to allowing calls with no x given.
+# x type check skipped on purpose due to allowing calls with no x given.
 def count(x="", dropna=False):
     """
     Return the amount of elements in `x`.
@@ -132,7 +138,7 @@ def count(x="", dropna=False):
                 return data.nrow
             return count(data[x], dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.count(dropna=dropna)
+            f = aggregate.generic(x or "_group_", len, dropna=dropna, default=0, nrequired=0)
             f.fallback = fallback
             return f
         return fallback
@@ -140,7 +146,7 @@ def count(x="", dropna=False):
         x = x[~np.isnan(x)]
     return len(x)
 
-@ensure_x_type
+@_ensure_x_type
 def count_unique(x, dropna=False):
     """
     Return the amount of unique elements in `x`.
@@ -163,7 +169,7 @@ def count_unique(x, dropna=False):
         x = x[~np.isnan(x)]
     return len(np.unique(x))
 
-@ensure_x_type
+@_ensure_x_type
 def first(x):
     """
     Return the first element of `x`.
@@ -176,7 +182,7 @@ def first(x):
     """
     return nth(x, 0)
 
-@ensure_x_type
+@_ensure_x_type
 def last(x):
     """
     Return the last element of `x`.
@@ -189,7 +195,7 @@ def last(x):
     """
     return nth(x, -1)
 
-@ensure_x_type
+@_ensure_x_type
 def max(x, dropna=True):
     """
     Return the maximum of `x`.
@@ -214,13 +220,16 @@ def max(x, dropna=True):
         return np.nan
     return np.amax(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def mean(x, dropna=True):
     """
     Return the arithmetic mean of `x`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.mean``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.mean.html
 
     >>> di.mean(di.Vector([1, 2, 10]))
     >>> di.mean("x")
@@ -239,13 +248,16 @@ def mean(x, dropna=True):
         return np.nan
     return np.mean(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def median(x, dropna=True):
     """
     Return the median of `x`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.median``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.median.html
 
     >>> di.median(di.Vector([5, 1, 2]))
     >>> di.median("x")
@@ -264,7 +276,7 @@ def median(x, dropna=True):
         return np.nan
     return np.median(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def min(x, dropna=True):
     """
     Return the minimum of `x`.
@@ -289,7 +301,7 @@ def min(x, dropna=True):
         return np.nan
     return np.amin(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def mode(x, dropna=True):
     """
     Return the most common value in `x`.
@@ -331,7 +343,7 @@ def nrow(data):
         nrow.warning_shown = True
     return data.nrow
 
-@ensure_x_type
+@_ensure_x_type
 def nth(x, index):
     """
     Return the element of `x` at `index`.
@@ -355,13 +367,16 @@ def nth(x, index):
     except IndexError:
         return x.missing_value
 
-@ensure_x_type
+@_ensure_x_type
 def quantile(x, q, dropna=True):
     """
     Return the `q`th quantile of `x`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.quantile``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
 
     >>> di.quantile(di.Vector([1, 5, 6]), 0.5)
     >>> di.quantile("x", 0.5)
@@ -380,16 +395,16 @@ def quantile(x, q, dropna=True):
         return np.nan
     return np.quantile(x, q).item()
 
-@ensure_x_type
+@_ensure_x_type
 def std(x, dropna=True):
     """
     Return the standard deviation of `x`.
 
-    Uses ``numpy.std``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.std.html
-
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.std``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.std.html
 
     >>> di.std(di.Vector([3, 6, 7]))
     >>> di.std("x")
@@ -408,7 +423,7 @@ def std(x, dropna=True):
         return np.nan
     return np.std(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def sum(x, dropna=True):
     """
     Return the sum of `x`.
@@ -423,26 +438,24 @@ def sum(x, dropna=True):
         def fallback(data):
             return sum(data[x], dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.sum, dropna=dropna, default=np.nan)
+            f = aggregate.generic(x, np.sum, dropna=dropna, default=0, nrequired=0)
             f.fallback = fallback
             return f
         return fallback
     if dropna:
         x = x[~np.isnan(x)]
-    if len(x) < 1:
-        return np.nan
     return np.sum(x).item()
 
-@ensure_x_type
+@_ensure_x_type
 def var(x, dropna=True):
     """
     Return the variance of `x`.
 
-    Uses ``numpy.var``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.var.html
-
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+
+    Uses ``numpy.var``, see the NumPy documentation for details:
+    https://numpy.org/doc/stable/reference/generated/numpy.var.html
 
     >>> di.var(di.Vector([3, 6, 7]))
     >>> di.var("x")

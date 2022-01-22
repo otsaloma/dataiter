@@ -89,6 +89,8 @@ class TestUtil:
             assert stat.a.equal(Vector([2, 2, 2, 2, 2]))
 
     def test_count_unique(self):
+        assert di.count_unique(Vector([])) == 0
+        assert di.count_unique(Vector([1])) == 1
         assert di.count_unique(Vector([1, 2])) == 2
         assert di.count_unique(Vector([1, 2, 2])) == 2
         assert di.count_unique(Vector([1, 2, 2, 3])) == 3
@@ -217,6 +219,9 @@ class TestUtil:
             assert stat.a.equal(Vector([0.5, 0.5, 0.5, NaN, NaN]))
 
     def test_sum(self):
+        assert di.sum(Vector([])) == 0
+        assert di.sum(Vector([1])) == 1
+        assert di.sum(Vector([1, 2])) == 3
         assert di.sum(Vector([1, 2, 3])) == 6
         assert np.isnan(di.sum(Vector([1, 2, NaN]), dropna=False))
 
@@ -225,7 +230,7 @@ class TestUtil:
         with patch("dataiter.USE_NUMBA", use_numba):
             data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
             stat = data.group_by("g").aggregate(a=di.sum("a"))
-            assert stat.a.equal(Vector([3, 7, 11, 7, np.nan]))
+            assert stat.a.equal(Vector([3, 7, 11, 7, 0]))
 
     def test_var(self):
         assert isclose(di.var(Vector([3, 6, 7])), 2.888889)
