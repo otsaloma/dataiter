@@ -183,10 +183,16 @@ class DataFrame(dict):
 
         In `colname_function_pairs`, `function` receives as an argument a data
         frame object, a group-wise subset of all rows. It should return a
-        scalar value.
+        scalar value. Common aggregation functions have shorthand helpers
+        available under :mod:`dataiter`, see the guide on :doc:`aggregation
+        </aggregation>` for details.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
-        >>> data.group_by("hood").aggregate(n=di.count(), price=lambda x: np.nanmean(x.price))
+        >>> # The below aggregations are identical. Usually you'll get by
+        >>> # with the shorthand helpers, but for complicated calculations,
+        >>> # you might need custom lambda functions.
+        >>> data.group_by("hood").aggregate(n=di.count(), price=di.mean("price"))
+        >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: np.nanmean(x.price))
         """
         group_colnames = self._group_colnames
         data = self.sort(**dict.fromkeys(group_colnames, 1))

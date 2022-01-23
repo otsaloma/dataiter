@@ -36,6 +36,7 @@ Currently included are the following classes.
 
    quick-start
    comparison
+   aggregation
 
 .. toctree::
    :maxdepth: 1
