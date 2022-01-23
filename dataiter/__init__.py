@@ -78,8 +78,8 @@ def all(x):
     Uses ``numpy.all``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.all.html
 
-    >>> di.all(di.Vector([True, False])
-    >>> di.all(di.Vector([True, True])
+    >>> di.all(di.Vector([True, False]))
+    >>> di.all(di.Vector([True, True]))
     >>> di.all("x")
     """
     if isinstance(x, str):
@@ -105,8 +105,8 @@ def any(x):
     Uses ``numpy.any``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.any.html
 
-    >>> di.any(di.Vector([False, False])
-    >>> di.any(di.Vector([True, False])
+    >>> di.any(di.Vector([False, False]))
+    >>> di.any(di.Vector([True, False]))
     >>> di.any("x")
     """
     if isinstance(x, str):
@@ -127,7 +127,10 @@ def count(x="", dropna=False):
     Return the amount of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`DataFrame.aggregate` that operates group-wise on column `x`. Since
+    all columns in a data frame should have the same amount of elements (i.e.
+    rows), you can just leave the x argument at its default blank string, which
+    will give you that row count.
 
     >>> di.count(di.Vector([1, 2, 3]))
     >>> di.count()
@@ -333,6 +336,8 @@ def nrow(data):
 
     This is a useful shorthand for `data.nrow` in contexts where you don't have
     direct access to the data frame in question, e.g. in group-by-aggregate
+
+    .. warning:: Deprecated, please use :func:`count` instead.
 
     >>> data = di.DataFrame.read_csv("data/listings.csv")
     >>> data.group_by("hood").aggregate(n=di.nrow)
