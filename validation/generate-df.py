@@ -23,8 +23,8 @@ def read_csv(path):
  .group_by("make", "model")
  .aggregate(
      n=di.count(),
-     cyl_min=lambda x: x.cyl.min(),
-     cyl_max=lambda x: x.cyl.max())
+     cyl_min=di.min("cyl"),
+     cyl_max=di.max("cyl"))
  .write_csv("aggregate.df.csv"))
 
 # ANTI JOIN
