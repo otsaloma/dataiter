@@ -1,3 +1,14 @@
+PENDING: dataiter 0.29
+======================
+
+* Add shorthand helper functions for use with `DataFrame.aggregate`,
+  optionally using Numba JIT-compiled code for speed
+    - https://dataiter.readthedocs.io/en/latest/aggregation.html
+    - https://dataiter.readthedocs.io/en/latest/data-frame.html#dataiter.DataFrame.aggregate
+    - https://dataiter.readthedocs.io/en/latest/dataiter.html
+* `dataiter.ncol`: Removed
+* `dataiter.nrow`: Deprecated in favor of `dataiter.count`
+
 2022-01-09: dataiter 0.28
 =========================
 
