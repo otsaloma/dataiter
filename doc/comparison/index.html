@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Compare basic data frame operations in dplyr vs. dataiter vs. pandas">
-    <title>Comparison Table of Basic Data Frame Operations in dplyr vs. dataiter vs. pandas</title>
+    <meta name="description" content="Compare basic data frame operations in dplyr vs. Dataiter vs. Pandas">
+    <title>Comparison Table of Basic Data Frame Operations in dplyr vs. Dataiter vs. Pandas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style type="text/tailwindcss">
       div.grid-row { @apply gap-x-5 gap-y-1 grid grid-cols-3 items-start max-w-7xl mx-auto my-1; }
@@ -31,14 +31,14 @@
   <body class="pb-48 pt-6 px-6">
 
     <div class="grid-row">
-      <h1 class="col-span-2">Comparison Table of Basic Data Frame Operations in dplyr vs. dataiter vs. pandas</h1>
+      <h1 class="col-span-2">Comparison Table of Basic Data Frame Operations in dplyr vs. Dataiter vs. Pandas</h1>
       <input type="search" id="search" placeholder="Search" autofocus>
     </div>
 
     <div class="grid-row">
       <h3>dplyr</h3>
-      <h3>dataiter</h3>
-      <h3>pandas</h3>
+      <h3>Dataiter</h3>
+      <h3>Pandas</h3>
     </div>
 
     <h2>Imports & Configuration</h2>
@@ -145,7 +145,7 @@
       <pre data-src="blocks/filter-dataiter.py"></pre>
       <pre data-src="blocks/filter-pandas.py"></pre>
       <p class="note"></p>
-      <p class="note">dataiter also has <code>filter_out</code> as a shorthand to negate the given
+      <p class="note">Dataiter also has <code>filter_out</code> as a shorthand to negate the given
         condition.</p>
       <p class="note"></p>
     </div>
@@ -184,11 +184,11 @@
     </div>
     <div class="grid-row-6" search-terms="join left inner full merge outer">
       <p class="col-start-2 col-span-4 note">
-        dplyr and pandas follow the SQL convention of joining all matching rows, i.e. if doing a
+        dplyr and Pandas follow the SQL convention of joining all matching rows, i.e. if doing a
         left join with ten rows on the left side, the result will have ten or more rows – ten if all
-        keys have zero or one match on the right side, twenty if all have two matches etc. dataiter
+        keys have zero or one match on the right side, twenty if all have two matches etc. Dataiter
         differs by only joining the first match, on account of it usually being more practical and
-        less liable to produce unpleasant surprises. If dataiter's <code>a.left_join(b)</code>
+        less liable to produce unpleasant surprises. If Dataiter's <code>a.left_join(b)</code>
         doesn't give you all the results you're looking for, you might want instead
         either <code>b.left_join(a)</code> or <code>a.full_join(b)</code>. SQL-style joins are
         currently unsupported, but may be added in the future.
@@ -207,14 +207,14 @@
       <pre data-src="blocks/aggregate-pandas.py"></pre>
     </div>
     <div class="grid-row-9" search-terms="group by aggregate groupby agg apply">
-      <p class="col-start-5 col-span-4 note">Both dataiter and pandas have two aggregation forms:
+      <p class="col-start-5 col-span-4 note">Both Dataiter and Pandas have two aggregation forms:
         one for fast aggregation limited to common operations with a single column and another for
-        arbitrary calculation with access to all columns. In dataiter, these forms are equivalent in
+        arbitrary calculation with access to all columns. In Dataiter, these forms are equivalent in
         the sense that e.g. <code>di.sum("sales")</code> returns a function that takes data as
         argument and calculates the mean of the "sales" column. Pandas' <code>agg</code> method
         arguments can take very many forms, the above is called "named aggregation". Likewise,
         the <code>apply</code> method can be used very many ways, the above is one way. The first
-        form is about equally fast in dataiter and pandas, the second form is a lot faster in
+        form is about equally fast in Dataiter and Pandas, the second form is a lot faster in
         dataiter.</p>
     </div>
 

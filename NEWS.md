@@ -1,4 +1,4 @@
-PENDING: dataiter 0.29
+PENDING: Dataiter 0.29
 ======================
 
 * Add shorthand helper functions for use with `DataFrame.aggregate`,
@@ -9,7 +9,7 @@ PENDING: dataiter 0.29
 * `dataiter.ncol`: Removed
 * `dataiter.nrow`: Deprecated in favor of `dataiter.count`
 
-2022-01-09: dataiter 0.28
+2022-01-09: Dataiter 0.28
 =========================
 
 * `DataFrame`: Make object columns work in various operations
@@ -25,7 +25,7 @@ PENDING: dataiter 0.29
 * `ListOfDicts.read_csv`: Add argument `types`, rename `columns` to `keys`
 * `ListOfDicts.read_json`: Add arguments `keys` and `types`
 
-2022-01-01: dataiter 0.27
+2022-01-01: Dataiter 0.27
 =========================
 
 * `DataFrame`: Fix error message when column not found
@@ -38,10 +38,10 @@ PENDING: dataiter 0.29
 * `Vector.rank`: Rewrite, add `method` argument
 * `*.read_*`: Rename `fname` argument `path`
 * `*.write_*`: Rename `fname` argument `path`
-* Add comparison table dplyr vs. dataiter vs. pandas to documentation:
+* Add comparison table dplyr vs. Dataiter vs. Pandas to documentation:
   <https://dataiter.readthedocs.io/en/latest/comparison.html>
 
-2021-12-02: dataiter 0.26
+2021-12-02: Dataiter 0.26
 =========================
 
 * `DataFrame.read_npz`: New method to read NumPy npz format
@@ -49,55 +49,55 @@ PENDING: dataiter 0.29
 * `*.read_*`: Decompress `.bz2|.gz|.xz` automatically
 * `*.write_*`: Compress `.bz2|.gz|.xz` automatically
 
-2021-11-13: dataiter 0.25
+2021-11-13: Dataiter 0.25
 =========================
 
 * `DataFrame.print_missing_counts`: Fix when nothing missing
 * `Vector.replace_missing`: New method
 
-2021-10-27: dataiter 0.24
+2021-10-27: Dataiter 0.24
 =========================
 
 * `DataFrame.print_memory_use`: New method
 * `ListOfDicts.write_csv`: Use less memory
 
-2021-07-08: dataiter 0.23
+2021-07-08: Dataiter 0.23
 =========================
 
 * `Vector.is_*`: Change to be methods instead of properties
 * Drop deprecated use of `np.int`
 * Drop deprecated comparisons against NaN
 
-2021-05-13: dataiter 0.22
+2021-05-13: Dataiter 0.22
 =========================
 
 * `ListOfDicts.map`: New method
 
-2021-03-08: dataiter 0.21
+2021-03-08: Dataiter 0.21
 =========================
 
 * `DataFrame.read_csv`: Add `columns` argument
 * `ListOfDicts.read_csv`: Add `columns` argument
 
-2021-03-06: dataiter 0.20
+2021-03-06: Dataiter 0.20
 =========================
 
 * `DataFrame.*_join`: Handle differing by names via tuple argument
 * `ListOfDicts.*_join`: Handle differing by names via tuple argument
 
-2021-03-04: dataiter 0.19
+2021-03-04: Dataiter 0.19
 =========================
 
 * Use terminal window width as maximum print width
 * `Vector.__init__`: Handle NaN values in non-float vectors
 
-2021-03-03: dataiter 0.18
+2021-03-03: Dataiter 0.18
 =========================
 
 * `Vector.__init__`: Accept generators/iterators
 * `Vector.map`: New method
 
-2021-02-27: dataiter 0.17
+2021-02-27: Dataiter 0.17
 =========================
 
 * `DataFrame.print_missing_counts`: New method
@@ -105,32 +105,32 @@ PENDING: dataiter 0.29
 * `ListOfDicts.print_missing_counts`: New method
 * `Vector.as_object`: New method
 
-2020-10-03: dataiter 0.16.1
+2020-10-03: Dataiter 0.16.1
 ===========================
 
 * `GeoJSON.read`: Use warnings, not errors for ignored excess feature keys
 
-2020-09-26: dataiter 0.16
+2020-09-26: Dataiter 0.16
 =========================
 
 * `GeoJSON`: New class
 
-2020-09-12: dataiter 0.15
+2020-09-12: Dataiter 0.15
 =========================
 
 * `ListOfDicts.sort`: Handle descending sort for all types
 
-2020-08-22: dataiter 0.14
+2020-08-22: Dataiter 0.14
 =========================
 
 * `ListOfDicts`: Make obsoletion a warning instead of an error
 
-2020-08-15: dataiter 0.13
+2020-08-15: Dataiter 0.13
 =========================
 
 * `DataFrame`: Fix error printing blank strings (#8)
 
-2020-07-25: dataiter 0.12
+2020-07-25: Dataiter 0.12
 =========================
 
 * `DataFrame.filter`: Add `colname_value_pairs` argument
@@ -139,17 +139,17 @@ PENDING: dataiter 0.29
 * `ListOfDicts.rename`: Preserve order of keys
 * Add documentation: https://dataiter.readthedocs.io/
 
-2020-06-02: dataiter 0.11
+2020-06-02: Dataiter 0.11
 =========================
 
 * `Vector.__init__`: Speed up by fixing type deduction
 
-2020-05-28: dataiter 0.10.1
+2020-05-28: Dataiter 0.10.1
 ===========================
 
 * `ListOfDicts.select`: Fix return value (#7)
 
-2020-05-21: dataiter 0.10
+2020-05-21: Dataiter 0.10
 =========================
 
 * `DataFrame.aggregate`: Fix `UnicodeEncodeError` with string columns
@@ -160,7 +160,7 @@ PENDING: dataiter 0.29
 * `Vector.to_string`: Add custom conversion to string for display
 * `Vector.to_strings`: Add custom conversion to string for display
 
-2020-05-11: dataiter 0.9
+2020-05-11: Dataiter 0.9
 ========================
 
 * `Array`: Rename to `Vector`
@@ -171,7 +171,7 @@ PENDING: dataiter 0.29
 * `Vector.tail`: New method
 * `Vector.unique`: New method
 
-2020-05-10: dataiter 0.8
+2020-05-10: Dataiter 0.8
 ========================
 
 * `DataFrame`: New class
@@ -209,17 +209,17 @@ PENDING: dataiter 0.29
 * `ListOfDicts.write_csv`: Add explicit arguments
 * `ListOfDicts.write_pickle`: New method
 
-2019-12-03: dataiter 0.7
+2019-12-03: Dataiter 0.7
 ========================
 
 * Make `sort` handle `None` values, sorted last
 
-2019-11-29: dataiter 0.6
+2019-11-29: Dataiter 0.6
 ========================
 
 * Fix `ObsoleteError` after multiple modifying actions
 
-2019-11-10: dataiter 0.5
+2019-11-10: Dataiter 0.5
 ========================
 
 * Add `read_csv`
@@ -227,27 +227,27 @@ PENDING: dataiter 0.29
 * Add `write_csv`
 * Add `write_json`
 
-2019-11-01: dataiter 0.4
+2019-11-01: Dataiter 0.4
 ========================
 
 * Fix `ObsoleteError` with `deepcopy`
 * Define `__deepcopy__` so that `copy.deepcopy` works too
 * Add `copy` (and `__copy__` for `copy.copy`)
 
-2019-11-01: dataiter 0.3
+2019-11-01: Dataiter 0.3
 ========================
 
 * Mark `ListOfDicts` object obsolete thus preventing (accidental) use if
   a chained successor has modified the shared dicts
 * Add `modify_if`
 
-2019-10-31: dataiter 0.2
+2019-10-31: Dataiter 0.2
 ========================
 
 * Speed up, mostly by avoiding copying (methods that modify dicts now do
   it in place rather than making a copy)
 
-2019-09-29: dataiter 0.1
+2019-09-29: Dataiter 0.1
 ========================
 
 * Initial release

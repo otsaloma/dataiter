@@ -5,13 +5,13 @@ Python Classes for Data Manipulation
 [![Documentation Status](https://readthedocs.org/projects/dataiter/badge/?version=latest)](https://dataiter.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/dataiter.svg)](https://pypi.org/project/dataiter/)
 
-dataiter currently includes the following classes.
+Dataiter currently includes the following classes.
 
 **`DataFrame`** is a class for tabular data similar to R's `data.frame`
 or `pandas.DataFrame`. It is under the hood a dictionary of NumPy arrays
 and thus capable of fast vectorized operations. You can consider this to
 be a light-weight alternative to Pandas with a simple and consistent
-API. Performance-wise dataiter relies on NumPy and Numba and is likely
+API. Performance-wise Dataiter relies on NumPy and Numba and is likely
 to be at best comparable to Pandas.
 
 **`ListOfDicts`** is a class useful for manipulating data from JSON
@@ -39,8 +39,8 @@ pip install -U git+https://github.com/otsaloma/dataiter#egg=dataiter
 pip install -U numba
 ```
 
-dataiter optionally uses **Numba** to speed up certain operations. If
-you have Numba installed and importing it succeeds, dataiter will use it
+Dataiter optionally uses **Numba** to speed up certain operations. If
+you have Numba installed and importing it succeeds, Dataiter will use it
 automatically. It's currently not a hard dependency, so you need to
 install it separately.
 

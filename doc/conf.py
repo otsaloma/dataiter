@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'dataiter'
+project = 'Dataiter'
 copyright = '2020–2022 Osmo Salomaa'
 author = 'Osmo Salomaa'
 

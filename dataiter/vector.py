@@ -345,9 +345,9 @@ class Vector(np.ndarray):
         """
         Return the corresponding value to use to represent missing data.
 
-        dataiter is built on top of NumPy. NumPy doesn't support a proper
+        Dataiter is built on top of NumPy. NumPy doesn't support a proper
         missing value ("NA"), only two data type specific values: ``np.nan``
-        and ``np.datetime64("NaT")``. dataiter recommends the following values
+        and ``np.datetime64("NaT")``. Dataiter recommends the following values
         be used and internally supports them to an extent.
 
         ======== ========================

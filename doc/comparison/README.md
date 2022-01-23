@@ -1,4 +1,4 @@
-Comparison Table dplyr vs. dataiter vs. pandas
+Comparison Table dplyr vs. Dataiter vs. Pandas
 ==============================================
 
 ## Development

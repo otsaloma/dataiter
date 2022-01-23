@@ -1,7 +1,7 @@
-dataiter Documentation
+Dataiter Documentation
 ======================
 
-dataiter is a Python package of classes for data manipulation. dataiter
+Dataiter is a Python package of classes for data manipulation. Dataiter
 is intended for practical data science and data engineering work with a
 focus on providing a simple and consistent API for common operations.
 Currently included are the following classes.
@@ -11,7 +11,7 @@ Currently included are the following classes.
    ``pandas.DataFrame``. It is under the hood a dictionary of NumPy
    arrays and thus capable of fast vectorized operations. You can
    consider this to be a light-weight alternative to Pandas with a
-   simple and consistent API. Performance-wise dataiter relies on NumPy
+   simple and consistent API. Performance-wise Dataiter relies on NumPy
    and Numba and is likely to be at best comparable to Pandas.
 
 :class:`dataiter.ListOfDicts`
@@ -28,7 +28,7 @@ Currently included are the following classes.
    by the data frame class. Geometry is read as-is into the "geometry"
    column, but no special geometric operations are currently supported.
 
-.. warning:: dataiter is still evolving and the API subject to change.
+.. warning:: Dataiter is still evolving and the API subject to change.
 
 .. toctree::
    :maxdepth: 1
