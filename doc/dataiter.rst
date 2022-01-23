@@ -1,4 +1,4 @@
-Dataiter
+dataiter
 ========
 
 The following functions are shorthand helpers for use in conjunction
