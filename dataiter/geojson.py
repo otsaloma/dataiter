@@ -90,11 +90,9 @@ class GeoJSON(DataFrame):
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
-
-        `kwargs` are passed to ``json.load``.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes. `kwargs` are
+        passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))

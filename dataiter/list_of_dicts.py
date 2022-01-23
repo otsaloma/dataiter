@@ -311,11 +311,8 @@ class ListOfDicts(list):
         """
         Return a new list of dicts from JSON `string`.
 
-        `keys` is an optional list of keys to limit to.
-
-        `types` is an optional dict mapping keys to datatypes.
-
-        `kwargs` are passed to ``json.load``.
+        `keys` is an optional list of keys to limit to. `types` is an optional
+        dict mapping keys to datatypes. `kwargs` are passed to ``json.load``.
         """
         data = json.loads(string, **kwargs)
         if not isinstance(data, list):
@@ -566,9 +563,8 @@ class ListOfDicts(list):
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `keys` is an optional list of keys to limit to.
-
-        `types` is an optional dict mapping keys to datatypes.
+        `keys` is an optional list of keys to limit to. `types` is an optional
+        dict mapping keys to datatypes.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep))
@@ -595,11 +591,8 @@ class ListOfDicts(list):
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `keys` is an optional list of keys to limit to.
-
-        `types` is an optional dict mapping keys to datatypes.
-
-        `kwargs` are passed to ``json.load``.
+        `keys` is an optional list of keys to limit to. `types` is an optional
+        dict mapping keys to datatypes. `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), keys, types, **kwargs)

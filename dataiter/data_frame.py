@@ -362,11 +362,9 @@ class DataFrame(dict):
         """
         Return a new data frame from JSON `string`.
 
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
-
-        `kwargs` are passed to ``json.load``.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes. `kwargs` are
+        passed to ``json.load``.
         """
         data = json.loads(string, **kwargs)
         if not isinstance(data, list):
@@ -658,9 +656,8 @@ class DataFrame(dict):
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes.
         """
         import pandas as pd
         data = pd.read_csv(path,
@@ -683,11 +680,9 @@ class DataFrame(dict):
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
-
-        `kwargs` are passed to ``json.load``.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes. `kwargs` are
+        passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), columns, dtypes, **kwargs)
@@ -697,8 +692,7 @@ class DataFrame(dict):
         """
         Return a new data frame from NumPy file `path`.
 
-        See `numpy.load` for an explanation of `allow_pickle`.
-
+        See `numpy.load` for an explanation of `allow_pickle`:
         https://numpy.org/doc/stable/reference/generated/numpy.load.html
         """
         with np.load(path, allow_pickle=allow_pickle) as data:
