@@ -462,7 +462,7 @@ class ListOfDicts(list):
         list of whatever `function` returns.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
-        >>> data.map(lambda x: {**x, "price_per_guest": x.price / x.guests})
+        >>> data.map(lambda x: (x.guests, x.price))
         """
         new = list(map(function, self))
         coerce = all(isinstance(x, dict) for x in new)

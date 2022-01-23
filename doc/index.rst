@@ -12,7 +12,7 @@ Currently included are the following classes.
    arrays and thus capable of fast vectorized operations. You can
    consider this to be a light-weight alternative to Pandas with a
    simple and consistent API. Performance-wise dataiter relies on NumPy
-   and is likely to be at best comparable to Pandas.
+   and Numba and is likely to be at best comparable to Pandas.
 
 :class:`dataiter.ListOfDicts`
    A class useful for manipulating data from JSON APIs. It provides
@@ -36,6 +36,7 @@ Currently included are the following classes.
 
    quick-start
    comparison
+   aggregation
 
 .. toctree::
    :maxdepth: 1

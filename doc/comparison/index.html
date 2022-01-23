@@ -9,6 +9,7 @@
     <style type="text/tailwindcss">
       div.grid-row { @apply gap-x-5 gap-y-1 grid grid-cols-3 items-start max-w-7xl mx-auto my-1; }
       div.grid-row-6 { @apply gap-x-5 gap-y-1 grid grid-cols-6 items-start max-w-7xl mx-auto my-1; }
+      div.grid-row-9 { @apply gap-x-5 gap-y-1 grid grid-cols-9 items-start max-w-7xl mx-auto my-1; }
       #search { @apply border-2 border-slate-300 font-mono mb-6 outline-0 px-4 py-2 rounded-lg w-full; }
       h1 { @apply font-bold leading-normal mb-6 text-3xl text-slate-900 tracking-wide; }
       h2 { @apply font-bold max-w-7xl mx-auto my-3 text-xl text-slate-900 tracking-wide; }
@@ -204,13 +205,17 @@
       <pre data-src="blocks/aggregate-dplyr.R"></pre>
       <pre data-src="blocks/aggregate-dataiter.py"></pre>
       <pre data-src="blocks/aggregate-pandas.py"></pre>
-      <p class="note"></p>
-      <p class="note"></p>
-      <p class="note"><code>agg</code> function arguments can take very many forms, the above is
-        called "named aggregation". <code>agg</code> only supports single-column calculation. To
-        access multiple columns, like in dplyr and dataiter, <code>apply</code> is needed instead.
-        Compared to dataiter's <code>aggregate</code>, <code>agg</code> is a lot
-        faster, <code>apply</code> a lot slower.</p>
+    </div>
+    <div class="grid-row-9" search-terms="group by aggregate groupby agg apply">
+      <p class="col-start-5 col-span-4 note">Both dataiter and pandas have two aggregation forms:
+        one for fast aggregation limited to common operations with a single column and another for
+        arbitrary calculation with access to all columns. In dataiter, these forms are equivalent in
+        the sense that e.g. <code>di.sum("sales")</code> returns a function that takes data as
+        argument and calculates the mean of the "sales" column. Pandas' <code>agg</code> method
+        arguments can take very many forms, the above is called "named aggregation". Likewise,
+        the <code>apply</code> method can be used very many ways, the above is one way. The first
+        form is about equally fast in dataiter and pandas, the second form is a lot faster in
+        dataiter.</p>
     </div>
 
     <script src="prism.js"></script>

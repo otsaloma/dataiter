@@ -27,6 +27,7 @@ import itertools
 import lzma
 import math
 import numpy as np
+import os
 import shutil
 import string
 
@@ -75,6 +76,21 @@ def pad(strings, align="right"):
         yield (padding + value
                if align == "right"
                else value + padding)
+
+def parse_env_boolean(name):
+    return {
+        "1":     True,
+        "t":     True,
+        "true":  True,
+        "y":     True,
+        "yes":   True,
+        "":      False,
+        "0":     False,
+        "f":     False,
+        "false": False,
+        "n":     False,
+        "no":    False,
+    }[os.environ[name].strip().lower()]
 
 def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))

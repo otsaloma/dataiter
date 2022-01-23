@@ -489,6 +489,11 @@ class Vector(np.ndarray):
         types = util.unique_types(seq)
         if dtype is not None:
             missing = Vector.fast([], dtype).missing_value
+        elif len(types) == 1 and types.copy().pop().__module__ == "numpy":
+            # If we have a regular Python list of NumPy scalars,
+            # infer type. This should be rare, but can happen.
+            dtype = types.copy().pop()().dtype
+            missing = Vector.fast([], dtype).missing_value
         else:
             # Guess the missing value based on types in seq.
             missing = cls._std_to_np_missing_value(types)

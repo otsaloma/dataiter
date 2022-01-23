@@ -8,14 +8,17 @@ import time
 
 from dataiter import test
 from statistics import mean
-from statistics import stdev
 
 
-def data_frame(path, nrow=1000000):
+def data_frame(path, nrow=1_000_000):
     data = test.data_frame(path)
     n = nrow // data.nrow
     data = data.rbind(*([data] * n))
     return data.head(nrow)
+
+def data_frame_random(nrows, ngroups):
+    return di.DataFrame(g=np.random.choice(ngroups, nrows, replace=True),
+                        a=np.random.normal(10, 2, nrows))
 
 def data_frame_full_join():
     data = data_frame("vehicles.csv")
@@ -33,10 +36,9 @@ def data_frame_group_by_aggregate_128():
     (data
      .group_by("make")
      .aggregate(
-         n=di.nrow,
-         hwy=lambda x: x.hwy.mean(),
-         cty=lambda x: x.cty.mean(),
-     ))
+         n=di.count(),
+         hwy=di.mean("hwy"),
+         cty=di.mean("cty")))
     return time.time() - start
 
 def data_frame_group_by_aggregate_3264():
@@ -45,10 +47,9 @@ def data_frame_group_by_aggregate_3264():
     (data
      .group_by("make", "model")
      .aggregate(
-         n=di.nrow,
-         hwy=lambda x: x.hwy.mean(),
-         cty=lambda x: x.cty.mean(),
-     ))
+         n=di.count(),
+         hwy=di.mean("hwy"),
+         cty=di.mean("cty")))
     return time.time() - start
 
 def data_frame_group_by_aggregate_14668():
@@ -57,24 +58,29 @@ def data_frame_group_by_aggregate_14668():
     (data
      .group_by("make", "model", "year")
      .aggregate(
-         n=di.nrow,
-         hwy=lambda x: x.hwy.mean(),
-         cty=lambda x: x.cty.mean(),
-     ))
+         n=di.count(),
+         hwy=di.mean("hwy"),
+         cty=di.mean("cty")))
     return time.time() - start
 
 def data_frame_group_by_aggregate_100000():
-    data = di.DataFrame(
-        a=np.random.choice(100000, 1000000, replace=True),
-        b=np.random.normal(10, 2, 1000000),
-    )
+    data = data_frame_random(1_000_000, 100_000)
     start = time.time()
     (data
-     .group_by("a")
+     .group_by("g")
      .aggregate(
-         b_mean=lambda x: np.mean(x.b),
-         b_std= lambda x: np.std(x.b),
-     ))
+         a_mean=di.mean("a"),
+         a_std=di.std("a")))
+    return time.time() - start
+
+def data_frame_group_by_aggregate_100000_lambda():
+    data = data_frame_random(1_000_000, 100_000)
+    start = time.time()
+    (data
+     .group_by("g")
+     .aggregate(
+         a_mean=lambda x: np.mean(x.a),
+         a_std=lambda x: np.std(x.a)))
     return time.time() - start
 
 def data_frame_left_join():
@@ -97,14 +103,14 @@ def data_frame_read_json():
 
 def data_frame_rbind_2():
     # 2 * 500,000 = 1,000,000
-    data = data_frame("vehicles.csv", 500000)
+    data = data_frame("vehicles.csv", 500_000)
     start = time.time()
     data.rbind(data)
     return time.time() - start
 
 def data_frame_rbind_100():
     # 100 * 10,000 = 1,000,000
-    data = data_frame("vehicles.csv", 10000)
+    data = data_frame("vehicles.csv", 10_000)
     start = time.time()
     data.rbind(*([data] * (100 - 1)))
     return time.time() - start
@@ -113,7 +119,7 @@ def data_frame_rbind_100000():
     # 100,000 * 10 = 1,000,000
     data = data_frame("vehicles.csv", 10)
     start = time.time()
-    data.rbind(*([data] * (100000 - 1)))
+    data.rbind(*([data] * (100_000 - 1)))
     return time.time() - start
 
 def data_frame_sort():
@@ -122,7 +128,7 @@ def data_frame_sort():
     data.sort(make=1, model=1, year=-1)
     return time.time() - start
 
-def list_of_dicts(path, length=100000):
+def list_of_dicts(path, length=100_000):
     data = test.list_of_dicts(path)
     n = length // len(data) + 1
     data = data * n
@@ -146,8 +152,7 @@ def list_of_dicts_group_by_aggregate_128():
      .aggregate(
          n=len,
          hwy=lambda x: mean(x.pluck("hwy")),
-         cty=lambda x: mean(x.pluck("cty")),
-     ))
+         cty=lambda x: mean(x.pluck("cty"))))
     return time.time() - start
 
 def list_of_dicts_group_by_aggregate_3264():
@@ -158,8 +163,7 @@ def list_of_dicts_group_by_aggregate_3264():
      .aggregate(
          n=len,
          hwy=lambda x: mean(x.pluck("hwy")),
-         cty=lambda x: mean(x.pluck("cty")),
-     ))
+         cty=lambda x: mean(x.pluck("cty"))))
     return time.time() - start
 
 def list_of_dicts_group_by_aggregate_14668():
@@ -170,22 +174,7 @@ def list_of_dicts_group_by_aggregate_14668():
      .aggregate(
          n=len,
          hwy=lambda x: mean(x.pluck("hwy")),
-         cty=lambda x: mean(x.pluck("cty")),
-     ))
-    return time.time() - start
-
-def list_of_dicts_group_by_aggregate_100000():
-    data = di.DataFrame(
-        a=np.random.choice(100000, 1000000, replace=True),
-        b=np.random.normal(10, 2, 1000000),
-    ).to_list_of_dicts()
-    start = time.time()
-    (data
-     .group_by("a")
-     .aggregate(
-         b_mean=lambda x: mean(x.pluck("b")),
-         b_std= lambda x: stdev(x.pluck("b")) if len(x) > 1 else None,
-     ))
+         cty=lambda x: mean(x.pluck("cty"))))
     return time.time() - start
 
 def list_of_dicts_left_join():
@@ -213,26 +202,26 @@ def list_of_dicts_sort():
     return time.time() - start
 
 def vector_fast_list():
-    seq = list(range(1000000))
+    seq = list(range(1_000_000))
     start = time.time()
     di.Vector.fast(seq, int)
     return time.time() - start
 
 def vector_fast_np():
-    seq = list(range(1000000))
+    seq = list(range(1_000_000))
     seq = np.array(seq)
     start = time.time()
     di.Vector.fast(seq, int)
     return time.time() - start
 
 def vector_new_list():
-    seq = list(range(1000000))
+    seq = list(range(1_000_000))
     start = time.time()
     di.Vector(seq)
     return time.time() - start
 
 def vector_new_np():
-    seq = list(range(1000000))
+    seq = list(range(1_000_000))
     seq = np.array(seq)
     start = time.time()
     di.Vector(seq)
@@ -241,9 +230,10 @@ def vector_new_np():
 
 BENCHMARKS = sorted([
     x for x in dir() if
-    x.startswith(("data_frame_", "list_of_dicts_", "vector_"))
+    x.startswith(("data_frame_", "list_of_dicts_", "vector_")) and
+    x not in ["data_frame_random"]
 ], key=lambda x: (
-    [int(x) if x.isdigit() else x for x in x.split("_")]
+    [x.zfill(9) if x.isdigit() else x for x in x.split("_")]
 ))
 
 @click.command()
@@ -261,7 +251,8 @@ def main(output, pattern):
         padding = "." * (width + 1 - len(benchmark))
         print(f"{i+1:2d}/{len(benchmarks)}. {benchmark} {padding} ", end="", flush=True)
         try:
-            elapsed = globals()[benchmark]() * 1000 # ms
+            f = globals()[benchmark]
+            elapsed = 1000 * min(f() for i in range(3))
             print("{:5.0f} ms".format(elapsed), flush=True)
         except Exception as e:
             elapsed = -1

@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import dataiter as di
 import numpy as np
 import tempfile
 
@@ -116,13 +117,12 @@ class TestDataFrame:
 
     def test_aggregate(self):
         data = test.data_frame("vehicles.csv")
-        # Avoid RuntimeWarning: All-NaN slice encountered.
         data = data.filter_out(data.cyl.is_missing())
         data = data.filter_out(data.displ.is_missing())
         stat = (data
                 .group_by("make", "model")
-                .aggregate(cyl=lambda x: np.median(x.cyl),
-                           displ=lambda x: np.mean(x.displ)))
+                .aggregate(cyl=di.median("cyl"),
+                           displ=di.mean("displ")))
 
         assert stat.nrow == 3240
         assert stat.ncol == 4

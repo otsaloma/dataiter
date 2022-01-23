@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import contextlib
 import dataiter
 import datetime
 import itertools
@@ -182,20 +183,41 @@ class DataFrame(dict):
 
         In `colname_function_pairs`, `function` receives as an argument a data
         frame object, a group-wise subset of all rows. It should return a
-        scalar value.
+        scalar value. Common aggregation functions have shorthand helpers
+        available under :mod:`dataiter`, see the guide on :doc:`aggregation
+        </aggregation>` for details.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
-        >>> data.group_by("hood").aggregate(n=di.nrow, price=lambda x: np.nanmean(x.price))
+        >>> # The below aggregations are identical. Usually you'll get by
+        >>> # with the shorthand helpers, but for complicated calculations,
+        >>> # you might need custom lambda functions.
+        >>> data.group_by("hood").aggregate(n=di.count(), price=di.mean("price"))
+        >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: np.nanmean(x.price))
         """
         group_colnames = self._group_colnames
         data = self.sort(**dict.fromkeys(group_colnames, 1))
         data._index_ = np.arange(data.nrow)
         stat = data.unique(*group_colnames).select("_index_", *group_colnames)
         indices = np.split(data._index_, stat._index_[1:])
-        slices = [data._view_rows(x) for x in indices]
+        uses_numba = [getattr(x, "numba", False) for x in colname_function_pairs.values()]
+        if any(uses_numba):
+            groups = Vector.fast(range(len(indices)), int)
+            n = Vector.fast(map(len, indices), int)
+            data._group_ = np.repeat(groups, n)
+        slices = None
         for colname, function in colname_function_pairs.items():
+            uses_numba = getattr(function, "numba", False)
+            if uses_numba:
+                # Numba-accelerated aggregation functions raise
+                # NotImplementedError if given an unsupported dtype.
+                with contextlib.suppress(NotImplementedError):
+                    stat[colname] = function(data)
+                    continue
+                function = function.fallback
+            if slices is None:
+                slices = [data._view_rows(x) for x in indices]
             stat[colname] = [function(x) for x in slices]
-        return stat.unselect("_index_")
+        return stat.unselect("_index_", "_group_")
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
