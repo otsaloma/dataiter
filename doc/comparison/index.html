@@ -211,9 +211,9 @@
         one for fast aggregation limited to common operations with a single column and another for
         arbitrary calculation with access to all columns. In dataiter, these forms are equivalent in
         the sense that e.g. <code>di.sum("sales")</code> returns a function that takes data as
-        argument and calculates the mean of the "sales" column. Pandas' <code>agg</code> function
+        argument and calculates the mean of the "sales" column. Pandas' <code>agg</code> method
         arguments can take very many forms, the above is called "named aggregation". Likewise,
-        the <code>apply</code> function can be used very many ways, the above is one way. The first
+        the <code>apply</code> method can be used very many ways, the above is one way. The first
         form is about equally fast in dataiter and pandas, the second form is a lot faster in
         dataiter.</p>
     </div>

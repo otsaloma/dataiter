@@ -201,7 +201,7 @@ def last(x):
 @_ensure_x_type
 def max(x, dropna=True):
     """
-    Return the maximum of `x`.
+    Return the maximum of elements in `x`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
@@ -282,7 +282,7 @@ def median(x, dropna=True):
 @_ensure_x_type
 def min(x, dropna=True):
     """
-    Return the minimum of `x`.
+    Return the minimum of elements in `x`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
@@ -375,7 +375,7 @@ def nth(x, index):
 @_ensure_x_type
 def quantile(x, q, dropna=True):
     """
-    Return the `q`th quantile of `x`.
+    Return the `qth` quantile of `x`.
 
     If `x` is a string, return a function usable with
     :meth:`DataFrame.aggregate` that operates group-wise on column `x`.

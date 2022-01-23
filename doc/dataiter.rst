@@ -1,9 +1,9 @@
 dataiter
 ========
 
-The below ``dataiter.*`` functions are shorthand helpers for use in
-conjunction with :meth:`dataiter.DataFrame.aggregate`, see the guide on
-:doc:`aggregation </aggregation>` for details.
+The following functions are shorthand helpers for use in conjunction
+with :meth:`DataFrame.aggregate`, see the guide on :doc:`aggregation
+</aggregation>` for details.
 
 :func:`~dataiter.all`
 :func:`~dataiter.any`
