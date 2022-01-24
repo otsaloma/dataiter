@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import dataiter as di
+import inspect
 import numpy as np
 import pytest
 import unittest.mock
@@ -206,6 +207,26 @@ class TestUtil:
             data = self.get_data([1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN])
             stat = data.group_by("g").aggregate(a=di.quantile("a", 0.5))
             assert stat.a.equal(Vector([1.5, 3.5, 5.5, 7, NaN]))
+
+    def test_read_csv(self):
+        s1 = inspect.signature(di.read_csv)
+        s2 = inspect.signature(di.DataFrame.read_csv)
+        assert s1 == s2
+
+    def test_read_geojson(self):
+        s1 = inspect.signature(di.read_geojson)
+        s2 = inspect.signature(di.GeoJSON.read)
+        assert s1 == s2
+
+    def test_read_json(self):
+        s1 = inspect.signature(di.read_json)
+        s2 = inspect.signature(di.ListOfDicts.read_json)
+        assert s1 == s2
+
+    def test_read_npz(self):
+        s1 = inspect.signature(di.read_npz)
+        s2 = inspect.signature(di.DataFrame.read_npz)
+        assert s1 == s2
 
     def test_std(self):
         assert isclose(di.std(Vector([3, 6, 7])), 1.699673)

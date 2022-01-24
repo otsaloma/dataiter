@@ -8,6 +8,10 @@ PENDING: Dataiter 0.29
     - https://dataiter.readthedocs.io/en/latest/dataiter.html
 * `dataiter.ncol`: Removed
 * `dataiter.nrow`: Deprecated in favor of `dataiter.count`
+* `dataiter.read_csv`: New alias for `DataFrame.read_csv`
+* `dataiter.read_geojson`: New alias for `GeoJSON.read`
+* `dataiter.read_json`: New alias for `ListOfDicts.read_json`
+* `dataiter.read_npz`: New alias for `DataFrame.read_npz`
 
 2022-01-09: Dataiter 0.28
 =========================
