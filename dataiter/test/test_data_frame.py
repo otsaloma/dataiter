@@ -266,6 +266,12 @@ class TestDataFrame:
         assert np.sum(~data.holiday.is_missing()) == 35
         assert np.sum(data.downloads) == 541335745
 
+    def test_map_rows(self):
+        data = test.data_frame("vehicles.csv")
+        x = data.map_rows(lambda x, i: x.hwy[i]**2)
+        y = [x**2 for x in data.hwy]
+        assert x == y
+
     def test_modify(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.modify(test=1)

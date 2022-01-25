@@ -6,6 +6,7 @@ PENDING: Dataiter 0.29
     - https://dataiter.readthedocs.io/en/latest/aggregation.html
     - https://dataiter.readthedocs.io/en/latest/data-frame.html#dataiter.DataFrame.aggregate
     - https://dataiter.readthedocs.io/en/latest/dataiter.html
+* `DataFrame.map_rows`: New method
 * `dataiter.ncol`: Removed
 * `dataiter.nrow`: Deprecated in favor of `dataiter.count`
 * `dataiter.read_csv`: New alias for `DataFrame.read_csv`

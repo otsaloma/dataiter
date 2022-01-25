@@ -504,6 +504,23 @@ class DataFrame(dict):
             new[found] = column[src[found]]
             yield colname, new.copy()
 
+    def map_rows(self, function):
+        """
+        Apply `function` to each row in data.
+
+        `function` receives as arguments the full data frame and the loop
+        index. The return value will be a list of whatever `function` returns.
+
+        Note that `map_rows` is an inefficient method as it iterates over rows
+        instead of doing vectorized computation. `map_rows` is mostly intended
+        for complicated conditional cases that are difficult to express in
+        vectorized form.
+
+        >>> data = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data.map_rows(lambda x, i: x.rating[i]**min(1, x.review[i]/100))
+        """
+        return [function(self, i) for i in range(self.nrow)]
+
     @deco.new_from_generator
     def modify(self, **colname_value_pairs):
         """
