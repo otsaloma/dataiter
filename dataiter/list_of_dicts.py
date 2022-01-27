@@ -719,7 +719,7 @@ class ListOfDicts(list):
 
     def to_data_frame(self):
         """
-        Return list converted to a :class:`dataiter.DataFrame`.
+        Return list converted to a :class:`.DataFrame`.
 
         >>> data = di.ListOfDicts.read_json("data/listings.json")
         >>> data.to_data_frame()

@@ -35,7 +35,7 @@ class GeoJSON(DataFrame):
     A class for GeoJSON data.
 
     GeoJSON is a simple wrapper class that reads GeoJSON features into a
-    :class:`dataiter.DataFrame`. Any operations on the data are thus done with
+    :class:`.DataFrame`. Any operations on the data are thus done with
     methods provided by the data frame class. Geometry is available in the
     "geometry" column, but no special geometric operations are supported.
 

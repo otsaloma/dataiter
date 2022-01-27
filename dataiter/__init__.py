@@ -73,7 +73,7 @@ def all(x):
     Return whether all elements of `x` evaluate to ``True``.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.all``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.all.html
@@ -100,7 +100,7 @@ def any(x):
     Return whether any element of `x` evaluates to ``True``.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.any``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.any.html
@@ -127,7 +127,7 @@ def count(x="", dropna=False):
     Return the amount of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`. Since
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`. Since
     all columns in a data frame should have the same amount of elements (i.e.
     rows), you can just leave the x argument at its default blank string, which
     will give you that row count.
@@ -155,7 +155,7 @@ def count_unique(x, dropna=False):
     Return the amount of unique elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.count_unique(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.count_unique("x")
@@ -178,7 +178,7 @@ def first(x):
     Return the first element of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.first(di.Vector([1, 2, 3]))
     >>> di.first("x")
@@ -191,7 +191,7 @@ def last(x):
     Return the last element of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.last(di.Vector([1, 2, 3]))
     >>> di.last("x")
@@ -204,7 +204,7 @@ def max(x, dropna=True):
     Return the maximum of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.max(di.Vector([4, 5, 6]))
     >>> di.max("x")
@@ -229,7 +229,7 @@ def mean(x, dropna=True):
     Return the arithmetic mean of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.mean``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.mean.html
@@ -257,7 +257,7 @@ def median(x, dropna=True):
     Return the median of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.median``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.median.html
@@ -285,7 +285,7 @@ def min(x, dropna=True):
     Return the minimum of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.min(di.Vector([4, 5, 6]))
     >>> di.min("x")
@@ -310,7 +310,7 @@ def mode(x, dropna=True):
     Return the most common value in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.mode("x")
@@ -354,7 +354,7 @@ def nth(x, index):
     Return the element of `x` at `index`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.nth(di.Vector([1, 2, 3]), 1)
     >>> di.nth("x", 1)
@@ -378,7 +378,7 @@ def quantile(x, q, dropna=True):
     Return the `qth` quantile of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.quantile``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
@@ -436,7 +436,7 @@ def std(x, dropna=True):
     Return the standard deviation of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.std``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.std.html
@@ -464,7 +464,7 @@ def sum(x, dropna=True):
     Return the sum of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
@@ -487,7 +487,7 @@ def var(x, dropna=True):
     Return the variance of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
     Uses ``numpy.var``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.var.html

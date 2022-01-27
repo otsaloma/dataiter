@@ -2,7 +2,7 @@ dataiter
 ========
 
 The following functions are shorthand helpers for use in conjunction
-with :meth:`DataFrame.aggregate`, see the guide on :doc:`aggregation
+with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
 </aggregation>` for details.
 
 :func:`~dataiter.all`
@@ -25,8 +25,8 @@ with :meth:`DataFrame.aggregate`, see the guide on :doc:`aggregation
 
 The following read functions are convenience aliases to the correspoding
 methods of the classes most suitable for the particular file type, i.e.
-:class:`DataFrame` for CSV and NPZ, :class:`GeoJSON` for GeoJSON and
-:class:`ListOfDicts` for JSON.
+:class:`.DataFrame` for CSV and NPZ, :class:`.GeoJSON` for GeoJSON and
+:class:`.ListOfDicts` for JSON.
 
 :func:`~dataiter.read_csv`
 :func:`~dataiter.read_geojson`

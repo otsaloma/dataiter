@@ -38,7 +38,7 @@ class DataFrameColumn(Vector):
     """
     A column in a data frame.
 
-    DataFrameColumn is a subclass of :class:`Vector`. See the vector
+    DataFrameColumn is a subclass of :class:`.Vector`. See the vector
     documentation for relevant properties and methods.
     """
 
@@ -95,7 +95,7 @@ class DataFrame(dict):
     A class for tabular data.
 
     DataFrame is a subclass of ``dict``, with columns being
-    :class:`DataFrameColumn`, which are :class:`Vector`, which are NumPy
+    :class:`.DataFrameColumn`, which are :class:`.Vector`, which are NumPy
     ``ndarray``. This means that basic ``dict`` methods, such as ``items()``,
     ``keys()`` and ``values()`` can be used iterate over and manage the data as
     a whole and NumPy functions and array methods can be used for fast
@@ -865,7 +865,7 @@ class DataFrame(dict):
 
     def to_list_of_dicts(self):
         """
-        Return data frame converted to a :class:`dataiter.ListOfDicts`.
+        Return data frame converted to a :class:`.ListOfDicts`.
 
         >>> data = di.DataFrame.read_csv("data/listings.csv")
         >>> data.to_list_of_dicts()
