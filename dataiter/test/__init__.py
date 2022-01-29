@@ -20,18 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import functools
+
 from dataiter import DataFrame
 from dataiter import GeoJSON
 from dataiter import ListOfDicts
 from pathlib import Path
 
 
+def cached(function):
+    cache = {}
+    @functools.wraps(function)
+    def wrapper(path):
+        if path not in cache:
+            cache[path] = function(path)
+        return cache[path].deepcopy()
+    return wrapper
+
+@cached
 def data_frame(path):
     path = get_data_path(path)
     extension = path.suffix.lstrip(".")
     read = getattr(DataFrame, f"read_{extension}")
     return read(path)
 
+@cached
 def geojson(path):
     path = get_data_path(path)
     return GeoJSON.read(path)
@@ -40,6 +53,7 @@ def get_data_path(path):
     root = Path(__file__).parent.parent.parent.resolve()
     return root / "data" / str(path)
 
+@cached
 def list_of_dicts(path):
     path = get_data_path(path)
     extension = path.suffix.lstrip(".")
