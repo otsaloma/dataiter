@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.29
-======================
+2022-01-29: Dataiter 0.29
+=========================
 
 * Add shorthand helper functions for use with `DataFrame.aggregate`,
   optionally using Numba JIT-compiled code for speed

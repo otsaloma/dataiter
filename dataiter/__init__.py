@@ -43,7 +43,7 @@ except Exception:
 with contextlib.suppress(LookupError):
     USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
 
-__version__ = "0.28"
+__version__ = "0.29"
 
 DEFAULT_PEEK_ELEMENTS = 10
 DEFAULT_PEEK_ITEMS = 3
