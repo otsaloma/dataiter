@@ -517,7 +517,7 @@ class DataFrame(dict):
         vectorized form.
 
         >>> data = di.read_csv("data/listings-reviews.csv")
-        >>> data.map(lambda x, i: x.rating[i]**min(1, x.review[i]/100))
+        >>> data.map(lambda x, i: min(1, x.reviews[i]/100) * min(1, x.rating[i]/100))
         """
         return [function(self, i) for i in range(self.nrow)]
 

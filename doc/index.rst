@@ -28,7 +28,8 @@ Currently included are the following classes.
    data frame class. Geometry is read as-is into the "geometry" column,
    but no special geometric operations are currently supported.
 
-.. warning:: Dataiter is still evolving and the API subject to change.
+.. warning:: Dataiter is still evolving and the API is subject to
+             breaking changes.
 
 .. toctree::
    :maxdepth: 1

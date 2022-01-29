@@ -24,9 +24,9 @@ with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
 :func:`~dataiter.var`
 
 The following read functions are convenience aliases to the correspoding
-methods of the classes most suitable for the particular file type, i.e.
-:class:`.DataFrame` for CSV and NPZ, :class:`.GeoJSON` for GeoJSON and
-:class:`.ListOfDicts` for JSON.
+methods of the classes generally most suitable for the particular file
+type, i.e. :class:`.DataFrame` for CSV and NPZ, :class:`.GeoJSON` for
+GeoJSON and :class:`.ListOfDicts` for JSON.
 
 :func:`~dataiter.read_csv`
 :func:`~dataiter.read_geojson`

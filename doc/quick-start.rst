@@ -5,7 +5,7 @@ DataFrame
 ---------
 
 >>> import dataiter as di
->>> data = di.DataFrame.read_csv("data/listings.csv")
+>>> data = di.read_csv("data/listings.csv")
 >>> data.price_per_guest = data.price / data.guests
 >>> data.head()
 .
@@ -44,7 +44,7 @@ GeoJSON
 -------
 
 >>> import dataiter as di
->>> data = di.GeoJSON.read("data/neighbourhoods.geojson")
+>>> data = di.read_geojson("data/neighbourhoods.geojson")
 >>> data.head()
 .
      neighbourhood neighbourhood_group       geometry
@@ -66,7 +66,7 @@ ListOfDicts
 -----------
 
 >>> import dataiter as di
->>> data = di.ListOfDicts.read_json("data/listings.json")
+>>> data = di.read_json("data/listings.json")
 >>> data = data.modify(price_per_guest=lambda x: x.price / x.guests)
 >>> data.head()
 [

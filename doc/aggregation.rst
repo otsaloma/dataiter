@@ -17,10 +17,10 @@ price of AirBnb listings in New York grouped by neighbourhood. The
 ``aggregate`` method takes keyword arguments of the function to be used
 to calculate the summary and the name of the column for that summary in
 the output. The return value is a regular data frame. See the following
-sections for what kinds of functions you can use.
+sections for what kinds of aggregation functions you can use.
 
 >>> import dataiter as di
->>> data = di.DataFrame.read_csv("data/listings.csv")
+>>> data = di.read_csv("data/listings.csv")
 >>> data.group_by("hood").aggregate(n=di.count(), price=di.mean("price"))
 .
            hood     n   price
@@ -54,7 +54,6 @@ listed below.
 * :func:`~dataiter.median`
 * :func:`~dataiter.min`
 * :func:`~dataiter.mode`
-* :func:`~dataiter.nrow`
 * :func:`~dataiter.nth`
 * :func:`~dataiter.quantile`
 * :func:`~dataiter.std`
@@ -62,9 +61,9 @@ listed below.
 * :func:`~dataiter.var`
 
 These common aggregation functions are provided for two reasons: (1)
-they provide shorter, more convenient syntax than using lambda functions
-and (2) they allow a huge conditional speed up under the hood. The
-relevant caveat here is that they work only for single column
+they provide shorter, more convenient syntax than typing out lambda
+functions and (2) they allow a huge conditional speed up under the hood.
+The relevant caveat here is that they work only for single column
 calculations. If you need to use multiple columns, such as for
 calculating a weighted mean, see the next section on using arbitrary
 lambda functions. And see the last section on when and how you can
@@ -73,20 +72,21 @@ benefit from the huge speed ups that these functions provide.
 Arbitrary Aggregation
 ---------------------
 
-If you need to access multiple columns in aggregation or calculate some
-more esoteric summaries than what you can accomplish with the above,
-then you'll need to use custom lambda functions. These functions should
-take a data frame as an argument and return a scalar value. The
-``aggregate`` method will then apply your lambda functions group-wise.
+If you need to access multiple columns in aggregation or you need to
+calculate some more esoteric summaries than what you can accomplish with
+the above, then you'll need to use custom lambda functions. These
+functions should take a data frame as an argument and return a scalar
+value. The ``aggregate`` method will then apply your lambda functions
+group-wise.
 
 Repeating the example up top, below is how you'd do the same with lambda
-functions. Notice that the code needed is a bit verbose and if you try
-this with a data frame that has a large amount of groups (around 100,000
-or more), you'll notice that it gets a bit slow, but for more common
-sizes of input, it should be well usable.
+functions. Notice that the code needed is a bit more verbose and if you
+try this with a data frame that has a large amount of groups (around
+100,000 or more), you'll notice that it gets a bit slow, but for more
+common sizes of input, it should be well usable.
 
 >>> import dataiter as di
->>> data = di.DataFrame.read_csv("data/listings.csv")
+>>> data = di.read_csv("data/listings.csv")
 >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
 .
            hood     n   price
@@ -105,8 +105,12 @@ The common aggregation functions listed above are implemented in
 Dataiter as both pure Python code (slow) and JIT-compiled `Numba
 <https://numba.pydata.org/>`_ code (fast). If you have Numba installed
 and importing it succeeds, then Dataiter will **automatically** use it
-for aggregation involving boolean, integer, float, date and datetime
-columns. Support for string columns might be added later.
+for aggregation involving **boolean**, **integer**, **float**, **date**
+and **datetime** columns. Support for string columns might be added
+later. If Numba is not available, Dataiter will automatically fall back
+on the slower pure Python implementations. The result should be the
+same, whether Numba is used or not, excluding some minor rounding or
+float precision differences.
 
 Numba is currently not a hard dependency of Dataiter, so you'll need to
 install it separately::
@@ -119,9 +123,9 @@ might take a couple seconds. The compiled code is saved in `cache
 <https://numba.pydata.org/numba-doc/latest/developer/caching.html>`_.
 After that, using the function from cache will be really fast. In case
 you're benchmarking something, note also that on the first use of such a
-function in a Python session, the compiled code is loaded from cache,
-which takes something like 10–100 ms and further calls will be faster as
-there's no more need to load anything from disk.
+function in a Python session, the compiled code is loaded from cache on
+disk, which takes something like 10–100 ms and further calls will be
+faster as there's no more need to load anything.
 
 .. note:: If you have trouble with Numba, please check the value of
           ``di.USE_NUMBA`` to see if Numba has been found. You can also
