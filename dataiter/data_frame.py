@@ -187,7 +187,7 @@ class DataFrame(dict):
         available under :mod:`dataiter`, see the guide on :doc:`aggregation
         </aggregation>` for details.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> # The below aggregations are identical. Usually you'll get by
         >>> # with the shorthand helpers, but for complicated calculations,
         >>> # you might need custom lambda functions.
@@ -229,8 +229,8 @@ class DataFrame(dict):
         `other`.
 
         >>> # All listings that don't have reviews
-        >>> listings = di.DataFrame.read_csv("data/listings.csv")
-        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> listings = di.read_csv("data/listings.csv")
+        >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -244,7 +244,7 @@ class DataFrame(dict):
         """
         Return data frame with columns from `others` added.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.cbind(di.DataFrame(x=1))
         """
         found_colnames = set()
@@ -267,7 +267,7 @@ class DataFrame(dict):
         """
         Get or set column names as a list.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.head()
         >>> data.colnames
         >>> data.colnames = ["a", "b", "c", "d", "e", "f"]
@@ -312,7 +312,7 @@ class DataFrame(dict):
         `colname_value_pairs` provides a shorthand to check against a fixed
         value. See the example below of equivalent filtering all three ways.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
         >>> data.filter(lambda x: (x.hood == "Manhattan") & (x.guests == 2))
         >>> data.filter(hood="Manhattan", guests=2)
@@ -341,7 +341,7 @@ class DataFrame(dict):
         `colname_value_pairs` provides a shorthand to check against a fixed
         value. See the example below of equivalent filtering all three ways.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.filter_out(data.hood == "Manhattan")
         >>> data.filter_out(lambda x: x.hood == "Manhattan")
         >>> data.filter_out(hood="Manhattan")
@@ -403,8 +403,8 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
-        >>> listings = di.DataFrame.read_csv("data/listings.csv")
-        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> listings = di.read_csv("data/listings.csv")
+        >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.full_join(reviews, "id")
         """
         a = self.modify(_aid_=np.arange(self.nrow))
@@ -438,7 +438,7 @@ class DataFrame(dict):
         """
         Return the first `n` rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.head(5)
         """
         if n is None:
@@ -459,8 +459,8 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
-        >>> listings = di.DataFrame.read_csv("data/listings.csv")
-        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> listings = di.read_csv("data/listings.csv")
+        >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -486,8 +486,8 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
-        >>> listings = di.DataFrame.read_csv("data/listings.csv")
-        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> listings = di.read_csv("data/listings.csv")
+        >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -516,7 +516,7 @@ class DataFrame(dict):
         complicated conditional cases that are difficult to express in
         vectorized form.
 
-        >>> data = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> data = di.read_csv("data/listings-reviews.csv")
         >>> data.map(lambda x, i: x.rating[i]**min(1, x.review[i]/100))
         """
         return [function(self, i) for i in range(self.nrow)]
@@ -535,7 +535,7 @@ class DataFrame(dict):
         data.guests``. `modify` just allows you to do the same in a method
         chain context.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.modify(price_per_guest=data.price/data.guests)
         >>> data.modify(price_per_guest=lambda x: x.price / x.guests)
         """
@@ -550,7 +550,7 @@ class DataFrame(dict):
         """
         Return the amount of columns.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.ncol
         """
         self._check_dimensions()
@@ -564,7 +564,7 @@ class DataFrame(dict):
         """
         Return the amount of rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.nrow
         """
         if not self: return 0
@@ -597,7 +597,7 @@ class DataFrame(dict):
         but since it's a method, you can use it at the end of a method chain
         instead of wrapping a ``print`` call around the whole chain.
 
-        >>> di.DataFrame.read_csv("data/listings.csv").print_()
+        >>> di.read_csv("data/listings.csv").print_()
         """
         print(self.to_string(max_rows, max_width))
 
@@ -605,7 +605,7 @@ class DataFrame(dict):
         """
         Print memory use by column and total.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.print_memory_use()
         """
         mem = DataFrame()
@@ -630,7 +630,7 @@ class DataFrame(dict):
         """
         Print counts of missing values by column.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.print_missing_counts()
         """
         nas = DataFrame()
@@ -648,7 +648,7 @@ class DataFrame(dict):
         """
         Return data frame with rows from `others` added.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.rbind(data)
         """
         data_frames = [self] + list(others)
@@ -737,7 +737,7 @@ class DataFrame(dict):
         """
         Return data frame with columns renamed.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.rename(listing_id="id")
         """
         from_to_pairs = {v: k for k, v in to_from_pairs.items()}
@@ -749,7 +749,7 @@ class DataFrame(dict):
         """
         Return randomly chosen `n` rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.sample(5)
         """
         if n is None:
@@ -763,7 +763,7 @@ class DataFrame(dict):
         """
         Return data frame, keeping only `colnames`.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.select("id", "hood", "zipcode")
         """
         for colname in colnames:
@@ -779,8 +779,8 @@ class DataFrame(dict):
         `other`.
 
         >>> # All listings that have reviews
-        >>> listings = di.DataFrame.read_csv("data/listings.csv")
-        >>> reviews = di.DataFrame.read_csv("data/listings-reviews.csv")
+        >>> listings = di.read_csv("data/listings.csv")
+        >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.semi_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -797,7 +797,7 @@ class DataFrame(dict):
         Both `rows` and `cols` should be integer vectors correspoding to the
         indices of the rows or columns to keep.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.slice(rows=[0, 1, 2])
         >>> data.slice(cols=[0, 1, 2])
         >>> data.slice(rows=[0, 1, 2], cols=[0, 1, 2])
@@ -817,7 +817,7 @@ class DataFrame(dict):
         `colname_dir_pairs` defines the sort order by column name with `dir`
         being ``1`` for ascending sort, ``-1`` for descending.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.sort(hood=1, zipcode=1)
         """
         @deco.tuplefy
@@ -844,7 +844,7 @@ class DataFrame(dict):
         """
         Return the last `n` rows.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.tail(5)
         """
         if n is None:
@@ -858,7 +858,7 @@ class DataFrame(dict):
 
         `kwargs` are passed to ``json.dump``.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.to_json()[:100]
         """
         return self.to_list_of_dicts().to_json(**kwargs)
@@ -867,7 +867,7 @@ class DataFrame(dict):
         """
         Return data frame converted to a :class:`.ListOfDicts`.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.to_list_of_dicts()
         """
         from dataiter import ListOfDicts
@@ -881,7 +881,7 @@ class DataFrame(dict):
         """
         Return data frame converted to a ``pandas.DataFrame``.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.to_pandas()
         """
         import pandas as pd
@@ -891,7 +891,7 @@ class DataFrame(dict):
         """
         Return data frame as a string formatted for display.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.to_string()
         """
         if not self: return ""
@@ -933,7 +933,7 @@ class DataFrame(dict):
         """
         Return unique rows by `colnames`.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.unique("hood")
         """
         colnames = colnames or self.colnames
@@ -957,7 +957,7 @@ class DataFrame(dict):
         """
         Return data frame, dropping `colnames`.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.unselect("guests", "sqft", "price")
         """
         for colname in self.colnames:
@@ -969,7 +969,7 @@ class DataFrame(dict):
         """
         Return data frame with columns from `other` added.
 
-        >>> data = di.DataFrame.read_csv("data/listings.csv")
+        >>> data = di.read_csv("data/listings.csv")
         >>> data.update(di.DataFrame(x=1))
         """
         for colname, column in self.items():

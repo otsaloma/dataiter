@@ -7,7 +7,7 @@ import dataiter as di
 import numpy as np
 
 def read_csv(path):
-    data = di.DataFrame.read_csv(path)
+    data = di.read_csv(path)
     for name in data.colnames:
         # Drop all rows with NAs to avoid upcasting to float
         # and differing NA representation in output.

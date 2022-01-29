@@ -339,7 +339,7 @@ def nrow(data):
 
     .. warning:: Deprecated, please use :func:`count` instead.
 
-    >>> data = di.DataFrame.read_csv("data/listings.csv")
+    >>> data = di.read_csv("data/listings.csv")
     >>> data.group_by("hood").aggregate(n=di.nrow)
     """
     if not getattr(nrow, "warning_shown", False):

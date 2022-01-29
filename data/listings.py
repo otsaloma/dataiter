@@ -9,7 +9,7 @@ def parse_price(price):
     return int(float(price.lstrip("$").replace(",", "")))
 
 data = (
-    di.DataFrame.read_csv("orig/listings.csv")
+    di.read_csv("orig/listings.csv")
     .select("id",
             "neighbourhood_group_cleansed",
             "zipcode",
@@ -27,7 +27,7 @@ data.write_csv("listings.csv")
 data.write_json("listings.json")
 
 data = (
-    di.DataFrame.read_csv("orig/listings.csv")
+    di.read_csv("orig/listings.csv")
     .select("id",
             "number_of_reviews",
             "review_scores_rating")

@@ -146,7 +146,7 @@ class ListOfDicts(list):
         of value, it will end up as-is in the output.
 
         >>> from statistics import mean
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.group_by("hood").aggregate(n=len, price=lambda x: mean(x.pluck("price")))
         """
         by = self._group_keys
@@ -173,8 +173,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         >>> # All listings that don't have reviews
-        >>> listings = di.ListOfDicts.read_json("data/listings.json")
-        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> listings = di.read_json("data/listings.json")
+        >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -190,7 +190,7 @@ class ListOfDicts(list):
         """
         Return list with `item` added to the end.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data = data.append(dict.fromkeys(data[0].keys()))
         >>> data.tail()
         """
@@ -202,7 +202,7 @@ class ListOfDicts(list):
         """
         Return list with all items removed.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.clear()
         """
         return self._new([])
@@ -224,7 +224,7 @@ class ListOfDicts(list):
         """
         Return list with items from `other` added to the end.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data = data.extend([dict.fromkeys(data[0].keys())])
         >>> data.tail()
         """
@@ -240,7 +240,7 @@ class ListOfDicts(list):
 
         If `key_value_pairs` not given, fill all missing keys with ``None``.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data = data.fill_missing(price=None)
         >>> data = data.fill_missing()
         """
@@ -264,7 +264,7 @@ class ListOfDicts(list):
         by `key_value_pairs`, which are a shorthand to check against a fixed
         value. See the example below of equivalent filtering with both ways.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.filter(lambda x: x.hood == "Manhattan" and x.guests == 2)
         >>> data.filter(hood="Manhattan", guests=2)
         """
@@ -290,7 +290,7 @@ class ListOfDicts(list):
         by `key_value_pairs`, which are a shorthand to check against a fixed
         value. See the example below of equivalent filtering with both ways.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.filter_out(lambda x: x.hood == "Manhattan")
         >>> data.filter_out(hood="Manhattan")
         """
@@ -339,8 +339,8 @@ class ListOfDicts(list):
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
 
-        >>> listings = di.ListOfDicts.read_json("data/listings.json")
-        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> listings = di.read_json("data/listings.json")
+        >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.full_join(reviews, "id")
         """
         acounter = itertools.count(start=1)
@@ -371,7 +371,7 @@ class ListOfDicts(list):
         """
         Return the first `n` items.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.head(3)
         """
         if n is None:
@@ -391,8 +391,8 @@ class ListOfDicts(list):
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
 
-        >>> listings = di.ListOfDicts.read_json("data/listings.json")
-        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> listings = di.read_json("data/listings.json")
+        >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -412,7 +412,7 @@ class ListOfDicts(list):
         """
         Return list with `item` inserted at `index`.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data = data.insert(0, dict.fromkeys(data[0].keys()))
         >>> data.head()
         """
@@ -436,8 +436,8 @@ class ListOfDicts(list):
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
 
-        >>> listings = di.ListOfDicts.read_json("data/listings.json")
-        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> listings = di.read_json("data/listings.json")
+        >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -458,7 +458,7 @@ class ListOfDicts(list):
         a :class:`ListOfDicts` instance, otherwise the return value will be a
         list of whatever `function` returns.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.map(lambda x: (x.guests, x.price))
         """
         new = list(map(function, self))
@@ -479,7 +479,7 @@ class ListOfDicts(list):
         In `key_function_pairs`, `function` receives as an argument an
         individual item.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.modify(price_per_guest=lambda x: x.price / x.guests)
         """
         key_function_pairs = key_function_pairs.items()
@@ -500,7 +500,7 @@ class ListOfDicts(list):
         In `key_function_pairs`, `function` receives as an argument an
         individual item.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.modify_if(lambda x: x.sqft, price_per_sqft=lambda x: x.price / x.sqft)
         """
         key_function_pairs = key_function_pairs.items()
@@ -522,7 +522,7 @@ class ListOfDicts(list):
 
         `default` is used for items in which `key` is not found.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.pluck("id")[:10]
         """
         return [x.get(key, default) for x in self]
@@ -535,7 +535,7 @@ class ListOfDicts(list):
         but since it's a method, you can use it at the end of a method chain
         instead of wrapping a ``print`` call around the whole chain.
 
-        >>> di.ListOfDicts.read_json("data/listings.json").print_()
+        >>> di.read_json("data/listings.json").print_()
         """
         print(self.to_string(max_items))
 
@@ -546,7 +546,7 @@ class ListOfDicts(list):
         Both keys entirely missing and keys with a value of ``None`` are
         considered missing.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.print_missing_counts()
         """
         print("Missing counts:")
@@ -613,7 +613,7 @@ class ListOfDicts(list):
         """
         Return items with keys renamed.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.rename(listing_id="id")
         """
         renames = {v: k for k, v in to_from_pairs.items()}
@@ -633,7 +633,7 @@ class ListOfDicts(list):
         """
         Return randomly chosen `n` items.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.sample(3)
         """
         if n is None:
@@ -648,7 +648,7 @@ class ListOfDicts(list):
         """
         Return items, keeping only `keys`.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.select("id", "hood", "zipcode")
         """
         for item in self:
@@ -663,8 +663,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         >>> # All listings that have reviews
-        >>> listings = di.ListOfDicts.read_json("data/listings.json")
-        >>> reviews = di.ListOfDicts.read_json("data/listings-reviews.json")
+        >>> listings = di.read_json("data/listings.json")
+        >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.semi_join(reviews, "id")
         """
         by1, by2 = self._split_by(*by)
@@ -682,7 +682,7 @@ class ListOfDicts(list):
         `key_dir_pairs` defines the sort order by key with `dir` being ``1``
         for ascending sort, ``-1`` for descending.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.sort(hood=1, zipcode=1)
         """
         data = self
@@ -706,7 +706,7 @@ class ListOfDicts(list):
         """
         Return the last `n` items.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.tail(3)
         """
         if n is None:
@@ -721,7 +721,7 @@ class ListOfDicts(list):
         """
         Return list converted to a :class:`.DataFrame`.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.to_data_frame()
         """
         from dataiter import DataFrame
@@ -733,7 +733,7 @@ class ListOfDicts(list):
 
         `kwargs` are passed to ``json.dump``.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.to_json()[:100]
         """
         kwargs.setdefault("default", str)
@@ -745,7 +745,7 @@ class ListOfDicts(list):
         """
         Return list converted to a ``pandas.DataFrame``.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.to_pandas()
         """
         import pandas as pd
@@ -755,7 +755,7 @@ class ListOfDicts(list):
         """
         Return list as a string formatted for display.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.to_string()
         """
         if max_items is None:
@@ -770,7 +770,7 @@ class ListOfDicts(list):
         """
         Return unique items by `keys`.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.unique("hood")
         """
         if not self: return
@@ -793,7 +793,7 @@ class ListOfDicts(list):
         """
         Return items, dropping `keys`.
 
-        >>> data = di.ListOfDicts.read_json("data/listings.json")
+        >>> data = di.read_json("data/listings.json")
         >>> data.unselect("guests", "sqft", "price")
         """
         for item in self:

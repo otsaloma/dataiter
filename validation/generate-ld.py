@@ -6,7 +6,7 @@ sys.path.insert(0, "..")
 import dataiter as di
 
 def read_json(path):
-    data = di.ListOfDicts.read_json(path)
+    data = di.read_json(path)
     for name in list(data[0].keys()):
         # Drop all rows with NAs to avoid upcasting to float
         # and differing NA representation in output.
