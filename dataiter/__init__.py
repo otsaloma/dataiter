@@ -23,6 +23,7 @@
 import contextlib
 import functools
 import numpy as np
+import statistics
 
 from dataiter import aggregate
 from dataiter import util
@@ -327,8 +328,9 @@ def mode(x, dropna=True):
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return x.missing_value
-    values, counts = np.unique(x, return_counts=True)
-    return values[counts.argmax()]
+    # We could use np.unique here, but it makes getting
+    # the first alternative in case of ties really complicated.
+    return statistics.mode(x)
 
 def nrow(data):
     """

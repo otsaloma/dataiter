@@ -133,10 +133,6 @@ def mode_numba(x, group, dropna, default):
         if dropna:
             xij = xij[~np.isnan(xij)]
         if len(xij) > 0:
-            # Numba doesn't support all np.unique's arguments,
-            # so we can't do the usual below, but want to match it.
-            # > values, counts = np.unique(x, return_counts=True)
-            # > return values[counts.argmax()]
             nij = np.repeat(1, len(xij))
             for k in range(len(xij)):
                 nij[k] = np.nansum(xij == xij[k])
