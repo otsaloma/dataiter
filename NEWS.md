@@ -1,3 +1,10 @@
+PENDING: Dataiter 0.29.1
+========================
+
+* `mode`: Fix to return first in case of ties (requires Python >= 3.8)
+* `std`, `var`: Add `ddof` argument (defaults to 0 on account of Numba limitations)
+* Don't try to dropna for non-float vectors in aggregation functions
+
 2022-01-29: Dataiter 0.29
 =========================
 
@@ -7,12 +14,12 @@
     - https://dataiter.readthedocs.io/en/latest/data-frame.html#dataiter.DataFrame.aggregate
     - https://dataiter.readthedocs.io/en/latest/dataiter.html
 * `DataFrame.map`: New method
-* `dataiter.ncol`: Removed
-* `dataiter.nrow`: Deprecated in favor of `dataiter.count`
-* `dataiter.read_csv`: New alias for `DataFrame.read_csv`
-* `dataiter.read_geojson`: New alias for `GeoJSON.read`
-* `dataiter.read_json`: New alias for `ListOfDicts.read_json`
-* `dataiter.read_npz`: New alias for `DataFrame.read_npz`
+* `ncol`: Removed
+* `nrow`: Deprecated in favor of `dataiter.count`
+* `read_csv`: New alias for `DataFrame.read_csv`
+* `read_geojson`: New alias for `GeoJSON.read`
+* `read_json`: New alias for `ListOfDicts.read_json`
+* `read_npz`: New alias for `DataFrame.read_npz`
 
 2022-01-09: Dataiter 0.28
 =========================
