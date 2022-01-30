@@ -171,7 +171,7 @@ def count_unique(x, dropna=False):
         return fallback
     if dropna:
         x = x[~np.isnan(x)]
-    return len(np.unique(x))
+    return len(set(x))
 
 @_ensure_x_type
 def first(x):
