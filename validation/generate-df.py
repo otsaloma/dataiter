@@ -6,6 +6,8 @@ sys.path.insert(0, "..")
 import dataiter as di
 import numpy as np
 
+print(f"USE_NUMBA: {di.USE_NUMBA}")
+
 def read_csv(path):
     data = di.read_csv(path)
     for name in data.colnames:
@@ -19,12 +21,25 @@ def read_csv(path):
     return data
 
 # AGGREGATE
+# XXX: std and var have different denominators in NumPy and R.
 (read_csv("../data/vehicles.csv")
+ .modify(fuel_regular=lambda x: x.fuel == "regular")
  .group_by("make", "model")
  .aggregate(
-     n=di.count(),
-     cyl_min=di.min("cyl"),
-     cyl_max=di.max("cyl"))
+     all_fuel_regular=di.all("fuel_regular"),
+     any_fuel_regular=di.any("fuel_regular"),
+     count=di.count(),
+     count_unique_cyl=di.count_unique("cyl"),
+     first_hwy=di.first("hwy"),
+     last_hwy=di.last("hwy"),
+     max_hwy=di.max("hwy"),
+     mean_hwy=di.mean("hwy"),
+     median_hwy=di.median("hwy"),
+     min_hwy=di.min("hwy"),
+     mode_year=di.mode("year"),
+     nth_id=di.nth("id", 0),
+     quantile_hwy=di.quantile("hwy", 0.75),
+     sum_hwy=di.sum("hwy"))
  .write_csv("aggregate.df.csv"))
 
 # ANTI JOIN

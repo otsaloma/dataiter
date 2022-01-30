@@ -7,6 +7,12 @@ suppressPackageStartupMessages({
 
 options(dplyr.summarise.inform=FALSE)
 
+Mode = function(x) {
+    # https://stackoverflow.com/q/2547402
+    ux = unique(x)
+    return(ux[which.max(tabulate(match(x, ux)))])
+}
+
 read_csv = function(path) {
     data = readr::read_csv(path, show_col_types=FALSE, lazy=FALSE)
     for (name in colnames(data)) {
@@ -27,11 +33,23 @@ write_csv = function(data, path) {
 
 # AGGREGATE
 read_csv("../data/vehicles.csv") %>%
+    mutate(fuel_regular=(fuel == "regular")) %>%
     group_by(make, model) %>%
     summarise(
-        n=n(),
-        cyl_min=min(cyl),
-        cyl_max=max(cyl)) %>%
+        all_fuel_regular=all(fuel_regular),
+        any_fuel_regular=any(fuel_regular),
+        count=n(),
+        count_unique_cyl=n_distinct(cyl),
+        first_hwy=first(hwy),
+        last_hwy=last(hwy),
+        max_hwy=max(hwy),
+        mean_hwy=mean(hwy),
+        median_hwy=median(hwy),
+        min_hwy=min(hwy),
+        mode_year=Mode(year),
+        nth_id=nth(id, 1),
+        quantile_hwy=quantile(hwy, 0.75, type=7),
+        sum_hwy=sum(hwy)) %>%
     write_csv("aggregate.R.csv")
 
 # ANTI JOIN

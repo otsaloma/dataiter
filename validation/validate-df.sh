@@ -6,6 +6,9 @@ python3 generate-df.py
 Rscript generate.R
 # Remove trailing zero decimals.
 sed -ri "s/\.0*(,|$)/\1/g" *.csv
+# Unify spelling of special values.
+sed -ri "s/True/TRUE/g" *.csv
+sed -ri "s/False/FALSE/g" *.csv
 EXIT_STATUS=0
 for NUM in $(ls *.df.csv | cut -d. -f1); do
     printf "%-23s" "Checking $NUM... "

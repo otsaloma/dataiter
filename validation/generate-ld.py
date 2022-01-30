@@ -5,6 +5,10 @@ sys.path.insert(0, "..")
 
 import dataiter as di
 
+from statistics import mean
+from statistics import median
+from statistics import mode
+
 def read_json(path):
     data = di.read_json(path)
     for name in list(data[0].keys()):
@@ -20,11 +24,23 @@ def read_json(path):
 
 # AGGREGATE
 (read_json("../data/vehicles.json")
+ .modify(fuel_regular=lambda x: x.fuel == "regular")
  .group_by("make", "model")
  .aggregate(
-     n=len,
-     cyl_min=lambda x: min(x.pluck("cyl")),
-     cyl_max=lambda x: max(x.pluck("cyl")))
+     all_fuel_regular=lambda x: all(x.pluck("fuel_regular")),
+     any_fuel_regular=lambda x: any(x.pluck("fuel_regular")),
+     count=len,
+     count_unique_cyl=lambda x: len(set(x.pluck("cyl"))),
+     first_hwy=lambda x: x[0].hwy,
+     last_hwy=lambda x: x[-1].hwy,
+     max_hwy=lambda x: max(x.pluck("hwy")),
+     mean_hwy=lambda x: mean(x.pluck("hwy")),
+     median_hwy=lambda x: median(x.pluck("hwy")),
+     min_hwy=lambda x: min(x.pluck("hwy")),
+     mode_year=lambda x: mode(x.pluck("year")),
+     nth_id=lambda x: x[0].id,
+     quantile_hwy=lambda x: di.quantile(di.Vector(x.pluck("hwy")), 0.75),
+     sum_hwy=lambda x: sum(x.pluck("hwy")))
  .write_csv("aggregate.ld.csv"))
 
 # ANTI JOIN
