@@ -146,7 +146,7 @@ def count(x="", dropna=False):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     return len(x)
 
@@ -169,7 +169,7 @@ def count_unique(x, dropna=False):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     return len(set(x))
 
@@ -218,7 +218,7 @@ def max(x, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return np.nan
@@ -246,7 +246,7 @@ def mean(x, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return np.nan
@@ -274,7 +274,7 @@ def median(x, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return np.nan
@@ -299,7 +299,7 @@ def min(x, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return np.nan
@@ -324,7 +324,7 @@ def mode(x, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return x.missing_value
@@ -396,7 +396,7 @@ def quantile(x, q, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 1:
         return np.nan
@@ -456,7 +456,7 @@ def std(x, ddof=0, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 2:
         return np.nan
@@ -481,7 +481,7 @@ def sum(x, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     return np.sum(x).item()
 
@@ -509,7 +509,7 @@ def var(x, ddof=0, dropna=True):
             f.fallback = fallback
             return f
         return fallback
-    if dropna:
+    if x.is_float() and dropna:
         x = x[~np.isnan(x)]
     if len(x) < 2:
         return np.nan
