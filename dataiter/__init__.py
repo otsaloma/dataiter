@@ -433,7 +433,7 @@ read_json.__doc__ = util.format_alias_doc(read_json, ListOfDicts.read_json)
 read_npz.__doc__ = util.format_alias_doc(read_npz, DataFrame.read_npz)
 
 @_ensure_x_type
-def std(x, dropna=True):
+def std(x, ddof=0, dropna=True):
     """
     Return the standard deviation of `x`.
 
@@ -448,8 +448,10 @@ def std(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return std(data[x], dropna=dropna)
-        if USE_NUMBA:
+            return std(data[x], ddof=ddof, dropna=dropna)
+        # Numba doesn't support the ddof argument,
+        # so can only handle the default ddof=0.
+        if USE_NUMBA and ddof == 0:
             f = aggregate.generic(x, np.std, dropna=dropna, default=np.nan, nrequired=2)
             f.fallback = fallback
             return f
@@ -458,7 +460,7 @@ def std(x, dropna=True):
         x = x[~np.isnan(x)]
     if len(x) < 2:
         return np.nan
-    return np.std(x).item()
+    return np.std(x, ddof=ddof).item()
 
 @_ensure_x_type
 def sum(x, dropna=True):
@@ -484,7 +486,7 @@ def sum(x, dropna=True):
     return np.sum(x).item()
 
 @_ensure_x_type
-def var(x, dropna=True):
+def var(x, ddof=0, dropna=True):
     """
     Return the variance of `x`.
 
@@ -499,8 +501,10 @@ def var(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return var(data[x], dropna=dropna)
-        if USE_NUMBA:
+            return var(data[x], ddof=ddof, dropna=dropna)
+        # Numba doesn't support the ddof argument,
+        # so can only handle the default ddof=0.
+        if USE_NUMBA and ddof == 0:
             f = aggregate.generic(x, np.var, dropna=dropna, default=np.nan, nrequired=2)
             f.fallback = fallback
             return f
@@ -509,4 +513,4 @@ def var(x, dropna=True):
         x = x[~np.isnan(x)]
     if len(x) < 2:
         return np.nan
-    return np.var(x).item()
+    return np.var(x, ddof=ddof).item()

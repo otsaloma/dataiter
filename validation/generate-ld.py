@@ -4,6 +4,7 @@ import sys
 sys.path.insert(0, "..")
 
 import dataiter as di
+import statistics
 
 from statistics import mean
 from statistics import median
@@ -21,6 +22,10 @@ def read_json(path):
                 # sorting of lower vs. upper case characters.
                 item[name] = item[name].lower()
     return data
+
+round2 = lambda x: round(x, 2) if x is not None else None
+stdev = lambda x: statistics.stdev(x) if len(x) > 1 else None
+variance = lambda x: statistics.variance(x) if len(x) > 1 else None
 
 # AGGREGATE
 (read_json("../data/vehicles.json")
@@ -40,7 +45,12 @@ def read_json(path):
      mode_year=lambda x: mode(x.pluck("year")),
      nth_id=lambda x: x[0].id,
      quantile_hwy=lambda x: di.quantile(di.Vector(x.pluck("hwy")), 0.75),
-     sum_hwy=lambda x: sum(x.pluck("hwy")))
+     std_hwy=lambda x: stdev(x.pluck("hwy")),
+     sum_hwy=lambda x: sum(x.pluck("hwy")),
+     var_hwy=lambda x: variance(x.pluck("hwy")))
+ .modify(mean_hwy=lambda x: round2(x.mean_hwy))
+ .modify(std_hwy =lambda x: round2(x.std_hwy))
+ .modify(var_hwy =lambda x: round2(x.var_hwy))
  .write_csv("aggregate.ld.csv"))
 
 # ANTI JOIN

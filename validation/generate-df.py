@@ -21,7 +21,6 @@ def read_csv(path):
     return data
 
 # AGGREGATE
-# XXX: std and var have different denominators in NumPy and R.
 (read_csv("../data/vehicles.csv")
  .modify(fuel_regular=lambda x: x.fuel == "regular")
  .group_by("make", "model")
@@ -39,7 +38,12 @@ def read_csv(path):
      mode_year=di.mode("year"),
      nth_id=di.nth("id", 0),
      quantile_hwy=di.quantile("hwy", 0.75),
-     sum_hwy=di.sum("hwy"))
+     std_hwy=di.std("hwy", ddof=1),
+     sum_hwy=di.sum("hwy"),
+     var_hwy=di.var("hwy", ddof=1))
+ .modify(mean_hwy=lambda x: x.mean_hwy.round(2))
+ .modify(std_hwy =lambda x: x.std_hwy.round(2))
+ .modify(var_hwy =lambda x: x.var_hwy.round(2))
  .write_csv("aggregate.df.csv"))
 
 # ANTI JOIN

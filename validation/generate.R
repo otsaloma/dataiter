@@ -49,7 +49,12 @@ read_csv("../data/vehicles.csv") %>%
         mode_year=Mode(year),
         nth_id=nth(id, 1),
         quantile_hwy=quantile(hwy, 0.75, type=7),
-        sum_hwy=sum(hwy)) %>%
+        std_hwy=sd(hwy),
+        sum_hwy=sum(hwy),
+        var_hwy=var(hwy)) %>%
+    mutate(mean_hwy=round(mean_hwy, 2)) %>%
+    mutate(std_hwy=round(std_hwy, 2)) %>%
+    mutate(var_hwy=round(var_hwy, 2)) %>%
     write_csv("aggregate.R.csv")
 
 # ANTI JOIN
