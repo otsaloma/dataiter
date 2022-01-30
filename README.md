@@ -4,6 +4,7 @@ Python Classes for Data Manipulation
 [![Test](https://github.com/otsaloma/dataiter/workflows/Test/badge.svg)](https://github.com/otsaloma/dataiter/actions)
 [![Documentation Status](https://readthedocs.org/projects/dataiter/badge/?version=latest)](https://dataiter.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/dataiter.svg)](https://pypi.org/project/dataiter/)
+[![Downloads](https://pepy.tech/badge/dataiter/month)](https://pepy.tech/project/dataiter)
 
 Dataiter currently includes the following classes.
 
