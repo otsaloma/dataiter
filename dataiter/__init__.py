@@ -25,6 +25,7 @@ import functools
 import numpy as np
 import statistics
 
+from collections import Counter
 from dataiter import aggregate
 from dataiter import util
 
@@ -329,8 +330,13 @@ def mode(x, dropna=True):
     if len(x) < 1:
         return x.missing_value
     # We could use np.unique here, but it makes getting
-    # the first alternative in case of ties really complicated.
-    return statistics.mode(x)
+    # the first one in case of ties really complicated.
+    try:
+        return statistics.mode(x)
+    except statistics.StatisticsError:
+        # Python < 3.8 with several elements tied for mode,
+        # will return one of the tied elements at random.
+        return Counter(x).most_common(1)[0][0]
 
 def nrow(data):
     """
