@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.29.1
-========================
+2022-01-30: Dataiter 0.29.1
+===========================
 
 * `mode`: Fix to return first in case of ties (requires Python >= 3.8)
 * `std`, `var`: Add `ddof` argument (defaults to 0 on account of Numba limitations)
