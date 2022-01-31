@@ -168,6 +168,15 @@ class Vector(np.ndarray):
         if self.ndim == 1: return
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
+    def drop_missing(self):
+        """
+        Return vector without missing values.
+
+        >>> vector = di.Vector([1, 2, 3, None])
+        >>> vector.drop_missing()
+        """
+        return self[~self.is_missing()]
+
     def equal(self, other):
         """
         Return whether vectors are equal.

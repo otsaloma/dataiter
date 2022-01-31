@@ -177,6 +177,11 @@ class TestVector:
         assert a.is_string()
         assert np.all(a == ["1", "2"])
 
+    def test_drop_missing(self):
+        a = Vector([1, 2, 3, None])
+        b = a.drop_missing()
+        assert b.tolist() == [1, 2, 3]
+
     def test_equal_boolean(self):
         a = Vector([True, False])
         b = Vector([True, False])

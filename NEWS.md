@@ -1,9 +1,11 @@
 PENDING: Dataiter 0.29.2
 ========================
 
-* `first`, `last`, `nth`: Add `dropna` argument
-* `max`, `mean`, `median`, `min`: Don't force `default=np.nan` so that
-  (at least) dates and datetimes work too (#16)
+* Rename `dropna` arguments `drop_missing`
+* Fix dropping missing values to be consistent with `Vector`
+* Fix dropping missing values for non-float dtypes
+* `first`, `last`, `nth`: Add `drop_missing` argument
+* `Vector.drop_missing`: New method
 
 2022-01-30: Dataiter 0.29.1
 ===========================

@@ -48,34 +48,34 @@ except Exception:
 # doesn't directly accept functions as arguments, but needs a wrapper instead.
 
 
-def count_unique(name, dropna):
+def count_unique(name, drop_missing):
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
         return count_unique_numba(
             data[name],
             data._group_,
-            dropna=dropna)
+            drop_missing=drop_missing)
     aggregate.numba = True
     return aggregate
 
 @numba.njit(cache=True)
-def count_unique_numba(x, group, dropna):
-    dropna = dropna and np.isnan(x).any()
+def count_unique_numba(x, group, drop_missing):
+    drop_missing = drop_missing and np.isnan(x).any()
     out = np.repeat(0, len(np.unique(group)))
     g = i = 0
     n = len(x)
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
-        if dropna:
+        if drop_missing:
             xij = xij[~np.isnan(xij)]
         out[g] = len(np.unique(xij))
         g += 1
         i = j
     return out
 
-def generic(name, function, dropna, default=None, nrequired=1):
+def generic(name, function, drop_missing, default=None, nrequired=1):
     f = generic_numba(function)
     def aggregate(data):
         if not use_numba(data[name]):
@@ -83,7 +83,7 @@ def generic(name, function, dropna, default=None, nrequired=1):
         return f(
             data[name],
             data._group_,
-            dropna=dropna,
+            drop_missing=drop_missing,
             default=(
                 data[name].missing_value
                 if default is None else default),
@@ -94,15 +94,15 @@ def generic(name, function, dropna, default=None, nrequired=1):
 @functools.lru_cache(256)
 def generic_numba(function):
     @numba.njit(cache=True)
-    def aggregate(x, group, dropna, default, nrequired):
-        dropna = dropna and np.isnan(x).any()
+    def aggregate(x, group, drop_missing, default, nrequired):
+        drop_missing = drop_missing and np.isnan(x).any()
         out = np.repeat(default, len(np.unique(group)))
         g = i = 0
         n = len(x)
         for j in range(1, n + 1):
             if j < n and group[j] == group[i]: continue
             xij = x[i:j]
-            if dropna:
+            if drop_missing:
                 xij = xij[~np.isnan(xij)]
             if len(xij) >= nrequired:
                 out[g] = function(xij)
@@ -111,28 +111,28 @@ def generic_numba(function):
         return out
     return aggregate
 
-def mode(name, dropna):
+def mode(name, drop_missing):
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
         return mode_numba(
             data[name],
             data._group_,
-            dropna=dropna,
+            drop_missing=drop_missing,
             default=data[name].missing_value)
     aggregate.numba = True
     return aggregate
 
 @numba.njit(cache=True)
-def mode_numba(x, group, dropna, default):
-    dropna = dropna and np.isnan(x).any()
+def mode_numba(x, group, drop_missing, default):
+    drop_missing = drop_missing and np.isnan(x).any()
     out = np.repeat(default, len(np.unique(group)))
     g = i = 0
     n = len(x)
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
-        if dropna:
+        if drop_missing:
             xij = xij[~np.isnan(xij)]
         if len(xij) > 0:
             nij = np.repeat(1, len(xij))
@@ -143,7 +143,7 @@ def mode_numba(x, group, dropna, default):
         i = j
     return out
 
-def nth(name, index, dropna):
+def nth(name, index, drop_missing):
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
@@ -151,21 +151,20 @@ def nth(name, index, dropna):
             data[name],
             data._group_,
             index=index,
-            dropna=dropna,
+            drop_missing=drop_missing,
             default=data[name].missing_value)
     aggregate.numba = True
     return aggregate
 
 @numba.njit(cache=True)
-def nth_numba(x, group, index, dropna, default):
-    dropna = dropna and np.isnan(x).any()
+def nth_numba(x, group, index, drop_missing, default):
     out = np.repeat(default, len(np.unique(group)))
     g = i = 0
     n = len(x)
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
-        if dropna:
+        if drop_missing:
             xij = xij[~np.isnan(xij)]
         if (0 <= index < len(xij) or
             -len(xij) <= index < 0):
@@ -174,7 +173,7 @@ def nth_numba(x, group, index, dropna, default):
         i = j
     return out
 
-def quantile(name, q, dropna):
+def quantile(name, q, drop_missing):
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
@@ -182,20 +181,21 @@ def quantile(name, q, dropna):
             data[name],
             data._group_,
             q=q,
-            dropna=dropna)
+            drop_missing=drop_missing,
+            default=data[name].missing_value)
     aggregate.numba = True
     return aggregate
 
 @numba.njit(cache=True)
-def quantile_numba(x, group, q, dropna):
-    dropna = dropna and np.isnan(x).any()
-    out = np.repeat(np.nan, len(np.unique(group)))
+def quantile_numba(x, group, q, default, drop_missing):
+    drop_missing = drop_missing and np.isnan(x).any()
+    out = np.repeat(default, len(np.unique(group)))
     g = i = 0
     n = len(x)
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
-        if dropna:
+        if drop_missing:
             xij = xij[~np.isnan(xij)]
         if len(xij) > 0:
             out[g] = np.quantile(xij, q)

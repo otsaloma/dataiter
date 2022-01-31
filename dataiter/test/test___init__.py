@@ -133,7 +133,7 @@ class TestUtil:
     def test_max(self):
         assert di.max(Vector([1, 3, 2])) == 3
         assert di.max(Vector([1, 3, NaN])) == 3
-        assert np.isnan(di.max(Vector([1, 3, NaN]), dropna=False))
+        assert np.isnan(di.max(Vector([1, 3, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_max_aggregate(self, use_numba):
@@ -145,7 +145,7 @@ class TestUtil:
 
     def test_mean(self):
         assert isclose(di.mean(Vector([1, 2, 10])), 4.333333)
-        assert np.isnan(di.mean(Vector([1, 2, NaN]), dropna=False))
+        assert np.isnan(di.mean(Vector([1, 2, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_mean_aggregate(self, use_numba):
@@ -157,7 +157,7 @@ class TestUtil:
 
     def test_median(self):
         assert isclose(di.median(Vector([1, 4, 6, 8, 5])), 5)
-        assert np.isnan(di.median(Vector([1, 4, NaN]), dropna=False))
+        assert np.isnan(di.median(Vector([1, 4, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_median_aggregate(self, use_numba):
@@ -170,7 +170,7 @@ class TestUtil:
     def test_min(self):
         assert di.min(Vector([3, 2, 1])) == 1
         assert di.min(Vector([3, 2, NaN])) == 2
-        assert np.isnan(di.min(Vector([3, 2, NaN]), dropna=False))
+        assert np.isnan(di.min(Vector([3, 2, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_min_aggregate(self, use_numba):
@@ -182,7 +182,7 @@ class TestUtil:
 
     def test_mode(self):
         assert di.mode(Vector([1, 2, 2, 3, 3, 3])) == 3
-        assert np.isnan(di.mode(Vector([NaN, 1]), dropna=False))
+        assert np.isnan(di.mode(Vector([NaN, 1]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_mode_aggregate(self, use_numba):
@@ -210,7 +210,7 @@ class TestUtil:
 
     def test_quantile(self):
         assert isclose(di.quantile(Vector([1, 5, 6, 7, 8]), 0.5), 6)
-        assert np.isnan(di.quantile(Vector([1, 5, NaN]), 0.5, dropna=False))
+        assert np.isnan(di.quantile(Vector([1, 5, NaN]), 0.5, drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_quantile_aggregate(self, use_numba):
@@ -242,7 +242,7 @@ class TestUtil:
 
     def test_std(self):
         assert isclose(di.std(Vector([3, 6, 7])), 1.699673)
-        assert np.isnan(di.std(Vector([3, 6, NaN]), dropna=False))
+        assert np.isnan(di.std(Vector([3, 6, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_std_aggregate(self, use_numba):
@@ -257,7 +257,7 @@ class TestUtil:
         assert di.sum(Vector([1])) == 1
         assert di.sum(Vector([1, 2])) == 3
         assert di.sum(Vector([1, 2, 3])) == 6
-        assert np.isnan(di.sum(Vector([1, 2, NaN]), dropna=False))
+        assert np.isnan(di.sum(Vector([1, 2, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_sum_aggregate(self, use_numba):
@@ -269,7 +269,7 @@ class TestUtil:
 
     def test_var(self):
         assert isclose(di.var(Vector([3, 6, 7])), 2.888889)
-        assert np.isnan(di.var(Vector([3, 6, NaN]), dropna=False))
+        assert np.isnan(di.var(Vector([3, 6, NaN]), drop_missing=False))
 
     @parametrize("use_numba", [True, False])
     def test_var_aggregate(self, use_numba):

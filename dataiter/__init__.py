@@ -88,7 +88,7 @@ def all(x):
         def fallback(data):
             return all(data[x])
         if USE_NUMBA:
-            f = aggregate.generic(x, np.all, dropna=False, default=True)
+            f = aggregate.generic(x, np.all, drop_missing=False, default=True)
             f.fallback = fallback
             return f
         return fallback
@@ -115,7 +115,7 @@ def any(x):
         def fallback(data):
             return any(data[x])
         if USE_NUMBA:
-            f = aggregate.generic(x, np.any, dropna=False, default=False)
+            f = aggregate.generic(x, np.any, drop_missing=False, default=False)
             f.fallback = fallback
             return f
         return fallback
@@ -124,7 +124,7 @@ def any(x):
     return np.any(x).item()
 
 # x type check skipped on purpose due to allowing calls with no x given.
-def count(x="", dropna=False):
+def count(x="", drop_missing=False):
     """
     Return the amount of elements in `x`.
 
@@ -141,18 +141,18 @@ def count(x="", dropna=False):
         def fallback(data):
             if not x:
                 return data.nrow
-            return count(data[x], dropna=dropna)
+            return count(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.generic(x or "_group_", len, dropna=dropna, default=0, nrequired=0)
+            f = aggregate.generic(x or "_group_", len, drop_missing=drop_missing, default=0, nrequired=0)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     return len(x)
 
 @_ensure_x_type
-def count_unique(x, dropna=False):
+def count_unique(x, drop_missing=False):
     """
     Return the amount of unique elements in `x`.
 
@@ -164,18 +164,18 @@ def count_unique(x, dropna=False):
     """
     if isinstance(x, str):
         def fallback(data):
-            return count_unique(data[x], dropna=dropna)
+            return count_unique(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.count_unique(x, dropna=dropna)
+            f = aggregate.count_unique(x, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     return len(set(x))
 
 @_ensure_x_type
-def first(x, dropna=False):
+def first(x, drop_missing=False):
     """
     Return the first element of `x`.
 
@@ -185,10 +185,10 @@ def first(x, dropna=False):
     >>> di.first(di.Vector([1, 2, 3]))
     >>> di.first("x")
     """
-    return nth(x, 0, dropna=dropna)
+    return nth(x, 0, drop_missing=drop_missing)
 
 @_ensure_x_type
-def last(x, dropna=False):
+def last(x, drop_missing=False):
     """
     Return the last element of `x`.
 
@@ -198,10 +198,10 @@ def last(x, dropna=False):
     >>> di.last(di.Vector([1, 2, 3]))
     >>> di.last("x")
     """
-    return nth(x, -1, dropna=dropna)
+    return nth(x, -1, drop_missing=drop_missing)
 
 @_ensure_x_type
-def max(x, dropna=True):
+def max(x, drop_missing=True):
     """
     Return the maximum of elements in `x`.
 
@@ -213,20 +213,20 @@ def max(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return max(data[x], dropna=dropna)
+            return max(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.amax, dropna=dropna)
+            f = aggregate.generic(x, np.amax, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 1:
-        return np.nan
+        return x.missing_value
     return np.amax(x).item()
 
 @_ensure_x_type
-def mean(x, dropna=True):
+def mean(x, drop_missing=True):
     """
     Return the arithmetic mean of `x`.
 
@@ -241,20 +241,20 @@ def mean(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return mean(data[x], dropna=dropna)
+            return mean(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.mean, dropna=dropna)
+            f = aggregate.generic(x, np.mean, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 1:
-        return np.nan
+        return x.missing_value
     return np.mean(x).item()
 
 @_ensure_x_type
-def median(x, dropna=True):
+def median(x, drop_missing=True):
     """
     Return the median of `x`.
 
@@ -269,20 +269,20 @@ def median(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return median(data[x], dropna=dropna)
+            return median(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.median, dropna=dropna)
+            f = aggregate.generic(x, np.median, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 1:
-        return np.nan
+        return x.missing_value
     return np.median(x).item()
 
 @_ensure_x_type
-def min(x, dropna=True):
+def min(x, drop_missing=True):
     """
     Return the minimum of elements in `x`.
 
@@ -294,20 +294,20 @@ def min(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return min(data[x], dropna=dropna)
+            return min(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.amin, dropna=dropna)
+            f = aggregate.generic(x, np.amin, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 1:
-        return np.nan
+        return x.missing_value
     return np.amin(x).item()
 
 @_ensure_x_type
-def mode(x, dropna=True):
+def mode(x, drop_missing=True):
     """
     Return the most common value in `x`.
 
@@ -319,14 +319,14 @@ def mode(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return mode(data[x], dropna=dropna)
+            return mode(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.mode(x, dropna=dropna)
+            f = aggregate.mode(x, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 1:
         return x.missing_value
     # We could use np.unique here, but it makes getting
@@ -357,7 +357,7 @@ def nrow(data):
     return data.nrow
 
 @_ensure_x_type
-def nth(x, index, dropna=False):
+def nth(x, index, drop_missing=False):
     """
     Return the element of `x` at `index`.
 
@@ -369,21 +369,21 @@ def nth(x, index, dropna=False):
     """
     if isinstance(x, str):
         def fallback(data):
-            return nth(data[x], index, dropna=dropna)
+            return nth(data[x], index, drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.nth(x, index, dropna=dropna)
+            f = aggregate.nth(x, index, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     try:
         return x[index].item()
     except IndexError:
         return x.missing_value
 
 @_ensure_x_type
-def quantile(x, q, dropna=True):
+def quantile(x, q, drop_missing=True):
     """
     Return the `qth` quantile of `x`.
 
@@ -398,16 +398,16 @@ def quantile(x, q, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return quantile(data[x], q, dropna=dropna)
+            return quantile(data[x], q, drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.quantile(x, q, dropna=dropna)
+            f = aggregate.quantile(x, q, drop_missing=drop_missing)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 1:
-        return np.nan
+        return x.missing_value
     return np.quantile(x, q).item()
 
 def read_csv(path, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
@@ -441,7 +441,7 @@ read_json.__doc__ = util.format_alias_doc(read_json, ListOfDicts.read_json)
 read_npz.__doc__ = util.format_alias_doc(read_npz, DataFrame.read_npz)
 
 @_ensure_x_type
-def std(x, ddof=0, dropna=True):
+def std(x, ddof=0, drop_missing=True):
     """
     Return the standard deviation of `x`.
 
@@ -456,22 +456,22 @@ def std(x, ddof=0, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return std(data[x], ddof=ddof, dropna=dropna)
+            return std(data[x], ddof=ddof, drop_missing=drop_missing)
         # Numba doesn't support the ddof argument,
         # so can only handle the default ddof=0.
         if USE_NUMBA and ddof == 0:
-            f = aggregate.generic(x, np.std, dropna=dropna, default=np.nan, nrequired=2)
+            f = aggregate.generic(x, np.std, drop_missing=drop_missing, default=np.nan, nrequired=2)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 2:
         return np.nan
     return np.std(x, ddof=ddof).item()
 
 @_ensure_x_type
-def sum(x, dropna=True):
+def sum(x, drop_missing=True):
     """
     Return the sum of `x`.
 
@@ -483,18 +483,18 @@ def sum(x, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return sum(data[x], dropna=dropna)
+            return sum(data[x], drop_missing=drop_missing)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.sum, dropna=dropna, default=0, nrequired=0)
+            f = aggregate.generic(x, np.sum, drop_missing=drop_missing, default=0, nrequired=0)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     return np.sum(x).item()
 
 @_ensure_x_type
-def var(x, ddof=0, dropna=True):
+def var(x, ddof=0, drop_missing=True):
     """
     Return the variance of `x`.
 
@@ -509,16 +509,16 @@ def var(x, ddof=0, dropna=True):
     """
     if isinstance(x, str):
         def fallback(data):
-            return var(data[x], ddof=ddof, dropna=dropna)
+            return var(data[x], ddof=ddof, drop_missing=drop_missing)
         # Numba doesn't support the ddof argument,
         # so can only handle the default ddof=0.
         if USE_NUMBA and ddof == 0:
-            f = aggregate.generic(x, np.var, dropna=dropna, default=np.nan, nrequired=2)
+            f = aggregate.generic(x, np.var, drop_missing=drop_missing, default=np.nan, nrequired=2)
             f.fallback = fallback
             return f
         return fallback
-    if x.is_float() and dropna:
-        x = x[~np.isnan(x)]
+    if drop_missing:
+        x = x.drop_missing()
     if len(x) < 2:
         return np.nan
     return np.var(x, ddof=ddof).item()
