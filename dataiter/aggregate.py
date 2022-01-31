@@ -75,7 +75,7 @@ def count_unique_numba(x, group, dropna):
         i = j
     return out
 
-def generic(name, function, dropna, default, nrequired=1):
+def generic(name, function, dropna, default=None, nrequired=1):
     f = generic_numba(function)
     def aggregate(data):
         if not use_numba(data[name]):
@@ -84,7 +84,9 @@ def generic(name, function, dropna, default, nrequired=1):
             data[name],
             data._group_,
             dropna=dropna,
-            default=default,
+            default=(
+                data[name].missing_value
+                if default is None else default),
             nrequired=nrequired)
     aggregate.numba = True
     return aggregate

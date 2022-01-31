@@ -215,7 +215,7 @@ def max(x, dropna=True):
         def fallback(data):
             return max(data[x], dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.amax, dropna=dropna, default=np.nan)
+            f = aggregate.generic(x, np.amax, dropna=dropna)
             f.fallback = fallback
             return f
         return fallback
@@ -243,7 +243,7 @@ def mean(x, dropna=True):
         def fallback(data):
             return mean(data[x], dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.mean, dropna=dropna, default=np.nan)
+            f = aggregate.generic(x, np.mean, dropna=dropna)
             f.fallback = fallback
             return f
         return fallback
@@ -271,7 +271,7 @@ def median(x, dropna=True):
         def fallback(data):
             return median(data[x], dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.median, dropna=dropna, default=np.nan)
+            f = aggregate.generic(x, np.median, dropna=dropna)
             f.fallback = fallback
             return f
         return fallback
@@ -296,7 +296,7 @@ def min(x, dropna=True):
         def fallback(data):
             return min(data[x], dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.generic(x, np.amin, dropna=dropna, default=np.nan)
+            f = aggregate.generic(x, np.amin, dropna=dropna)
             f.fallback = fallback
             return f
         return fallback
