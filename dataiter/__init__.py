@@ -175,7 +175,7 @@ def count_unique(x, dropna=False):
     return len(set(x))
 
 @_ensure_x_type
-def first(x):
+def first(x, dropna=False):
     """
     Return the first element of `x`.
 
@@ -185,10 +185,10 @@ def first(x):
     >>> di.first(di.Vector([1, 2, 3]))
     >>> di.first("x")
     """
-    return nth(x, 0)
+    return nth(x, 0, dropna=dropna)
 
 @_ensure_x_type
-def last(x):
+def last(x, dropna=False):
     """
     Return the last element of `x`.
 
@@ -198,7 +198,7 @@ def last(x):
     >>> di.last(di.Vector([1, 2, 3]))
     >>> di.last("x")
     """
-    return nth(x, -1)
+    return nth(x, -1, dropna=dropna)
 
 @_ensure_x_type
 def max(x, dropna=True):
@@ -357,7 +357,7 @@ def nrow(data):
     return data.nrow
 
 @_ensure_x_type
-def nth(x, index):
+def nth(x, index, dropna=False):
     """
     Return the element of `x` at `index`.
 
@@ -369,12 +369,14 @@ def nth(x, index):
     """
     if isinstance(x, str):
         def fallback(data):
-            return nth(data[x], index)
+            return nth(data[x], index, dropna=dropna)
         if USE_NUMBA:
-            f = aggregate.nth(x, index)
+            f = aggregate.nth(x, index, dropna=dropna)
             f.fallback = fallback
             return f
         return fallback
+    if x.is_float() and dropna:
+        x = x[~np.isnan(x)]
     try:
         return x[index].item()
     except IndexError:

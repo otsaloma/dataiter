@@ -143,7 +143,7 @@ def mode_numba(x, group, dropna, default):
         i = j
     return out
 
-def nth(name, index):
+def nth(name, index, dropna):
     def aggregate(data):
         if not use_numba(data[name]):
             raise NotImplementedError
@@ -151,18 +151,22 @@ def nth(name, index):
             data[name],
             data._group_,
             index=index,
+            dropna=dropna,
             default=data[name].missing_value)
     aggregate.numba = True
     return aggregate
 
 @numba.njit(cache=True)
-def nth_numba(x, group, index, default):
+def nth_numba(x, group, index, dropna, default):
+    dropna = dropna and np.isnan(x).any()
     out = np.repeat(default, len(np.unique(group)))
     g = i = 0
     n = len(x)
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
+        if dropna:
+            xij = xij[~np.isnan(xij)]
         if (0 <= index < len(xij) or
             -len(xij) <= index < 0):
             out[g] = xij[index]

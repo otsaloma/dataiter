@@ -1,8 +1,9 @@
 PENDING: Dataiter 0.29.2
 ========================
 
-* Don't force `default=np.nan` for certain aggregation functions so that
-  e.g. min or max of dates and datetimes work too (#16)
+* `first`, `last`, `nth`: Add `dropna` argument
+* `max`, `mean`, `median`, `min`: Don't force `default=np.nan` so that
+  (at least) dates and datetimes work too (#16)
 
 2022-01-30: Dataiter 0.29.1
 ===========================
