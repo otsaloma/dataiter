@@ -33,13 +33,6 @@ skipif = pytest.mark.skipif
 class TestAggregate:
 
     @skipif(not di.USE_NUMBA, reason="No Numba")
-    def test_drop_missing_datetime(self):
-        x = Vector([None, "2022-01-01", "2022-01-02", "2022-01-03"]).as_date()
-        g = np.repeat(1, len(x))
-        y = aggregate.nth_numba(x, g, 0, drop_missing=True, default=x.missing_value)
-        assert y[0] == x[1]
-
-    @skipif(not di.USE_NUMBA, reason="No Numba")
     def test_drop_missing_float(self):
         x = Vector([None, 1, 2, 3])
         g = np.repeat(1, len(x))

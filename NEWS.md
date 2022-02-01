@@ -1,9 +1,10 @@
 PENDING: Dataiter 0.29.2
 ========================
 
-* Rename `dropna` arguments `drop_missing`
-* Fix dropping missing values to be consistent with `Vector`
+* Disable Numba for date and datetime columns (#X)
 * Fix dropping missing values for non-float dtypes
+* Fix dropping missing values to be consistent with `Vector`
+* Rename `dropna` arguments `drop_missing`
 * `first`, `last`, `nth`: Add `drop_missing` argument
 * `Vector.drop_missing`: New method
 

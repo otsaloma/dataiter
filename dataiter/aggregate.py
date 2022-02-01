@@ -208,6 +208,5 @@ def use_numba(x):
     # XXX: Strings should be supported, but not all functions seem to work.
     # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#built-in-types
     return (np.issubdtype(x.dtype, np.bool_) or
-            np.issubdtype(x.dtype, np.datetime64) or
             np.issubdtype(x.dtype, np.floating) or
             np.issubdtype(x.dtype, np.integer))
