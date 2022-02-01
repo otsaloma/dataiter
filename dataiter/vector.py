@@ -175,7 +175,7 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 2, 3, None])
         >>> vector.drop_missing()
         """
-        return self[~self.is_missing()]
+        return self[~self.is_missing()].copy()
 
     def equal(self, other):
         """
