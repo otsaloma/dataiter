@@ -205,6 +205,7 @@ def quantile_numba(x, group, q, default, drop_missing):
 
 def use_numba(x):
     # Numba can't handle all dtypes, use conditionally.
+    # XXX: Datetimes should be supported, but NaT doesn't seem to work.
     # XXX: Strings should be supported, but not all functions seem to work.
     # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#built-in-types
     return (np.issubdtype(x.dtype, np.bool_) or
