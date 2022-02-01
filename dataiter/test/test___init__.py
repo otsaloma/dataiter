@@ -82,7 +82,7 @@ class TestUtil:
                 ]:
                     for vector in vectors:
                         data = self.get_data(a=vector)
-                        stat = data.group_by("g").aggregate(a=function("a", *args))
+                        data.group_by("g").aggregate(a=function("a", *args))
 
     def test_all(self):
         assert     di.all(Vector([T, T]))
