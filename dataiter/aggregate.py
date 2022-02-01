@@ -84,9 +84,7 @@ def generic(name, function, drop_missing, default=None, nrequired=1):
             data[name],
             data._group_,
             drop_missing=drop_missing,
-            default=(
-                data[name].missing_value
-                if default is None else default),
+            default=np.nan if default is None else default,
             nrequired=nrequired)
     aggregate.numba = True
     return aggregate
@@ -119,7 +117,7 @@ def mode(name, drop_missing):
             data[name],
             data._group_,
             drop_missing=drop_missing,
-            default=data[name].missing_value)
+            default=np.nan)
     aggregate.numba = True
     return aggregate
 
@@ -152,7 +150,7 @@ def nth(name, index, drop_missing):
             data._group_,
             index=index,
             drop_missing=drop_missing,
-            default=data[name].missing_value)
+            default=np.nan)
     aggregate.numba = True
     return aggregate
 
@@ -182,7 +180,7 @@ def quantile(name, q, drop_missing):
             data._group_,
             q=q,
             drop_missing=drop_missing,
-            default=data[name].missing_value)
+            default=np.nan)
     aggregate.numba = True
     return aggregate
 

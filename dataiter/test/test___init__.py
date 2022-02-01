@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import dataiter as di
+import datetime
 import inspect
 import numpy as np
 import pytest
@@ -31,6 +32,8 @@ from dataiter import Vector
 T = True
 F = False
 NaN = np.nan
+NaT = np.datetime64("NaT")
+TODAY = datetime.date.today()
 
 parametrize = pytest.mark.parametrize
 patch = unittest.mock.patch
@@ -49,6 +52,37 @@ class TestUtil:
     def skip_if_no_numba(self, use_numba):
         if use_numba and not di.USE_NUMBA:
             pytest.skip("No Numba")
+
+    def test_brute(self):
+        b = [T, T, T, T, T, F, F, F, F, F]
+        i = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        f = [1, 2, 3, 4, 5, 6, 7, NaN, NaN, NaN]
+        s = ["a", "b", "c", "d", "e", "f", "g", "", "", ""]
+        d = [TODAY, TODAY, TODAY, TODAY, TODAY, TODAY, TODAY, NaT, NaT, NaT]
+        for use_numba in [True, False]:
+            self.skip_if_no_numba(use_numba)
+            with patch("dataiter.USE_NUMBA", use_numba):
+                for function, vectors, args in [
+                        (di.all, [b, i, f], []),
+                        (di.any, [b, i, f], []),
+                        (di.count, [b, i, f, s, d], []),
+                        (di.count_unique, [b, i, f, s, d], []),
+                        (di.first, [b, i, f, s, d], []),
+                        (di.last, [b, i, f, s, d], []),
+                        (di.max, [i, f, d], []),
+                        (di.mean, [i, f], []),
+                        (di.median, [i, f], []),
+                        (di.min, [i, f, d], []),
+                        (di.mode, [b, i, f, s, d], []),
+                        (di.nth, [b, i, f, s, d], [1]),
+                        (di.quantile, [i, f], [0.75]),
+                        (di.std, [i, f], []),
+                        (di.sum, [i, f], []),
+                        (di.var, [i, f], []),
+                ]:
+                    for vector in vectors:
+                        data = self.get_data(a=vector)
+                        stat = data.group_by("g").aggregate(a=function("a", *args))
 
     def test_all(self):
         assert     di.all(Vector([T, T]))

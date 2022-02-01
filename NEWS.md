@@ -2,8 +2,7 @@ PENDING: Dataiter 0.29.2
 ========================
 
 * Disable Numba for date and datetime columns (#18)
-* Fix dropping missing values for non-float dtypes
-* Fix dropping missing values to be consistent with `Vector`
+* Fix handling of missing values for non-float dtypes
 * Rename `dropna` arguments `drop_missing`
 * `first`, `last`, `nth`: Add `drop_missing` argument
 * `Vector.drop_missing`: New method
