@@ -1,9 +1,11 @@
 PENDING: Dataiter 0.29.2
 ========================
 
-* Disable Numba for date and datetime columns (#18)
-* Fix handling of missing values for non-float dtypes
-* Rename `dropna` arguments `drop_missing`
+* Fix aggregation functions to work with all main data types:
+  boolean, integer, float, date, datetime and string
+* Fix aggregation functions to handle all missing values (NaN, NaT,
+  blank string) correctly, the same as implemented in Vector
+* Rename aggregation functions' `dropna` arguments `drop_missing`
 * `first`, `last`, `nth`: Add `drop_missing` argument
 * `Vector.drop_missing`: New method
 

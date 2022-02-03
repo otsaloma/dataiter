@@ -21,29 +21,8 @@
 # THE SOFTWARE.
 
 import contextlib
-import functools
-import numpy as np
-import statistics
 
-from collections import Counter
-from dataiter import aggregate
 from dataiter import util
-
-# API
-from dataiter.vector import Vector # noqa
-from dataiter.data_frame import DataFrame # noqa
-from dataiter.data_frame import DataFrameColumn # noqa
-from dataiter.geojson import GeoJSON # noqa
-from dataiter.list_of_dicts import ListOfDicts # noqa
-
-try:
-    import numba # noqa
-    USE_NUMBA = True
-except Exception:
-    USE_NUMBA = False
-
-with contextlib.suppress(LookupError):
-    USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
 
 __version__ = "0.29.1"
 
@@ -54,471 +33,74 @@ PRINT_FLOAT_PRECISION = 6
 PRINT_MAX_ELEMENTS = 100
 PRINT_MAX_ITEMS = 10
 PRINT_MAX_ROWS = 100
-
-# Only used as a fallback, see util.get_print_width.
 PRINT_MAX_WIDTH = 80
-
-
-def _ensure_x_type(function):
-    @functools.wraps(function)
-    def wrapper(x, *args, **kwargs):
-        if not isinstance(x, (Vector, str)):
-            raise TypeError(
-                f"Bad type for x: {type(x)}, "
-                f"expected dataiter.Vector or str")
-        return function(x, *args, **kwargs)
-    return wrapper
-
-@_ensure_x_type
-def all(x):
-    """
-    Return whether all elements of `x` evaluate to ``True``.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.all``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.all.html
-
-    >>> di.all(di.Vector([True, False]))
-    >>> di.all(di.Vector([True, True]))
-    >>> di.all("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return all(data[x])
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.all, drop_missing=False, default=True)
-            f.fallback = fallback
-            return f
-        return fallback
-    if len(x) < 1:
-        return True
-    return np.all(x).item()
-
-@_ensure_x_type
-def any(x):
-    """
-    Return whether any element of `x` evaluates to ``True``.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.any``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.any.html
-
-    >>> di.any(di.Vector([False, False]))
-    >>> di.any(di.Vector([True, False]))
-    >>> di.any("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return any(data[x])
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.any, drop_missing=False, default=False)
-            f.fallback = fallback
-            return f
-        return fallback
-    if len(x) < 1:
-        return False
-    return np.any(x).item()
-
-# x type check skipped on purpose due to allowing calls with no x given.
-def count(x="", drop_missing=False):
-    """
-    Return the amount of elements in `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`. Since
-    all columns in a data frame should have the same amount of elements (i.e.
-    rows), you can just leave the x argument at its default blank string, which
-    will give you that row count.
-
-    >>> di.count(di.Vector([1, 2, 3]))
-    >>> di.count()
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            if not x:
-                return data.nrow
-            return count(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.generic(x or "_group_", len, drop_missing=drop_missing, default=0, nrequired=0)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    return len(x)
-
-@_ensure_x_type
-def count_unique(x, drop_missing=False):
-    """
-    Return the amount of unique elements in `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.count_unique(di.Vector([1, 2, 2, 3, 3, 3]))
-    >>> di.count_unique("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return count_unique(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.count_unique(x, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    return len(set(x))
-
-@_ensure_x_type
-def first(x, drop_missing=False):
-    """
-    Return the first element of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.first(di.Vector([1, 2, 3]))
-    >>> di.first("x")
-    """
-    return nth(x, 0, drop_missing=drop_missing)
-
-@_ensure_x_type
-def last(x, drop_missing=False):
-    """
-    Return the last element of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.last(di.Vector([1, 2, 3]))
-    >>> di.last("x")
-    """
-    return nth(x, -1, drop_missing=drop_missing)
-
-@_ensure_x_type
-def max(x, drop_missing=True):
-    """
-    Return the maximum of elements in `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.max(di.Vector([4, 5, 6]))
-    >>> di.max("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return max(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.amax, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 1:
-        return x.missing_value
-    return np.amax(x).item()
-
-@_ensure_x_type
-def mean(x, drop_missing=True):
-    """
-    Return the arithmetic mean of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.mean``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.mean.html
-
-    >>> di.mean(di.Vector([1, 2, 10]))
-    >>> di.mean("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return mean(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.mean, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 1:
-        return x.missing_value
-    return np.mean(x).item()
-
-@_ensure_x_type
-def median(x, drop_missing=True):
-    """
-    Return the median of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.median``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.median.html
-
-    >>> di.median(di.Vector([5, 1, 2]))
-    >>> di.median("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return median(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.median, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 1:
-        return x.missing_value
-    return np.median(x).item()
-
-@_ensure_x_type
-def min(x, drop_missing=True):
-    """
-    Return the minimum of elements in `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.min(di.Vector([4, 5, 6]))
-    >>> di.min("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return min(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.amin, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 1:
-        return x.missing_value
-    return np.amin(x).item()
-
-@_ensure_x_type
-def mode(x, drop_missing=True):
-    """
-    Return the most common value in `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
-    >>> di.mode("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return mode(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.mode(x, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 1:
-        return x.missing_value
-    # We could use np.unique here, but it makes getting
-    # the first one in case of ties really complicated.
-    try:
-        return statistics.mode(x)
-    except statistics.StatisticsError:
-        # Python < 3.8 with several elements tied for mode,
-        # will return one of the tied elements at random.
-        return Counter(x).most_common(1)[0][0]
-
-def nrow(data):
-    """
-    Return the amount of rows in `data`.
-
-    This is a useful shorthand for `data.nrow` in contexts where you don't have
-    direct access to the data frame in question, e.g. in group-by-aggregate
-
-    .. warning:: Deprecated, please use :func:`count` instead.
-
-    >>> data = di.read_csv("data/listings.csv")
-    >>> data.group_by("hood").aggregate(n=di.nrow)
-    """
-    if not getattr(nrow, "warning_shown", False):
-        print('Warning: nrow is deprecated, please use count instead')
-        print('e.g. data.group_by("hood").aggregate(n=di.count())')
-        nrow.warning_shown = True
-    return data.nrow
-
-@_ensure_x_type
-def nth(x, index, drop_missing=False):
-    """
-    Return the element of `x` at `index`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.nth(di.Vector([1, 2, 3]), 1)
-    >>> di.nth("x", 1)
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return nth(data[x], index, drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.nth(x, index, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    try:
-        return x[index].item()
-    except IndexError:
-        return x.missing_value
-
-@_ensure_x_type
-def quantile(x, q, drop_missing=True):
-    """
-    Return the `qth` quantile of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.quantile``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
-
-    >>> di.quantile(di.Vector([1, 5, 6]), 0.5)
-    >>> di.quantile("x", 0.5)
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return quantile(data[x], q, drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.quantile(x, q, drop_missing=drop_missing)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 1:
-        return x.missing_value
-    return np.quantile(x, q).item()
-
-def read_csv(path, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
-    return DataFrame.read_csv(path,
-                              encoding=encoding,
-                              sep=sep,
-                              header=header,
-                              columns=columns,
-                              dtypes=dtypes)
-
-def read_geojson(path, encoding="utf-8", columns=[], dtypes={}, **kwargs):
-    return GeoJSON.read(path,
-                        encoding=encoding,
-                        columns=columns,
-                        dtypes=dtypes,
-                        **kwargs)
-
-def read_json(path, encoding="utf-8", keys=[], types={}, **kwargs):
-    return ListOfDicts.read_json(path,
-                                 encoding=encoding,
-                                 keys=keys,
-                                 types=types,
-                                 **kwargs)
-
-def read_npz(path, allow_pickle=True):
-    return DataFrame.read_npz(path, allow_pickle=allow_pickle)
-
-read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)
-read_geojson.__doc__ = util.format_alias_doc(read_geojson, GeoJSON.read)
-read_json.__doc__ = util.format_alias_doc(read_json, ListOfDicts.read_json)
-read_npz.__doc__ = util.format_alias_doc(read_npz, DataFrame.read_npz)
-
-@_ensure_x_type
-def std(x, ddof=0, drop_missing=True):
-    """
-    Return the standard deviation of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.std``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.std.html
-
-    >>> di.std(di.Vector([3, 6, 7]))
-    >>> di.std("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return std(data[x], ddof=ddof, drop_missing=drop_missing)
-        # Numba doesn't support the ddof argument,
-        # so can only handle the default ddof=0.
-        if USE_NUMBA and ddof == 0:
-            f = aggregate.generic(x, np.std, drop_missing=drop_missing, default=np.nan, nrequired=2)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 2:
-        return np.nan
-    return np.std(x, ddof=ddof).item()
-
-@_ensure_x_type
-def sum(x, drop_missing=True):
-    """
-    Return the sum of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    >>> di.sum(di.Vector([1, 2, 3]))
-    >>> di.sum("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return sum(data[x], drop_missing=drop_missing)
-        if USE_NUMBA:
-            f = aggregate.generic(x, np.sum, drop_missing=drop_missing, default=0, nrequired=0)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    return np.sum(x).item()
-
-@_ensure_x_type
-def var(x, ddof=0, drop_missing=True):
-    """
-    Return the variance of `x`.
-
-    If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
-
-    Uses ``numpy.var``, see the NumPy documentation for details:
-    https://numpy.org/doc/stable/reference/generated/numpy.var.html
-
-    >>> di.var(di.Vector([3, 6, 7]))
-    >>> di.var("x")
-    """
-    if isinstance(x, str):
-        def fallback(data):
-            return var(data[x], ddof=ddof, drop_missing=drop_missing)
-        # Numba doesn't support the ddof argument,
-        # so can only handle the default ddof=0.
-        if USE_NUMBA and ddof == 0:
-            f = aggregate.generic(x, np.var, drop_missing=drop_missing, default=np.nan, nrequired=2)
-            f.fallback = fallback
-            return f
-        return fallback
-    if drop_missing:
-        x = x.drop_missing()
-    if len(x) < 2:
-        return np.nan
-    return np.var(x, ddof=ddof).item()
+USE_NUMBA = False
+
+with contextlib.suppress(Exception):
+    # Use Numba automatically if found.
+    import numba
+    USE_NUMBA = True
+    del numba
+
+with contextlib.suppress(LookupError):
+    # Force Numba on or off via an environment variable.
+    USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
+
+del contextlib
+del util
+
+# Classes API
+from dataiter.vector import Vector # noqa
+from dataiter.data_frame import DataFrame # noqa
+from dataiter.data_frame import DataFrameColumn # noqa
+from dataiter.geojson import GeoJSON # noqa
+from dataiter.list_of_dicts import ListOfDicts # noqa
+
+# Functions API
+from dataiter.aggregate import all
+from dataiter.aggregate import any
+from dataiter.aggregate import count
+from dataiter.aggregate import count_unique
+from dataiter.aggregate import first
+from dataiter.aggregate import last
+from dataiter.aggregate import max
+from dataiter.aggregate import mean
+from dataiter.aggregate import median
+from dataiter.aggregate import min
+from dataiter.aggregate import mode
+from dataiter.aggregate import nrow
+from dataiter.aggregate import nth
+from dataiter.aggregate import quantile
+from dataiter.aggregate import std
+from dataiter.aggregate import sum
+from dataiter.aggregate import var
+from dataiter.io import read_csv
+from dataiter.io import read_geojson
+from dataiter.io import read_json
+from dataiter.io import read_npz
+
+for f in [
+        all,
+        any,
+        count,
+        count_unique,
+        first,
+        last,
+        max,
+        mean,
+        median,
+        min,
+        mode,
+        nrow,
+        nth,
+        quantile,
+        read_csv,
+        read_geojson,
+        read_json,
+        read_npz,
+        std,
+        sum,
+        var,
+]:
+    # Patch module to include f in API documentation.
+    f.__module__ = "dataiter"

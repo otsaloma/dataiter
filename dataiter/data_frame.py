@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import contextlib
 import dataiter
 import datetime
 import itertools
@@ -206,17 +205,25 @@ class DataFrame(dict):
             data._group_ = np.repeat(groups, n)
         slices = None
         for colname, function in colname_function_pairs.items():
-            uses_numba = getattr(function, "numba", False)
-            if uses_numba:
-                # Numba-accelerated aggregation functions raise
-                # NotImplementedError if given an unsupported dtype.
-                with contextlib.suppress(NotImplementedError):
-                    stat[colname] = function(data)
-                    continue
-                function = function.fallback
-            if slices is None:
-                slices = [data._view_rows(x) for x in indices]
-            stat[colname] = [function(x) for x in slices]
+            if getattr(function, "numba", False):
+                # function might leave Nones in its output,
+                # once those are replaced with the proper default
+                # we can do a fast conversion to DataFrameColumn.
+                column = function(data)
+                default = function.default
+                for i in range(len(column)):
+                    if column[i] is None:
+                        column[i] = default
+                assert len(column) == stat.nrow
+                column = DataFrameColumn.fast(column)
+                stat[colname] = column
+            else:
+                # When using an arbitrary function, we cannot know
+                # what special values to expect and thus we end up
+                # needing to use the slow Vector.__init__.
+                if slices is None:
+                    slices = [data._view_rows(x) for x in indices]
+                stat[colname] = [function(x) for x in slices]
         return stat.unselect("_index_", "_group_")
 
     @deco.new_from_generator

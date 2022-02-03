@@ -96,6 +96,8 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([0, 1])
         >>> vector.as_boolean()
         """
+        if self.is_string():
+            return self.map(bool)
         return self.astype(bool)
 
     def as_bytes(self):
