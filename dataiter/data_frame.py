@@ -76,7 +76,7 @@ class DataFrameColumn(Vector):
 
     @classmethod
     def _sequencify(cls, object):
-        if isinstance(object, (list, tuple, np.ndarray)):
+        if isinstance(object, (np.ndarray, list, tuple)):
             return object
         if (object is None or
             np.isscalar(object) or

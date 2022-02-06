@@ -211,7 +211,7 @@ class Vector(np.ndarray):
         values or if you know they are already of the correct type.
         """
         if (hasattr(object, "__iter__") and
-            not isinstance(object, (list, tuple))):
+            not isinstance(object, (np.ndarray, list, tuple))):
             # Evaluate generator/iterator.
             object = list(object)
         return np.array(object, dtype).view(cls)
