@@ -238,8 +238,9 @@ BENCHMARKS = sorted([
 
 @click.command()
 @click.option("-o", "--output", help="Filename for optional CSV output")
+@click.option("-r", "--rounds", default=5, help="Number of rounds per benchmark")
 @click.argument("pattern", nargs=-1)
-def main(output, pattern):
+def main(output, rounds, pattern):
     """Benchmark dataiter functions."""
     benchmarks = BENCHMARKS.copy()
     if pattern:
@@ -252,7 +253,7 @@ def main(output, pattern):
         print(f"{i+1:2d}/{len(benchmarks)}. {benchmark} {padding} ", end="", flush=True)
         try:
             f = globals()[benchmark]
-            elapsed = 1000 * min(f() for i in range(3))
+            elapsed = 1000 * min(f() for i in range(rounds))
             print("{:5.0f} ms".format(elapsed), flush=True)
         except Exception as e:
             elapsed = -1
