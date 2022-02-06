@@ -49,7 +49,7 @@ install it separately.
 
 https://dataiter.readthedocs.io/
 
-If you're familiar with either R's dplyr or Python's Pandas, the
+If you're familiar with either dplyr (R) or Pandas (Python), the
 comparison table in the documentation will give you a quick overview of
 the differences and similarities.
 
