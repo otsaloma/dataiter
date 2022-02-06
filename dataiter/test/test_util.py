@@ -100,7 +100,7 @@ class TestUtil:
         assert util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]
 
     def test_unique_types(self):
-        assert util.unique_types([1, 2, 3.3, np.nan, None]) == set((int, float))
+        assert util.unique_types([1, 2, 3.3, np.nan, None]) == {int, float}
 
     def test_xopen_bz2(self):
         text = "test åäö"
