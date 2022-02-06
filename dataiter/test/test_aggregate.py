@@ -217,70 +217,91 @@ class TestAggregate:
         assert count_unique(Vector([1, 1, 2, NaN]), drop_missing=True) == 2
 
     def test_first(self):
-        assert np.isnan(first(EMPTY_VECTOR))
         assert first(Vector([1, 2, 3])) == 1
-        assert np.isnan(first(Vector([NaN, 1, 2])))
         assert first(Vector([NaN, 1, 2]), drop_missing=True) == 1
 
+    def test_first_nan(self):
+        assert np.isnan(first(EMPTY_VECTOR))
+        assert np.isnan(first(Vector([NaN, 1, 2])))
+
     def test_last(self):
-        assert np.isnan(last(EMPTY_VECTOR))
         assert last(Vector([1, 2, 3])) == 3
-        assert np.isnan(last(Vector([1, 2, NaN])))
         assert last(Vector([1, 2, NaN]), drop_missing=True) == 2
 
+    def test_last_nan(self):
+        assert np.isnan(last(EMPTY_VECTOR))
+        assert np.isnan(last(Vector([1, 2, NaN])))
+
     def test_max(self):
-        assert np.isnan(max(EMPTY_VECTOR))
         assert max(Vector([3, 2, 1])) == 3
         assert max(Vector([3, 2, NaN])) == 3
+
+    def test_max_nan(self):
+        assert np.isnan(max(EMPTY_VECTOR))
         assert np.isnan(max(Vector([3, 2, NaN]), drop_missing=False))
 
     def test_mean(self):
-        assert np.isnan(mean(EMPTY_VECTOR))
         assert np.isclose(mean(Vector([1, 2, 10])), 4.333333)
         assert np.isclose(mean(Vector([1, 2, NaN])), 1.5)
+
+    def test_mean_nan(self):
+        assert np.isnan(mean(EMPTY_VECTOR))
         assert np.isnan(mean(Vector([1, 2, NaN]), drop_missing=False))
 
     def test_median(self):
-        assert np.isnan(median(EMPTY_VECTOR))
         assert median(Vector([1, 4, 6, 8, 5])) == 5
         assert median(Vector([1, 4, 6, NaN, NaN])) == 4
+
+    def test_median_nan(self):
+        assert np.isnan(median(EMPTY_VECTOR))
         assert np.isnan(median(Vector([1, 4, NaN]), drop_missing=False))
 
     def test_min(self):
-        assert np.isnan(min(EMPTY_VECTOR))
         assert min(Vector([3, 2, 1])) == 1
         assert min(Vector([3, 2, NaN])) == 2
+
+    def test_min_nan(self):
+        assert np.isnan(min(EMPTY_VECTOR))
         assert np.isnan(min(Vector([3, 2, NaN]), drop_missing=False))
 
     def test_mode(self):
-        assert np.isnan(mode(EMPTY_VECTOR))
         assert mode(Vector([1,])) == 1
         assert mode(Vector([1, 2])) == 1
         assert mode(Vector([1, 2, 2])) == 2
         assert mode(Vector([1, 2, 2, NaN])) == 2
         assert mode(Vector([1, 2, 2, NaN]), drop_missing=False) == 2
 
+    def test_mode_nan(self):
+        assert np.isnan(mode(EMPTY_VECTOR))
+        assert np.isnan(mode(Vector([NaN, NaN], float), drop_missing=False))
+
     def test_nrow(self):
         data = DataFrame(x=range(10))
         assert nrow(data) == 10
 
     def test_nth(self):
-        assert np.isnan(nth(EMPTY_VECTOR, 0))
         assert nth(Vector([1, 2, 3]), 0) == 1
-        assert np.isnan(nth(Vector([NaN, 1, 2]), 0))
         assert nth(Vector([NaN, 1, 2]), 0, drop_missing=True) == 1
 
+    def test_nth_nan(self):
+        assert np.isnan(nth(EMPTY_VECTOR, 0))
+        assert np.isnan(nth(Vector([NaN, 1, 2]), 0))
+
     def test_quantile(self):
-        assert np.isnan(quantile(EMPTY_VECTOR, 0.5))
         assert quantile(Vector([1, 4, 6, 8, 5]), 0.5) == 5
         assert quantile(Vector([1, 4, 6, NaN, NaN]), 0.5) == 4
+
+    def test_quantile_nan(self):
+        assert np.isnan(quantile(EMPTY_VECTOR, 0.5))
         assert np.isnan(quantile(Vector([1, 4, NaN]), 0.5, drop_missing=False))
 
     def test_std(self):
-        assert np.isnan(std(EMPTY_VECTOR))
-        assert np.isnan(std(Vector([1,])))
         assert np.isclose(std(Vector([3, 6, 7])), 1.699673)
         assert np.isclose(std(Vector([3, 6, NaN])), 1.5)
+
+    def test_std_nan(self):
+        assert np.isnan(std(EMPTY_VECTOR))
+        assert np.isnan(std(Vector([1,])))
         assert np.isnan(std(Vector([3, 6, NaN]), drop_missing=False))
 
     def test_sum(self):
@@ -288,11 +309,15 @@ class TestAggregate:
         assert sum(Vector([1,])) == 1
         assert sum(Vector([1, 2])) == 3
         assert sum(Vector([1, 2, NaN])) == 3
+
+    def test_sum_nan(self):
         assert np.isnan(sum(Vector([1, 2, NaN]), drop_missing=False))
 
     def test_var(self):
-        assert np.isnan(var(EMPTY_VECTOR))
-        assert np.isnan(var(Vector([1,])))
         assert np.isclose(var(Vector([3, 6, 7])), 2.888889)
         assert np.isclose(var(Vector([3, 6, NaN])), 2.25)
+
+    def test_var_nan(self):
+        assert np.isnan(var(EMPTY_VECTOR))
+        assert np.isnan(var(Vector([1,])))
         assert np.isnan(var(Vector([3, 6, NaN]), drop_missing=False))
