@@ -26,6 +26,7 @@ import numpy as np
 
 from dataiter import Vector
 
+NaN = np.nan
 NaT = np.datetime64("NaT")
 DATE = datetime.date.today()
 DATETIME = datetime.datetime.now()
@@ -53,14 +54,14 @@ class TestVector:
 
     def test___new___missing(self):
         Vector([None])
-        Vector([np.nan])
+        Vector([NaN])
         Vector([NaT])
         Vector([""])
 
     def test___new___missing_boolean(self):
         # Should be upcast to object.
         # Missing values should be None.
-        a = Vector([True, False, np.nan, None])
+        a = Vector([True, False, NaN, None])
         b = Vector([True, False, None, None])
         assert a.is_object()
         assert a.equal(b)
@@ -68,7 +69,7 @@ class TestVector:
     def test___new___missing_date(self):
         # Should be converted to np.datetime64.
         # Missing values should be NaT.
-        a = Vector([DATE, NaT, np.nan, None])
+        a = Vector([DATE, NaT, NaN, None])
         b = Vector([DATE, NaT, NaT, NaT])
         assert a.is_datetime()
         assert a.equal(b)
@@ -76,29 +77,29 @@ class TestVector:
     def test___new___missing_datetime(self):
         # Should be converted to np.datetime64.
         # Missing values should be NaT.
-        a = Vector([DATETIME, np.nan, NaT, None])
+        a = Vector([DATETIME, NaN, NaT, None])
         b = Vector([DATETIME, NaT, NaT, NaT])
         assert a.is_datetime()
         assert a.equal(b)
 
     def test___new___missing_float(self):
         # Missing values should be NaN.
-        a = Vector([1.1, 2.2, np.nan, None])
-        b = Vector([1.1, 2.2, np.nan, np.nan])
+        a = Vector([1.1, 2.2, NaN, None])
+        b = Vector([1.1, 2.2, NaN, NaN])
         assert a.is_float()
         assert a.equal(b)
 
     def test___new___missing_integer(self):
         # Should be upcast to float.
         # Missing values should be NaN.
-        a = Vector([1, 2, np.nan, None])
-        b = Vector([1, 2, np.nan, np.nan])
+        a = Vector([1, 2, NaN, None])
+        b = Vector([1, 2, NaN, NaN])
         assert a.is_float()
         assert a.equal(b)
 
     def test___new___missing_object(self):
         # Missing values should be None.
-        a = Vector(["a", "b", "", np.nan, None], object)
+        a = Vector(["a", "b", "", NaN, None], object)
         assert a.is_object()
         assert a[0] == "a"
         assert a[1] == "b"
@@ -114,7 +115,7 @@ class TestVector:
 
     def test___new___missing_string(self):
         # Missing values should be blank strings.
-        a = Vector(["a", "b", "", np.nan, None])
+        a = Vector(["a", "b", "", NaN, None])
         b = Vector(["a", "b", "", "", ""])
         assert a.is_string()
         assert a.equal(b)
@@ -201,8 +202,8 @@ class TestVector:
         assert not a.equal(b[::-1])
 
     def test_equal_float(self):
-        a = Vector([1.1, 2.2, np.nan])
-        b = Vector([1.1, 2.2, np.nan])
+        a = Vector([1.1, 2.2, NaN])
+        b = Vector([1.1, 2.2, NaN])
         assert a.equal(b)
         assert not a.equal(b[::-1])
 
@@ -359,7 +360,7 @@ class TestVector:
         assert b.tolist() == [6, 2, 2, 2, 4.5, 4.5]
 
     def test_rank_average_missing(self):
-        a = Vector([np.nan, 1, 2, 3, np.nan])
+        a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="average")
         assert b.tolist() == [4.5, 1, 2, 3, 4.5]
 
@@ -369,7 +370,7 @@ class TestVector:
         assert b.tolist() == [2, 4, 2, 4, 5]
 
     def test_rank_max_missing(self):
-        a = Vector([np.nan, 1, 2, 3, np.nan])
+        a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="max")
         assert b.tolist() == [5, 1, 2, 3, 5]
 
@@ -379,7 +380,7 @@ class TestVector:
         assert b.tolist() == [1, 3, 1, 3, 5]
 
     def test_rank_min_missing(self):
-        a = Vector([np.nan, 1, 2, 3, np.nan])
+        a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="min")
         assert b.tolist() == [4, 1, 2, 3, 4]
 
@@ -389,13 +390,13 @@ class TestVector:
         assert b.tolist() == [1, 3, 2, 4, 5]
 
     def test_rank_ordinal_missing(self):
-        a = Vector([np.nan, 1, 2, 3, np.nan])
+        a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="ordinal")
         assert b.tolist() == [4, 1, 2, 3, 5]
 
     def test_rank_without_ties(self):
         # Without ties, all methods should give the same result.
-        a = Vector([np.nan, 3, 2, 4, 5, 1])
+        a = Vector([NaN, 3, 2, 4, 5, 1])
         assert a.rank(method="min").equal(a.rank(method="average"))
         assert a.rank(method="min").equal(a.rank(method="max"))
         assert a.rank(method="min").equal(a.rank(method="min"))
@@ -475,7 +476,7 @@ class TestVector:
         assert Vector(a).tolist() == b
 
     def test_tolist_float(self):
-        a = [1.1, 2.2, np.nan]
+        a = [1.1, 2.2, NaN]
         b = [1.1, 2.2, None]
         assert Vector(a).tolist() == b
 
