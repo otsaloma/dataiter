@@ -143,8 +143,7 @@ def count(x="", drop_missing=False):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
+    x = handle_missing(x, drop_missing)
     return len(x)
 
 @composite
@@ -171,21 +170,20 @@ def count_unique(x, drop_missing=False):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
+    x = handle_missing(x, drop_missing)
     return len(set(x))
 
 def count_unique_apply(x, group, drop_missing):
     out = []
-    for xij in yield_groups(x, group, drop_missing):
-        out.append(len(set(xij)))
+    for xg in yield_groups(x, group, drop_missing):
+        out.append(len(set(xg)))
     return out
 
 @numba.njit(cache=True)
 def count_unique_apply_numba(x, group, drop_missing):
     out = []
-    for xij in yield_groups_numba(x, group, drop_missing):
-        out.append(len(np.unique(xij)))
+    for xg in yield_groups_numba(x, group, drop_missing):
+        out.append(len(np.unique(xg)))
     return out
 
 def first(x, drop_missing=False):
@@ -204,8 +202,8 @@ def first(x, drop_missing=False):
 def generic(function, **kwargs):
     def aggregate(x, group, drop_missing, default, nrequired):
         out = []
-        for xij in yield_groups(x, group, drop_missing):
-            out.append(function(xij, **kwargs) if len(xij) >= nrequired else default)
+        for xg in yield_groups(x, group, drop_missing):
+            out.append(function(xg, **kwargs) if len(xg) >= nrequired else default)
         return out
     return aggregate
 
@@ -214,10 +212,13 @@ def generic_numba(function):
     @numba.njit(cache=True)
     def aggregate(x, group, drop_missing, default, nrequired):
         out = []
-        for xij in yield_groups_numba(x, group, drop_missing):
-            out.append(function(xij) if len(xij) >= nrequired else default)
+        for xg in yield_groups_numba(x, group, drop_missing):
+            out.append(function(xg) if len(xg) >= nrequired else default)
         return out
     return aggregate
+
+def handle_missing(x, drop_missing):
+    return x[~x.is_missing()] if drop_missing else x
 
 @numba.generated_jit(nopython=True, cache=True)
 def is_missing_item_numba(x):
@@ -277,11 +278,8 @@ def max(x, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 1:
-        return x.missing_value
-    return np.amax(x).item()
+    x = handle_missing(x, drop_missing)
+    return np.amax(x).item() if len(x) >= 1 else x.missing_value
 
 @composite
 def mean(x, drop_missing=True):
@@ -312,11 +310,8 @@ def mean(x, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 1:
-        return np.nan
-    return np.mean(x).item()
+    x = handle_missing(x, drop_missing)
+    return np.mean(x).item() if len(x) >= 1 else np.nan
 
 @composite
 def median(x, drop_missing=True):
@@ -347,11 +342,8 @@ def median(x, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 1:
-        return np.nan
-    return np.median(x).item()
+    x = handle_missing(x, drop_missing)
+    return np.median(x).item() if len(x) >= 1 else np.nan
 
 @composite
 def min(x, drop_missing=True):
@@ -379,11 +371,8 @@ def min(x, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 1:
-        return x.missing_value
-    return np.amin(x).item()
+    x = handle_missing(x, drop_missing)
+    return np.amin(x).item() if len(x) >= 1 else x.missing_value
 
 @composite
 def mode(x, drop_missing=True):
@@ -409,11 +398,29 @@ def mode(x, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 1:
-        return x.missing_value
-    return mode1(x)
+    x = handle_missing(x, drop_missing)
+    return mode1(x) if len(x) >= 1 else x.missing_value
+
+def mode_apply(x, group, drop_missing):
+    out = []
+    for xg in yield_groups(x, group, drop_missing):
+        out.append(mode1(xg) if len(xg) >= 1 else None)
+    return out
+
+@numba.njit(cache=True)
+def mode_apply_numba(x, group, drop_missing):
+    out = []
+    for xg in yield_groups_numba(x, group, drop_missing):
+        if len(xg) > 0:
+            ng = np.full(len(xg), 1)
+            for i in range(len(xg)):
+                for j in range(len(xg)):
+                    if xg[j] == xg[i]:
+                        ng[i] += 1
+            out.append(xg[np.argmax(ng)])
+        else:
+            out.append(None)
+    return out
 
 def mode1(x):
     try:
@@ -422,27 +429,6 @@ def mode1(x):
         # Python < 3.8 with several elements tied for mode,
         # will return one of the tied elements at random.
         return Counter(x).most_common(1)[0][0]
-
-def mode_apply(x, group, drop_missing):
-    out = []
-    for xij in yield_groups(x, group, drop_missing):
-        out.append(mode1(xij) if len(xij) > 0 else None)
-    return out
-
-@numba.njit(cache=True)
-def mode_apply_numba(x, group, drop_missing):
-    out = []
-    for xij in yield_groups_numba(x, group, drop_missing):
-        if len(xij) > 0:
-            nij = np.repeat(1, len(xij))
-            for k in range(len(xij)):
-                for l in range(len(xij)):
-                    if xij[l] == xij[k]:
-                        nij[k] += 1
-            out.append(xij[np.argmax(nij)])
-        else:
-            out.append(None)
-    return out
 
 def nrow(data):
     """
@@ -487,8 +473,7 @@ def nth(x, index, drop_missing=False):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
+    x = handle_missing(x, drop_missing)
     try:
         return x[index].item()
     except IndexError:
@@ -496,9 +481,9 @@ def nth(x, index, drop_missing=False):
 
 def nth_apply(x, group, index, drop_missing):
     out = []
-    for xij in yield_groups(x, group, drop_missing):
+    for xg in yield_groups(x, group, drop_missing):
         try:
-            out.append(xij[index])
+            out.append(xg[index])
         except IndexError:
             out.append(None)
     return out
@@ -506,9 +491,9 @@ def nth_apply(x, group, index, drop_missing):
 @numba.njit(cache=True)
 def nth_apply_numba(x, group, index, drop_missing):
     out = []
-    for xij in yield_groups_numba(x, group, drop_missing):
-        if 0 <= index < len(xij) or -len(xij) <= index < 0:
-            out.append(xij[index])
+    for xg in yield_groups_numba(x, group, drop_missing):
+        if 0 <= index < len(xg) or -len(xg) <= index < 0:
+            out.append(xg[index])
         else:
             out.append(None)
     return out
@@ -541,23 +526,20 @@ def quantile(x, q, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 1:
-        return np.nan
-    return np.quantile(x.as_float(), q).item()
+    x = handle_missing(x, drop_missing)
+    return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
 
 def quantile_apply(x, group, q, drop_missing):
     out = []
-    for xij in yield_groups(x, group, drop_missing):
-        out.append(np.quantile(xij, q) if len(xij) > 0 else np.nan)
+    for xg in yield_groups(x, group, drop_missing):
+        out.append(np.quantile(xg, q) if len(xg) >= 1 else np.nan)
     return out
 
 @numba.njit(cache=True)
 def quantile_apply_numba(x, group, q, drop_missing):
     out = []
-    for xij in yield_groups_numba(x, group, drop_missing):
-        out.append(np.quantile(xij, q) if len(xij) > 0 else np.nan)
+    for xg in yield_groups_numba(x, group, drop_missing):
+        out.append(np.quantile(xg, q) if len(xg) >= 1 else np.nan)
     return out
 
 def select(functions, data, name):
@@ -597,11 +579,8 @@ def std(x, ddof=0, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 2:
-        return np.nan
-    return np.std(x, ddof=ddof).item()
+    x = handle_missing(x, drop_missing)
+    return np.std(x, ddof=ddof).item() if len(x) >= 2 else np.nan
 
 @composite
 def sum(x, drop_missing=True):
@@ -629,8 +608,7 @@ def sum(x, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
+    x = handle_missing(x, drop_missing)
     return np.sum(x).item()
 
 def use_numba(x):
@@ -676,11 +654,8 @@ def var(x, ddof=0, drop_missing=True):
 
         aggregate.numba = True
         return aggregate
-    if drop_missing:
-        x = x[~x.is_missing()]
-    if len(x) < 2:
-        return np.nan
-    return np.var(x, ddof=ddof).item()
+    x = handle_missing(x, drop_missing)
+    return np.var(x, ddof=ddof).item() if len(x) >= 2 else np.nan
 
 def yield_groups(x, group, drop_missing):
     # Groups must be contiguous for this to work!
