@@ -57,50 +57,30 @@ from dataiter.geojson import GeoJSON # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
 
 # Functions API
-from dataiter.aggregate import all
-from dataiter.aggregate import any
-from dataiter.aggregate import count
-from dataiter.aggregate import count_unique
-from dataiter.aggregate import first
-from dataiter.aggregate import last
-from dataiter.aggregate import max
-from dataiter.aggregate import mean
-from dataiter.aggregate import median
-from dataiter.aggregate import min
-from dataiter.aggregate import mode
-from dataiter.aggregate import nrow
-from dataiter.aggregate import nth
-from dataiter.aggregate import quantile
-from dataiter.aggregate import std
-from dataiter.aggregate import sum
-from dataiter.aggregate import var
-from dataiter.io import read_csv
-from dataiter.io import read_geojson
-from dataiter.io import read_json
-from dataiter.io import read_npz
+from dataiter.aggregate import all # noqa
+from dataiter.aggregate import any # noqa
+from dataiter.aggregate import count # noqa
+from dataiter.aggregate import count_unique # noqa
+from dataiter.aggregate import first # noqa
+from dataiter.aggregate import last # noqa
+from dataiter.aggregate import max # noqa
+from dataiter.aggregate import mean # noqa
+from dataiter.aggregate import median # noqa
+from dataiter.aggregate import min # noqa
+from dataiter.aggregate import mode # noqa
+from dataiter.aggregate import nrow # noqa
+from dataiter.aggregate import nth # noqa
+from dataiter.aggregate import quantile # noqa
+from dataiter.aggregate import std # noqa
+from dataiter.aggregate import sum # noqa
+from dataiter.aggregate import var # noqa
+from dataiter.io import read_csv # noqa
+from dataiter.io import read_geojson # noqa
+from dataiter.io import read_json # noqa
+from dataiter.io import read_npz # noqa
 
-for f in [
-        all,
-        any,
-        count,
-        count_unique,
-        first,
-        last,
-        max,
-        mean,
-        median,
-        min,
-        mode,
-        nrow,
-        nth,
-        quantile,
-        read_csv,
-        read_geojson,
-        read_json,
-        read_npz,
-        std,
-        sum,
-        var,
-]:
-    # Patch module to include f in API documentation.
-    f.__module__ = "dataiter"
+for name, value in list(globals().items()):
+    if (getattr(value, "__module__", "") in
+        ["dataiter.aggregate", "dataiter.io"]):
+        # Patch module to include value in API documentation.
+        value.__module__ = "dataiter"
