@@ -449,7 +449,7 @@ def nrow(data):
 @composite
 def nth(x, index, drop_missing=False):
     """
-    Return the element of `x` at `index`.
+    Return the element of `x` at `index` (zero-based).
 
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
