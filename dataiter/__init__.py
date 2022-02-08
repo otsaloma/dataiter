@@ -84,3 +84,6 @@ for name, value in list(globals().items()):
         ["dataiter.aggregate", "dataiter.io"]):
         # Patch module to include value in API documentation.
         value.__module__ = "dataiter"
+
+del name
+del value
