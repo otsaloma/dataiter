@@ -410,7 +410,7 @@ def mode_apply_numba(x, group, drop_missing):
     out = []
     for xg in yield_groups_numba(x, group, drop_missing):
         if len(xg) > 0:
-            ng = np.zeros(len(xg), int)
+            ng = np.full(len(xg), 0)
             for i in range(len(xg)):
                 for j in range(len(xg)):
                     if xg[j] == xg[i]:
