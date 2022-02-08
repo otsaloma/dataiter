@@ -26,6 +26,7 @@ import numpy as np
 import statistics
 
 from collections import Counter
+from dataiter import deco
 from dataiter import Vector
 
 try:
@@ -173,11 +174,10 @@ def count_unique(x, drop_missing=False):
     x = handle_missing(x, drop_missing)
     return len(set(x))
 
+@deco.listify
 def count_unique_apply(x, group, drop_missing):
-    out = []
     for xg in yield_groups(x, group, drop_missing):
-        out.append(len(set(xg)))
-    return out
+        yield len(set(xg))
 
 @numba.njit(cache=True)
 def count_unique_apply_numba(x, group, drop_missing):
@@ -200,11 +200,10 @@ def first(x, drop_missing=False):
 
 @functools.lru_cache(256)
 def generic(function, **kwargs):
+    @deco.listify
     def aggregate(x, group, drop_missing, default, nrequired):
-        out = []
         for xg in yield_groups(x, group, drop_missing):
-            out.append(function(xg, **kwargs) if len(xg) >= nrequired else default)
-        return out
+            yield function(xg, **kwargs) if len(xg) >= nrequired else default
     return aggregate
 
 @functools.lru_cache(256)
@@ -401,11 +400,10 @@ def mode(x, drop_missing=True):
     x = handle_missing(x, drop_missing)
     return mode1(x) if len(x) >= 1 else x.missing_value
 
+@deco.listify
 def mode_apply(x, group, drop_missing):
-    out = []
     for xg in yield_groups(x, group, drop_missing):
-        out.append(mode1(xg) if len(xg) >= 1 else None)
-    return out
+        yield mode1(xg) if len(xg) >= 1 else None
 
 @numba.njit(cache=True)
 def mode_apply_numba(x, group, drop_missing):
@@ -479,14 +477,13 @@ def nth(x, index, drop_missing=False):
     except IndexError:
         return x.missing_value
 
+@deco.listify
 def nth_apply(x, group, index, drop_missing):
-    out = []
     for xg in yield_groups(x, group, drop_missing):
         try:
-            out.append(xg[index])
+            yield xg[index]
         except IndexError:
-            out.append(None)
-    return out
+            yield None
 
 @numba.njit(cache=True)
 def nth_apply_numba(x, group, index, drop_missing):
@@ -529,11 +526,10 @@ def quantile(x, q, drop_missing=True):
     x = handle_missing(x, drop_missing)
     return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
 
+@deco.listify
 def quantile_apply(x, group, q, drop_missing):
-    out = []
     for xg in yield_groups(x, group, drop_missing):
-        out.append(np.quantile(xg, q) if len(xg) >= 1 else np.nan)
-    return out
+        yield np.quantile(xg, q) if len(xg) >= 1 else np.nan
 
 @numba.njit(cache=True)
 def quantile_apply_numba(x, group, q, drop_missing):
