@@ -5,7 +5,7 @@ PENDING: Dataiter 0.29.2
   boolean, integer, float, date, datetime and string
 * Fix aggregation functions to handle all missing values (NaN, NaT,
   blank string) correctly, the same as implemented in Vector
-* Rename aggregation functions' `dropna` arguments `drop_missing`
+* Rename aggregation functions' `dropna` arguments to `drop_missing`
 * `first`, `last`, `nth`: Add `drop_missing` argument
 * `Vector.drop_missing`: New method
 

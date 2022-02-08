@@ -203,14 +203,14 @@ class TestAggregate:
 
     def test_count(self):
         assert count(EMPTY_VECTOR) == 0
-        assert count(Vector([1,])) == 1
+        assert count(Vector([1])) == 1
         assert count(Vector([1, 2])) == 2
         assert count(Vector([1, 2, NaN])) == 3
         assert count(Vector([1, 2, NaN]), drop_missing=True) == 2
 
     def test_count_unique(self):
         assert count_unique(EMPTY_VECTOR) == 0
-        assert count_unique(Vector([1,])) == 1
+        assert count_unique(Vector([1])) == 1
         assert count_unique(Vector([1, 1])) == 1
         assert count_unique(Vector([1, 1, 2])) == 2
         assert count_unique(Vector([1, 1, 2, NaN])) == 3
@@ -265,7 +265,7 @@ class TestAggregate:
         assert np.isnan(min(Vector([3, 2, NaN]), drop_missing=False))
 
     def test_mode(self):
-        assert mode(Vector([1,])) == 1
+        assert mode(Vector([1])) == 1
         assert mode(Vector([1, 2])) == 1
         assert mode(Vector([1, 2, 2])) == 2
         assert mode(Vector([1, 2, 2, NaN])) == 2
@@ -301,12 +301,12 @@ class TestAggregate:
 
     def test_std_nan(self):
         assert np.isnan(std(EMPTY_VECTOR))
-        assert np.isnan(std(Vector([1,])))
+        assert np.isnan(std(Vector([1])))
         assert np.isnan(std(Vector([3, 6, NaN]), drop_missing=False))
 
     def test_sum(self):
         assert sum(EMPTY_VECTOR) == 0
-        assert sum(Vector([1,])) == 1
+        assert sum(Vector([1])) == 1
         assert sum(Vector([1, 2])) == 3
         assert sum(Vector([1, 2, NaN])) == 3
 
@@ -319,5 +319,5 @@ class TestAggregate:
 
     def test_var_nan(self):
         assert np.isnan(var(EMPTY_VECTOR))
-        assert np.isnan(var(Vector([1,])))
+        assert np.isnan(var(Vector([1])))
         assert np.isnan(var(Vector([3, 6, NaN]), drop_missing=False))
