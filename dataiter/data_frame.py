@@ -191,7 +191,7 @@ class DataFrame(dict):
         >>> # with the shorthand helpers, but for complicated calculations,
         >>> # you might need custom lambda functions.
         >>> data.group_by("hood").aggregate(n=di.count(), price=di.mean("price"))
-        >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: np.nanmean(x.price))
+        >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
         """
         group_colnames = self._group_colnames
         data = self.sort(**dict.fromkeys(group_colnames, 1))
