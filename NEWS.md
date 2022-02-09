@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.29.2
-========================
+2022-02-09: Dataiter 0.29.2
+===========================
 
 * Fix aggregation functions to work with all main data types:
   boolean, integer, float, date, datetime and string
