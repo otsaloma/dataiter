@@ -8,6 +8,7 @@ import time
 
 from dataiter import test
 from statistics import mean
+from unittest.mock import patch
 
 
 def data_frame(path, nrow=1_000_000):
@@ -63,16 +64,6 @@ def data_frame_group_by_aggregate_14668():
          cty=di.mean("cty")))
     return time.time() - start
 
-def data_frame_group_by_aggregate_100000():
-    data = data_frame_random(1_000_000, 100_000)
-    start = time.time()
-    (data
-     .group_by("g")
-     .aggregate(
-         a_mean=di.mean("a"),
-         a_std=di.std("a")))
-    return time.time() - start
-
 def data_frame_group_by_aggregate_100000_lambda():
     data = data_frame_random(1_000_000, 100_000)
     start = time.time()
@@ -82,6 +73,28 @@ def data_frame_group_by_aggregate_100000_lambda():
          a_mean=lambda x: np.mean(x.a),
          a_std=lambda x: np.std(x.a)))
     return time.time() - start
+
+def data_frame_group_by_aggregate_100000_short():
+    with patch("dataiter.USE_NUMBA", False):
+        data = data_frame_random(1_000_000, 100_000)
+        start = time.time()
+        (data
+         .group_by("g")
+         .aggregate(
+             a_mean=di.mean("a"),
+             a_std=di.std("a")))
+        return time.time() - start
+
+def data_frame_group_by_aggregate_100000_short_numba():
+    with patch("dataiter.USE_NUMBA", True):
+        data = data_frame_random(1_000_000, 100_000)
+        start = time.time()
+        (data
+         .group_by("g")
+         .aggregate(
+             a_mean=di.mean("a"),
+             a_std=di.std("a")))
+        return time.time() - start
 
 def data_frame_left_join():
     data = data_frame("vehicles.csv")
