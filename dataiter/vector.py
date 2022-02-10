@@ -97,6 +97,9 @@ class Vector(np.ndarray):
         >>> vector.as_boolean()
         """
         if self.is_string():
+            # NumPy does bool(int(str)), which is weird.
+            # https://github.com/numpy/numpy/issues/20898
+            # https://github.com/numpy/numpy/pull/21024
             return self.map(bool)
         return self.astype(bool)
 
