@@ -26,7 +26,7 @@ from dataiter import ListOfDicts
 from dataiter import util
 
 
-def read_csv(path, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
+def read_csv(path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
     return DataFrame.read_csv(path,
                               encoding=encoding,
                               sep=sep,
@@ -34,21 +34,21 @@ def read_csv(path, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}
                               columns=columns,
                               dtypes=dtypes)
 
-def read_geojson(path, encoding="utf-8", columns=[], dtypes={}, **kwargs):
+def read_geojson(path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
     return GeoJSON.read(path,
                         encoding=encoding,
                         columns=columns,
                         dtypes=dtypes,
                         **kwargs)
 
-def read_json(path, encoding="utf-8", keys=[], types={}, **kwargs):
+def read_json(path, *, encoding="utf-8", keys=[], types={}, **kwargs):
     return ListOfDicts.read_json(path,
                                  encoding=encoding,
                                  keys=keys,
                                  types=types,
                                  **kwargs)
 
-def read_npz(path, allow_pickle=True):
+def read_npz(path, *, allow_pickle=True):
     return DataFrame.read_npz(path, allow_pickle=allow_pickle)
 
 read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)

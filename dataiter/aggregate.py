@@ -116,7 +116,7 @@ def any(x):
     return np.any(x).item()
 
 # @composite skipped on purpose due to allowing calls with no x given.
-def count(x="", drop_missing=False):
+def count(x="", *, drop_missing=False):
     """
     Return the amount of elements in `x`.
 
@@ -148,7 +148,7 @@ def count(x="", drop_missing=False):
     return len(x)
 
 @composite
-def count_unique(x, drop_missing=False):
+def count_unique(x, *, drop_missing=False):
     """
     Return the amount of unique elements in `x`.
 
@@ -186,7 +186,7 @@ def count_unique_apply_numba(x, group, drop_missing):
         out.append(len(np.unique(xg)))
     return out
 
-def first(x, drop_missing=False):
+def first(x, *, drop_missing=False):
     """
     Return the first element of `x`.
 
@@ -239,7 +239,7 @@ def is_missing_numba(x):
     return missing
 
 @composite
-def last(x, drop_missing=False):
+def last(x, *, drop_missing=False):
     """
     Return the last element of `x`.
 
@@ -252,7 +252,7 @@ def last(x, drop_missing=False):
     return nth(x, -1, drop_missing=drop_missing)
 
 @composite
-def max(x, drop_missing=True):
+def max(x, *, drop_missing=True):
     """
     Return the maximum of elements in `x`.
 
@@ -281,7 +281,7 @@ def max(x, drop_missing=True):
     return np.amax(x).item() if len(x) >= 1 else x.missing_value
 
 @composite
-def mean(x, drop_missing=True):
+def mean(x, *, drop_missing=True):
     """
     Return the arithmetic mean of `x`.
 
@@ -313,7 +313,7 @@ def mean(x, drop_missing=True):
     return np.mean(x).item() if len(x) >= 1 else np.nan
 
 @composite
-def median(x, drop_missing=True):
+def median(x, *, drop_missing=True):
     """
     Return the median of `x`.
 
@@ -345,7 +345,7 @@ def median(x, drop_missing=True):
     return np.median(x).item() if len(x) >= 1 else np.nan
 
 @composite
-def min(x, drop_missing=True):
+def min(x, *, drop_missing=True):
     """
     Return the minimum of elements in `x`.
 
@@ -374,7 +374,7 @@ def min(x, drop_missing=True):
     return np.amin(x).item() if len(x) >= 1 else x.missing_value
 
 @composite
-def mode(x, drop_missing=True):
+def mode(x, *, drop_missing=True):
     """
     Return the most common value in `x`.
 
@@ -447,7 +447,7 @@ def nrow(data):
     return data.nrow
 
 @composite
-def nth(x, index, drop_missing=False):
+def nth(x, index, *, drop_missing=False):
     """
     Return the element of `x` at `index` (zero-based).
 
@@ -496,7 +496,7 @@ def nth_apply_numba(x, group, index, drop_missing):
     return out
 
 @composite
-def quantile(x, q, drop_missing=True):
+def quantile(x, q, *, drop_missing=True):
     """
     Return the `qth` quantile of `x`.
 
@@ -542,7 +542,7 @@ def select(functions, data, name):
     return functions[use_numba(data[name])]
 
 @composite
-def std(x, ddof=0, drop_missing=True):
+def std(x, *, ddof=0, drop_missing=True):
     """
     Return the standard deviation of `x`.
 
@@ -579,7 +579,7 @@ def std(x, ddof=0, drop_missing=True):
     return np.std(x, ddof=ddof).item() if len(x) >= 2 else np.nan
 
 @composite
-def sum(x, drop_missing=True):
+def sum(x, *, drop_missing=True):
     """
     Return the sum of `x`.
 
@@ -617,7 +617,7 @@ def use_numba(x):
         np.issubdtype(x.dtype, np.unicode_))
 
 @composite
-def var(x, ddof=0, drop_missing=True):
+def var(x, *, ddof=0, drop_missing=True):
     """
     Return the variance of `x`.
 

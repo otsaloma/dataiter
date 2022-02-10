@@ -76,7 +76,7 @@ def makedirs_for_file(path):
     return Path(path).parent.mkdir(parents=True, exist_ok=True)
 
 @deco.listify
-def pad(strings, align="right"):
+def pad(strings, *, align="right"):
     width = max(len(x) for x in strings)
     for value in strings:
         padding = " " * (width - len(value))

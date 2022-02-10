@@ -398,7 +398,7 @@ class Vector(np.ndarray):
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
 
-    def rank(self, method="average"):
+    def rank(self, *, method="average"):
         """
         Return the order of elements in a sorted vector.
 
@@ -475,7 +475,7 @@ class Vector(np.ndarray):
         indices = np.random.choice(self.length, n, replace=False)
         return self[np.sort(indices)].copy()
 
-    def sort(self, dir=1):
+    def sort(self, *, dir=1):
         """
         Return elements in sorted order.
 
@@ -554,7 +554,7 @@ class Vector(np.ndarray):
         n = min(self.length, n)
         return self[np.arange(self.length - n, self.length)].copy()
 
-    def to_string(self, max_elements=None):
+    def to_string(self, *, max_elements=None):
         """
         Return vector as a string formatted for display.
 
@@ -584,7 +584,7 @@ class Vector(np.ndarray):
         rows.append([f"dtype: {self.dtype}"])
         return "\n".join(" ".join(x) for x in rows)
 
-    def to_strings(self, quote=True, pad=False):
+    def to_strings(self, *, quote=True, pad=False):
         """
         Return vector as strings formatted for display.
 

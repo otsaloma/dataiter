@@ -1,3 +1,10 @@
+PENDING: Dataiter 0.30
+======================
+
+* Use keyword-only arguments where appropriate. The general principle is
+  that mandatory arguments are allowed as positional, but optional
+  modifiers are keyword only.
+
 2022-02-09: Dataiter 0.29.2
 ===========================
 

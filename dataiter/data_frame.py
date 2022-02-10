@@ -365,7 +365,7 @@ class DataFrame(dict):
             yield colname, np.delete(column, rows)
 
     @classmethod
-    def from_json(cls, string, columns=[], dtypes={}, **kwargs):
+    def from_json(cls, string, *, columns=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON `string`.
 
@@ -385,7 +385,7 @@ class DataFrame(dict):
         return cls(**data)
 
     @classmethod
-    def from_pandas(cls, data, dtypes={}):
+    def from_pandas(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
 
@@ -596,7 +596,7 @@ class DataFrame(dict):
     def _parse_rows_from_integer(self, rows):
         return Vector.fast(rows, int)
 
-    def print_(self, max_rows=None, max_width=None):
+    def print_(self, *, max_rows=None, max_width=None):
         """
         Print data frame to ``sys.stdout``.
 
@@ -674,7 +674,7 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
@@ -695,10 +695,10 @@ class DataFrame(dict):
 
         if not header:
             data.columns = util.generate_colnames(len(data.columns))
-        return cls.from_pandas(data, dtypes)
+        return cls.from_pandas(data, dtypes=dtypes)
 
     @classmethod
-    def read_json(cls, path, encoding="utf-8", columns=[], dtypes={}, **kwargs):
+    def read_json(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON file `path`.
 
@@ -709,10 +709,10 @@ class DataFrame(dict):
         passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
-            return cls.from_json(f.read(), columns, dtypes, **kwargs)
+            return cls.from_json(f.read(), columns=columns, dtypes=dtypes, **kwargs)
 
     @classmethod
-    def read_npz(cls, path, allow_pickle=True):
+    def read_npz(cls, path, *, allow_pickle=True):
         """
         Return a new data frame from NumPy file `path`.
 
@@ -894,7 +894,7 @@ class DataFrame(dict):
         import pandas as pd
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
-    def to_string(self, max_rows=None, max_width=None):
+    def to_string(self, *, max_rows=None, max_width=None):
         """
         Return data frame as a string formatted for display.
 
@@ -993,7 +993,7 @@ class DataFrame(dict):
         dict.update(data, {x: self[x][rows] for x in self})
         return data
 
-    def write_csv(self, path, encoding="utf-8", header=True, sep=","):
+    def write_csv(self, path, *, encoding="utf-8", header=True, sep=","):
         """
         Write data frame to CSV file `path`.
 
@@ -1003,7 +1003,7 @@ class DataFrame(dict):
         util.makedirs_for_file(path)
         pddf.to_csv(path, sep=sep, header=header, index=False, encoding=encoding)
 
-    def write_json(self, path, encoding="utf-8", **kwargs):
+    def write_json(self, path, *, encoding="utf-8", **kwargs):
         """
         Write data frame to JSON file `path`.
 
@@ -1013,7 +1013,7 @@ class DataFrame(dict):
         """
         return self.to_list_of_dicts().write_json(path, encoding=encoding, **kwargs)
 
-    def write_npz(self, path, compress=False):
+    def write_npz(self, path, *, compress=False):
         """
         Write data frame to NumPy file `path`.
         """

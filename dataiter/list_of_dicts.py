@@ -65,7 +65,7 @@ class ListOfDicts(list):
     https://github.com/otsaloma/attd
     """
 
-    def __init__(self, dicts=(), as_is=False):
+    def __init__(self, dicts=(), *, as_is=False):
         """
         Return a new list of dicts.
 
@@ -307,7 +307,7 @@ class ListOfDicts(list):
                     yield item
 
     @classmethod
-    def from_json(cls, string, keys=[], types={}, **kwargs):
+    def from_json(cls, string, *, keys=[], types={}, **kwargs):
         """
         Return a new list of dicts from JSON `string`.
 
@@ -527,7 +527,7 @@ class ListOfDicts(list):
         """
         return [x.get(key, default) for x in self]
 
-    def print_(self, max_items=None):
+    def print_(self, *, max_items=None):
         """
         Print list to ``sys.stdout``.
 
@@ -557,7 +557,7 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, path, encoding="utf-8", sep=",", header=True, keys=[], types={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, keys=[], types={}):
         """
         Return a new list from CSV file `path`.
 
@@ -585,7 +585,7 @@ class ListOfDicts(list):
             return data
 
     @classmethod
-    def read_json(cls, path, encoding="utf-8", keys=[], types={}, **kwargs):
+    def read_json(cls, path, *, encoding="utf-8", keys=[], types={}, **kwargs):
         """
         Return a new list from JSON file `path`.
 
@@ -595,7 +595,7 @@ class ListOfDicts(list):
         dict mapping keys to datatypes. `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
-            return cls.from_json(f.read(), keys, types, **kwargs)
+            return cls.from_json(f.read(), keys=keys, types=types, **kwargs)
 
     @classmethod
     def read_pickle(cls, path):
@@ -751,7 +751,7 @@ class ListOfDicts(list):
         import pandas as pd
         return pd.DataFrame(self._to_columns())
 
-    def to_string(self, max_items=None):
+    def to_string(self, *, max_items=None):
         """
         Return list as a string formatted for display.
 
@@ -802,7 +802,7 @@ class ListOfDicts(list):
                     del item[key]
             yield item
 
-    def write_csv(self, path, encoding="utf-8", header=True, sep=","):
+    def write_csv(self, path, *, encoding="utf-8", header=True, sep=","):
         """
         Write list to CSV file `path`.
 
@@ -826,7 +826,7 @@ class ListOfDicts(list):
                 item = {**dict.fromkeys(keys), **item}
                 writer.writerow(item)
 
-    def write_json(self, path, encoding="utf-8", **kwargs):
+    def write_json(self, path, *, encoding="utf-8", **kwargs):
         """
         Write list to JSON file `path`.
 
