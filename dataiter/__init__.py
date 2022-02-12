@@ -36,15 +36,15 @@ PRINT_MAX_ROWS = 100
 PRINT_MAX_WIDTH = 80
 USE_NUMBA = False
 
-with contextlib.suppress(Exception):
-    # Use Numba automatically if found.
-    import numba
-    USE_NUMBA = True
-    del numba
-
-with contextlib.suppress(LookupError):
-    # Force Numba on or off via an environment variable.
+try:
+    # Force Numba on or off if environment variable defined.
     USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
+except LookupError:
+    with contextlib.suppress(Exception):
+        # Use Numba automatically if found.
+        import numba
+        USE_NUMBA = True
+        del numba
 
 del contextlib
 del util
