@@ -34,4 +34,24 @@ GeoJSON and :class:`.ListOfDicts` for JSON.
 :func:`~dataiter.read_npz`
 
 .. automodule:: dataiter
-   :members:
+   :members: all,
+             any,
+             count,
+             count_unique,
+             first,
+             last,
+             max,
+             mean,
+             median,
+             min,
+             mode,
+             nrow,
+             nth,
+             quantile,
+             read_csv,
+             read_geojson,
+             read_json,
+             read_npz,
+             std,
+             sum,
+             var

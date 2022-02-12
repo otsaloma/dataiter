@@ -78,12 +78,3 @@ from dataiter.io import read_csv # noqa
 from dataiter.io import read_geojson # noqa
 from dataiter.io import read_json # noqa
 from dataiter.io import read_npz # noqa
-
-for name, value in list(globals().items()):
-    if (getattr(value, "__module__", "") in
-        ["dataiter.aggregate", "dataiter.io"]):
-        # Patch module to include value in API documentation.
-        value.__module__ = "dataiter"
-
-del name
-del value
