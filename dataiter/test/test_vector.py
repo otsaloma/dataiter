@@ -52,13 +52,13 @@ class TestVector:
         assert Vector([np.object_(np)]).is_object()
         assert Vector([np.str_("")]).is_string()
 
-    def test___new___missing(self):
+    def test___new___na(self):
         Vector([None])
         Vector([NaN])
         Vector([NaT])
         Vector([""])
 
-    def test___new___missing_boolean(self):
+    def test___new___na_boolean(self):
         # Should be upcast to object.
         # Missing values should be None.
         a = Vector([True, False, NaN, None])
@@ -66,7 +66,7 @@ class TestVector:
         assert a.is_object()
         assert a.equal(b)
 
-    def test___new___missing_date(self):
+    def test___new___na_date(self):
         # Should be converted to np.datetime64.
         # Missing values should be NaT.
         a = Vector([DATE, NaT, NaN, None])
@@ -74,7 +74,7 @@ class TestVector:
         assert a.is_datetime()
         assert a.equal(b)
 
-    def test___new___missing_datetime(self):
+    def test___new___na_datetime(self):
         # Should be converted to np.datetime64.
         # Missing values should be NaT.
         a = Vector([DATETIME, NaN, NaT, None])
@@ -82,14 +82,14 @@ class TestVector:
         assert a.is_datetime()
         assert a.equal(b)
 
-    def test___new___missing_float(self):
+    def test___new___na_float(self):
         # Missing values should be NaN.
         a = Vector([1.1, 2.2, NaN, None])
         b = Vector([1.1, 2.2, NaN, NaN])
         assert a.is_float()
         assert a.equal(b)
 
-    def test___new___missing_integer(self):
+    def test___new___na_integer(self):
         # Should be upcast to float.
         # Missing values should be NaN.
         a = Vector([1, 2, NaN, None])
@@ -97,7 +97,7 @@ class TestVector:
         assert a.is_float()
         assert a.equal(b)
 
-    def test___new___missing_object(self):
+    def test___new___na_object(self):
         # Missing values should be None.
         a = Vector(["a", "b", "", NaN, None], object)
         assert a.is_object()
@@ -107,13 +107,13 @@ class TestVector:
         assert a[3] is None
         assert a[4] is None
 
-    def test___new___missing_object_single(self):
+    def test___new___na_object_single(self):
         # Missing values should be None.
         a = Vector([None], object)
         assert a.is_object()
         assert a[0] is None
 
-    def test___new___missing_string(self):
+    def test___new___na_string(self):
         # Missing values should be blank strings.
         a = Vector(["a", "b", "", NaN, None])
         b = Vector(["a", "b", "", "", ""])
@@ -178,9 +178,9 @@ class TestVector:
         assert a.is_string()
         assert np.all(a == ["1", "2"])
 
-    def test_drop_missing(self):
+    def test_drop_na(self):
         a = Vector([1, 2, 3, None])
-        b = a.drop_missing()
+        b = a.drop_na()
         assert b.tolist() == [1, 2, 3]
 
     def test_equal_boolean(self):
@@ -296,25 +296,25 @@ class TestVector:
         assert not Vector([DATETIME]).is_integer()
         assert not Vector([self]).is_integer()
 
-    def test_is_missing_date(self):
+    def test_is_na_date(self):
         a = Vector([DATE, DATE, NaT])
-        assert a.is_missing().tolist() == [False, False, True]
+        assert a.is_na().tolist() == [False, False, True]
 
-    def test_is_missing_datetime(self):
+    def test_is_na_datetime(self):
         a = Vector([DATETIME, DATETIME, NaT])
-        assert a.is_missing().tolist() == [False, False, True]
+        assert a.is_na().tolist() == [False, False, True]
 
-    def test_is_missing_float(self):
+    def test_is_na_float(self):
         a = Vector([1, 2, None])
-        assert a.is_missing().tolist() == [False, False, True]
+        assert a.is_na().tolist() == [False, False, True]
 
-    def test_is_missing_object(self):
+    def test_is_na_object(self):
         a = Vector([self, self, None])
-        assert a.is_missing().tolist() == [False, False, True]
+        assert a.is_na().tolist() == [False, False, True]
 
-    def test_is_missing_string(self):
+    def test_is_na_string(self):
         a = Vector(["a", "b", ""])
-        assert a.is_missing().tolist() == [False, False, True]
+        assert a.is_na().tolist() == [False, False, True]
 
     def test_is_number(self):
         assert not Vector([b"1"]).is_number()
@@ -359,7 +359,7 @@ class TestVector:
         b = a.rank(method="average")
         assert b.tolist() == [6, 2, 2, 2, 4.5, 4.5]
 
-    def test_rank_average_missing(self):
+    def test_rank_average_na(self):
         a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="average")
         assert b.tolist() == [4.5, 1, 2, 3, 4.5]
@@ -369,7 +369,7 @@ class TestVector:
         b = a.rank(method="max")
         assert b.tolist() == [2, 4, 2, 4, 5]
 
-    def test_rank_max_missing(self):
+    def test_rank_max_na(self):
         a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="max")
         assert b.tolist() == [5, 1, 2, 3, 5]
@@ -379,7 +379,7 @@ class TestVector:
         b = a.rank(method="min")
         assert b.tolist() == [1, 3, 1, 3, 5]
 
-    def test_rank_min_missing(self):
+    def test_rank_min_na(self):
         a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="min")
         assert b.tolist() == [4, 1, 2, 3, 4]
@@ -389,7 +389,7 @@ class TestVector:
         b = a.rank(method="ordinal")
         assert b.tolist() == [1, 3, 2, 4, 5]
 
-    def test_rank_ordinal_missing(self):
+    def test_rank_ordinal_na(self):
         a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="ordinal")
         assert b.tolist() == [4, 1, 2, 3, 5]
@@ -402,9 +402,9 @@ class TestVector:
         assert a.rank(method="min").equal(a.rank(method="min"))
         assert a.rank(method="min").equal(a.rank(method="ordinal"))
 
-    def test_replace_missing(self):
+    def test_replace_na(self):
         a = Vector([1, 2, 3, None])
-        assert a.replace_missing(0).tolist() == [1, 2, 3, 0]
+        assert a.replace_na(0).tolist() == [1, 2, 3, 0]
 
     def test_sample(self):
         a = Vector([1, 2, 3, 4, 5])
@@ -416,7 +416,7 @@ class TestVector:
         assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5]
         assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1]
 
-    def test_sort_missing(self):
+    def test_sort_na(self):
         a = Vector([None, 1, 2, 3, 4, 5, None])
         assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5, None, None]
         assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1, None, None]

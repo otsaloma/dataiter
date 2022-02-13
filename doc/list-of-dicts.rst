@@ -9,7 +9,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.copy`
 :meth:`~dataiter.ListOfDicts.deepcopy`
 :meth:`~dataiter.ListOfDicts.extend`
-:meth:`~dataiter.ListOfDicts.fill_missing`
+:meth:`~dataiter.ListOfDicts.fill_missing_keys`
 :meth:`~dataiter.ListOfDicts.filter`
 :meth:`~dataiter.ListOfDicts.filter_out`
 :meth:`~dataiter.ListOfDicts.from_json`
@@ -24,7 +24,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.modify_if`
 :meth:`~dataiter.ListOfDicts.pluck`
 :meth:`~dataiter.ListOfDicts.print_`
-:meth:`~dataiter.ListOfDicts.print_missing_counts`
+:meth:`~dataiter.ListOfDicts.print_na_counts`
 :meth:`~dataiter.ListOfDicts.read_csv`
 :meth:`~dataiter.ListOfDicts.read_json`
 :meth:`~dataiter.ListOfDicts.read_pickle`

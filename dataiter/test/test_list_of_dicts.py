@@ -180,22 +180,22 @@ class TestListOfDicts:
         assert data[:len(orig)] == orig
         assert data[-len(orig):] == orig
 
-    def test_fill_missing(self):
+    def test_fill_missing_keys(self):
         orig = test.list_of_dicts("downloads.json")
         for i, item in enumerate(orig):
             if i % 2 == 0:
                 del item.downloads
-        data = orig.deepcopy().fill_missing(downloads=0)
+        data = orig.deepcopy().fill_missing_keys(downloads=0)
         assert sum("downloads" in x for x in orig) == len(orig) // 2
         assert sum("downloads" in x for x in data) == len(orig)
 
-    def test_fill_missing_all(self):
+    def test_fill_missing_keys_all(self):
         orig = test.list_of_dicts("downloads.json")
         for i, item in enumerate(orig):
             if i % 2 == 0: del item.category
             if i % 4 == 0: del item.date
             if i % 8 == 0: del item.downloads
-        data = orig.deepcopy().fill_missing()
+        data = orig.deepcopy().fill_missing_keys()
         for item in data:
             assert "category" in item
             assert "date" in item
@@ -315,7 +315,7 @@ class TestListOfDicts:
         assert len(downloads) == len(data)
         assert sum(downloads) == 541335745
 
-    def test_pluck_with_missing(self):
+    def test_pluck_with_na(self):
         data = test.list_of_dicts("downloads.json")
         del data[0].downloads
         downloads = data.pluck("downloads", 0)
@@ -323,9 +323,9 @@ class TestListOfDicts:
         assert sum(downloads) == 541300639
 
     @patch("builtins.print")
-    def test_print_missing_counts(self, mock_print):
+    def test_print_na_counts(self, mock_print):
         data = test.list_of_dicts("vehicles.json")
-        data.print_missing_counts()
+        data.print_na_counts()
         mock_print.assert_called()
 
     def test_read_csv(self):

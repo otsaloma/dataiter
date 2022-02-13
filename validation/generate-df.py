@@ -13,7 +13,7 @@ def read_csv(path):
     for name in data.colnames:
         # Drop all rows with NAs to avoid upcasting to float
         # and differing NA representation in output.
-        data = data.filter_out(data[name].is_missing())
+        data = data.filter_out(data[name].is_na())
         if data[name].is_string():
             # Use all lower case for strings to avoid differing
             # sorting of lower vs. upper case characters.

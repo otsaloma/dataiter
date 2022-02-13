@@ -234,15 +234,15 @@ class ListOfDicts(list):
 
     @deco.obsoletes
     @deco.new_from_generator
-    def fill_missing(self, **key_value_pairs):
+    def fill_missing_keys(self, **key_value_pairs):
         """
         Return list with missing keys added.
 
         If `key_value_pairs` not given, fill all missing keys with ``None``.
 
         >>> data = di.read_json("data/listings.json")
-        >>> data = data.fill_missing(price=None)
-        >>> data = data.fill_missing()
+        >>> data = data.fill_missing_keys(price=None)
+        >>> data = data.fill_missing_keys()
         """
         if not key_value_pairs:
             keys = util.unique_keys(itertools.chain(*self))
@@ -349,7 +349,7 @@ class ListOfDicts(list):
         b = other.deepcopy().modify(_bid_=lambda x: next(bcounter))
         ab = a.deepcopy().left_join(b, *by)
         # Fill in missing _bid_ with bogus values.
-        ab = ab.fill_missing(_bid_=next(bcounter))
+        ab = ab.fill_missing_keys(_bid_=next(bcounter))
         # Check which items of b were not joined into a,
         # if no items remain, full join is the same as left join ab.
         b = b.anti_join(ab, "_bid_")
@@ -357,7 +357,7 @@ class ListOfDicts(list):
             return ab.unselect("_aid_", "_bid_")
         ba = b.left_join(a, *by)
         # Fill in missing _aid_ with bogus values.
-        ba = ba.fill_missing(_aid_=next(acounter))
+        ba = ba.fill_missing_keys(_aid_=next(acounter))
         return (ab + ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def group_by(self, *keys):
@@ -539,7 +539,7 @@ class ListOfDicts(list):
         """
         print(self.to_string(max_items))
 
-    def print_missing_counts(self):
+    def print_na_counts(self):
         """
         Print counts of missing values by key.
 
@@ -547,7 +547,7 @@ class ListOfDicts(list):
         considered missing.
 
         >>> data = di.read_json("data/listings.json")
-        >>> data.print_missing_counts()
+        >>> data.print_na_counts()
         """
         print("Missing counts:")
         for key in util.unique_keys(itertools.chain(*self)):

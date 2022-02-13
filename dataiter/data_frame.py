@@ -505,8 +505,8 @@ class DataFrame(dict):
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
-            value = column.missing_value
-            dtype = column.missing_dtype
+            value = column.na_value
+            dtype = column.na_dtype
             new = DataFrameColumn(value, dtype, self.nrow)
             new[found] = column[src[found]]
             yield colname, new.copy()
@@ -633,16 +633,16 @@ class DataFrame(dict):
         mem.colnames = [x.upper() for x in mem.colnames]
         print(mem)
 
-    def print_missing_counts(self):
+    def print_na_counts(self):
         """
         Print counts of missing values by column.
 
         >>> data = di.read_csv("data/listings.csv")
-        >>> data.print_missing_counts()
+        >>> data.print_na_counts()
         """
         nas = DataFrame()
         for name in self.colnames:
-            n = self[name].is_missing().sum()
+            n = self[name].is_na().sum()
             if n == 0: continue
             nas = nas.rbind(DataFrame(column=name, nna=n))
         if not nas: return
@@ -665,8 +665,8 @@ class DataFrame(dict):
                 return data[colname]
             for ref in data_frames:
                 if colname not in ref: continue
-                value = ref[colname].missing_value
-                dtype = ref[colname].missing_dtype
+                value = ref[colname].na_value
+                dtype = ref[colname].na_dtype
                 return Vector.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
             parts = [get_part(x, colname) for x in data_frames]

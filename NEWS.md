@@ -1,9 +1,13 @@
 PENDING: Dataiter 0.30
 ======================
 
-* Use keyword-only arguments where appropriate. The general principle is
-  that mandatory arguments are allowed as positional, but optional
-  modifiers are keyword only.
+* Use keyword-only arguments where appropriate – the general principle
+  is that mandatory arguments are allowed as positional, but optional
+  modifiers are keyword only
+* Rename all instances of "missing" to "na", such as `Vector.is_missing`
+  to `Vector.is_na`, the only exception being
+  `ListOfDicts.fill_missing`, which becomes
+  `ListOfDicts.fill_missing_keys`
 
 2022-02-09: Dataiter 0.29.2
 ===========================

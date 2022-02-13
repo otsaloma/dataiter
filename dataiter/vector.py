@@ -173,14 +173,14 @@ class Vector(np.ndarray):
         if self.ndim == 1: return
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
-    def drop_missing(self):
+    def drop_na(self):
         """
         Return vector without missing values.
 
         >>> vector = di.Vector([1, 2, 3, None])
-        >>> vector.drop_missing()
+        >>> vector.drop_na()
         """
-        return self[~self.is_missing()].copy()
+        return self[~self.is_na()].copy()
 
     def equal(self, other):
         """
@@ -197,10 +197,10 @@ class Vector(np.ndarray):
         """
         if not (isinstance(other, Vector) and
                 self.length == other.length and
-                str(self.missing_value) == str(other.missing_value)):
+                str(self.na_value) == str(other.na_value)):
             return False
-        ii = self.is_missing()
-        jj = other.is_missing()
+        ii = self.is_na()
+        jj = other.is_na()
         return (np.all(ii == jj) and
                 np.all(self[~ii] == other[~jj]))
 
@@ -274,13 +274,13 @@ class Vector(np.ndarray):
         """
         return np.issubdtype(self.dtype, np.integer)
 
-    def is_missing(self):
+    def is_na(self):
         """
         Return a boolean vector indicating missing data elements.
 
         >>> vector = di.Vector([1, 2, 3, None])
         >>> vector
-        >>> vector.is_missing()
+        >>> vector.is_na()
         """
         if self.is_datetime():
             return np.isnat(self)
@@ -330,7 +330,7 @@ class Vector(np.ndarray):
         return self.__class__(function(x, *args, **kwargs) for x in self)
 
     @property
-    def missing_dtype(self):
+    def na_dtype(self):
         """
         Return the corresponding data type that can handle missing data.
 
@@ -338,10 +338,10 @@ class Vector(np.ndarray):
 
         >>> vector = di.Vector([1, 2, 3])
         >>> vector
-        >>> vector.put([2], vector.missing_value)
-        >>> vector = vector.astype(vector.missing_dtype)
+        >>> vector.put([2], vector.na_value)
+        >>> vector = vector.astype(vector.na_dtype)
         >>> vector
-        >>> vector.put([2], vector.missing_value)
+        >>> vector.put([2], vector.na_value)
         >>> vector
         """
         if self.is_datetime():
@@ -355,7 +355,7 @@ class Vector(np.ndarray):
         return object
 
     @property
-    def missing_value(self):
+    def na_value(self):
         """
         Return the corresponding value to use to represent missing data.
 
@@ -424,7 +424,7 @@ class Vector(np.ndarray):
         """
         if method not in ["min", "max", "average", "ordinal"]:
             raise ValueError(f"Unexpected method: {method!r}")
-        missing = self.is_missing()
+        na = self.is_na()
         if method == "average":
             rank_min = self.rank(method="min")
             rank_max = self.rank(method="max")
@@ -432,34 +432,34 @@ class Vector(np.ndarray):
             return self.__class__(rank)
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
-            inv = np.unique(self[~missing], return_inverse=True)[1]
+            inv = np.unique(self[~na], return_inverse=True)[1]
             arank = np.concatenate(([0], np.bincount(inv))).cumsum()[inv]
             zrank = arank.max() + 1
         if method == "max":
             # https://stackoverflow.com/a/14672797/16369038
-            inv = np.unique(self[~missing], return_inverse=True)[1]
+            inv = np.unique(self[~na], return_inverse=True)[1]
             arank = np.bincount(inv).cumsum()[inv] - 1
             zrank = len(self) - 1
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
-            indices = self[~missing].argsort()
+            indices = self[~na].argsort()
             arank = np.empty_like(indices)
             arank[indices] = np.arange(len(indices))
-            zrank = arank.max() + 1 + np.arange(missing.sum())
+            zrank = arank.max() + 1 + np.arange(na.sum())
         out = np.zeros_like(self, int)
-        out[~missing] = arank + 1
-        out[missing] = zrank + 1
+        out[~na] = arank + 1
+        out[na] = zrank + 1
         return self.__class__(out)
 
-    def replace_missing(self, value):
+    def replace_na(self, value):
         """
         Return vector with missing values replaced with `value`.
 
         >>> vector = di.Vector([1, 2, 3, None])
-        >>> vector.replace_missing(0)
+        >>> vector.replace_na(0)
         """
         vector = self.copy()
-        vector[vector.is_missing()] = value
+        vector[vector.is_na()] = value
         return vector
 
     def sample(self, n=None):
@@ -487,9 +487,9 @@ class Vector(np.ndarray):
         >>> vector.sort(dir=1)
         >>> vector.sort(dir=-1)
         """
-        missing = self.is_missing()
-        a = self[~missing].copy()
-        z = self[missing].copy()
+        na = self.is_na()
+        a = self[~na].copy()
+        z = self[na].copy()
         np.ndarray.sort(a)
         if dir < 0:
             a = a[::-1]
@@ -502,16 +502,16 @@ class Vector(np.ndarray):
         # Can be empty if all of seq are missing values.
         types = util.unique_types(seq)
         if dtype is not None:
-            missing = Vector.fast([], dtype).missing_value
+            na = Vector.fast([], dtype).na_value
         elif len(types) == 1 and types.copy().pop().__module__ == "numpy":
             # If we have a regular Python list of NumPy scalars,
             # infer type. This should be rare, but can happen.
             dtype = types.copy().pop()().dtype
-            missing = Vector.fast([], dtype).missing_value
+            na = Vector.fast([], dtype).na_value
         else:
             # Guess the missing value based on types in seq.
-            missing = cls._std_to_np_missing_value(types)
-        seq = [missing if
+            na = cls._std_to_np_na_value(types)
+        seq = [na if
                x is None or
                (isinstance(x, float) and np.isnan(x))
                else x for x in seq]
@@ -529,7 +529,7 @@ class Vector(np.ndarray):
         return np.array(seq, dtype)
 
     @classmethod
-    def _std_to_np_missing_value(cls, types):
+    def _std_to_np_na_value(cls, types):
         if not types:
             return None
         if str in types:
@@ -614,7 +614,7 @@ class Vector(np.ndarray):
 
         Missing values are replaced with ``None``.
         """
-        return np.where(self.is_missing(), None, self).tolist()
+        return np.where(self.is_na(), None, self).tolist()
 
     def unique(self):
         """

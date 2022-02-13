@@ -117,8 +117,8 @@ class TestDataFrame:
 
     def test_aggregate(self):
         data = test.data_frame("vehicles.csv")
-        data = data.filter_out(data.cyl.is_missing())
-        data = data.filter_out(data.displ.is_missing())
+        data = data.filter_out(data.cyl.is_na())
+        data = data.filter_out(data.displ.is_na())
         stat = (data
                 .group_by("make", "model")
                 .aggregate(cyl=di.median("cyl"),
@@ -230,8 +230,8 @@ class TestDataFrame:
         data = orig.full_join(holidays, "date")
         assert data.nrow == 930
         assert data.ncol == 4
-        assert sum(~data.holiday.is_missing()) == 60
-        assert sum(data.downloads.is_missing()) == 25
+        assert sum(~data.holiday.is_na()) == 60
+        assert sum(data.downloads.is_na()) == 25
         assert np.nansum(data.downloads) == 541335745
 
     def test_head(self):
@@ -244,7 +244,7 @@ class TestDataFrame:
         data = orig.inner_join(holidays, "date")
         assert data.nrow == 35
         assert data.ncol == orig.ncol + 1
-        assert np.sum(data.holiday.is_missing()) == 0
+        assert np.sum(data.holiday.is_na()) == 0
         assert np.sum(data.downloads) == 18226489
 
     def test_left_join(self):
@@ -253,7 +253,7 @@ class TestDataFrame:
         data = orig.left_join(holidays, "date")
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
-        assert np.sum(~data.holiday.is_missing()) == 35
+        assert np.sum(~data.holiday.is_na()) == 35
         assert np.sum(data.downloads) == 541335745
 
     def test_left_join_by_tuple(self):
@@ -263,7 +263,7 @@ class TestDataFrame:
         data = orig.left_join(holidays, ("date", "holiday_date"))
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol + 1
-        assert np.sum(~data.holiday.is_missing()) == 35
+        assert np.sum(~data.holiday.is_na()) == 35
         assert np.sum(data.downloads) == 541335745
 
     def test_map(self):
@@ -301,16 +301,16 @@ class TestDataFrame:
         mock_print.assert_called()
 
     @patch("builtins.print")
-    def test_print_missing_counts(self, mock_print):
+    def test_print_na_counts(self, mock_print):
         data = test.data_frame("vehicles.csv")
-        data.print_missing_counts()
+        data.print_na_counts()
         mock_print.assert_called()
 
     @patch("builtins.print")
-    def test_print_missing_counts_none(self, mock_print):
+    def test_print_na_counts_none(self, mock_print):
         data = test.data_frame("vehicles.csv")
         data = data.select("id", "make", "model")
-        data.print_missing_counts()
+        data.print_na_counts()
         mock_print.assert_not_called()
 
     def test_rbind(self):
@@ -322,7 +322,7 @@ class TestDataFrame:
         assert data.slice(range(orig.nrow*1, orig.nrow*2)) == orig
         assert data.slice(range(orig.nrow*2, orig.nrow*3)) == orig
 
-    def test_rbind_missing(self):
+    def test_rbind_na(self):
         part1 = test.data_frame("vehicles.csv")
         part2 = test.data_frame("vehicles.csv")
         part1.test1 = 1
