@@ -13,7 +13,7 @@ def main(indent, precision, file):
     """Rewrite GeoJSON file with proper formatting."""
     for path in file:
         click.echo(path)
-        data = di.GeoJSON.read(path)
+        data = di.read_geojson(path)
         for i in range(data.nrow):
             coords = data.geometry[i].coordinates
             data.geometry[i].coordinates = round_recursive(coords, precision)

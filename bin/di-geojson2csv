@@ -18,7 +18,7 @@ def main(force, file):
             raise SystemExit(
                 f"Output file {output} exists, "
                 f"use -f/--force to overwrite")
-        data = di.GeoJSON.read(input)
+        data = di.read_geojson(input)
         data = data.unselect("geometry")
         data.write_csv(output)
 
