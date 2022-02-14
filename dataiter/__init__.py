@@ -49,14 +49,12 @@ except LookupError:
 del contextlib
 del util
 
-# Classes API
 from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.geojson import GeoJSON # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
 
-# Functions API
 from dataiter.aggregate import all # noqa
 from dataiter.aggregate import any # noqa
 from dataiter.aggregate import count # noqa
