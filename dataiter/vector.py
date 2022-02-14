@@ -375,6 +375,11 @@ class Vector(np.ndarray):
         Note that actually using these might require upcasting the vector.
         Integer will need to be upcast to float to contain ``np.nan``. Other,
         such as boolean, will need to be upcast to object to contain ``None``.
+
+        If you need to avoid object columns, you can also consider converting
+        booleans to float using :meth:`as_float`, which will give you 0.0 for
+        false and 1.0 for true. Depending on how you use the data, that might
+        work as well as an object vector of ``True``, ``False`` and ``None``.
         """
         if self.is_datetime():
             return np.datetime64("NaT")
