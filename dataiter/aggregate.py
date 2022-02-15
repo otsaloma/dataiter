@@ -79,7 +79,7 @@ def all(x):
                      default=True,
                      nrequired=0)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = x.as_boolean()
     return np.all(x).item()
@@ -110,7 +110,7 @@ def any(x):
                      default=False,
                      nrequired=0)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = x.as_boolean()
     return np.any(x).item()
@@ -142,7 +142,7 @@ def count(x="", *, drop_na=False):
                      default=0,
                      nrequired=0)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return len(x)
@@ -169,7 +169,7 @@ def count_unique(x, *, drop_na=False):
                          drop_na and
                          data[x].is_na().any()))
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return len(set(x))
@@ -275,7 +275,7 @@ def max(x, *, drop_na=True):
                      default=None,
                      nrequired=1)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.amax(x).item() if len(x) >= 1 else x.na_value
@@ -307,7 +307,7 @@ def mean(x, *, drop_na=True):
                      default=np.nan,
                      nrequired=1)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.mean(x).item() if len(x) >= 1 else np.nan
@@ -339,7 +339,7 @@ def median(x, *, drop_na=True):
                      default=np.nan,
                      nrequired=1)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.median(x).item() if len(x) >= 1 else np.nan
@@ -368,7 +368,7 @@ def min(x, *, drop_na=True):
                      default=None,
                      nrequired=1)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.amin(x).item() if len(x) >= 1 else x.na_value
@@ -395,7 +395,7 @@ def mode(x, *, drop_na=True):
                          drop_na and
                          data[x].is_na().any()))
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return mode1(x) if len(x) >= 1 else x.na_value
@@ -469,7 +469,7 @@ def nth(x, index, *, drop_na=False):
                          drop_na and
                          data[x].is_na().any()))
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     try:
@@ -521,7 +521,7 @@ def quantile(x, q, *, drop_na=True):
                          drop_na and
                          data[x].is_na().any()))
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
@@ -573,7 +573,7 @@ def std(x, *, ddof=0, drop_na=True):
                      default=np.nan,
                      nrequired=2)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.std(x, ddof=ddof).item() if len(x) >= 2 else np.nan
@@ -602,7 +602,7 @@ def sum(x, *, drop_na=True):
                      default=0,
                      nrequired=0)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.sum(x).item()
@@ -648,7 +648,7 @@ def var(x, *, ddof=0, drop_na=True):
                      default=np.nan,
                      nrequired=2)
 
-        aggregate.numba = True
+        aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
     return np.var(x, ddof=ddof).item() if len(x) >= 2 else np.nan

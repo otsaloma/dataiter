@@ -198,14 +198,14 @@ class DataFrame(dict):
         data._index_ = np.arange(data.nrow)
         stat = data.unique(*group_colnames).select("_index_", *group_colnames)
         indices = np.split(data._index_, stat._index_[1:])
-        uses_numba = [getattr(x, "numba", False) for x in colname_function_pairs.values()]
-        if any(uses_numba):
+        group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
+        if any(group_aware):
             groups = Vector.fast(range(len(indices)), int)
             n = Vector.fast(map(len, indices), int)
             data._group_ = np.repeat(groups, n)
         slices = None
         for colname, function in colname_function_pairs.items():
-            if getattr(function, "numba", False):
+            if getattr(function, "group_aware", False):
                 # function might leave Nones in its output,
                 # once those are replaced with the proper default
                 # we can do a fast conversion to DataFrameColumn.
