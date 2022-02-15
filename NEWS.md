@@ -8,6 +8,8 @@ PENDING: Dataiter 0.30
   to `Vector.is_na`, the only exception being
   `ListOfDicts.fill_missing`, which becomes
   `ListOfDicts.fill_missing_keys`
+* Truncate data frame object and string columns at
+  `PRINT_TRUNCATE_WIDTH` (default 32) for printing
 
 2022-02-09: Dataiter 0.29.2
 ===========================

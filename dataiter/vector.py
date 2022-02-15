@@ -26,6 +26,7 @@ import numpy as np
 import sys
 
 from dataiter import util
+from math import inf
 
 TYPE_CONVERSIONS = {
     datetime.date: "datetime64[D]",
@@ -589,7 +590,7 @@ class Vector(np.ndarray):
         rows.append([f"dtype: {self.dtype}"])
         return "\n".join(" ".join(x) for x in rows)
 
-    def to_strings(self, *, quote=True, pad=False):
+    def to_strings(self, *, quote=True, pad=False, truncate_width=inf):
         """
         Return vector as strings formatted for display.
 
@@ -607,8 +608,17 @@ class Vector(np.ndarray):
         if self.is_integer():
             strings = ["{:d}".format(x) for x in self]
             return self.__class__.fast(pad(strings), str)
+        if self.is_object():
+            strings = [str(x) for x in self]
+            for i in range(len(strings)):
+                if len(strings[i]) > truncate_width:
+                    strings[i] = strings[i][:(truncate_width-1)] + "…"
+            return self.__class__.fast(pad(strings), str)
         if self.is_string():
             strings = [quote(x) for x in self]
+            for i in range(len(strings)):
+                if len(strings[i]) > truncate_width:
+                    strings[i] = strings[i][:(truncate_width-1)] + "…"
             return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]
         return self.__class__.fast(pad(strings), str)

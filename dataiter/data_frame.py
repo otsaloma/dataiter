@@ -894,7 +894,7 @@ class DataFrame(dict):
         import pandas as pd
         return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
 
-    def to_string(self, *, max_rows=None, max_width=None):
+    def to_string(self, *, max_rows=None, max_width=None, truncate_width=None):
         """
         Return data frame as a string formatted for display.
 
@@ -902,13 +902,15 @@ class DataFrame(dict):
         >>> data.to_string()
         """
         if not self: return ""
-        max_rows = dataiter.PRINT_MAX_ROWS if max_rows is None else max_rows
-        max_width = util.get_print_width() if max_width is None else max_width
+        max_rows = max_rows or dataiter.PRINT_MAX_ROWS
+        max_width = max_width or util.get_print_width()
+        truncate_width = truncate_width or dataiter.PRINT_TRUNCATE_WIDTH
         n = min(self.nrow, max_rows)
         columns = {colname: util.pad(
             [colname] +
             [str(column.dtype)] +
-            [str(x) for x in column[:n].to_strings(quote=False, pad=True)]
+            [str(x) for x in column[:n].to_strings(
+                quote=False, pad=True, truncate_width=truncate_width)]
         ) for colname, column in self.items()}
         for column in columns.values():
             column.insert(2, "-" * len(column[0]))
