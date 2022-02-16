@@ -40,8 +40,8 @@ might want to calculate. These are technically function factories, i.e.
 they are functions that return functions, that will then be called
 group-wise within the ``aggregate`` method. For example,
 ``di.mean("price")`` returns a function, that given a data frame,
-returns the mean of the "price" column. The supported functions are
-listed below.
+returns the group-wise mean of the "price" column. The supported
+functions are listed below.
 
 * :func:`~dataiter.all`
 * :func:`~dataiter.any`
