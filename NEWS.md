@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.30
-======================
+2022-02-19: Dataiter 0.30
+=========================
 
 * Use keyword-only arguments where appropriate – the general principle
   is that mandatory arguments are allowed as positional, but optional
