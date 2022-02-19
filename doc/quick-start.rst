@@ -11,7 +11,7 @@ DataFrame
 .
      id      hood zipcode guests    sqft price price_per_guest
   int64      <U13    <U11  int64 float64 int64         float64
-  ----- --------- ------- ------ ------- ----- ---------------
+  ────────────────────────────────────────────────────────────
 0  2060 Manhattan   10040      2     nan   100          50.000
 1  2595 Manhattan   10018      2     nan   225         112.500
 2  3831  Brooklyn   11238      3     500    89          29.667
@@ -27,7 +27,7 @@ DataFrame
 .
         id      hood zipcode guests    sqft price price_per_guest
      int64      <U13    <U11  int64 float64 int64         float64
-  -------- --------- ------- ------ ------- ----- ---------------
+  ───────────────────────────────────────────────────────────────
 0 42279170 Manhattan   10013      2     nan     0             0.0
 1 42384530 Manhattan   10036      2     nan     0             0.0
 2 18835820 Manhattan   10021      2     nan    10             5.0
@@ -49,7 +49,7 @@ GeoJSON
 .
      neighbourhood neighbourhood_group       geometry
               <U26                <U13         object
-  ---------------- ------------------- --------------
+  ───────────────────────────────────────────────────
 0        Bayswater              Queens <MultiPolygon>
 1         Allerton               Bronx <MultiPolygon>
 2      City Island               Bronx <MultiPolygon>
