@@ -74,5 +74,5 @@ def setup(app):
     # https://github.com/readthedocs/readthedocs.org/issues/2276#issuecomment-231899567
     import subprocess
     from pathlib import Path
-    cwd = Path(__file__).parent.resolve() / "comparison"
-    subprocess.run([sys.executable, "build.py"], cwd=cwd, check=True)
+    cwd = Path(__file__).parent.resolve() / 'comparison'
+    subprocess.run([sys.executable, 'build.py'], cwd=cwd, check=True)
