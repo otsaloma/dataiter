@@ -178,6 +178,14 @@ class TestVector:
         assert a.is_string()
         assert np.all(a == ["1", "2"])
 
+    def test_as_string_length(self):
+        a = Vector([""]).as_string()
+        a[0] = "hello"
+        assert a[0] == "h"
+        a = Vector([""]).as_string(5)
+        a[0] = "hello"
+        assert a[0] == "hello"
+
     def test_drop_na(self):
         a = Vector([1, 2, 3, None])
         b = a.drop_na()

@@ -161,14 +161,15 @@ class Vector(np.ndarray):
         """
         return self.__class__(self.tolist(), object)
 
-    def as_string(self):
+    def as_string(self, length=None):
         """
         Return vector converted to string data type.
 
         >>> vector = di.Vector([1, 2, 3])
         >>> vector.as_string()
+        >>> vector.as_string(64)
         """
-        return self.astype(str)
+        return self.astype(f"<U{length}" if length else str)
 
     def _check_dimensions(self):
         if self.ndim == 1: return
