@@ -913,7 +913,7 @@ class DataFrame(dict):
                 quote=False, pad=True, truncate_width=truncate_width)]
         ) for colname, column in self.items()}
         for column in columns.values():
-            column.insert(2, "-" * len(column[0]))
+            column.insert(2, "─" * len(column[0]))
         row_numbers = [str(i) for i in range(n)]
         row_numbers = util.pad(["", "", ""] + row_numbers)
         # If the length of rows exceeds max_width, split to
@@ -927,7 +927,7 @@ class DataFrame(dict):
                 width = len(batch_rows[0] + column[0]) + 1
                 if width > max_width: break
                 for i in range(len(column)):
-                    batch_rows[i] += " "
+                    batch_rows[i] += "─" if i == 2 else " "
                     batch_rows[i] += column[i]
                 del columns[colname]
             rows_to_print.append("")
