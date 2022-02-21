@@ -305,10 +305,11 @@ class DataFrame(dict):
         `compare` returns three data frames: added rows, removed rows and
         changed values. The first two are basically subsets of the rows of
         `self` and `other`, respectively. Changed values are returned as a data
-        frame with column names, row numbers and values.
+        frame with one row per differing value.
 
         .. warning:: `compare` is experimental, do not rely on it reporting all
-                     of the differences correctly.
+                     of the differences correctly. Do not try to give it two
+                     huge data frames with very little in common.
 
         >>> old = di.read_csv("data/vehicles.csv")
         >>> new = old.modify(hwy=lambda x: np.minimum(100, x.hwy))
