@@ -7,6 +7,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.cbind`
 :attr:`~dataiter.DataFrame.colnames`
 :attr:`~dataiter.DataFrame.columns`
+:meth:`~dataiter.DataFrame.compare`
 :meth:`~dataiter.DataFrame.copy`
 :meth:`~dataiter.DataFrame.deepcopy`
 :meth:`~dataiter.DataFrame.filter`

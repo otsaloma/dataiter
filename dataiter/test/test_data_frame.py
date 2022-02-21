@@ -168,6 +168,15 @@ class TestDataFrame:
         data = test.data_frame("downloads.csv")
         assert data.columns == [data.category, data.date, data.downloads]
 
+    def test_compare(self):
+        old = test.data_frame("vehicles.csv")
+        new = old.modify(hwy=lambda x: np.minimum(100, x.hwy))
+        added, removed, changed = new.compare(old, "id")
+        assert added is None
+        assert removed is None
+        assert changed.nrow == 9
+        assert all(changed.column == "hwy")
+
     def test_copy(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.copy()

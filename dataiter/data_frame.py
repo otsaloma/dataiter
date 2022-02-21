@@ -294,6 +294,55 @@ class DataFrame(dict):
         """
         return list(self.values())
 
+    def compare(self, other, *by, ignore_columns=[]):
+        """
+        Find differences against another data frame.
+
+        `by` are identifier columns which can be used to uniquely identify rows
+        and match them between `self` and `other`. `ignore_columns` is an
+        optional list of columns, differences in which to ignore.
+
+        `compare` returns three data frames: added rows, removed rows and
+        changed values. The first two are basically subsets of the rows of
+        `self` and `other`, respectively. Changed values are returned as a data
+        frame with column names, row numbers and values.
+
+        .. warning:: `compare` is experimental, do not rely on it reporting all
+                     of the differences correctly.
+
+        >>> old = di.read_csv("data/vehicles.csv")
+        >>> new = old.modify(hwy=lambda x: np.minimum(100, x.hwy))
+        >>> added, removed, changed = new.compare(old, "id")
+        >>> changed
+        """
+        added = self.anti_join(other, *by)
+        removed = other.anti_join(self, *by)
+        x = self.modify(_i_=range(self.nrow))
+        y = other.modify(_j_=range(other.nrow))
+        x = x.left_join(y.select("_j_", *by), *by)
+        colnames = util.unique_keys(self.colnames + other.colnames)
+        colnames = [x for x in colnames if x not in ignore_columns]
+        changed = []
+        for i in x._i_[~x._j_.is_na()]:
+            j = int(x._j_[i])
+            for colname in colnames:
+                # XXX: How to make a distinction between
+                # a missing column and a missing value?
+                xvalue = x[colname][i] if colname in x else None
+                yvalue = y[colname][j] if colname in x else None
+                if (xvalue != yvalue and
+                    not Vector([xvalue, yvalue]).is_na().all()):
+                    changed.append(dict(column=colname,
+                                        xrow=i,
+                                        yrow=j,
+                                        xvalue=xvalue,
+                                        yvalue=yvalue))
+
+        added = added if added.nrow > 0 else None
+        removed = removed if removed.nrow > 0 else None
+        changed = self.from_json(changed) if changed else None
+        return added, removed, changed
+
     def copy(self):
         """
         Return a shallow copy.
@@ -373,7 +422,9 @@ class DataFrame(dict):
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
         """
-        data = json.loads(string, **kwargs)
+        data = string
+        if isinstance(data, str):
+            data = json.loads(data, **kwargs)
         if not isinstance(data, list):
             raise TypeError("Not a list")
         keys = util.unique_keys(itertools.chain(*data))

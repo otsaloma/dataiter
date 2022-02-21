@@ -1,6 +1,7 @@
 PENDING: Dataiter 0.31
 ======================
 
+* `DataFrame.compare`: New experimental method
 * `Vector.as_string`: Add `length` argument
 
 2022-02-19: Dataiter 0.30
