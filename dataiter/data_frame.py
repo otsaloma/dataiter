@@ -319,12 +319,11 @@ class DataFrame(dict):
         removed = other.anti_join(self, *by)
         x = self.modify(_i_=range(self.nrow))
         y = other.modify(_j_=range(other.nrow))
-        x = x.left_join(y.select("_j_", *by), *by)
+        z = x.inner_join(y.select("_j_", *by), *by)
         colnames = util.unique_keys(self.colnames + other.colnames)
         colnames = [x for x in colnames if x not in ignore_columns]
         changed = []
-        for i in x._i_[~x._j_.is_na()]:
-            j = int(x._j_[i])
+        for i, j in zip(z._i_, z._j_):
             for colname in colnames:
                 # XXX: How to make a distinction between
                 # a missing column and a missing value?
