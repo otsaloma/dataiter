@@ -329,7 +329,7 @@ class DataFrame(dict):
                 # XXX: How to make a distinction between
                 # a missing column and a missing value?
                 xvalue = x[colname][i] if colname in x else None
-                yvalue = y[colname][j] if colname in x else None
+                yvalue = y[colname][j] if colname in y else None
                 if (xvalue != yvalue and
                     not Vector([xvalue, yvalue]).is_na().all()):
                     # XXX: We could have a name clash here.
