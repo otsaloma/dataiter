@@ -331,9 +331,10 @@ class DataFrame(dict):
                 yvalue = y[colname][j] if colname in x else None
                 if (xvalue != yvalue and
                     not Vector([xvalue, yvalue]).is_na().all()):
-                    changed.append(dict(column=colname,
-                                        xrow=i,
-                                        yrow=j,
+                    # XXX: We could have a name clash here.
+                    byrow = {k: x[k][i] for k in by}
+                    changed.append(dict(**byrow,
+                                        column=colname,
                                         xvalue=xvalue,
                                         yvalue=yvalue))
 
