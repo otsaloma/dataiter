@@ -30,6 +30,7 @@ import pickle
 from dataiter import deco
 from dataiter import util
 from dataiter import Vector
+from math import inf
 
 
 class DataFrameColumn(Vector):
@@ -294,7 +295,7 @@ class DataFrame(dict):
         """
         return list(self.values())
 
-    def compare(self, other, *by, ignore_columns=[]):
+    def compare(self, other, *by, ignore_columns=[], max_changed=inf):
         """
         Find differences against another data frame.
 
@@ -305,11 +306,12 @@ class DataFrame(dict):
         `compare` returns three data frames: added rows, removed rows and
         changed values. The first two are basically subsets of the rows of
         `self` and `other`, respectively. Changed values are returned as a data
-        frame with one row per differing value.
+        frame with one row per differing value (not per differing row).
 
         .. warning:: `compare` is experimental, do not rely on it reporting all
                      of the differences correctly. Do not try to give it two
-                     huge data frames with very little in common.
+                     huge data frames with very little in common, unless also
+                     giving some sensible value for `max_changed`.
 
         >>> old = di.read_csv("data/vehicles.csv")
         >>> new = old.modify(hwy=lambda x: np.minimum(100, x.hwy))
@@ -329,6 +331,9 @@ class DataFrame(dict):
         colnames = [x for x in colnames if x not in ignore_columns]
         changed = []
         for i, j in zip(z._i_, z._j_):
+            if len(changed) >= max_changed:
+                print(f"max_changed={max_changed} reached, terminating")
+                break
             for colname in colnames:
                 # XXX: How to make a distinction between
                 # a missing column and a missing value?
