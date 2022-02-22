@@ -316,6 +316,10 @@ class DataFrame(dict):
         >>> added, removed, changed = new.compare(old, "id")
         >>> changed
         """
+        if self.unique(*by).nrow < self.nrow:
+            raise ValueError(f"self not unique by {by}")
+        if other.unique(*by).nrow < other.nrow:
+            raise ValueError(f"other not unique by {by}")
         added = self.anti_join(other, *by)
         removed = other.anti_join(self, *by)
         x = self.modify(_i_=range(self.nrow))
