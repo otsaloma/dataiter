@@ -335,6 +335,7 @@ class DataFrame(dict):
                 print(f"max_changed={max_changed} reached, terminating")
                 break
             for colname in colnames:
+                if len(changed) >= max_changed: break
                 # XXX: How to make a distinction between
                 # a missing column and a missing value?
                 xvalue = x[colname][i] if colname in x else None
