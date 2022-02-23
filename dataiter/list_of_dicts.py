@@ -537,7 +537,7 @@ class ListOfDicts(list):
 
         >>> di.read_json("data/listings.json").print_()
         """
-        print(self.to_string(max_items))
+        print(self.to_string(max_items=max_items))
 
     def print_na_counts(self):
         """
