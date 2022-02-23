@@ -586,7 +586,7 @@ class DataFrame(dict):
         vectorized form.
 
         >>> data = di.read_csv("data/listings-reviews.csv")
-        >>> data.map(lambda x, i: min(1, x.reviews[i]/100) * min(1, x.rating[i]/100))
+        >>> data.map(lambda x, i: (x.reviews[i], x.rating[i]))
         """
         return [function(self, i) for i in range(self.nrow)]
 
@@ -658,7 +658,7 @@ class DataFrame(dict):
     def _parse_rows_from_integer(self, rows):
         return Vector.fast(rows, int)
 
-    def print_(self, *, max_rows=None, max_width=None):
+    def print_(self, *, max_rows=None, max_width=None, truncate_width=None):
         """
         Print data frame to ``sys.stdout``.
 
@@ -668,7 +668,9 @@ class DataFrame(dict):
 
         >>> di.read_csv("data/listings.csv").print_()
         """
-        print(self.to_string(max_rows, max_width))
+        print(self.to_string(max_rows=max_rows,
+                             max_width=max_width,
+                             truncate_width=truncate_width))
 
     def print_memory_use(self):
         """
