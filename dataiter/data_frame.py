@@ -991,7 +991,7 @@ class DataFrame(dict):
                 width = len(batch_rows[0] + column[0]) + 1
                 if width > max_width: break
                 for i in range(len(column)):
-                    batch_rows[i] += "─" if i == 2 else " "
+                    batch_rows[i] += " "
                     batch_rows[i] += column[i]
                 del columns[colname]
             rows_to_print.append("")
