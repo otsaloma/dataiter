@@ -169,7 +169,7 @@ class Vector(np.ndarray):
         >>> vector.as_string()
         >>> vector.as_string(64)
         """
-        return self.astype(f"<U{length}" if length else str)
+        return self.astype(f"U{length}" if length else str)
 
     def _check_dimensions(self):
         if self.ndim == 1: return
