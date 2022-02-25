@@ -25,7 +25,7 @@ sections for what kinds of aggregation functions you can use.
 .
            hood     n   price
            <U13 int64 float64
-  ------------- ----- -------
+  ───────────── ───── ───────
 0         Bronx  1198  90.176
 1      Brooklyn 19931 125.056
 2     Manhattan 21963 218.855
@@ -91,7 +91,7 @@ common sizes of input, it should be well usable.
 .
            hood     n   price
            <U13 int64 float64
-  ------------- ----- -------
+  ───────────── ───── ───────
 0         Bronx  1198  90.176
 1      Brooklyn 19931 125.056
 2     Manhattan 21963 218.855
