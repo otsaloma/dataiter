@@ -299,14 +299,16 @@ class DataFrame(dict):
         """
         Find differences against another data frame.
 
-        `by` are identifier columns which can be used to uniquely identify rows
-        and match them between `self` and `other`. `ignore_columns` is an
-        optional list of columns, differences in which to ignore.
+        `by` are identifier columns which are used to uniquely identify rows
+        and match them between `self` and `other`. `compare` will not work if
+        your data lacks suitable identifiers. `ignore_columns` is an optional
+        list of columns, differences in which to ignore.
 
         `compare` returns three data frames: added rows, removed rows and
         changed values. The first two are basically subsets of the rows of
         `self` and `other`, respectively. Changed values are returned as a data
-        frame with one row per differing value (not per differing row).
+        frame with one row per differing value (not per differing row). Listing
+        changes will terminate once `max_changed` is reached.
 
         .. warning:: `compare` is experimental, do not rely on it reporting all
                      of the differences correctly. Do not try to give it two
