@@ -37,6 +37,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.semi_join`
 :meth:`~dataiter.DataFrame.slice`
 :meth:`~dataiter.DataFrame.sort`
+:meth:`~dataiter.DataFrame.split`
 :meth:`~dataiter.DataFrame.tail`
 :meth:`~dataiter.DataFrame.to_json`
 :meth:`~dataiter.DataFrame.to_list_of_dicts`

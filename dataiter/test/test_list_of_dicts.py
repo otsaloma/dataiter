@@ -491,6 +491,16 @@ class TestListOfDicts:
         assert data[-2] is orig[1]
         assert data[-1] is orig[2]
 
+    def test_split(self):
+        data = ListOfDicts(
+            {"x": x, "y": y} for x, y in zip(
+                [1, 2, 2, 3, 3, 3],
+                [1, 1, 1, 1, 1, 2],
+            )
+        )
+        rows = data.split("x", "y")
+        assert rows == [[0], [1, 2], [3, 4], [5]]
+
     def test_tail(self):
         data = test.list_of_dicts("downloads.json")
         assert data.tail(10) == data[-10:]

@@ -177,7 +177,7 @@ class ListOfDicts(list):
         >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.anti_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         extract1 = operator.itemgetter(*by1)
         extract2 = operator.itemgetter(*by2)
         other_ids = set(map(extract2, other))
@@ -395,7 +395,7 @@ class ListOfDicts(list):
         >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.inner_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         extract1 = operator.itemgetter(*by1)
         extract2 = operator.itemgetter(*by2)
         other_by_id = {extract2(x): x for x in reversed(other)}
@@ -440,7 +440,7 @@ class ListOfDicts(list):
         >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.left_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         extract1 = operator.itemgetter(*by1)
         extract2 = operator.itemgetter(*by2)
         other_by_id = {extract2(x): x for x in reversed(other)}
@@ -667,7 +667,7 @@ class ListOfDicts(list):
         >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.semi_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         extract1 = operator.itemgetter(*by1)
         extract2 = operator.itemgetter(*by2)
         other_ids = set(map(extract2, other))
@@ -697,7 +697,21 @@ class ListOfDicts(list):
             data = sorted(data, key=sort_key, reverse=dir < 0)
         return self._new(data)
 
-    def _split_by(self, *by):
+    def split(self, *by):
+        """
+        Split list into chunks and return a list of their indices.
+
+        >>> data = di.ListOfDicts({"x": x} for x in [1, 2, 2, 3, 3, 3])
+        >>> data.split("x")
+        """
+        extract = operator.itemgetter(*by)
+        indices_by_group = {}
+        for i, item in enumerate(self):
+            id = extract(item)
+            indices_by_group.setdefault(id, []).append(i)
+        return list(indices_by_group.values())
+
+    def _split_join_by(self, *by):
         by1 = [x if isinstance(x, str) else x[0] for x in by]
         by2 = [x if isinstance(x, str) else x[1] for x in by]
         return by1, by2

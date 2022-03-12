@@ -34,6 +34,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.select`
 :meth:`~dataiter.ListOfDicts.semi_join`
 :meth:`~dataiter.ListOfDicts.sort`
+:meth:`~dataiter.ListOfDicts.split`
 :meth:`~dataiter.ListOfDicts.tail`
 :meth:`~dataiter.ListOfDicts.to_data_frame`
 :meth:`~dataiter.ListOfDicts.to_json`

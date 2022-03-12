@@ -241,7 +241,7 @@ class DataFrame(dict):
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.anti_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
@@ -534,7 +534,7 @@ class DataFrame(dict):
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.inner_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
@@ -561,7 +561,7 @@ class DataFrame(dict):
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.left_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
@@ -856,7 +856,7 @@ class DataFrame(dict):
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.semi_join(reviews, "id")
         """
-        by1, by2 = self._split_by(*by)
+        by1, by2 = self._split_join_by(*by)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
@@ -908,7 +908,21 @@ class DataFrame(dict):
         for colname, column in self.items():
             yield colname, column[indices].copy()
 
-    def _split_by(self, *by):
+    def split(self, *by):
+        """
+        Split data frame into chunks and return a list of their rows.
+
+        >>> data = di.DataFrame(x=[1, 2, 2, 3, 3, 3])
+        >>> data.split("x")
+        """
+        data = self.select(*by)
+        data._index_ = np.arange(data.nrow)
+        data = data.sort(**dict.fromkeys(by, 1))
+        data._sorted_index_ = np.arange(data.nrow)
+        stat = data.unique(*by)
+        return np.split(data._index_, stat._sorted_index_[1:])
+
+    def _split_join_by(self, *by):
         by1 = [x if isinstance(x, str) else x[0] for x in by]
         by2 = [x if isinstance(x, str) else x[1] for x in by]
         return by1, by2

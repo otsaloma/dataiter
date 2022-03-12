@@ -1,3 +1,9 @@
+PENDING: Dataiter 0.32
+======================
+
+* `DataFrame.split`: New method
+* `ListOfDicts.split`: New method
+
 2022-02-26: Dataiter 0.31
 =========================
 

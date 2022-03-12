@@ -468,6 +468,15 @@ class TestDataFrame:
         assert data.ncol == orig.ncol
         assert data.year.tolist() == sorted(data.year, reverse=True)
 
+    def test_split(self):
+        data = DataFrame(
+            x=[1, 2, 2, 3, 3, 3],
+            y=[1, 1, 1, 1, 1, 2],
+        )
+        rows = data.split("x", "y")
+        rows = [x.tolist() for x in rows]
+        assert rows == [[0], [1, 2], [3, 4], [5]]
+
     def test_tail(self):
         data = test.data_frame("vehicles.csv")
         assert data.tail(10) == data.slice(list(range(data.nrow - 10, data.nrow)))
