@@ -295,6 +295,11 @@ class TestDataFrame:
         assert data.ncol == orig.ncol + 1
         assert np.all(data.test == data.make)
 
+    def test_modify_group_wise(self):
+        data = DataFrame(g=[1, 2, 2, 3, 3, 3])
+        data = data.group_by("g").modify(f=lambda x: 1 / x.nrow)
+        assert data.f.tolist() == [1, 1/2, 1/2, 1/3, 1/3, 1/3]
+
     def test_ncol(self):
         data = test.data_frame("vehicles.csv")
         assert data.ncol == 12

@@ -609,12 +609,28 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.modify(price_per_guest=data.price/data.guests)
         >>> data.modify(price_per_guest=lambda x: x.price / x.guests)
+
+        If the data frame is grouped, then `colname_value_pairs` need to be
+        functions, which are applied to group-wise subsets of the data frame.
+        A common use for this is calculating group-wise fractions.
+
+        >>> data = di.DataFrame(g=[1, 2, 2, 3, 3, 3])
+        >>> data.group_by("g").modify(f=lambda x: 1 / x.nrow)
         """
         for colname, column in self.items():
             yield colname, column.copy()
-        for colname, value in colname_value_pairs.items():
-            value = value(self) if callable(value) else value
-            yield colname, self._reconcile_column(value).copy()
+        if self._group_colnames:
+            slices = self.split(*self._group_colnames)
+            slices = [self._view_rows(x) for x in slices]
+            for colname, function in colname_value_pairs.items():
+                if not callable(function):
+                    raise ValueError(f"{colname} argument not callable")
+                column = [DataFrameColumn(function(x), nrow=x.nrow)  for x in slices]
+                yield colname, np.concatenate(column)
+        else:
+            for colname, value in colname_value_pairs.items():
+                value = value(self) if callable(value) else value
+                yield colname, self._reconcile_column(value).copy()
 
     @property
     def ncol(self):

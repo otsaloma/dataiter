@@ -1,6 +1,7 @@
 PENDING: Dataiter 0.32
 ======================
 
+* `DataFrame.modify`: Add support for grouped modification (#19)
 * `DataFrame.split`: New method
 * `ListOfDicts.split`: New method
 
