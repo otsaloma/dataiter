@@ -584,11 +584,10 @@ class Vector(np.ndarray):
             add_string_element(string, rows)
         if max_elements < self.length:
             add_string_element("...", rows)
-        add_string_element("]", rows)
+        add_string_element(f"] {self.dtype}", rows)
         if len(rows) == 1:
             # Drop padding for single-line output.
             rows[0] = [x.strip() for x in rows[0]]
-        rows.append([f"dtype: {self.dtype}"])
         return "\n".join(" ".join(x) for x in rows)
 
     def to_strings(self, *, quote=True, pad=False, truncate_width=inf):
