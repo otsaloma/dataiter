@@ -625,7 +625,7 @@ class DataFrame(dict):
             for colname, function in colname_value_pairs.items():
                 if not callable(function):
                     raise ValueError(f"{colname} argument not callable")
-                column = [DataFrameColumn(function(x), nrow=x.nrow)  for x in slices]
+                column = [DataFrameColumn(function(x), nrow=x.nrow) for x in slices]
                 yield colname, np.concatenate(column)
         else:
             for colname, value in colname_value_pairs.items():
