@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.32
-======================
+2022-04-02: Dataiter 0.32
+=========================
 
 * `DataFrame.modify`: Add support for grouped modification (#19)
 * `DataFrame.split`: New method
