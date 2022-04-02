@@ -926,7 +926,7 @@ class DataFrame(dict):
 
     def split(self, *by):
         """
-        Split data frame into chunks and return a list of their rows.
+        Split data frame into groups and return a list of their rows.
 
         >>> data = di.DataFrame(x=[1, 2, 2, 3, 3, 3])
         >>> data.split("x")

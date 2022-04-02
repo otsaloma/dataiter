@@ -699,7 +699,7 @@ class ListOfDicts(list):
 
     def split(self, *by):
         """
-        Split list into chunks and return a list of their indices.
+        Split list into groups and return a list of their indices.
 
         >>> data = di.ListOfDicts({"x": x} for x in [1, 2, 2, 3, 3, 3])
         >>> data.split("x")
