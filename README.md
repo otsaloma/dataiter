@@ -34,7 +34,7 @@ special geometric operations are currently supported.
 pip install -U dataiter
 
 # Latest development version
-pip install -U git+https://github.com/otsaloma/dataiter#egg=dataiter
+pip install -U git+https://github.com/otsaloma/dataiter
 
 # Numba (optional)
 pip install -U numba
