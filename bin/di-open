@@ -1,0 +1,15 @@
+#!/bin/sh
+python3 -i -c "
+import dataiter as di
+import os, sys
+from pathlib import Path
+path = Path('$1')
+assert path.exists()
+os.chdir(path.parent)
+path = path.relative_to(path.parent)
+suffix = path.suffix.lstrip('.')
+read = getattr(di, f'read_{suffix}')
+print(f'Reading {str(path)} into data...')
+data = read(path)
+del os, Path, path, read, suffix, sys
+"
