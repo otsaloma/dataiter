@@ -6,7 +6,7 @@ PREFIX = /usr/local
 
 check:
 	flake8 .
-	flake8 bin/*
+	flake8 . `grep -Fl '#!/usr/bin/env python3' bin/*`
 
 clean:
 	rm -rf *.lprof
