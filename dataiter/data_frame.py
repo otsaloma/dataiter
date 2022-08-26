@@ -916,6 +916,9 @@ class DataFrame(dict):
                 if dir not in [1, -1]:
                     raise ValueError("dir should be 1 or -1")
                 column = self[colname]
+                if column.is_object():
+                    # Avoid TypeError trying to compare different types.
+                    column = column.as_string()
                 if dir < 0 and not (column.is_boolean() or column.is_number()):
                     # Use rank for non-numeric types so that we can sort descending.
                     column = column.rank(method="min")

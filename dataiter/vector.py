@@ -494,6 +494,9 @@ class Vector(np.ndarray):
         >>> vector.sort(dir=1)
         >>> vector.sort(dir=-1)
         """
+        if self.is_object():
+            # Avoid TypeError trying to compare different types.
+            return self.as_string().sort(dir=dir)
         na = self.is_na()
         a = self[~na].copy()
         z = self[na].copy()

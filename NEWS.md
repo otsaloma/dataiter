@@ -1,3 +1,9 @@
+PENDING: Dataiter 0.33
+======================
+
+* `DataFrame.sort`: Convert object to string for sorting
+* `Vector.sort`: Convert object to string for sorting
+
 2022-04-02: Dataiter 0.32
 =========================
 
