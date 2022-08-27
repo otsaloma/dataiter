@@ -77,9 +77,9 @@ def makedirs_for_file(path):
 
 @deco.listify
 def pad(strings, *, align="right"):
-    width = max(len(x) for x in strings)
+    width = max(ulen(x) for x in strings)
     for value in strings:
-        padding = " " * (width - len(value))
+        padding = " " * (width - ulen(value))
         yield (padding + value
                if align == "right"
                else value + padding)
@@ -104,6 +104,16 @@ def quote(value):
 
 def unique_keys(keys):
     return list(dict.fromkeys(keys))
+
+def ulen(string):
+    # Return the display length of string accounting for
+    # Unicode characters that have a display width of zero.
+    return len(string
+               .replace("\u200b", "") # zero width space
+               .replace("\u200c", "") # zero width non-joiner
+               .replace("\u200d", "") # zero width joiner
+               .replace("\u2060", "") # word joiner
+               )
 
 def unique_types(seq):
     return set(x.__class__ for x in seq if

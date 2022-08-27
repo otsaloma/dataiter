@@ -95,6 +95,11 @@ class TestUtil:
         assert util.quote("hello") == '"hello"'
         assert util.quote('"hello"') == '"\\"hello\\""'
 
+    def test_ulen(self):
+        assert util.ulen("asdf") == 4
+        assert util.ulen("asdf\u200b") == 4
+        assert util.ulen("asdf\u200b\u200b") == 4
+
     def test_unique_keys(self):
         assert util.unique_keys([1, 2, 3]) == [1, 2, 3]
         assert util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]

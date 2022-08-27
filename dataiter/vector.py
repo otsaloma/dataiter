@@ -576,7 +576,7 @@ class Vector(np.ndarray):
             if len(rows[-1]) <= 1:
                 return rows[-1].append(string)
             row = " ".join(rows[-1] + [string])
-            if len(row) < print_width:
+            if util.ulen(row) < print_width:
                 return rows[-1].append(string)
             # Start a new row with padding and string.
             return rows.append([" ", string])
@@ -614,13 +614,13 @@ class Vector(np.ndarray):
         if self.is_object():
             strings = [str(x) for x in self]
             for i in range(len(strings)):
-                if len(strings[i]) > truncate_width:
+                if util.ulen(strings[i]) > truncate_width:
                     strings[i] = strings[i][:(truncate_width-1)] + "…"
             return self.__class__.fast(pad(strings), str)
         if self.is_string():
             strings = [quote(x) for x in self]
             for i in range(len(strings)):
-                if len(strings[i]) > truncate_width:
+                if util.ulen(strings[i]) > truncate_width:
                     strings[i] = strings[i][:(truncate_width-1)] + "…"
             return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]

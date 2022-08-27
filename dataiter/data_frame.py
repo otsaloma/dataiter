@@ -1012,7 +1012,7 @@ class DataFrame(dict):
                 quote=False, pad=True, truncate_width=truncate_width)]
         ) for colname, column in self.items()}
         for column in columns.values():
-            column.insert(2, "─" * len(column[0]))
+            column.insert(2, "─" * util.ulen(column[0]))
         row_numbers = [str(i) for i in range(n)]
         row_numbers = util.pad(["", "", ""] + row_numbers)
         # If the length of rows exceeds max_width, split to
@@ -1023,7 +1023,7 @@ class DataFrame(dict):
             batch_rows = [" ".join(x) for x in zip(
                 row_numbers, columns.pop(first))]
             for colname, column in list(columns.items()):
-                width = len(batch_rows[0] + column[0]) + 1
+                width = util.ulen(batch_rows[0] + column[0]) + 1
                 if width > max_width: break
                 for i in range(len(column)):
                     batch_rows[i] += " "
