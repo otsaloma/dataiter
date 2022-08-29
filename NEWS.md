@@ -3,7 +3,7 @@ PENDING: Dataiter 0.33
 
 * `DataFrame.sort`: Convert object to string for sorting
 * `Vector.sort`: Convert object to string for sorting
-* Fix conditional Numba caching when importing the numba package works,
+* Fix conditional Numba use when importing the numba package works,
   but caching doesn't (e.g. due to missing cache directory write access)
 
 2022-04-02: Dataiter 0.32
