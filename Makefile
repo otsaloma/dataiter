@@ -37,7 +37,7 @@ doc-watch:
 	onchange $(MAKE) -C doc html
 
 install:
-	./setup.py install --prefix=$(PREFIX)
+	pip3 install .
 
 # Non-essential scripts, not installed by default.
 # Note that these don't go through setuptools rewriting,
