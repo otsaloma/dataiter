@@ -184,7 +184,7 @@ def count_unique_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield len(set(xg))
 
-@numba.njit(cache=dataiter.USE_NUMBA)
+@numba.njit(cache=True)
 def count_unique_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -213,7 +213,7 @@ def generic(function, **kwargs):
 
 @functools.lru_cache(256)
 def generic_numba(function):
-    @numba.njit(cache=dataiter.USE_NUMBA)
+    @numba.njit(cache=True)
     def aggregate(x, group, drop_na, default, nrequired):
         out = []
         for xg in yield_groups_numba(x, group, drop_na):
@@ -224,7 +224,7 @@ def generic_numba(function):
 def handle_na(x, drop_na):
     return x[~x.is_na()] if drop_na else x
 
-@numba.generated_jit(nopython=True, cache=dataiter.USE_NUMBA)
+@numba.generated_jit(nopython=True, cache=True)
 def is_na_item_numba(x):
     # Flexible specializations with @generated_jit
     # https://numba.pydata.org/numba-doc/dev/user/generated-jit.html
@@ -236,7 +236,7 @@ def is_na_item_numba(x):
         return lambda x: x == ""
     return lambda x: False
 
-@numba.njit(cache=dataiter.USE_NUMBA)
+@numba.njit(cache=True)
 def is_na_numba(x):
     na = np.full(len(x), False)
     for i in range(len(x)):
@@ -410,7 +410,7 @@ def mode_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield mode1(xg) if len(xg) >= 1 else None
 
-@numba.njit(cache=dataiter.USE_NUMBA)
+@numba.njit(cache=True)
 def mode_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -490,7 +490,7 @@ def nth_apply(x, group, index, drop_na):
         except IndexError:
             yield None
 
-@numba.njit(cache=dataiter.USE_NUMBA)
+@numba.njit(cache=True)
 def nth_apply_numba(x, group, index, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -536,7 +536,7 @@ def quantile_apply(x, group, q, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield np.quantile(xg, q) if len(xg) >= 1 else np.nan
 
-@numba.njit(cache=dataiter.USE_NUMBA)
+@numba.njit(cache=True)
 def quantile_apply_numba(x, group, q, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -670,7 +670,7 @@ def yield_groups(x, group, drop_na):
         yield xij
         i = j
 
-@numba.njit(cache=dataiter.USE_NUMBA)
+@numba.njit(cache=True)
 def yield_groups_numba(x, group, drop_na):
     # Groups must be contiguous for this to work!
     i = 0

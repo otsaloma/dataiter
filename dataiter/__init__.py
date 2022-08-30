@@ -42,13 +42,22 @@ try:
     USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
 except LookupError:
     with contextlib.suppress(Exception):
-        # Use Numba automatically if found.
+        # Use Numba automatically if found
+        # and a calling a trivial function works.
         import numba
-        USE_NUMBA = True
-        del numba
+        try:
+            @numba.njit(cache=True)
+            def check(x):
+                return x**2
+            assert check(10) == 100
+            USE_NUMBA = True
+        except Exception as error:
+            print(f"Numba found, but disabled due to error: {error!s}")
 
-del contextlib
-del util
+globals().pop("check", None)
+globals().pop("contextlib", None)
+globals().pop("numba", None)
+globals().pop("util", None)
 
 from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
@@ -73,6 +82,7 @@ from dataiter.aggregate import quantile # noqa
 from dataiter.aggregate import std # noqa
 from dataiter.aggregate import sum # noqa
 from dataiter.aggregate import var # noqa
+
 from dataiter.io import read_csv # noqa
 from dataiter.io import read_geojson # noqa
 from dataiter.io import read_json # noqa
