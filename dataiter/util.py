@@ -91,7 +91,6 @@ def parse_env_boolean(name):
         "true":  True,
         "y":     True,
         "yes":   True,
-        "":      False,
         "0":     False,
         "f":     False,
         "false": False,
