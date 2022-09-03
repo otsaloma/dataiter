@@ -65,7 +65,7 @@ publish:
 	twine upload dist/*
 	sudo pip3 uninstall -y dataiter || true
 	sudo pip3 uninstall -y dataiter || true
-	sudo pip3 install dataiter
+	sudo pip3 install -U dataiter
 	$(MAKE) test-installed
 
 # Interactive!
