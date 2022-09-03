@@ -1,10 +1,12 @@
-PENDING: Dataiter 0.33
-======================
+2022-09-03: Dataiter 0.33
+=========================
 
 * `DataFrame.sort`: Convert object to string for sorting
 * `Vector.sort`: Convert object to string for sorting
 * Fix conditional Numba use when importing the numba package works,
   but caching doesn't
+* Add `di-open` cli command (currently not part of the default install,
+  but can be installed from source using `make install-cli`)
 
 2022-04-02: Dataiter 0.32
 =========================
