@@ -286,6 +286,8 @@ class Vector(np.ndarray):
         """
         if self.is_datetime():
             return np.isnat(self)
+        if self.is_timedelta():
+            return np.isnat(self)
         if self.is_float():
             return np.isnan(self)
         if self.is_string():
@@ -309,6 +311,12 @@ class Vector(np.ndarray):
         Return whether vector data type is string.
         """
         return np.issubdtype(self.dtype, np.unicode_)
+
+    def is_timedelta(self):
+        """
+        Return whether vector data type is timedelta.
+        """
+        return np.issubdtype(self.dtype, np.timedelta64)
 
     @property
     def length(self):
@@ -348,6 +356,8 @@ class Vector(np.ndarray):
         """
         if self.is_datetime():
             return self.dtype
+        if self.is_timedelta():
+            return self.dtype
         if self.is_float():
             return self.dtype
         if self.is_integer():
@@ -362,17 +372,19 @@ class Vector(np.ndarray):
         Return the corresponding value to use to represent missing data.
 
         Dataiter is built on top of NumPy. NumPy doesn't support a proper
-        missing value ("NA"), only two data type specific values: ``np.nan``
-        and ``np.datetime64("NaT")``. Dataiter recommends the following values
-        be used and internally supports them to an extent.
+        missing value ("NA"), only data type specific values: ``np.nan``,
+        ``np.datetime64("NaT")`` and ``np.timedelta64("NaT")``. Dataiter
+        recommends the following values be used and internally supports them to
+        an extent.
 
-        ======== ========================
-        datetime ``np.datetime64("NaT")``
-        float    ``np.nan``
-        integer  ``np.nan``
-        string   ``""``
-        other    ``None``
-        ======== ========================
+        ========= ========================
+        datetime  ``np.datetime64("NaT")``
+        timedelta ``np.timedelta64("NaT")``
+        float     ``np.nan``
+        integer   ``np.nan``
+        string    ``""``
+        other     ``None``
+        ========= ========================
 
         Note that actually using these might require upcasting the vector.
         Integer will need to be upcast to float to contain ``np.nan``. Other,
@@ -385,6 +397,8 @@ class Vector(np.ndarray):
         """
         if self.is_datetime():
             return np.datetime64("NaT")
+        if self.is_timedelta():
+            return np.timedelta64("NaT")
         if self.is_float():
             return np.nan
         if self.is_integer():
@@ -608,7 +622,7 @@ class Vector(np.ndarray):
         if self.is_float():
             strings = util.format_floats(self)
             return self.__class__.fast(pad(strings), str)
-        if self.is_integer():
+        if self.is_integer() and not self.is_timedelta():
             strings = ["{:d}".format(x) for x in self]
             return self.__class__.fast(pad(strings), str)
         if self.is_object():

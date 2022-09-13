@@ -324,6 +324,14 @@ class TestVector:
         a = Vector(["a", "b", ""])
         assert a.is_na().tolist() == [False, False, True]
 
+    def test_is_na_timedelta_date(self):
+        a = Vector([DATE, DATE, NaT]) - Vector([DATE])
+        assert a.is_na().tolist() == [False, False, True]
+
+    def test_is_na_timedelta_datetime(self):
+        a = Vector([DATETIME, DATETIME, NaT]) - Vector([DATETIME])
+        assert a.is_na().tolist() == [False, False, True]
+
     def test_is_number(self):
         assert not Vector([b"1"]).is_number()
         assert not Vector([True]).is_number()
@@ -353,6 +361,14 @@ class TestVector:
         assert not Vector([DATE]).is_string()
         assert not Vector([DATETIME]).is_string()
         assert not Vector([self]).is_string()
+
+    def test_is_timedelta_date(self):
+        date = Vector([DATE])
+        assert (date - date).is_timedelta()
+
+    def test_is_timedelta_datetime(self):
+        datetime = Vector([DATETIME])
+        assert (datetime - datetime).is_timedelta()
 
     def test_map(self):
         a = Vector([1, 2, 3, 4, 5])
@@ -468,6 +484,18 @@ class TestVector:
         b = ['"a"', '"b"']
         assert Vector(a).to_strings().tolist() == b
 
+    def test_to_strings_timedelta_date(self):
+        a = Vector([DATE, DATE])
+        a = (a + np.timedelta64(1, "D")) - a
+        b = ["1 days", "1 days"]
+        assert a.to_strings().tolist() == b
+
+    def test_to_strings_timedelta_datetime(self):
+        a = Vector([DATETIME, DATETIME])
+        a = (a + np.timedelta64(1, "us")) - a
+        b = ["1 microseconds", "1 microseconds"]
+        assert a.to_strings().tolist() == b
+
     def test_tolist_boolean(self):
         a = [True, False]
         b = [True, False]
@@ -501,6 +529,18 @@ class TestVector:
     def test_tolist_string(self):
         a = ["a", "b", ""]
         b = ["a", "b", None]
+        assert Vector(a).tolist() == b
+
+    def test_tolist_timedelta_date(self):
+        a = Vector([DATE, DATE])
+        a = (a + np.timedelta64(1, "D")) - a
+        b = [datetime.timedelta(days=1), datetime.timedelta(days=1)]
+        assert Vector(a).tolist() == b
+
+    def test_tolist_timedelta_datetime(self):
+        a = Vector([DATETIME, DATETIME])
+        a = (a + np.timedelta64(1, "us")) - a
+        b = [datetime.timedelta(microseconds=1), datetime.timedelta(microseconds=1)]
         assert Vector(a).tolist() == b
 
     def test_unique(self):
