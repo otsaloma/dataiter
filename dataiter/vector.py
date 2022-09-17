@@ -379,10 +379,10 @@ class Vector(np.ndarray):
 
         ========= ========================
         datetime  ``np.datetime64("NaT")``
-        timedelta ``np.timedelta64("NaT")``
         float     ``np.nan``
         integer   ``np.nan``
         string    ``""``
+        timedelta ``np.timedelta64("NaT")``
         other     ``None``
         ========= ========================
 
