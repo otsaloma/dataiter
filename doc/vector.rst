@@ -24,6 +24,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.is_number`
 :meth:`~dataiter.Vector.is_object`
 :meth:`~dataiter.Vector.is_string`
+:meth:`~dataiter.Vector.is_timedelta`
 :attr:`~dataiter.Vector.length`
 :meth:`~dataiter.Vector.map`
 :attr:`~dataiter.Vector.na_dtype`
