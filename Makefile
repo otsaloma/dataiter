@@ -27,6 +27,9 @@ clean:
 doc:
 	$(MAKE) -C doc clean html
 
+doc-check:
+	PYTHONPATH=. doc/check.py
+
 doc-open:
 	xdg-open doc/_build/html/index.html
 
@@ -56,7 +59,7 @@ profile:
 
 # Interactive!
 publish:
-	$(MAKE) check test validate clean
+	$(MAKE) check doc-check test validate clean
 	python3 -m build
 	test -s dist/dataiter-*-py3-none-any.whl
 	test -s dist/dataiter-*.tar.gz
@@ -70,7 +73,7 @@ publish:
 
 # Interactive!
 release:
-	$(MAKE) check test validate clean
+	$(MAKE) check doc-check test validate clean
 	@echo "BUMP VERSION NUMBERS"
 	$(EDITOR) dataiter/__init__.py
 	$(EDITOR) benchmark-versions.sh
@@ -93,4 +96,4 @@ validate:
 	cd validation && DATAITER_USE_NUMBA=true  ./validate-df.sh
 	cd validation && ./validate-ld.sh
 
-.PHONY: check clean doc doc-open doc-watch install install-cli profile publish release test test-installed validate
+.PHONY: check clean doc doc-check doc-open doc-watch install install-cli profile publish release test test-installed validate
