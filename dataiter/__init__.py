@@ -24,7 +24,7 @@ import contextlib
 
 from dataiter import util
 
-__version__ = "0.33"
+__version__ = "0.34"
 
 DEFAULT_PEEK_ELEMENTS = 10
 DEFAULT_PEEK_ITEMS = 3

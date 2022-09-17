@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.34
-======================
+2022-09-17: Dataiter 0.34
+=========================
 
 * `Vector`: Handle timedeltas correctly for NA checks and printing
 * `Vector.is_timedelta`: New method
