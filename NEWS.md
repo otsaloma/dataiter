@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.35
+======================
+
+* `DataFrame.full_join`: Fix join and output when `by` is a tuple
+
 2022-09-17: Dataiter 0.34
 =========================
 

@@ -486,7 +486,16 @@ class DataFrame(dict):
         b = b.anti_join(ab, "_bid_")
         if b.nrow == 0:
             return ab.unselect("_aid_", "_bid_")
-        ba = b.left_join(a, *by)
+        by_reverse = [
+            tuple(reversed(x)) if isinstance(x, (list, tuple))
+            else x
+            for x in by]
+        ba = b.left_join(a, *by_reverse)
+        for item in by:
+            # For identifiers in by whose name differs in a and b,
+            # rename and keep the variant found in a.
+            if isinstance(item, (list, tuple)):
+                ba[item[0]] = ba.pop(item[1])
         return ab.rbind(ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
     def _get_join_indices(self, other, by1, by2):
