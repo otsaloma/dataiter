@@ -52,6 +52,11 @@ class TestGeoJSON:
     def test_read_path(self):
         GeoJSON.read(test.get_data_path(self.path))
 
+    def test_to_string(self):
+        data = test.geojson(self.path)
+        assert data.head(0).to_string()
+        assert data.head(5).to_string()
+
     def test_write(self):
         orig = test.geojson(self.path)
         handle, path = tempfile.mkstemp(".geojson")
