@@ -1,6 +1,7 @@
 PENDING: Dataiter 0.35
 ======================
 
+* `DataFrame.from_pandas`: Speed up by avoiding unnecessary conversions
 * `DataFrame.full_join`: Fix join and output when `by` is a tuple
 * `GeoJSON`: Fix printing object
 

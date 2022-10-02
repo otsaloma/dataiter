@@ -455,9 +455,12 @@ class DataFrame(dict):
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
-        # It would be a lot faster to skip tolist here,
-        # but then we'd need to map some Pandas dtype oddities.
-        data = {x: data[x].to_numpy().tolist() for x in data.columns}
+        data = {x: data[x].to_numpy(copy=True) for x in data.columns}
+        for name, value in data.items():
+            # Pandas object columns are likely to be strings,
+            # convert to list to force type guessing in Vector.__init__.
+            if np.issubdtype(value.dtype, np.object_):
+                data[name] = data[name].tolist()
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
         return cls(**data)
