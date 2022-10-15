@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(".")))
 import dataiter as di
 import numpy as np
+from dataiter import dt
 di.PRINT_MAX_ITEMS = 3
 di.PRINT_MAX_ROWS = 10
 di.PRINT_MAX_WIDTH = 72

@@ -49,3 +49,4 @@ Currently included are the following classes.
    geojson
    list-of-dicts
    vector
+   dt

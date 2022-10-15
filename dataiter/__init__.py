@@ -64,6 +64,7 @@ from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa
 from dataiter.geojson import GeoJSON # noqa
 from dataiter.list_of_dicts import ListOfDicts # noqa
+from dataiter import dt # noqa
 
 from dataiter.aggregate import all # noqa
 from dataiter.aggregate import any # noqa
