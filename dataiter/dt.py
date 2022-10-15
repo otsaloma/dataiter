@@ -51,7 +51,7 @@ def isoweek(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.isoweek(x)
     """
-    return _pull_int(x, lambda y: y.isocalendar().week)
+    return _pull_int(x, lambda y: y.isocalendar()[1])
 
 def isoweekday(x):
     """
