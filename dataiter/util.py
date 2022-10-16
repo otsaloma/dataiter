@@ -22,6 +22,7 @@
 
 import bz2
 import dataiter
+import datetime
 import gzip
 import itertools
 import lzma
@@ -69,6 +70,19 @@ def generate_colnames(n):
 def get_print_width():
     return shutil.get_terminal_size((dataiter.PRINT_MAX_WIDTH, 24))[0] - 1
 
+def is_scalar(value):
+    # np.isscalar doesn't cover all needed cases.
+    return (np.isscalar(value) or
+            value is None or
+            isinstance(value, (bytes,
+                               bool,
+                               float,
+                               int,
+                               str,
+                               datetime.date,
+                               datetime.datetime,
+                               datetime.timedelta)))
+
 def length(value):
     return 1 if np.isscalar(value) else len(value)
 
@@ -100,6 +114,16 @@ def parse_env_boolean(name):
 
 def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))
+
+def sequencify(value):
+    if isinstance(value, (np.ndarray, list, tuple)):
+        return value
+    if is_scalar(value):
+        return [value]
+    if hasattr(value, "__iter__"):
+        # Evaluate generator or iterator.
+        return list(value)
+    raise ValueError(f"Unexpected type: {type(value)}")
 
 def unique_keys(keys):
     return list(dict.fromkeys(keys))

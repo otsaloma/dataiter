@@ -13,6 +13,7 @@ PAGES = {
     "dataiter.rst": di,
     "data-frame.rst": di.DataFrame,
     "data-frame-column.rst": di.DataFrameColumn,
+    "dt.rst": di.dt,
     "geojson.rst": di.GeoJSON,
     "list-of-dicts.rst": di.ListOfDicts,
     "vector.rst": di.Vector,

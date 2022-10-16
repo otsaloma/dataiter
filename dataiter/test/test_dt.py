@@ -34,6 +34,14 @@ class TestDT:
         a = dt.new(["2022-10-15", NaT])
         assert dt.day(a).tolist() == [15, None]
 
+    def test_day_numpy(self):
+        a = np.array(["2022-10-15", NaT], np.datetime64)
+        assert dt.day(a).tolist() == [15, None]
+
+    def test_day_scalar(self):
+        x = np.datetime64("2022-10-15")
+        assert dt.day(x) == 15
+
     def test_hour(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.hour(a).tolist() == [12, None]
@@ -67,6 +75,11 @@ class TestDT:
         a = dt.new(["2022-10-15T12:00:00"])
         b = Vector(["2022-10-15T12:00:00"]).as_datetime()
         assert a.equal(b)
+
+    def test_new_scalar(self):
+        a = dt.new("2022-10-15")
+        b = np.datetime64("2022-10-15")
+        assert a == b
 
     def test_now(self):
         assert isinstance(dt.now(), np.datetime64)

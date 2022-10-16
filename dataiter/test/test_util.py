@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import datetime
 import math
 import numpy as np
 import tempfile
@@ -82,6 +83,19 @@ class TestUtil:
     def test_get_print_width(self):
         assert 0 < util.get_print_width() < 1000
 
+    def test_is_scalar(self):
+        assert util.is_scalar(None)
+        assert util.is_scalar(b"")
+        assert util.is_scalar(1.0)
+        assert util.is_scalar(1)
+        assert util.is_scalar("")
+        assert util.is_scalar(datetime.date.today())
+        assert util.is_scalar(datetime.datetime.now())
+        assert util.is_scalar(datetime.timedelta(days=1))
+        assert not util.is_scalar(np.array([1, 2, 3]))
+        assert not util.is_scalar([1, 2, 3])
+        assert not util.is_scalar((1, 2, 3))
+
     def test_length(self):
         assert util.length(1) == 1
         assert util.length([1]) == 1
@@ -94,6 +108,14 @@ class TestUtil:
     def test_quote(self):
         assert util.quote("hello") == '"hello"'
         assert util.quote('"hello"') == '"\\"hello\\""'
+
+    def test_sequencify(self):
+        assert util.sequencify(np.array([1])) == np.array([1])
+        assert util.sequencify([1]) == [1]
+        assert util.sequencify((1,)) == (1,)
+        assert util.sequencify(None) == [None]
+        assert util.sequencify(1) == [1]
+        assert util.sequencify(map(math.sqrt, [1, 4, 9])) == [1, 2, 3]
 
     def test_ulen(self):
         assert util.ulen("asdf") == 4

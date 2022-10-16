@@ -23,6 +23,7 @@
 import datetime
 import numpy as np
 
+from dataiter import util
 from dataiter import Vector
 
 
@@ -94,12 +95,16 @@ def month(x):
 
 def new(x):
     """
-    Initialize a datetime vector from `x`.
+    Initialize a datetime scalar or vector from `x`.
 
+    >>> dt.new("2022-10-15")
+    >>> dt.new("2022-10-15T12:00:00")
     >>> dt.new(["2022-10-15"])
     >>> dt.new(["2022-10-15T12:00:00"])
     """
-    return Vector.fast(map(np.datetime64, x))
+    if util.is_scalar(x):
+        return np.datetime64(x)
+    return Vector.fast(map(np.datetime64, x), np.datetime64)
 
 def now():
     """
@@ -110,23 +115,31 @@ def now():
     return np.datetime64(datetime.datetime.now())
 
 def _pull_datetime(x, function):
-    assert isinstance(x, Vector)
-    assert x.is_datetime()
+    if util.is_scalar(x):
+        x = np.array([x], np.datetime64)
+        return _pull_datetime(x, function)[0]
+    x = util.sequencify(x)
+    assert isinstance(x, np.ndarray)
+    assert np.issubdtype(x.dtype, np.datetime64)
     out = np.full_like(x, np.nan)
-    out = Vector.fast(out)
-    na = x.is_na()
+    out = Vector.fast(out, np.datetime64)
+    na = np.isnat(x)
     f = np.vectorize(function)
-    out[~na] = f(x[~na].as_object())
+    out[~na] = f(x[~na].astype(object))
     return out
 
 def _pull_int(x, function):
-    assert isinstance(x, Vector)
-    assert x.is_datetime()
+    if util.is_scalar(x):
+        x = np.array([x], np.datetime64)
+        return _pull_int(x, function)[0]
+    x = util.sequencify(x)
+    assert isinstance(x, np.ndarray)
+    assert np.issubdtype(x.dtype, np.datetime64)
     out = np.full_like(x, np.nan, float)
-    out = Vector.fast(out)
-    na = x.is_na()
+    out = Vector.fast(out, float)
+    na = np.isnat(x)
     f = np.vectorize(function)
-    out[~na] = f(x[~na].as_object())
+    out[~na] = f(x[~na].astype(object))
     return out if na.any() else out.as_integer()
 
 def quarter(x):
@@ -145,15 +158,7 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     >>> x = dt.new(["2022-10-15"])
     >>> dt.replace(x, month=1, day=1)
     """
-    kwargs = {k: v for k, v in {
-        "year": year,
-        "month": month,
-        "day": day,
-        "hour": hour,
-        "minute": minute,
-        "second": second,
-        "microsecond": microsecond,
-    }.items() if v is not None}
+    kwargs = {k: v for k, v in locals().items() if k != "x" and v is not None}
     return _pull_datetime(x, lambda y: y.replace(**kwargs))
 
 def second(x):

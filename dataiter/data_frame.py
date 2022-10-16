@@ -21,7 +21,6 @@
 # THE SOFTWARE.
 
 import dataiter
-import datetime
 import itertools
 import json
 import numpy as np
@@ -43,7 +42,7 @@ class DataFrameColumn(Vector):
     """
 
     def __new__(cls, object, dtype=None, nrow=None):
-        object = cls._sequencify(object)
+        object = util.sequencify(object)
         column = Vector(object, dtype)
         if nrow is not None and nrow != column.length:
             if column.length != 1 or nrow < 1:
@@ -74,19 +73,6 @@ class DataFrameColumn(Vector):
         Return the amount of rows.
         """
         return self.length
-
-    @classmethod
-    def _sequencify(cls, object):
-        if isinstance(object, (np.ndarray, list, tuple)):
-            return object
-        if (object is None or
-            np.isscalar(object) or
-            isinstance(object, (bytes, bool, float, int, str, datetime.date, datetime.datetime))):
-            return [object]
-        if hasattr(object, "__iter__"):
-            # Evaluate generator or iterator.
-            return list(object)
-        raise ValueError(f"Unexpected type: {type(object)}")
 
 
 class DataFrame(dict):
