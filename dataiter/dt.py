@@ -61,6 +61,8 @@ def isoweekday(x):
     Day of the week is an integer between 1 and 7, where 1 is Monday and 7 is
     Sunday.
 
+    See also: :func:`weekday`
+
     >>> x = dt.new(["2022-10-15"])
     >>> dt.isoweekday(x)
     """
@@ -184,6 +186,8 @@ def weekday(x):
 
     Day of the week is an integer between 0 and 6, where 0 is Monday and 6 is
     Sunday.
+
+    See also: :func:`isoweekday`
 
     >>> x = dt.new(["2022-10-15"])
     >>> dt.weekday(x)
