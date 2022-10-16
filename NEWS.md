@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.36
-======================
+2022-10-16: Dataiter 0.36
+=========================
 
 * `dt`: New module for dealing with dates and datetimes
 
