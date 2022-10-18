@@ -33,11 +33,8 @@ doc-check:
 doc-open:
 	xdg-open doc/_build/html/index.html
 
-# Watch files for changes, rebuild html.
-# https://gist.github.com/senko/1154509
 doc-watch:
-	$(MAKE) -C doc clean html
-	onchange $(MAKE) -C doc html
+	watchexec -e py,rst --workdir doc $(MAKE) html
 
 install:
 	pip3 install .
