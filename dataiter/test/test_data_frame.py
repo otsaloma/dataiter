@@ -96,7 +96,7 @@ class TestDataFrame:
         assert not callable(data["items"])
 
     def test___delattr__(self):
-        data = DataFrame(a=DataFrameColumn([1, 2, 3]))
+        data = DataFrame(a=[1, 2, 3])
         assert "a" in data
         del data.a
         assert "a" not in data
@@ -109,6 +109,13 @@ class TestDataFrame:
     def test___getattr__(self):
         data = test.data_frame("vehicles.csv")
         assert data.make is data["make"]
+
+    def test___hasattr(self):
+        data = DataFrame(a=[1, 2, 3])
+        data._DataFrame__hasattr("left_join")
+        data._DataFrame__hasattr("items")
+        assert not data._DataFrame__hasattr("a")
+        assert not data._DataFrame__hasattr("xxx")
 
     def test___setattr__(self):
         data = test.data_frame("vehicles.csv")

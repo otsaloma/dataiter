@@ -167,7 +167,7 @@ class DataFrame(dict):
 
     def __hasattr(self, name):
         # Return True if attribute exists and is not a column.
-        return not isinstance(getattr(self, name, None), DataFrameColumn)
+        return hasattr(self, name) and not isinstance(getattr(self, name), DataFrameColumn)
 
     def __setattr__(self, name, value):
         if name in self.ATTRIBUTES:
