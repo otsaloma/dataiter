@@ -88,6 +88,13 @@ class TestDataFrame:
         data = DataFrame(a=[1, 2, 3])
         assert data.a.tolist() == [1, 2, 3]
 
+    def test___init___reserved_names(self):
+        # Columns names that conflict with method names should
+        # not be made attributes, only accessible as keys.
+        data = DataFrame(items=[1, 2, 3])
+        assert callable(data.items)
+        assert not callable(data["items"])
+
     def test___delattr__(self):
         data = DataFrame(a=DataFrameColumn([1, 2, 3]))
         assert "a" in data

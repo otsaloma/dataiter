@@ -103,6 +103,10 @@ class DataFrame(dict):
     # List of names that are actual attributes, not columns
     ATTRIBUTES = ["colnames", "_group_colnames"]
 
+    # Use dummy attributes corresponding to dictionary keys so that
+    # Tab completion of column names at a Python shell would work.
+    COLUMN_PLACEHOLDER = type("COLUMN_PLACEHOLDER", (), {})
+
     def __init__(self, *args, **kwargs):
         """
         Return a new data frame.
@@ -118,6 +122,9 @@ class DataFrame(dict):
                 value.nrow == nrow): continue
             column = DataFrameColumn(value, nrow=nrow)
             super().__setitem__(key, column)
+        for key in self:
+            if not self.__hasattr(key) and key.isidentifier():
+                super().__setattr__(key, self.COLUMN_PLACEHOLDER)
         # Check that we have a uniform table.
         self._check_dimensions()
         self._group_colnames = ()
@@ -133,6 +140,11 @@ class DataFrame(dict):
             return self.__delitem__(name)
         return super().__delattr__(name)
 
+    def __delitem__(self, key):
+        if self[key] is self.COLUMN_PLACEHOLDER:
+            super().__delattr__(key)
+        return super().__delitem__(key)
+
     def __eq__(self, other):
         return (isinstance(other, DataFrame) and
                 self.nrow == other.nrow and
@@ -145,6 +157,18 @@ class DataFrame(dict):
             return self.__getitem__(name)
         raise AttributeError(name)
 
+    def __getattribute__(self, name):
+        value = super().__getattribute__(name)
+        if name == "COLUMN_PLACEHOLDER":
+            return value
+        if value is self.COLUMN_PLACEHOLDER:
+            return self[name]
+        return value
+
+    def __hasattr(self, name):
+        # Return True if attribute exists and is not a column.
+        return not isinstance(getattr(self, name, None), DataFrameColumn)
+
     def __setattr__(self, name, value):
         if name in self.ATTRIBUTES:
             return super().__setattr__(name, value)
@@ -152,6 +176,8 @@ class DataFrame(dict):
 
     def __setitem__(self, key, value):
         value = self._reconcile_column(value)
+        if not self.__hasattr(key) and key.isidentifier():
+            super().__setattr__(key, self.COLUMN_PLACEHOLDER)
         return super().__setitem__(key, value)
 
     def __repr__(self):
