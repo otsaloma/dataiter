@@ -252,8 +252,9 @@ BENCHMARKS = sorted([
 @click.command()
 @click.option("-o", "--output", help="Filename for optional CSV output")
 @click.option("-r", "--rounds", default=5, help="Number of rounds per benchmark")
+@click.option("--version", default=di.__version__, help="Version number for CSV output")
 @click.argument("pattern", nargs=-1)
-def main(output, rounds, pattern):
+def main(output, rounds, version, pattern):
     """Benchmark dataiter functions."""
     benchmarks = BENCHMARKS.copy()
     if pattern:
@@ -274,7 +275,7 @@ def main(output, rounds, pattern):
             if not output: raise
         list.append(results, {
             "name":    benchmark,
-            "version": di.__version__,
+            "version": version,
             "elapsed": round(elapsed),
         })
     if output:
