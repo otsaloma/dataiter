@@ -36,6 +36,37 @@ def day(x):
     """
     return _pull_int(x, lambda y: y.day)
 
+def from_string(x, format):
+    """
+    Initialize a datetime scalar or vector from `x`.
+
+    `format` uses Python ``strptime`` format codes:
+    https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+
+    >>> x = di.Vector(["15.10.2022"])
+    >>> dt.from_string(x, "%d.%m.%Y")
+    >>> x = di.Vector(["15.10.2022 12:00"])
+    >>> dt.from_string(x, "%d.%m.%Y %H:%M")
+    """
+    if util.is_scalar(x):
+        x = np.array([x], str)
+        return from_string(x, format)[0]
+    x = util.sequencify(x)
+    assert isinstance(x, np.ndarray)
+    assert np.issubdtype(x.dtype, np.unicode_)
+    out = np.full_like(x, None, object)
+    out = Vector.fast(out, object)
+    na = x == ""
+    f = np.vectorize(lambda x: datetime.datetime.strptime(x, format))
+    out[~na] = f(x[~na].astype(object))
+    out = out.as_datetime()
+    if len(out[~na]) > 0:
+        if (hour(out[~na]) == 0).all():
+            if (minute(out[~na]) == 0).all():
+                if (second(out[~na]) == 0).all():
+                    out = out.as_date()
+    return out
+
 def hour(x):
     """
     Extract hour from datetime `x`.
@@ -144,6 +175,20 @@ def _pull_int(x, function):
     out[~na] = f(x[~na].astype(object))
     return out if na.any() else out.as_integer()
 
+def _pull_str(x, function):
+    if util.is_scalar(x):
+        x = np.array([x], np.datetime64)
+        return _pull_str(x, function)[0]
+    x = util.sequencify(x)
+    assert isinstance(x, np.ndarray)
+    assert np.issubdtype(x.dtype, np.datetime64)
+    out = np.full_like(x, "", object)
+    out = Vector.fast(out, object)
+    na = np.isnat(x)
+    f = np.vectorize(function)
+    out[~na] = f(x[~na].astype(object))
+    return out.as_string()
+
 def quarter(x):
     """
     Extract quarter from datetime `x`.
@@ -171,6 +216,20 @@ def second(x):
     >>> dt.second(x)
     """
     return _pull_int(x, lambda y: y.second)
+
+def to_string(x, format):
+    """
+    Format datetime `x` as string.
+
+    `format` uses Python ``strftime`` format codes:
+    https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+
+    >>> x = dt.new(["2022-10-15"])
+    >>> dt.to_string(x, "%d.%m.%Y")
+    >>> x = dt.new(["2022-10-15T12:00"])
+    >>> dt.to_string(x, "%d.%m.%Y %H:%M")
+    """
+    return _pull_str(x, lambda x: x.strftime(format))
 
 def today():
     """

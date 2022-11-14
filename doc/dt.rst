@@ -7,6 +7,7 @@ Most of the operations are done via Python's standard library
 ``datetime`` module and subject to any limitations therein.
 
 :func:`~dataiter.dt.day`
+:func:`~dataiter.dt.from_string`
 :func:`~dataiter.dt.hour`
 :func:`~dataiter.dt.isoweek`
 :func:`~dataiter.dt.isoweekday`
@@ -18,6 +19,7 @@ Most of the operations are done via Python's standard library
 :func:`~dataiter.dt.quarter`
 :func:`~dataiter.dt.replace`
 :func:`~dataiter.dt.second`
+:func:`~dataiter.dt.to_string`
 :func:`~dataiter.dt.today`
 :func:`~dataiter.dt.weekday`
 :func:`~dataiter.dt.year`

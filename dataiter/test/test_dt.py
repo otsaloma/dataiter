@@ -42,6 +42,20 @@ class TestDT:
         x = np.datetime64("2022-10-15")
         assert dt.day(x) == 15
 
+    def test_from_string_date(self):
+        a = Vector(["14.11.2022", ""], str)
+        b = dt.from_string(a, "%d.%m.%Y")
+        assert b.is_datetime()
+        assert b[0] == np.datetime64("2022-11-14")
+        assert np.isnat(b[1])
+
+    def test_from_string_datetime(self):
+        a = Vector(["14.11.2022 22:49", ""], str)
+        b = dt.from_string(a, "%d.%m.%Y %H:%M")
+        assert b.is_datetime()
+        assert b[0] == np.datetime64("2022-11-14T22:49:00")
+        assert np.isnat(b[1])
+
     def test_hour(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.hour(a).tolist() == [12, None]
@@ -96,6 +110,18 @@ class TestDT:
     def test_second(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.second(a).tolist() == [56, None]
+
+    def test_to_string_date(self):
+        a = dt.new(["2022-11-14", NaT])
+        b = dt.to_string(a, "%d.%m.%Y")
+        assert b.is_string()
+        assert b.tolist() == ["14.11.2022", None]
+
+    def test_to_string_datetime(self):
+        a = dt.new(["2022-11-14T22:49:00", NaT])
+        b = dt.to_string(a, "%Y%m%d-%H%M%S")
+        assert b.is_string()
+        assert b.tolist() == ["20221114-224900", None]
 
     def test_today(self):
         assert isinstance(dt.today(), np.datetime64)
