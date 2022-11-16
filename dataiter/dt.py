@@ -45,8 +45,6 @@ def from_string(x, format):
 
     >>> x = di.Vector(["15.10.2022"])
     >>> dt.from_string(x, "%d.%m.%Y")
-    >>> x = di.Vector(["15.10.2022 12:00"])
-    >>> dt.from_string(x, "%d.%m.%Y %H:%M")
     """
     if util.is_scalar(x):
         x = np.array([x], str)
@@ -226,8 +224,6 @@ def to_string(x, format):
 
     >>> x = dt.new(["2022-10-15"])
     >>> dt.to_string(x, "%d.%m.%Y")
-    >>> x = dt.new(["2022-10-15T12:00"])
-    >>> dt.to_string(x, "%d.%m.%Y %H:%M")
     """
     return _pull_str(x, lambda x: x.strftime(format))
 
