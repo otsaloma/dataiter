@@ -5,6 +5,7 @@ PENDING: Dataiter 0.37
   completion of columns as attributes at a shell works
 * `dt.from_string`: New function
 * `dt.to_string`: New function
+* Don't use Numba for aggregation involving strings due to bad performance
 
 2022-10-16: Dataiter 0.36
 =========================
