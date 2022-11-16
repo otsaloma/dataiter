@@ -77,7 +77,6 @@ from dataiter.aggregate import mean # noqa
 from dataiter.aggregate import median # noqa
 from dataiter.aggregate import min # noqa
 from dataiter.aggregate import mode # noqa
-from dataiter.aggregate import nrow # noqa
 from dataiter.aggregate import nth # noqa
 from dataiter.aggregate import quantile # noqa
 from dataiter.aggregate import std # noqa

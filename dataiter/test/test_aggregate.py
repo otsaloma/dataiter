@@ -38,7 +38,6 @@ from dataiter.aggregate import mean
 from dataiter.aggregate import median
 from dataiter.aggregate import min
 from dataiter.aggregate import mode
-from dataiter.aggregate import nrow
 from dataiter.aggregate import nth
 from dataiter.aggregate import quantile
 from dataiter.aggregate import std
@@ -274,10 +273,6 @@ class TestAggregate:
     def test_mode_nan(self):
         assert np.isnan(mode(EMPTY_VECTOR))
         assert np.isnan(mode(Vector([NaN, NaN], float), drop_na=False))
-
-    def test_nrow(self):
-        data = DataFrame(x=range(10))
-        assert nrow(data) == 10
 
     def test_nth(self):
         assert nth(Vector([1, 2, 3]), 0) == 1

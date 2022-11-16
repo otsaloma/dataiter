@@ -16,7 +16,6 @@ with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
 :func:`~dataiter.median`
 :func:`~dataiter.min`
 :func:`~dataiter.mode`
-:func:`~dataiter.nrow`
 :func:`~dataiter.nth`
 :func:`~dataiter.quantile`
 :func:`~dataiter.std`
@@ -45,7 +44,6 @@ GeoJSON and :class:`.ListOfDicts` for JSON.
              median,
              min,
              mode,
-             nrow,
              nth,
              quantile,
              read_csv,

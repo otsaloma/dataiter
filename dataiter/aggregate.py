@@ -433,24 +433,6 @@ def mode1(x):
         # Return the first encountered of the tied elements.
         return Counter(x).most_common(1)[0][0]
 
-def nrow(data):
-    """
-    Return the amount of rows in `data`.
-
-    This is a useful shorthand for `data.nrow` in contexts where you don't have
-    direct access to the data frame in question, e.g. in group-by-aggregate
-
-    .. warning:: Deprecated, please use :func:`count` instead.
-
-    >>> data = di.read_csv("data/listings.csv")
-    >>> data.group_by("hood").aggregate(n=di.nrow)
-    """
-    if not getattr(nrow, "warning_shown", False):
-        print('Warning: nrow is deprecated, please use count instead')
-        print('e.g. data.group_by("hood").aggregate(n=di.count())')
-        nrow.warning_shown = True
-    return data.nrow
-
 @composite
 def nth(x, index, *, drop_na=False):
     """
