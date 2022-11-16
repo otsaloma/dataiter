@@ -429,8 +429,8 @@ def mode1(x):
     try:
         return statistics.mode(x)
     except statistics.StatisticsError:
-        # Python < 3.8 with several elements tied for mode,
-        # will return one of the tied elements at random.
+        # Python < 3.8 with several elements tied for mode.
+        # Return the first encountered of the tied elements.
         return Counter(x).most_common(1)[0][0]
 
 def nrow(data):

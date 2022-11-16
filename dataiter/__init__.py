@@ -43,7 +43,7 @@ try:
 except LookupError:
     with contextlib.suppress(Exception):
         # Use Numba automatically if found
-        # and a calling a trivial function works.
+        # and calling a trivial function works.
         import numba
         try:
             @numba.njit(cache=True)
