@@ -1,8 +1,8 @@
-PENDING: Dataiter 0.37
-======================
+2022-11-17: Dataiter 0.37
+=========================
 
-* `DataFrame`: Add placeholder attributes for columns so that tab
-  completion of columns as attributes at a shell works
+* `DataFrame`: Add placeholder attributes for columns so that
+  tab completion of columns as attributes at a shell works
 * `dt.from_string`: New function
 * `dt.to_string`: New function
 * `nrow`: Remove deprecated aggregation function
