@@ -20,6 +20,7 @@ PAGES = {
 }
 
 SKIP = [
+    "DataFrame.COLUMN_PLACEHOLDER",
     "GeoJSON.to_string",
     "Vector.to_strings",
 ]
