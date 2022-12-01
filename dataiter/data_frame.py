@@ -923,6 +923,27 @@ class DataFrame(dict):
             yield colname, self[colname][rows].copy()
 
     @deco.new_from_generator
+    def slice_off(self, rows=None, cols=None):
+        """
+        Return a row-wise and/or column-wise negative subset of data frame.
+
+        Both `rows` and `cols` should be integer vectors correspoding to the
+        indices of the rows or columns to drop.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> data.slice_off(rows=[0, 1, 2])
+        >>> data.slice_off(cols=[0, 1, 2])
+        >>> data.slice_off(rows=[0, 1, 2], cols=[0, 1, 2])
+        """
+        rows = [] if rows is None else rows
+        cols = [] if cols is None else cols
+        rows = self._parse_rows_from_integer(rows)
+        cols = self._parse_cols_from_integer(cols)
+        for i, colname in enumerate(self.colnames):
+            if i in cols: continue
+            yield colname, np.delete(self[colname], rows)
+
+    @deco.new_from_generator
     def sort(self, **colname_dir_pairs):
         """
         Return rows in sorted order.

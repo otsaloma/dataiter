@@ -480,6 +480,27 @@ class TestDataFrame:
         assert data.ncol == orig.ncol
         assert data.colnames == orig.colnames
 
+    def test_slice_off_given_both(self):
+        orig = test.data_frame("vehicles.csv")
+        data = orig.slice_off(rows=[0, 1, 2], cols=[0, 1, 2])
+        assert data.nrow == orig.nrow - 3
+        assert data.ncol == orig.ncol - 3
+        assert data.colnames == orig.colnames[3:]
+
+    def test_slice_off_given_cols(self):
+        orig = test.data_frame("vehicles.csv")
+        data = orig.slice_off(cols=[0, 1, 2])
+        assert data.nrow == orig.nrow
+        assert data.ncol == orig.ncol - 3
+        assert data.colnames == orig.colnames[3:]
+
+    def test_slice_off_given_rows(self):
+        orig = test.data_frame("vehicles.csv")
+        data = orig.slice_off(rows=[0, 1, 2])
+        assert data.nrow == orig.nrow - 3
+        assert data.ncol == orig.ncol
+        assert data.colnames == orig.colnames
+
     def test_sort(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.sort(year=-1, make=1, model=1)

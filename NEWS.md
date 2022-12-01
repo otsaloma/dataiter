@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.38
+======================
+
+* `DataFrame.slice_off`: New method
+
 2022-11-17: Dataiter 0.37
 =========================
 
