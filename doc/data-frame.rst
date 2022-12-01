@@ -36,6 +36,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.select`
 :meth:`~dataiter.DataFrame.semi_join`
 :meth:`~dataiter.DataFrame.slice`
+:meth:`~dataiter.DataFrame.slice_off`
 :meth:`~dataiter.DataFrame.sort`
 :meth:`~dataiter.DataFrame.split`
 :meth:`~dataiter.DataFrame.tail`
