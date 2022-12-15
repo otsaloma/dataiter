@@ -115,9 +115,20 @@ class GeoJSON(DataFrame):
         data.metadata = raw
         return data
 
+    def to_data_frame(self, drop_geometry=False):
+        """
+        Return GeoJSON converted to a regular data frame.
+        """
+        data = dict.copy(self)
+        if drop_geometry:
+            data.pop("geometry", None)
+        return DataFrame(**data)
+
     def to_string(self, *, max_rows=None, max_width=None):
-        geometry = [f"<{x['type']}>" for x in self.geometry]
-        data = self.modify(geometry=Vector.fast(geometry, object))
+        data = self
+        if "geometry" in data.colnames:
+            geometry = [f"<{x['type']}>" for x in data.geometry]
+            data = data.modify(geometry=Vector.fast(geometry, object))
         return DataFrame.to_string(data, max_rows=max_rows, max_width=max_width)
 
     def write(self, path, *, encoding="utf-8", **kwargs):

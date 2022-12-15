@@ -52,8 +52,29 @@ class TestGeoJSON:
     def test_read_path(self):
         GeoJSON.read(test.get_data_path(self.path))
 
+    def test_to_data_frame(self):
+        orig = test.geojson(self.path)
+        data = orig.to_data_frame()
+        assert data.ncol == orig.ncol
+        assert data.nrow == orig.nrow
+        assert not isinstance(data, GeoJSON)
+
+    def test_to_data_frame_drop_geometry(self):
+        orig = test.geojson(self.path)
+        data = orig.to_data_frame(drop_geometry=True)
+        assert data.ncol == orig.ncol - 1
+        assert data.nrow == orig.nrow
+        assert not isinstance(data, GeoJSON)
+        assert "geometry" not in data.colnames
+
     def test_to_string(self):
         data = test.geojson(self.path)
+        assert data.head(0).to_string()
+        assert data.head(5).to_string()
+
+    def test_to_string_no_geometry(self):
+        data = test.geojson(self.path)
+        del data.geometry
         assert data.head(0).to_string()
         assert data.head(5).to_string()
 

@@ -2,6 +2,7 @@ PENDING: Dataiter 0.38
 ======================
 
 * `DataFrame.slice_off`: New method
+* `GeoJSON.to_data_frame`: New method
 * Fix error with new column placeholder attributes in conjunction with
   pop, popitem and clear
 
