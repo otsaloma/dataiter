@@ -20,7 +20,10 @@ PAGES = {
 }
 
 SKIP = [
+    "DataFrame.clear",
     "DataFrame.COLUMN_PLACEHOLDER",
+    "DataFrame.pop",
+    "DataFrame.popitem",
     "GeoJSON.to_string",
     "Vector.to_strings",
 ]
