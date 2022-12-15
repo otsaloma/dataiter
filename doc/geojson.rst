@@ -7,5 +7,5 @@ dataiter.GeoJSON
 :meth:`~dataiter.GeoJSON.write`
 
 .. autoclass:: dataiter.GeoJSON
-   :members: read, write
+   :members: read, to_data_frame, write
    :special-members: __init__
