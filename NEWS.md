@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.38
-======================
+2022-12-15: Dataiter 0.38
+=========================
 
 * `DataFrame.slice_off`: New method
 * `GeoJSON.to_data_frame`: New method
