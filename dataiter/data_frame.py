@@ -284,6 +284,9 @@ class DataFrame(dict):
         if len(set(nrows)) == 1: return
         raise ValueError(f"Bad dimensions: {nrows!r}")
 
+    def clear(self):
+        return self._new()
+
     @property
     def colnames(self):
         """
@@ -701,6 +704,18 @@ class DataFrame(dict):
 
     def _parse_rows_from_integer(self, rows):
         return Vector.fast(rows, int)
+
+    def pop(self, key, *args, **kwargs):
+        value = super().pop(key, *args, **kwargs)
+        if hasattr(self, key):
+            super().__delattr__(key)
+        return value
+
+    def popitem(self):
+        key, value = super().popitem()
+        if hasattr(self, key):
+            super().__delattr__(key)
+        return key, value
 
     def print_(self, *, max_rows=None, max_width=None, truncate_width=None):
         """

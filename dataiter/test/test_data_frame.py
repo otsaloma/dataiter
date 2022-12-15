@@ -169,6 +169,10 @@ class TestDataFrame:
         assert np.all(data.test == 1)
         assert data.unselect("test") == orig
 
+    def test_clear(self):
+        data = test.data_frame("vehicles.csv")
+        assert not data.clear()
+
     def test_colnames(self):
         data = test.data_frame("downloads.csv")
         assert data.colnames == ["category", "date", "downloads"]
@@ -328,6 +332,19 @@ class TestDataFrame:
     def test_nrow(self):
         data = test.data_frame("vehicles.csv")
         assert data.nrow == 33442
+
+    def test_pop(self):
+        data = test.data_frame("vehicles.csv")
+        data.pop("fuel")
+        assert "fuel" not in data
+        assert not hasattr(data, "fuel")
+
+    def test_popitem(self):
+        data = test.data_frame("vehicles.csv")
+        key, value = data.popitem()
+        assert key not in data
+        assert not hasattr(data, key)
+        assert isinstance(value, DataFrameColumn)
 
     @patch("builtins.print")
     def test_print_memory_use(self, mock_print):
