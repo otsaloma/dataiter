@@ -141,6 +141,8 @@ class DataFrame(dict):
         return super().__delattr__(name)
 
     def __delitem__(self, key):
+        # Note that this is not called for some methods,
+        # at least pop, popitem and clear.
         if self[key] is self.COLUMN_PLACEHOLDER:
             super().__delattr__(key)
         return super().__delitem__(key)
@@ -161,7 +163,7 @@ class DataFrame(dict):
         value = super().__getattribute__(name)
         if name == "COLUMN_PLACEHOLDER":
             return value
-        if value is self.COLUMN_PLACEHOLDER:
+        if value is self.COLUMN_PLACEHOLDER and name in self:
             return self[name]
         return value
 

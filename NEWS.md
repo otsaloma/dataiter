@@ -2,6 +2,7 @@ PENDING: Dataiter 0.38
 ======================
 
 * `DataFrame.slice_off`: New method
+* Fix error with new column placeholder attributes
 
 2022-11-17: Dataiter 0.37
 =========================

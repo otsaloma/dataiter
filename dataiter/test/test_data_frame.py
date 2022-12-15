@@ -178,6 +178,13 @@ class TestDataFrame:
         data.colnames = ["a", "b", "c"]
         assert data.colnames == ["a", "b", "c"]
 
+    def test_colnames_set_again(self):
+        data = test.data_frame("downloads.csv")
+        data.colnames = ["a", "b", "c"]
+        assert data.colnames == ["a", "b", "c"]
+        data.colnames = ["a", "b", "c"]
+        assert data.colnames == ["a", "b", "c"]
+
     def test_columns(self):
         data = test.data_frame("downloads.csv")
         assert data.columns == [data.category, data.date, data.downloads]
