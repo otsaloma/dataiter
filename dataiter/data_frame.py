@@ -1091,9 +1091,9 @@ class DataFrame(dict):
                     batch_rows[i] += " "
                     batch_rows[i] += column[i]
                 del columns[colname]
-            rows_to_print.append("")
+            rows_to_print.append("" if rows_to_print else ".")
             rows_to_print += batch_rows
-        rows_to_print.append("")
+        rows_to_print.append(".")
         if max_rows < self.nrow:
             rows_to_print.append(f"... {self.nrow} rows total")
         return "\n".join(rows_to_print)
