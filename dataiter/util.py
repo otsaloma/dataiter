@@ -84,7 +84,7 @@ def is_scalar(value):
                                datetime.timedelta)))
 
 def length(value):
-    return 1 if np.isscalar(value) else len(value)
+    return 1 if is_scalar(value) else len(value)
 
 def makedirs_for_file(path):
     return Path(path).parent.mkdir(parents=True, exist_ok=True)
