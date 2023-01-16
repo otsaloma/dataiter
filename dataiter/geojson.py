@@ -27,6 +27,7 @@ from dataiter import DataFrame
 from dataiter import DataFrameColumn
 from dataiter import util
 from dataiter import Vector
+from math import inf
 
 
 class GeoJSON(DataFrame):
@@ -84,16 +85,27 @@ class GeoJSON(DataFrame):
             raise TypeError(f"Property type {type(value)} of {key!r} not supported")
 
     @classmethod
-    def read(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
+    def read(cls, path, *, encoding="utf-8", columns=[], strings_as_object=inf, dtypes={}, **kwargs):
         """
         Return data from GeoJSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `columns` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes. `kwargs` are
-        passed to ``json.load``.
+        `columns` is an optional list of columns to limit to.
+
+        `strings_as_object` is a cutoff point. If any row has more characters
+        than that, the whole column will use the object data type. This is
+        intended to help limit memory use as NumPy strings are fixed-length and
+        can take a huge amount of memory if even a single row is long. If set,
+        `dtypes` overrides this.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+
+        `kwargs` are passed to ``json.load``.
         """
+        if (not isinstance(strings_as_object, (int, float)) or
+            isinstance(strings_as_object, bool)):
+            raise TypeError("Expected a number for strings_as_object")
         with util.xopen(path, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))
         cls._check_raw_data(raw)
@@ -108,6 +120,14 @@ class GeoJSON(DataFrame):
                 value = feature.properties.get(key, None)
                 data[key].append(value)
         data["geometry"] = [x.geometry for x in raw.features]
+        dtypes = dtypes.copy()
+        if strings_as_object < inf:
+            for name in data:
+                if (data[name] and
+                    name not in dtypes and
+                    any(isinstance(x, str) for x in data[name]) and
+                    max(len(x) for x in data[name] if isinstance(x, str)) > strings_as_object):
+                    dtypes[name] = object
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
         data = cls(**data)

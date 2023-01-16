@@ -38,19 +38,22 @@ class TestGeoJSON:
         assert data.ncol == 3
 
     def test_read_columns(self):
-        path = str(test.get_data_path(self.path))
+        path = test.get_data_path(self.path)
         data = GeoJSON.read(path, columns=["neighbourhood"])
         assert data.colnames == ["neighbourhood", "geometry"]
 
     def test_read_dtypes(self):
-        path = str(test.get_data_path(self.path))
+        path = test.get_data_path(self.path)
         dtypes = {"neighbourhood": object, "neighbourhood_group": object}
         data = GeoJSON.read(path, dtypes=dtypes)
         assert data.neighbourhood.is_object()
         assert data.neighbourhood_group.is_object()
 
-    def test_read_path(self):
-        GeoJSON.read(test.get_data_path(self.path))
+    def test_read_strings_as_object(self):
+        path = test.get_data_path(self.path)
+        data = GeoJSON.read(path, strings_as_object=8)
+        assert data.neighbourhood.is_object()
+        assert data.neighbourhood_group.is_object()
 
     def test_to_data_frame(self):
         orig = test.geojson(self.path)

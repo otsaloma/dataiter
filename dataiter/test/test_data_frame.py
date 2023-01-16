@@ -394,19 +394,22 @@ class TestDataFrame:
         assert data.ncol == 12
 
     def test_read_csv_columns(self):
-        path = str(test.get_data_path("vehicles.csv"))
+        path = test.get_data_path("vehicles.csv")
         data = DataFrame.read_csv(path, columns=["make", "model"])
         assert data.colnames == ["make", "model"]
 
     def test_read_csv_dtypes(self):
-        path = str(test.get_data_path("vehicles.csv"))
+        path = test.get_data_path("vehicles.csv")
         dtypes = {"make": object, "model": object}
         data = DataFrame.read_csv(path, dtypes=dtypes)
         assert data.make.is_object()
         assert data.model.is_object()
 
-    def test_read_csv_path(self):
-        DataFrame.read_csv(test.get_data_path("vehicles.csv"))
+    def test_read_csv_strings_as_object(self):
+        path = test.get_data_path("vehicles.csv")
+        data = DataFrame.read_csv(path, strings_as_object=8)
+        assert data.make.is_object()
+        assert data.model.is_object()
 
     def test_read_json(self):
         path = str(test.get_data_path("downloads.json"))

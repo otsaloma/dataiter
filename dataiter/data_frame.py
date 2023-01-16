@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import contextlib
 import dataiter
 import itertools
 import json
@@ -466,17 +467,35 @@ class DataFrame(dict):
         return cls(**data)
 
     @classmethod
-    def from_pandas(cls, data, *, dtypes={}):
+    def from_pandas(cls, data, *, strings_as_object=inf, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
 
+        `strings_as_object` is a cutoff point. If any row has more characters
+        than that, the whole column will use the object data type. This is
+        intended to help limit memory use as NumPy strings are fixed-length and
+        can take a huge amount of memory if even a single row is long. If set,
+        `dtypes` overrides this.
+
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
+        if (not isinstance(strings_as_object, (int, float)) or
+            isinstance(strings_as_object, bool)):
+            raise TypeError("Expected a number for strings_as_object")
+        dtypes = dtypes.copy()
+        from pandas.api.types import is_object_dtype
+        if strings_as_object < inf:
+            for name in data.columns:
+                if name not in dtypes and is_object_dtype(data[name]):
+                    with contextlib.suppress(AttributeError):
+                        if data[name].str.len().max() > strings_as_object:
+                            dtypes[name] = object
         data = {x: data[x].to_numpy(copy=True) for x in data.columns}
         for name, value in data.items():
             # Pandas object columns are likely to be strings,
             # convert to list to force type guessing in Vector.__init__.
-            if np.issubdtype(value.dtype, np.object_):
+            if (np.issubdtype(value.dtype, np.object_) and
+                dtypes.get(name, None) is not object):
                 data[name] = data[name].tolist()
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
@@ -797,14 +816,21 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, columns=[], strings_as_object=inf, dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
-        `columns` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes.
+        `columns` is an optional list of columns to limit to.
+
+        `strings_as_object` is a cutoff point. If any row has more characters
+        than that, the whole column will use the object data type. This is
+        intended to help limit memory use as NumPy strings are fixed-length and
+        can take a huge amount of memory if even a single row is long. If set,
+        `dtypes` overrides this.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
         import pandas as pd
         data = pd.read_csv(path,
@@ -818,7 +844,7 @@ class DataFrame(dict):
 
         if not header:
             data.columns = util.generate_colnames(len(data.columns))
-        return cls.from_pandas(data, dtypes=dtypes)
+        return cls.from_pandas(data, strings_as_object=strings_as_object, dtypes=dtypes)
 
     @classmethod
     def read_json(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):

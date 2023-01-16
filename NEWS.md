@@ -1,3 +1,9 @@
+PENDING: Dataiter 0.39
+======================
+
+* `read_csv`, `read_geojson`, `DataFrame.from_pandas`,
+  `DataFrame.read_csv`, `GeoJSON.read`: Add `strings_as_object` argument
+
 2022-12-15: Dataiter 0.38
 =========================
 
