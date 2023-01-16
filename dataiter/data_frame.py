@@ -494,8 +494,7 @@ class DataFrame(dict):
         for name, value in data.items():
             # Pandas object columns are likely to be strings,
             # convert to list to force type guessing in Vector.__init__.
-            if (np.issubdtype(value.dtype, np.object_) and
-                dtypes.get(name, None) is not object):
+            if np.issubdtype(value.dtype, np.object_):
                 data[name] = data[name].tolist()
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
