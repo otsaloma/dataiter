@@ -90,7 +90,9 @@ test-installed:
 
 validate:
 	cd validation && DATAITER_USE_NUMBA=false ./validate-df.sh
-	cd validation && DATAITER_USE_NUMBA=true  ./validate-df.sh
+	# XXX: No Numba yet for Python 3.11:
+	# https://github.com/numba/numba/issues/8304
+	# cd validation && DATAITER_USE_NUMBA=true ./validate-df.sh
 	cd validation && ./validate-ld.sh
 
 .PHONY: check clean doc doc-check doc-open doc-watch install install-cli profile publish release test test-installed validate

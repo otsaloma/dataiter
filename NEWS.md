@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.39
-======================
+2023-01-21: Dataiter 0.39
+=========================
 
 * `read_csv`, `read_geojson`, `DataFrame.from_pandas`,
   `DataFrame.read_csv`, `GeoJSON.read`: Add `strings_as_object` argument
