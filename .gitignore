@@ -1,5 +1,7 @@
 *.lprof
 *.prof
+.env
+.envrc
 .pytest_cache
 __pycache__
 benchmark*.csv
@@ -13,3 +15,4 @@ doc/comparison/comparison.html
 test.py
 tmp.csv
 validation/*.csv
+venv
