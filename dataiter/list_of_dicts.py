@@ -32,6 +32,7 @@ import random
 from attd import AttributeDict
 from dataiter import deco
 from dataiter import util
+from math import inf
 
 
 class ListOfDicts(list):
@@ -731,15 +732,28 @@ class ListOfDicts(list):
     def _to_columns(self):
         return {k: self.pluck(k) for k in self[0]} if self else {}
 
-    def to_data_frame(self):
+    def to_data_frame(self, strings_as_object=inf):
         """
         Return list converted to a :class:`.DataFrame`.
+
+        `strings_as_object` is a cutoff point. If any row has more characters
+        than that, the whole column will use the object data type. This is
+        intended to help limit memory use as NumPy strings are fixed-length and
+        can take a huge amount of memory if even a single row is long.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.to_data_frame()
         """
         from dataiter import DataFrame
-        return DataFrame(**self._to_columns())
+        from dataiter import DataFrameColumn
+        data = self._to_columns()
+        if strings_as_object < inf:
+            for name in data:
+                if (data[name] and
+                    any(isinstance(x, str) for x in data[name]) and
+                    max(len(x) for x in data[name] if isinstance(x, str)) > strings_as_object):
+                    data[name] = DataFrameColumn(data[name], object)
+        return DataFrame(**data)
 
     def to_json(self, **kwargs):
         """

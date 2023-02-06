@@ -511,6 +511,12 @@ class TestListOfDicts:
         assert data.nrow == len(orig)
         assert data.ncol == len(orig[0])
 
+    def test_to_data_frame_strings_as_object(self):
+        orig = test.list_of_dicts("vehicles.csv")
+        data = orig.to_data_frame(strings_as_object=8)
+        assert data.make.is_object()
+        assert data.model.is_object()
+
     def test_to_json(self):
         orig = test.list_of_dicts("downloads.json")
         text = orig.to_json()
