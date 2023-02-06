@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.39.1
-========================
+2023-02-06: Dataiter 0.39.1
+===========================
 
 * `ListOfDicts.to_data_frame`: Add `strings_as_object` argument
 

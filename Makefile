@@ -17,6 +17,7 @@ clean:
 	rm -rf doc/_build
 	rm -rf doc/comparison/comparison.html
 	rm -rf validation/*.csv
+	rm -rf venv
 	rm -rf __pycache__
 	rm -rf */__pycache__
 	rm -rf */*/__pycache__
