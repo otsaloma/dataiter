@@ -126,7 +126,7 @@ class GeoJSON(DataFrame):
                 if (data[name] and
                     name not in dtypes and
                     any(isinstance(x, str) for x in data[name]) and
-                    max(len(x) for x in data[name] if isinstance(x, str)) > strings_as_object):
+                    any(len(x) > strings_as_object for x in data[name] if isinstance(x, str))):
                     dtypes[name] = object
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
