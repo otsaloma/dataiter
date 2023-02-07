@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.40
+======================
+
+* `Vector.map`: Add `dtype` argument
+
 2023-02-06: Dataiter 0.39.1
 ===========================
 

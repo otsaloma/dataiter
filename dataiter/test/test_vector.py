@@ -374,6 +374,12 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5])
         assert a.map(math.pow, 2).tolist() == [1, 4, 9, 16, 25]
 
+    def test_map_dtype(self):
+        a = Vector(["a", "ab", "abc"], object)
+        b = a.map(str.replace, "a", "x", dtype=object)
+        assert b.tolist() == ["x", "xb", "xbc"]
+        assert b.is_object()
+
     def test_range(self):
         a = Vector([1, 2, 3, 4, 5, None])
         assert a.range().tolist() == [1, 5]

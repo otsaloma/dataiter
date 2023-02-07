@@ -329,7 +329,7 @@ class Vector(np.ndarray):
         self._check_dimensions()
         return self.size
 
-    def map(self, function, *args, **kwargs):
+    def map(self, function, *args, dtype=None, **kwargs):
         """
         Apply `function` element-wise and return a new vector.
 
@@ -337,7 +337,7 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(range(10))
         >>> vector.map(math.pow, 2)
         """
-        return self.__class__(function(x, *args, **kwargs) for x in self)
+        return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
 
     @property
     def na_dtype(self):
