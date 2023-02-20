@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.40
-======================
+2023-02-20: Dataiter 0.40
+=========================
 
 * `Vector.map`: Add `dtype` argument
 

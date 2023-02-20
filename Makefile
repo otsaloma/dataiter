@@ -38,7 +38,7 @@ doc-watch:
 	watchexec -e py,rst --workdir doc $(MAKE) html
 
 install:
-	pip3 install .
+	pip3 install --break-system-packages .
 
 # Non-essential scripts, not installed by default.
 # Note that these don't go through setuptools rewriting,
@@ -64,9 +64,9 @@ publish:
 	ls -l dist
 	@printf "Press Enter to upload or Ctrl+C to abort: "; read _
 	twine upload dist/*
-	sudo pip3 uninstall -y dataiter || true
-	sudo pip3 uninstall -y dataiter || true
-	sudo pip3 install -U dataiter
+	sudo pip3 uninstall --break-system-packages -y dataiter || true
+	sudo pip3 uninstall --break-system-packages -y dataiter || true
+	sudo pip3 install   --break-system-packages -U dataiter
 	$(MAKE) test-installed
 
 # Interactive!
