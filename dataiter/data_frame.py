@@ -668,12 +668,16 @@ class DataFrame(dict):
             yield colname, column.copy()
         if self._group_colnames:
             slices = self.split(*self._group_colnames)
+            # Mapping over slices will produce contiguous groups in order
+            # of self._group_colnames. Calculate and apply indexing that
+            # will restore the original order.
+            restore_indices = np.argsort(np.concatenate(slices))
             slices = [self._view_rows(x) for x in slices]
             for colname, function in colname_value_pairs.items():
                 if not callable(function):
                     raise ValueError(f"{colname} argument not callable")
                 column = [DataFrameColumn(function(x), nrow=x.nrow) for x in slices]
-                yield colname, np.concatenate(column)
+                yield colname, np.concatenate(column)[restore_indices]
         else:
             for colname, value in colname_value_pairs.items():
                 value = value(self) if callable(value) else value

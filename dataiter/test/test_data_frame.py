@@ -325,6 +325,11 @@ class TestDataFrame:
         data = data.group_by("g").modify(f=lambda x: 1 / x.nrow)
         assert data.f.tolist() == [1, 1/2, 1/2, 1/3, 1/3, 1/3]
 
+    def test_modify_group_wise_unsorted(self):
+        data = DataFrame(g=[1, 3, 3, 3, 2, 2])
+        data = data.group_by("g").modify(f=lambda x: 1 / x.nrow)
+        assert data.f.tolist() == [1, 1/3, 1/3, 1/3, 1/2, 1/2]
+
     def test_ncol(self):
         data = test.data_frame("vehicles.csv")
         assert data.ncol == 12

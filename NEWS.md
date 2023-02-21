@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.40.1
+========================
+
+* `DataFrame.modify`: Fix grouped modify on unsorted data frame
+
 2023-02-20: Dataiter 0.40
 =========================
 
