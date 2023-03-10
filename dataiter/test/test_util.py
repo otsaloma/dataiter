@@ -35,6 +35,8 @@ class TestUtil:
         assert util.count_digits(0.1) == (0, 1)
         assert util.count_digits(1.000) == (1, 0)
         assert util.count_digits(123.456) == (3, 3)
+        assert util.count_digits(1e-1) == (0, 1)
+        assert util.count_digits(1e-10) == (0, 10)
 
     def test_count_digits_special(self):
         assert util.count_digits(np.nan) == (0, 0)
@@ -63,6 +65,11 @@ class TestUtil:
     def test_format_floats_5(self):
         a = [12345678, 1234567812345678, 123456781234567812345678, np.nan]
         b = ["1.234568e+07", "1.234568e+15", "1.234568e+23", "nan"]
+        assert util.format_floats(a) == b
+
+    def test_format_floats_6(self):
+        a = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5]
+        b = ["0.10000", "0.01000", "0.00100", "0.00010", "0.00001"]
         assert util.format_floats(a) == b
 
     def test_format_floats_inf(self):

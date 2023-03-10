@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.41
+======================
+
+* Fix priting really small numbers
+
 2023-02-21: Dataiter 0.40.1
 ===========================
 
