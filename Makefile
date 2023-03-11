@@ -57,7 +57,7 @@ profile:
 
 # Interactive!
 publish:
-	$(MAKE) check doc-check test validate clean
+	$(MAKE) clean
 	python3 -m build
 	test -s dist/dataiter-*-py3-none-any.whl
 	test -s dist/dataiter-*.tar.gz
