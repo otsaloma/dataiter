@@ -634,8 +634,10 @@ class Vector(np.ndarray):
         if self.is_string():
             strings = [quote(x) for x in self]
             for i in range(len(strings)):
-                if util.ulen(strings[i]) > truncate_width:
-                    strings[i] = strings[i][:(truncate_width-1)] + "…"
+                lines = strings[i].splitlines()
+                if (util.ulen(strings[i]) > truncate_width or
+                    (len(lines) > 1 and truncate_width < inf)):
+                    strings[i] = lines[0][:(truncate_width-1)] + "…"
             return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]
         return self.__class__.fast(pad(strings), str)

@@ -490,6 +490,18 @@ class TestVector:
         b = ['"a"', '"b"']
         assert Vector(a).to_strings().tolist() == b
 
+    def test_to_strings_string_newline(self):
+        a = ["a\nb", "c\nd"]
+        b = ['"a\nb"', '"c\nd"']
+        assert Vector(a).to_strings().tolist() == b
+
+    def test_to_strings_string_newline_truncate(self):
+        # Used especially by DataFrame.to_strings to avoid ruining
+        # tabular display with a multiline mess.
+        a = ["a\nb", "c\nd"]
+        b = ["a…", "c…"]
+        assert Vector(a).to_strings(quote=False, truncate_width=36).tolist() == b
+
     def test_to_strings_timedelta_date(self):
         a = Vector([DATE, DATE])
         a = (a + np.timedelta64(1, "D")) - a

@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.42
+======================
+
+* `DataFrame`: Truncate multiline strings when printing
+
 2023-03-11: Dataiter 0.41
 =========================
 
