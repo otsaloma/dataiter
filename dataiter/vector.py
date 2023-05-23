@@ -607,7 +607,7 @@ class Vector(np.ndarray):
             rows[0] = [x.strip() for x in rows[0]]
         return "\n".join(" ".join(x) for x in rows)
 
-    def to_strings(self, *, quote=True, pad=False, truncate_width=inf):
+    def to_strings(self, *, ksep=None, quote=True, pad=False, truncate_width=inf):
         """
         Return vector as strings formatted for display.
 
@@ -617,13 +617,15 @@ class Vector(np.ndarray):
         if self.length == 0:
             return self.__class__.fast([], str)
         identity = lambda x, *args, **kwargs: x
+        if ksep is None:
+            ksep = dataiter.PRINT_THOUSAND_SEPARATOR
         quote = util.quote if quote else identity
         pad = util.pad if pad else identity
         if self.is_float():
-            strings = util.format_floats(self)
+            strings = util.format_floats(self, ksep=ksep)
             return self.__class__.fast(pad(strings), str)
         if self.is_integer() and not self.is_timedelta():
-            strings = ["{:d}".format(x) for x in self]
+            strings = ["{:,d}".format(x).replace(",", ksep) for x in self]
             return self.__class__.fast(pad(strings), str)
         if self.is_object():
             strings = [str(x) for x in self]

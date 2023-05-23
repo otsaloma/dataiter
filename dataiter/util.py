@@ -51,18 +51,21 @@ def format_alias_doc(alias, target):
         .format(alias.__name__, target.__qualname__))
     return target.__doc__ + "\n\n" + indent + note
 
-def format_floats(seq):
+def format_floats(seq, ksep=None):
     precision = dataiter.PRINT_FLOAT_PRECISION
     if any(0 < abs(x) < 1/10**precision or abs(x) > 10**16 - 1 for x in seq):
         # Format tiny and huge numbers in scientific notation.
         f = np.format_float_scientific
         return [f(x, precision=precision, trim="-") for x in seq]
+    if ksep is None:
+        ksep = dataiter.PRINT_THOUSAND_SEPARATOR
     # Format like largest by significant digits.
     digits = [count_digits(x) for x in seq]
     n = max(x[0] for x in digits)
     m = max(x[1] for x in digits)
     precision = min(m, max(0, precision - n))
-    return [f"{{:.{precision}f}}".format(x) for x in seq]
+    return [f"{{:,.{precision}f}}".format(x).replace(",", ksep)
+            for x in seq]
 
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))

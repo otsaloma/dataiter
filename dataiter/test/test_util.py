@@ -62,6 +62,11 @@ class TestUtil:
         b = ["123", "123457", "123456789", "nan"]
         assert util.format_floats(a) == b
 
+    def test_format_floats_4_ksep(self):
+        a = [123.456789, 123456.789, 123456789, np.nan]
+        b = ["123", "123,457", "123,456,789", "nan"]
+        assert util.format_floats(a, ksep=",") == b
+
     def test_format_floats_5(self):
         a = [12345678, 1234567812345678, 123456781234567812345678, np.nan]
         b = ["1.234568e+07", "1.234568e+15", "1.234568e+23", "nan"]

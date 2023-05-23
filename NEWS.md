@@ -2,6 +2,8 @@ PENDING: Dataiter 0.42
 ======================
 
 * `DataFrame`: Truncate multiline strings when printing
+* Allow using a thousand separator when printing numbers,
+  off by default, can be set with `dataiter.PRINT_THOUSAND_SEPARATOR`
 
 2023-03-11: Dataiter 0.41
 =========================
