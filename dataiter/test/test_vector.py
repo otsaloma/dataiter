@@ -89,11 +89,45 @@ class TestVector:
         assert a.is_float()
         assert a.equal(b)
 
+    def test___new___na_float_mixed_nan(self):
+        # Missing values should be NaN.
+        # Mixing Python and NumPy floats should be fine.
+        a = Vector([1.1, np.float64(2.2), NaN])
+        b = Vector([1.1, 2.2, NaN])
+        assert a.is_float()
+        assert a.equal(b)
+
+    def test___new___na_float_mixed_none(self):
+        # Missing values should be NaN.
+        # Mixing Python and NumPy floats should be fine.
+        a = Vector([1.1, np.float64(2.2), None])
+        b = Vector([1.1, 2.2, NaN])
+        assert a.is_float()
+        assert a.equal(b)
+
     def test___new___na_integer(self):
         # Should be upcast to float.
         # Missing values should be NaN.
         a = Vector([1, 2, NaN, None])
         b = Vector([1, 2, NaN, NaN])
+        assert a.is_float()
+        assert a.equal(b)
+
+    def test___new___na_integer_mixed_nan(self):
+        # Should be upcast to float.
+        # Missing values should be NaN.
+        # Mixing Python and NumPy integers should be fine.
+        a = Vector([1, np.int64(2), NaN])
+        b = Vector([1, 2, NaN])
+        assert a.is_float()
+        assert a.equal(b)
+
+    def test___new___na_integer_mixed_none(self):
+        # Should be upcast to float.
+        # Missing values should be NaN.
+        # Mixing Python and NumPy integers should be fine.
+        a = Vector([1, np.int64(2), None])
+        b = Vector([1, 2, NaN])
         assert a.is_float()
         assert a.equal(b)
 

@@ -558,7 +558,10 @@ class Vector(np.ndarray):
             return None
         if str in types:
             return ""
-        if all(x in [float, int] for x in types):
+        if all(x in [float, int] or
+               np.issubdtype(x, np.floating) or
+               np.issubdtype(x, np.integer)
+               for x in types):
             return np.nan
         datetimes = [datetime.date, datetime.datetime, np.datetime64]
         if all(x in datetimes for x in types):

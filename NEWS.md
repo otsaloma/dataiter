@@ -2,6 +2,8 @@ PENDING: Dataiter 0.42
 ======================
 
 * `DataFrame`: Truncate multiline strings when printing
+* `Vector.__init__`: Fix type guessing when mixing Python and NumPy
+  floats or integers and missing values
 * Allow using a thousand separator when printing numbers,
   off by default, can be set with `dataiter.PRINT_THOUSAND_SEPARATOR`
 
