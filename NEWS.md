@@ -2,6 +2,11 @@ PENDING: Dataiter 0.42
 ======================
 
 * `DataFrame`: Truncate multiline strings when printing
+* `DataFrame.from_arrow`: New method
+* `DataFrame.read_parquet`: New method
+* `DataFrame.to_arrow`: New method
+* `DataFrame.write_parquet`: New method
+* `read_parquet`: New function
 * `Vector.__init__`: Fix type guessing when mixing Python and NumPy
   floats or integers and missing values
 * Allow using a thousand separator when printing numbers,

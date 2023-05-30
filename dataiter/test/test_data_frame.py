@@ -242,6 +242,16 @@ class TestDataFrame:
         assert np.all(data.make != "Saab")
         assert np.sum(data.hwy) == 776930
 
+    def test_from_arrow(self):
+        import pyarrow as pa
+        orig = test.data_frame("vehicles.csv")
+        data = orig.to_arrow()
+        assert isinstance(data, pa.Table)
+        assert data.num_rows == orig.nrow
+        assert data.num_columns == orig.ncol
+        data = DataFrame.from_arrow(data)
+        assert data == orig
+
     def test_from_json(self):
         orig = test.data_frame("downloads.json")
         text = orig.to_json()
@@ -450,6 +460,13 @@ class TestDataFrame:
         orig.write_npz(path)
         DataFrame.read_npz(Path(path))
 
+    def test_read_parquet(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, path = tempfile.mkstemp(".parquet")
+        orig.write_parquet(path)
+        data = DataFrame.read_parquet(path)
+        assert data == orig
+
     def test_read_pickle(self):
         orig = test.data_frame("vehicles.csv")
         handle, path = tempfile.mkstemp(".pkl")
@@ -564,6 +581,14 @@ class TestDataFrame:
         data = orig.to_list_of_dicts()
         assert len(data) == orig.nrow
 
+    def test_to_arrow(self):
+        import pyarrow as pa
+        orig = test.data_frame("vehicles.csv")
+        data = orig.to_arrow()
+        assert isinstance(data, pa.Table)
+        assert data.num_rows == orig.nrow
+        assert data.num_columns == orig.ncol
+
     def test_to_pandas(self):
         import pandas as pd
         orig = test.data_frame("vehicles.csv")
@@ -662,6 +687,13 @@ class TestDataFrame:
         orig = test.data_frame("vehicles.csv")
         handle, path = tempfile.mkstemp(".npz")
         orig.write_npz(Path(path))
+
+    def test_write_parquet(self):
+        orig = test.data_frame("vehicles.csv")
+        handle, path = tempfile.mkstemp(".parquet")
+        orig.write_parquet(path)
+        data = DataFrame.read_parquet(path)
+        assert data == orig
 
     def test_write_pickle(self):
         orig = test.data_frame("vehicles.csv")

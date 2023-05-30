@@ -445,6 +445,26 @@ class DataFrame(dict):
             yield colname, np.delete(column, rows)
 
     @classmethod
+    def from_arrow(cls, data, *, strings_as_object=inf, dtypes={}):
+        """
+        Return a new data frame from ``pyarrow.Table`` `data`.
+
+        `strings_as_object` is a cutoff point. If any row has more characters
+        than that, the whole column will use the object data type. This is
+        intended to help limit memory use as NumPy strings are fixed-length and
+        can take a huge amount of memory if even a single row is long. If set,
+        `dtypes` overrides this.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+        """
+        # Arrow's 'to_numpy' is "limited to primitive types for which NumPy has
+        # the same physical representation as Arrow, and assuming the Arrow
+        # data has no nulls." Using Pandas is easier and probably good enough.
+        return cls.from_pandas(data.to_pandas(),
+                               strings_as_object=strings_as_object,
+                               dtypes=dtypes)
+
+    @classmethod
     def from_json(cls, string, *, columns=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON `string`.
@@ -875,6 +895,26 @@ class DataFrame(dict):
             return cls(**data)
 
     @classmethod
+    def read_parquet(cls, path, *, columns=[], strings_as_object=inf, dtypes={}):
+        """
+        Return a new data frame from Parquet file `path`.
+
+        `columns` is an optional list of columns to limit to.
+
+        `strings_as_object` is a cutoff point. If any row has more characters
+        than that, the whole column will use the object data type. This is
+        intended to help limit memory use as NumPy strings are fixed-length and
+        can take a huge amount of memory if even a single row is long. If set,
+        `dtypes` overrides this.
+
+        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+        """
+        import pyarrow.parquet as pq
+        columns = columns or None
+        data = pq.read_table(path, columns=columns)
+        return cls.from_arrow(data, strings_as_object=strings_as_object, dtypes=dtypes)
+
+    @classmethod
     def read_pickle(cls, path):
         """
         Return a new data frame from Pickle file `path`.
@@ -1049,6 +1089,17 @@ class DataFrame(dict):
         n = min(self.nrow, n)
         return self.slice(np.arange(self.nrow - n, self.nrow))
 
+    def to_arrow(self):
+        """
+        Return data frame converted to a ``pyarrow.Table``.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> data.to_arrow()
+        """
+        import pyarrow as pa
+        data = [pa.array(self[x].tolist()) for x in self.colnames]
+        return pa.table(data, names=self.colnames)
+
     def to_json(self, **kwargs):
         """
         Return data frame converted to a JSON string.
@@ -1191,9 +1242,9 @@ class DataFrame(dict):
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        pddf = self.to_pandas()
+        data = self.to_pandas()
         util.makedirs_for_file(path)
-        pddf.to_csv(path, sep=sep, header=header, index=False, encoding=encoding)
+        data.to_csv(path, sep=sep, header=header, index=False, encoding=encoding)
 
     def write_json(self, path, *, encoding="utf-8", **kwargs):
         """
@@ -1212,6 +1263,17 @@ class DataFrame(dict):
         util.makedirs_for_file(path)
         savez = np.savez_compressed if compress else np.savez
         savez(path, **self)
+
+    def write_parquet(self, path, **kwargs):
+        """
+        Write data frame to Parquet file `path`.
+
+        `kwargs` are passed to ``pyarrow.parquet.write_table``.
+        """
+        import pyarrow.parquet as pq
+        data = self.to_arrow()
+        util.makedirs_for_file(path)
+        pq.write_table(data, path, **kwargs)
 
     def write_pickle(self, path):
         """

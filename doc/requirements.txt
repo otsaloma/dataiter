@@ -1,5 +1,6 @@
 attd==0.4
 numpy==1.21.0
 pandas==1.1.5
+pyarrow==12.0.0
 sphinx==3.4.3
 sphinx-rtd-theme==0.5.2

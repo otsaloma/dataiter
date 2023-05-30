@@ -24,13 +24,14 @@ with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
 
 The following read functions are convenience aliases to the correspoding
 methods of the classes generally most suitable for the particular file
-type, i.e. :class:`.DataFrame` for CSV and NPZ, :class:`.GeoJSON` for
-GeoJSON and :class:`.ListOfDicts` for JSON.
+type, i.e. :class:`.DataFrame` for CSV, NPZ and Parquet,
+:class:`.GeoJSON` for GeoJSON and :class:`.ListOfDicts` for JSON.
 
 :func:`~dataiter.read_csv`
 :func:`~dataiter.read_geojson`
 :func:`~dataiter.read_json`
 :func:`~dataiter.read_npz`
+:func:`~dataiter.read_parquet`
 
 .. automodule:: dataiter
    :members: all,
@@ -50,6 +51,7 @@ GeoJSON and :class:`.ListOfDicts` for JSON.
              read_geojson,
              read_json,
              read_npz,
+             read_parquet,
              std,
              sum,
              var

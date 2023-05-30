@@ -12,6 +12,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.deepcopy`
 :meth:`~dataiter.DataFrame.filter`
 :meth:`~dataiter.DataFrame.filter_out`
+:meth:`~dataiter.DataFrame.from_arrow`
 :meth:`~dataiter.DataFrame.from_json`
 :meth:`~dataiter.DataFrame.from_pandas`
 :meth:`~dataiter.DataFrame.full_join`
@@ -30,6 +31,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.read_csv`
 :meth:`~dataiter.DataFrame.read_json`
 :meth:`~dataiter.DataFrame.read_npz`
+:meth:`~dataiter.DataFrame.read_parquet`
 :meth:`~dataiter.DataFrame.read_pickle`
 :meth:`~dataiter.DataFrame.rename`
 :meth:`~dataiter.DataFrame.sample`
@@ -40,6 +42,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.sort`
 :meth:`~dataiter.DataFrame.split`
 :meth:`~dataiter.DataFrame.tail`
+:meth:`~dataiter.DataFrame.to_arrow`
 :meth:`~dataiter.DataFrame.to_json`
 :meth:`~dataiter.DataFrame.to_list_of_dicts`
 :meth:`~dataiter.DataFrame.to_pandas`
@@ -50,6 +53,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.write_csv`
 :meth:`~dataiter.DataFrame.write_json`
 :meth:`~dataiter.DataFrame.write_npz`
+:meth:`~dataiter.DataFrame.write_parquet`
 :meth:`~dataiter.DataFrame.write_pickle`
 
 .. autoclass:: dataiter.DataFrame
