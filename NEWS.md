@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.42
-======================
+2023-05-30: Dataiter 0.42
+=========================
 
 * `DataFrame`: Truncate multiline strings when printing
 * `DataFrame.from_arrow`: New method
