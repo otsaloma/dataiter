@@ -88,3 +88,4 @@ from dataiter.io import read_csv # noqa
 from dataiter.io import read_geojson # noqa
 from dataiter.io import read_json # noqa
 from dataiter.io import read_npz # noqa
+from dataiter.io import read_parquet # noqa
