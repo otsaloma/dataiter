@@ -257,6 +257,10 @@ class DataFrame(dict):
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        for name in by2:
+            # Don't try to join by NAs.
+            na = other[name].is_na()
+            other = other.filter_out(na)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
@@ -539,11 +543,13 @@ class DataFrame(dict):
         a = self.modify(_aid_=np.arange(self.nrow))
         b = other.modify(_bid_=np.arange(other.nrow))
         ab = a.left_join(b, *by)
-        # Check which rows of b were not joined into a,
-        # if no rows remain, full join is the same as left join ab.
+        # Check which rows of b were not joined into a.
+        # If no rows remain, full join is the same as left join ab.
         b = b.anti_join(ab, "_bid_")
         if b.nrow == 0:
             return ab.unselect("_aid_", "_bid_")
+        # Reverse the by-tuples for the reverse join ba,
+        # so that the data frame and by orders match.
         by_reverse = [
             tuple(reversed(x)) if isinstance(x, (list, tuple))
             else x
@@ -602,6 +608,10 @@ class DataFrame(dict):
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        for name in by2:
+            # Don't try to join by NAs.
+            na = other[name].is_na()
+            other = other.filter_out(na)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
@@ -629,6 +639,10 @@ class DataFrame(dict):
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        for name in by2:
+            # Don't try to join by NAs.
+            na = other[name].is_na()
+            other = other.filter_out(na)
         other = other.unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
