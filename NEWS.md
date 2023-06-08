@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.43
-======================
+2023-06-08: Dataiter 0.43
+=========================
 
 * `DataFrame`: Don't try to do joins on NA values in `by` columns
 * `DataFrame.drop_na`: New method
