@@ -257,11 +257,7 @@ class DataFrame(dict):
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        for name in by2:
-            # Don't try to join by NAs.
-            na = other[name].is_na()
-            other = other.filter_out(na)
-        other = other.unique(*by2)
+        other = other.drop_na(*by2).unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, np.delete(column, found)
@@ -389,6 +385,18 @@ class DataFrame(dict):
         Return a deep copy.
         """
         return self.__deepcopy__()
+
+    def drop_na(self, *colnames):
+        """
+        Return data frame without rows that have missing values in `colnames`.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> data.drop_na("sqft")
+        """
+        drop = Vector.fast([False], bool).repeat(self.nrow)
+        for colname in colnames:
+            drop = drop | self[colname].is_na()
+        return self.filter_out(drop)
 
     @deco.new_from_generator
     def filter(self, rows=None, **colname_value_pairs):
@@ -608,11 +616,7 @@ class DataFrame(dict):
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        for name in by2:
-            # Don't try to join by NAs.
-            na = other[name].is_na()
-            other = other.filter_out(na)
-        other = other.unique(*by2)
+        other = other.drop_na(*by2).unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column[found].copy()
@@ -639,11 +643,7 @@ class DataFrame(dict):
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        for name in by2:
-            # Don't try to join by NAs.
-            na = other[name].is_na()
-            other = other.filter_out(na)
-        other = other.unique(*by2)
+        other = other.drop_na(*by2).unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column.copy()

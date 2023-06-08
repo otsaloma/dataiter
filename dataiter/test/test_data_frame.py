@@ -214,6 +214,12 @@ class TestDataFrame:
         assert data == orig
         assert data is not orig
 
+    def test_drop_na(self):
+        data = test.data_frame("listings.csv")
+        data = data.drop_na("sqft")
+        assert data.nrow == 396
+        assert not (data.sqft.is_na()).any()
+
     def test_filter_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter(data.make == "Saab")

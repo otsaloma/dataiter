@@ -10,6 +10,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.compare`
 :meth:`~dataiter.DataFrame.copy`
 :meth:`~dataiter.DataFrame.deepcopy`
+:meth:`~dataiter.DataFrame.drop_na`
 :meth:`~dataiter.DataFrame.filter`
 :meth:`~dataiter.DataFrame.filter_out`
 :meth:`~dataiter.DataFrame.from_arrow`

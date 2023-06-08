@@ -2,6 +2,7 @@ PENDING: Dataiter 0.43
 ======================
 
 * `DataFrame`: Don't try to do joins on NA values in `by` columns
+* `DataFrame.drop_na`: New method
 
 2023-05-30: Dataiter 0.42
 =========================
