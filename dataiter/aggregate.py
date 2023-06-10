@@ -31,19 +31,20 @@ from dataiter import Vector
 
 try:
     assert dataiter.USE_NUMBA
-    import numba
+    from numba import njit
+    from numba import types
+    from numba.extending import overload
 except Exception:
-    class numba:
-        @classmethod
-        def jit(cls, *args, **kwargs):
-            def outer_wrapper(function):
-                def inner_wrapper(*args, **kwargs):
-                    print("Using dummy jit, this shouldn't happen")
-                    return function(*args, **kwargs)
-                return inner_wrapper
-            return outer_wrapper
-        generated_jit = jit
-        njit = jit
+    # We need the decorators used to exist to avoid import time errors,
+    # but actual calls to the below shouldn't be made (see 'select').
+    def dummy_jit(*args, **kwargs):
+        def outer_wrapper(function):
+            def inner_wrapper(*args, **kwargs):
+                print("Using dummy jit, this shouldn't happen")
+                return function(*args, **kwargs)
+            return inner_wrapper
+        return outer_wrapper
+    njit = overload = dummy_jit
 
 
 # TODO: Use yield in njitted functions, requires Numba 0.56.
@@ -184,7 +185,7 @@ def count_unique_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield len(set(xg))
 
-@numba.njit(cache=True)
+@njit(cache=True)
 def count_unique_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -213,7 +214,7 @@ def generic(function, **kwargs):
 
 @functools.lru_cache(256)
 def generic_numba(function):
-    @numba.njit(cache=True)
+    @njit(cache=True)
     def aggregate(x, group, drop_na, default, nrequired):
         out = []
         for xg in yield_groups_numba(x, group, drop_na):
@@ -224,19 +225,23 @@ def generic_numba(function):
 def handle_na(x, drop_na):
     return x[~x.is_na()] if drop_na else x
 
-@numba.generated_jit(nopython=True, cache=True)
 def is_na_item_numba(x):
-    # Flexible specializations with @generated_jit
-    # https://numba.pydata.org/numba-doc/dev/user/generated-jit.html
-    if isinstance(x, numba.types.Float):
+    raise NotImplementedError
+
+@overload(is_na_item_numba)
+def is_na_item_numba_overload(x):
+    # "Called at compile-time with the types of the function's runtime arguments."
+    # https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-generated-jit
+    # https://numba.readthedocs.io/en/stable/extending/high-level.html#implementing-functions
+    if isinstance(x, types.Float):
         return lambda x: np.isnan(x)
-    if isinstance(x, numba.types.NPDatetime):
+    if isinstance(x, types.NPDatetime):
         return lambda x: np.isnat(x)
-    if isinstance(x, numba.types.UnicodeType):
+    if isinstance(x, types.UnicodeType):
         return lambda x: x == ""
     return lambda x: False
 
-@numba.njit(cache=True)
+@njit(cache=True)
 def is_na_numba(x):
     na = np.full(len(x), False)
     for i in range(len(x)):
@@ -410,7 +415,7 @@ def mode_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield mode1(xg) if len(xg) >= 1 else None
 
-@numba.njit(cache=True)
+@njit(cache=True)
 def mode_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -472,7 +477,7 @@ def nth_apply(x, group, index, drop_na):
         except IndexError:
             yield None
 
-@numba.njit(cache=True)
+@njit(cache=True)
 def nth_apply_numba(x, group, index, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -518,7 +523,7 @@ def quantile_apply(x, group, q, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield np.quantile(xg, q) if len(xg) >= 1 else np.nan
 
-@numba.njit(cache=True)
+@njit(cache=True)
 def quantile_apply_numba(x, group, q, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -653,7 +658,7 @@ def yield_groups(x, group, drop_na):
         yield xij
         i = j
 
-@numba.njit(cache=True)
+@njit(cache=True)
 def yield_groups_numba(x, group, drop_na):
     # Groups must be contiguous for this to work!
     i = 0
