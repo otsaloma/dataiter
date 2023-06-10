@@ -47,10 +47,6 @@ except Exception:
     njit = overload = dummy_jit
 
 
-# TODO: Use yield in njitted functions, requires Numba 0.56.
-# https://github.com/numba/numba/issues/2868
-
-
 def composite(function):
     @functools.wraps(function)
     def wrapper(x, *args, **kwargs):
