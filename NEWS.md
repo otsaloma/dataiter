@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.44
-======================
+2023-06-13: Dataiter 0.44
+=========================
 
 * Use `numba.extending.overload` instead of the deprecated
   `numba.generated_jit`
