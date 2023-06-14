@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.45
-======================
+2023-06-14: Dataiter 0.45
+=========================
 
 * `USE_NUMBA_CACHE`: New option, read from environment variable
   `DATAITER_USE_NUMBA_CACHE` if exists, defauls to `True`
