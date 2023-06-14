@@ -181,7 +181,7 @@ def count_unique_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield len(set(xg))
 
-@njit(cache=True)
+@njit(cache=dataiter.USE_NUMBA_CACHE)
 def count_unique_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -210,7 +210,7 @@ def generic(function, **kwargs):
 
 @functools.lru_cache(256)
 def generic_numba(function):
-    @njit(cache=True)
+    @njit(cache=dataiter.USE_NUMBA_CACHE)
     def aggregate(x, group, drop_na, default, nrequired):
         out = []
         for xg in yield_groups_numba(x, group, drop_na):
@@ -237,7 +237,7 @@ def is_na_item_numba_overload(x):
         return lambda x: x == ""
     return lambda x: False
 
-@njit(cache=True)
+@njit(cache=dataiter.USE_NUMBA_CACHE)
 def is_na_numba(x):
     na = np.full(len(x), False)
     for i in range(len(x)):
@@ -411,7 +411,7 @@ def mode_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield mode1(xg) if len(xg) >= 1 else None
 
-@njit(cache=True)
+@njit(cache=dataiter.USE_NUMBA_CACHE)
 def mode_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -473,7 +473,7 @@ def nth_apply(x, group, index, drop_na):
         except IndexError:
             yield None
 
-@njit(cache=True)
+@njit(cache=dataiter.USE_NUMBA_CACHE)
 def nth_apply_numba(x, group, index, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -519,7 +519,7 @@ def quantile_apply(x, group, q, drop_na):
     for xg in yield_groups(x, group, drop_na):
         yield np.quantile(xg, q) if len(xg) >= 1 else np.nan
 
-@njit(cache=True)
+@njit(cache=dataiter.USE_NUMBA_CACHE)
 def quantile_apply_numba(x, group, q, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
@@ -654,7 +654,7 @@ def yield_groups(x, group, drop_na):
         yield xij
         i = j
 
-@njit(cache=True)
+@njit(cache=dataiter.USE_NUMBA_CACHE)
 def yield_groups_numba(x, group, drop_na):
     # Groups must be contiguous for this to work!
     i = 0

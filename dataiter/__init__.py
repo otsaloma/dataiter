@@ -37,6 +37,10 @@ PRINT_MAX_WIDTH = 80
 PRINT_THOUSAND_SEPARATOR = ""
 PRINT_TRUNCATE_WIDTH = 36
 USE_NUMBA = False
+USE_NUMBA_CACHE = True
+
+with contextlib.suppress(LookupError):
+    USE_NUMBA_CACHE = util.parse_env_boolean("DATAITER_USE_NUMBA_CACHE")
 
 try:
     # Force Numba on or off if environment variable defined.
@@ -47,7 +51,7 @@ except LookupError:
         # and calling a trivial function works.
         import numba
         try:
-            @numba.njit(cache=True)
+            @numba.njit(cache=USE_NUMBA_CACHE)
             def check(x):
                 return x**2
             assert check(10) == 100
