@@ -659,10 +659,12 @@ def yield_groups_numba(x, group, drop_na):
     # Groups must be contiguous for this to work!
     i = 0
     n = len(x)
+    out = []
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
         if drop_na:
             xij = xij[~is_na_numba(xij)]
-        yield xij
+        out.append(xij)
         i = j
+    return out

@@ -3,6 +3,7 @@ PENDING: Dataiter 0.45
 
 * `USE_NUMBA_CACHE`: New option, read from environment variable
   `DATAITER_USE_NUMBA_CACHE` if exists, defauls to `True`
+* Fix a possible issue with Numba caching
 
 2023-06-13: Dataiter 0.44
 =========================
