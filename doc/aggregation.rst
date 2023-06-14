@@ -119,7 +119,7 @@ install it separately::
 When, for a particular version of Dataiter, you first use a
 Numba-accelerated aggregation function, the code will be compiled, which
 might take a couple seconds. The compiled code is saved in `cache
-<https://numba.pydata.org/numba-doc/latest/developer/caching.html>`_.
+<https://numba.readthedocs.io/en/stable/developer/caching.html>`_.
 After that, using the function from cache will be really fast. In case
 you're benchmarking something, note also that on the first use of such a
 function in a Python session, the compiled code is loaded from cache on
@@ -129,6 +129,12 @@ faster as there's no more need to load anything.
 .. note:: If you have trouble with Numba, please check the value of
           ``di.USE_NUMBA`` to see if Numba has been found. You can also
           set ``di.USE_NUMBA = False`` if you have Numba installed, but
-          it's not working right, or if you prefer, you can set the
-          environment variable ``DATAITER_USE_NUMBA=true`` or
-          ``DATAITER_USE_NUMBA=false`` to force a desired value.
+          it's not working right, or via the environment variable
+          ``DATAITER_USE_NUMBA=false``. Sometimes it's the just the
+          `caching
+          <https://numba.readthedocs.io/en/stable/developer/caching.html>`_
+          part of Numba that's causing issues. When upgrading you might
+          sometimes need to delete old caches. If that doesn't help, you
+          can also turn caching off with ``di.USE_NUMBA_CACHE = False``
+          or the environment variable
+          ``DATAITER_USE_NUMBA_CACHE=false``.
