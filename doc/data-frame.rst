@@ -9,6 +9,7 @@ dataiter.DataFrame
 :attr:`~dataiter.DataFrame.columns`
 :meth:`~dataiter.DataFrame.compare`
 :meth:`~dataiter.DataFrame.copy`
+:meth:`~dataiter.DataFrame.count`
 :meth:`~dataiter.DataFrame.deepcopy`
 :meth:`~dataiter.DataFrame.drop_na`
 :meth:`~dataiter.DataFrame.filter`

@@ -380,6 +380,15 @@ class DataFrame(dict):
         """
         return self.__copy__()
 
+    def count(self, *colnames):
+        """
+        Return row counts grouped by `colnames`.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> data.count("hood")
+        """
+        return self.copy().group_by(*colnames).aggregate(n=dataiter.count())
+
     def deepcopy(self):
         """
         Return a deep copy.

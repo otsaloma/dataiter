@@ -208,6 +208,12 @@ class TestDataFrame:
         assert data == orig
         assert data is not orig
 
+    def test_count(self):
+        data = test.data_frame("listings.csv")
+        stat = data.count("hood")
+        assert stat.hood.equal(data.hood.unique().sort())
+        assert stat.n.sum() == data.nrow
+
     def test_deepcopy(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.copy()
