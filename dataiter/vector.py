@@ -443,9 +443,15 @@ class Vector(np.ndarray):
         >>> vector.rank(method="average")
         >>> vector.rank(method="ordinal")
         """
+        if self.length == 0:
+            return self.__class__([], int)
         if method not in ["min", "max", "average", "ordinal"]:
             raise ValueError(f"Unexpected method: {method!r}")
         na = self.is_na()
+        if na.all():
+            # Avoid trying to evaluate min/max/mean of all NA.
+            x = self.__class__(np.repeat(1, self.length))
+            return x.rank(method=method)
         if method == "average":
             rank_min = self.rank(method="min")
             rank_max = self.rank(method="max")

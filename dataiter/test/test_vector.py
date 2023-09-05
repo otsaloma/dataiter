@@ -423,10 +423,20 @@ class TestVector:
         b = a.rank(method="average")
         assert b.tolist() == [6, 2, 2, 2, 4.5, 4.5]
 
+    def test_rank_average_blank(self):
+        a = Vector([], float)
+        b = a.rank(method="average")
+        assert b.tolist() == []
+
     def test_rank_average_na(self):
         a = Vector([NaN, 1, 2, 3, NaN])
         b = a.rank(method="average")
         assert b.tolist() == [4.5, 1, 2, 3, 4.5]
+
+    def test_rank_average_na_all(self):
+        a = Vector([NaN, NaN, NaN], float)
+        b = a.rank(method="average")
+        assert b.tolist() == [2, 2, 2]
 
     def test_rank_max(self):
         a = Vector([1, 2, 1, 2, 3])

@@ -3,6 +3,7 @@ PENDING: Dataiter 0.46
 
 * `DataFrame.count`: New method, shorthand for
   `data.group_by(...).aggregate(n=di.count())`
+* `Vector.rank`: Handle empty and all-NA vectors
 
 2023-06-14: Dataiter 0.45
 =========================
