@@ -18,7 +18,7 @@ set -e
 rm -f $OUTPUT_FILE
 echo "name,version,elapsed" > $OUTPUT_FILE
 cp -fv benchmark.py $SCRIPT
-for VERSION in 0.45 master; do
+for VERSION in 0.46 master; do
     benchmark $VERSION
 done
 rm -f $SCRIPT $TMP_FILE

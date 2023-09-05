@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.46
-======================
+2023-09-05: Dataiter 0.46
+=========================
 
 * `DataFrame.count`: New method, shorthand for
   `data.group_by(...).aggregate(n=di.count())`
