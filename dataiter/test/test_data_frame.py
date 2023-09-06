@@ -189,6 +189,19 @@ class TestDataFrame:
         data.colnames = ["a", "b", "c"]
         assert data.colnames == ["a", "b", "c"]
 
+    def test_colnames_set_reserved(self):
+        # One should be able to use column names that clash with
+        # method names without any error setting or deleting attributes.
+        data = test.data_frame("downloads.csv")
+        data.colnames = ["a", "count", "update"]
+        assert data.colnames == ["a", "count", "update"]
+        assert callable(data.count)
+        assert callable(data.update)
+        data.colnames = ["a", "b", "c"]
+        assert data.colnames == ["a", "b", "c"]
+        assert callable(data.count)
+        assert callable(data.update)
+
     def test_columns(self):
         data = test.data_frame("downloads.csv")
         assert data.columns == [data.category, data.date, data.downloads]
