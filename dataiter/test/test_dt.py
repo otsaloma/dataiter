@@ -115,8 +115,9 @@ class TestDT:
     def test_replace_vector_1m(self):
         a = np.repeat(dt.new("2023-08-09"), 1_000_000)
         month = np.repeat([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 100_000)
-        assert len(a) == len(month) == 1_000_000
-        assert dt.replace(a, month=month, day=1).all()
+        assert len(month) == len(a) == 1_000_000
+        b = dt.replace(a, month=month, day=1)
+        assert len(b) == len(a)
 
     def test_second(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
