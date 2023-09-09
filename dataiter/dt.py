@@ -204,7 +204,26 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     >>> dt.replace(x, month=1, day=1)
     """
     kwargs = {k: v for k, v in locals().items() if k != "x" and v is not None}
-    return _pull_datetime(x, lambda y: y.replace(**kwargs))
+    if all(map(util.is_scalar, kwargs.values())):
+        return _pull_datetime(x, lambda y: y.replace(**kwargs))
+    for value in kwargs.values():
+        assert util.is_scalar(value) or len(value) == len(x)
+    scalar_keys = [x for x in kwargs if util.is_scalar(kwargs[x])]
+    vector_keys = [x for x in kwargs if x not in scalar_keys]
+    # Like _pull_datetime, but no vectorized function.
+    x = util.sequencify(x)
+    assert isinstance(x, np.ndarray)
+    assert np.issubdtype(x.dtype, np.datetime64)
+    out = np.full_like(x, np.nan)
+    out = Vector.fast(out, np.datetime64)
+    na = np.isnat(x)
+    xobj = x.astype(object)
+    kwargs_scalar = {x: kwargs[x] for x in scalar_keys}
+    for i in np.flatnonzero(~na):
+        for key in vector_keys:
+            kwargs_scalar[key] = kwargs[key][i]
+        out[i] = xobj[i].replace(**kwargs_scalar)
+    return out
 
 def second(x):
     """

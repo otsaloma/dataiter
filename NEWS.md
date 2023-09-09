@@ -2,6 +2,7 @@ PENDING: Dataiter 0.47
 ======================
 
 * `DataFrame`: Fix column and method name clash errors in certain operations
+* `dt.replace`: Allow vector arguments the same length as `x`
 
 2023-09-05: Dataiter 0.46
 =========================

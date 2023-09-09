@@ -107,6 +107,17 @@ class TestDT:
         b = dt.new(["2022-01-01", NaT])
         assert dt.replace(a, month=1, day=1).equal(b)
 
+    def test_replace_vector(self):
+        a = dt.new(["2023-08-09", "2023-08-10", "2023-08-11"])
+        b = dt.new(["2023-07-01", "2023-07-02", "2023-07-03"])
+        assert dt.replace(a, month=7, day=[1, 2, 3]).equal(b)
+
+    def test_replace_vector_1m(self):
+        a = np.repeat(dt.new("2023-08-09"), 1_000_000)
+        month = np.repeat([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 100_000)
+        assert len(a) == len(month) == 1_000_000
+        assert dt.replace(a, month=month, day=1).all()
+
     def test_second(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.second(a).tolist() == [56, None]
