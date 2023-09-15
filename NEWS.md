@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.48
+======================
+
+* `Vector.sort`: Fix sorting object vectors
+
 2023-09-09: Dataiter 0.47
 =========================
 

@@ -515,8 +515,15 @@ class Vector(np.ndarray):
         >>> vector.sort(dir=-1)
         """
         if self.is_object():
-            # Avoid TypeError trying to compare different types.
-            return self.as_string().sort(dir=dir)
+            # It's not really clear how objects should be sorted.
+            # Let's use strings, since (1) object vectors are often
+            # used to hold strings and (2) most types probably
+            # implement __str__, so this is actually doable.
+            lst = sorted(self.tolist(), key=str, reverse=dir<0)
+            for i in list(reversed(range(len(lst)))):
+                if lst[i] is None:
+                    lst.append(lst.pop(i))
+            return self.__class__(lst, object)
         na = self.is_na()
         a = self[~na].copy()
         z = self[na].copy()
