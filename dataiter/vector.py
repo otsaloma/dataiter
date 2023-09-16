@@ -519,19 +519,18 @@ class Vector(np.ndarray):
             # Let's use strings, since (1) object vectors are often
             # used to hold strings and (2) most types probably
             # implement __str__, so this is actually doable.
-            lst = sorted(self.tolist(), key=str, reverse=dir<0)
-            for i in list(reversed(range(len(lst)))):
-                if lst[i] is None:
-                    lst.append(lst.pop(i))
-            return self.__class__(lst, object)
-        na = self.is_na()
-        a = self[~na].copy()
-        z = self[na].copy()
-        np.ndarray.sort(a)
+            lst = sorted(self, key=str, reverse=dir<0)
+            new = self.fast(lst, object)
+            na = new.is_na()
+            new = np.concatenate((new[~na], new[na]))
+            return self.fast(new, object)
+        new = self.copy()
+        np.ndarray.sort(new)
         if dir < 0:
-            a = a[::-1]
-        vector = np.concatenate((a, z))
-        return self.__class__(vector)
+            new = new[::-1]
+        na = new.is_na()
+        new = np.concatenate((new[~na], new[na]))
+        return self.fast(new, self.dtype)
 
     @classmethod
     def _std_to_np(cls, seq, dtype=None):
