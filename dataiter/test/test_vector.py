@@ -225,6 +225,12 @@ class TestVector:
         a[0] = "hello"
         assert a[0] == "hello"
 
+    def test_concat(self):
+        a = Vector([1, 2, 3])
+        b = Vector([4, 5, 6])
+        c = Vector([7, 8, 9])
+        assert a.concat(b, c).tolist() == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
     def test_drop_na(self):
         a = Vector([1, 2, 3, None])
         b = a.drop_na()

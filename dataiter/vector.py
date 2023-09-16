@@ -175,6 +175,19 @@ class Vector(np.ndarray):
         if self.ndim == 1: return
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
 
+    def concat(self, *others):
+        """
+        Return vector with elements from `others` appended.
+
+        >>> a = di.Vector([1, 2, 3])
+        >>> b = di.Vector([4, 5, 6])
+        >>> c = di.Vector([7, 8, 9])
+        >>> a.concat(b, c)
+        """
+        vectors = [self] + list(others)
+        new = np.concatenate(vectors)
+        return self.__class__(new)
+
     def drop_na(self):
         """
         Return vector without missing values.
@@ -522,14 +535,14 @@ class Vector(np.ndarray):
             lst = sorted(self, key=str, reverse=dir<0)
             new = self.fast(lst, object)
             na = new.is_na()
-            new = np.concatenate((new[~na], new[na]))
+            new = new[~na].concat(new[na])
             return self.fast(new, object)
         new = self.copy()
         np.ndarray.sort(new)
         if dir < 0:
             new = new[::-1]
         na = new.is_na()
-        new = np.concatenate((new[~na], new[na]))
+        new = new[~na].concat(new[na])
         return self.fast(new, self.dtype)
 
     @classmethod

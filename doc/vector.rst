@@ -10,6 +10,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.as_integer`
 :meth:`~dataiter.Vector.as_object`
 :meth:`~dataiter.Vector.as_string`
+:meth:`~dataiter.Vector.concat`
 :meth:`~dataiter.Vector.drop_na`
 :meth:`~dataiter.Vector.equal`
 :meth:`~dataiter.Vector.fast`

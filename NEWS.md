@@ -2,6 +2,7 @@ PENDING: Dataiter 0.48
 ======================
 
 * `Vector.as_datetime`: Add `precision` argument
+* `Vector.concat`: New method
 * `Vector.sort`: Fix sorting object vectors
 
 2023-09-09: Dataiter 0.47
