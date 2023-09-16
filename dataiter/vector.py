@@ -125,14 +125,14 @@ class Vector(np.ndarray):
         """
         return self.astype(np.dtype("datetime64[D]"))
 
-    def as_datetime(self):
+    def as_datetime(self, precision="us"):
         """
         Return vector converted to datetime data type.
 
         >>> vector = di.Vector(["2020-01-01T12:00:00"])
         >>> vector.as_datetime()
         """
-        return self.astype(np.dtype("datetime64[us]"))
+        return self.astype(np.dtype(f"datetime64[{precision}]"))
 
     def as_float(self):
         """

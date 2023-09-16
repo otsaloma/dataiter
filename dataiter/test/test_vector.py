@@ -188,9 +188,14 @@ class TestVector:
         assert np.all(a == [np.datetime64(DATE, "D")])
 
     def test_as_datetime(self):
-        a = Vector([DATE]).as_datetime()
+        a = Vector([DATETIME]).as_datetime()
         assert a.is_datetime()
-        assert np.all(a == [np.datetime64(DATE, "us")])
+        assert np.all(a == [np.datetime64(DATETIME, "us")])
+
+    def test_as_datetime_precision(self):
+        a = Vector([DATETIME]).as_datetime("s")
+        assert a.is_datetime()
+        assert np.all(a == [np.datetime64(DATETIME, "s")])
 
     def test_as_float(self):
         a = Vector([1, 2]).as_float()
