@@ -32,9 +32,9 @@ write_csv = function(data, path) {
 }
 
 # AGGREGATE
-read_csv("../data/vehicles.csv") %>%
-    mutate(fuel_regular=(fuel == "regular")) %>%
-    group_by(make, model) %>%
+read_csv("../data/vehicles.csv") |>
+    mutate(fuel_regular=(fuel == "regular")) |>
+    group_by(make, model) |>
     summarise(
         all_fuel_regular=all(fuel_regular),
         any_fuel_regular=any(fuel_regular),
@@ -51,61 +51,61 @@ read_csv("../data/vehicles.csv") %>%
         quantile_hwy=quantile(hwy, 0.75, type=7),
         std_hwy=sd(hwy),
         sum_hwy=sum(hwy),
-        var_hwy=var(hwy)) %>%
-    mutate(mean_hwy=round(mean_hwy, 2)) %>%
-    mutate(std_hwy=round(std_hwy, 2)) %>%
-    mutate(var_hwy=round(var_hwy, 2)) %>%
+        var_hwy=var(hwy)) |>
+    mutate(mean_hwy=round(mean_hwy, 2)) |>
+    mutate(std_hwy=round(std_hwy, 2)) |>
+    mutate(var_hwy=round(var_hwy, 2)) |>
     write_csv("aggregate.R.csv")
 
 # ANTI JOIN
 reviews = read_csv("../data/listings-reviews.csv")
-read_csv("../data/listings.csv") %>%
-    anti_join(reviews, by="id") %>%
+read_csv("../data/listings.csv") |>
+    anti_join(reviews, by="id") |>
     write_csv("anti_join.R.csv")
 
 # FILTER
-read_csv("../data/vehicles.csv") %>%
-    filter(year < 2000) %>%
-    filter(cyl < 10) %>%
+read_csv("../data/vehicles.csv") |>
+    filter(year < 2000) |>
+    filter(cyl < 10) |>
     write_csv("filter.R.csv")
 
 # FILTER OUT
-read_csv("../data/vehicles.csv") %>%
-    filter(!(year < 2000)) %>%
-    filter(!(cyl < 10)) %>%
+read_csv("../data/vehicles.csv") |>
+    filter(!(year < 2000)) |>
+    filter(!(cyl < 10)) |>
     write_csv("filter_out.R.csv")
 
 # FULL JOIN
 reviews = read_csv("../data/listings-reviews.csv")
 reviews = bind_rows(reviews, reviews)
-read_csv("../data/listings.csv") %>%
-    full_join(reviews, by="id") %>%
+read_csv("../data/listings.csv") |>
+    full_join(reviews, by="id") |>
     write_csv("full_join.R.csv")
 
 # INNER JOIN
 reviews = read_csv("../data/listings-reviews.csv")
-read_csv("../data/listings.csv") %>%
-    inner_join(reviews, by="id") %>%
+read_csv("../data/listings.csv") |>
+    inner_join(reviews, by="id") |>
     write_csv("inner_join.R.csv")
 
 # LEFT JOIN
 reviews = read_csv("../data/listings-reviews.csv")
-read_csv("../data/listings.csv") %>%
-    left_join(reviews, by="id") %>%
+read_csv("../data/listings.csv") |>
+    left_join(reviews, by="id") |>
     write_csv("left_join.R.csv")
 
 # SEMI JOIN
 reviews = read_csv("../data/listings-reviews.csv")
-read_csv("../data/listings.csv") %>%
-    semi_join(reviews, by="id") %>%
+read_csv("../data/listings.csv") |>
+    semi_join(reviews, by="id") |>
     write_csv("semi_join.R.csv")
 
 # SORT
-read_csv("../data/vehicles.csv") %>%
-    arrange(make, model, desc(year)) %>%
+read_csv("../data/vehicles.csv") |>
+    arrange(make, model, desc(year)) |>
     write_csv("sort.R.csv")
 
 # UNIQUE
-read_csv("../data/vehicles.csv") %>%
-    distinct(make, model, year, .keep_all=TRUE) %>%
+read_csv("../data/vehicles.csv") |>
+    distinct(make, model, year, .keep_all=TRUE) |>
     write_csv("unique.R.csv")
