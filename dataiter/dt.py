@@ -26,7 +26,6 @@ import numpy as np
 from dataiter import util
 from dataiter import Vector
 
-
 def day(x):
     """
     Extract day of the month from datetime `x`.

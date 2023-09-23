@@ -35,7 +35,6 @@ import string
 from dataiter import deco
 from pathlib import Path
 
-
 def count_digits(value):
     if np.isnan(value): return 0, 0
     if math.isinf(value): return 0, 0

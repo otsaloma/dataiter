@@ -27,7 +27,6 @@ from dataiter import Vector
 
 NaT = np.datetime64("NaT")
 
-
 class TestDT:
 
     def test_day(self):

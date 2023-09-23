@@ -27,7 +27,6 @@ import tempfile
 
 from dataiter import util
 
-
 class TestUtil:
 
     def test_count_digits(self):

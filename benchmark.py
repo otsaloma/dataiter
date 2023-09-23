@@ -10,7 +10,6 @@ from dataiter import test
 from statistics import mean
 from unittest.mock import patch
 
-
 def data_frame(path, nrow=1_000_000):
     data = test.data_frame(path)
     n = nrow // data.nrow
@@ -240,7 +239,6 @@ def vector_new_np():
     di.Vector(seq)
     return time.time() - start
 
-
 BENCHMARKS = sorted([
     x for x in dir() if
     x.startswith(("data_frame_", "list_of_dicts_", "vector_")) and
@@ -282,7 +280,6 @@ def main(output, rounds, version, pattern):
         assert output.endswith(".csv")
         print(f"Writing {output}...")
         results.write_csv(output)
-
 
 if __name__ == "__main__":
     main()

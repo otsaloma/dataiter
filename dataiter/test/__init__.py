@@ -27,7 +27,6 @@ from dataiter import GeoJSON
 from dataiter import ListOfDicts
 from pathlib import Path
 
-
 def cached(function):
     cache = {}
     @functools.wraps(function)

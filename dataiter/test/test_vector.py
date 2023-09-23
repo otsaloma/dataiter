@@ -31,7 +31,6 @@ NaT = np.datetime64("NaT")
 DATE = datetime.date.today()
 DATETIME = datetime.datetime.now()
 
-
 class TestVector:
 
     def test___new___iterator(self):

@@ -26,7 +26,6 @@ from dataiter import ListOfDicts
 from dataiter import util
 from math import inf
 
-
 def read_csv(path, *, encoding="utf-8", sep=",", header=True, columns=[], strings_as_object=inf, dtypes={}):
     return DataFrame.read_csv(path,
                               encoding=encoding,

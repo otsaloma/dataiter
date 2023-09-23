@@ -26,7 +26,6 @@ from dataiter import GeoJSON
 from dataiter import test
 from pathlib import Path
 
-
 class TestGeoJSON:
 
     path = "neighbourhoods.geojson"

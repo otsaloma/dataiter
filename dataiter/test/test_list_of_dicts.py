@@ -29,7 +29,6 @@ from dataiter import test
 from pathlib import Path
 from unittest.mock import patch
 
-
 class TestListOfDicts:
 
     def is_list_of_dicts(self, data):

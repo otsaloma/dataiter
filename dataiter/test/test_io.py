@@ -27,7 +27,6 @@ from dataiter import GeoJSON
 from dataiter import io
 from dataiter import ListOfDicts
 
-
 class TestIO:
 
     def test_read_csv(self):

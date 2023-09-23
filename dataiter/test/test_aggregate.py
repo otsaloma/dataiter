@@ -156,7 +156,6 @@ TEST_MATRIX = [
 
 ]
 
-
 class TestAggregate:
 
     @pytest.mark.parametrize("use_numba", [False, True])

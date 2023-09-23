@@ -30,7 +30,6 @@ from dataiter import test
 from pathlib import Path
 from unittest.mock import patch
 
-
 class TestDataFrameColumn:
 
     def test___init___given_array(self):
@@ -63,7 +62,6 @@ class TestDataFrameColumn:
 
     def test_nrow(self):
         assert DataFrameColumn([1, 2, 3]).nrow == 3
-
 
 class TestDataFrame:
 

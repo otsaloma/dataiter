@@ -33,7 +33,6 @@ from dataiter import util
 from dataiter import Vector
 from math import inf
 
-
 class DataFrameColumn(Vector):
 
     """
@@ -75,7 +74,6 @@ class DataFrameColumn(Vector):
         Return the amount of rows.
         """
         return self.length
-
 
 class DataFrame(dict):
 

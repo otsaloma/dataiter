@@ -33,7 +33,6 @@ TYPE_CONVERSIONS = {
     datetime.datetime: "datetime64[us]",
 }
 
-
 class Vector(np.ndarray):
 
     """

@@ -34,7 +34,6 @@ from dataiter import deco
 from dataiter import util
 from math import inf
 
-
 class ListOfDicts(list):
 
     """

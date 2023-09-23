@@ -22,7 +22,6 @@
 
 import functools
 
-
 def listify(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):

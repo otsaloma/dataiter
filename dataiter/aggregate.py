@@ -46,7 +46,6 @@ except Exception:
         return outer_wrapper
     njit = overload = dummy_jit
 
-
 def composite(function):
     @functools.wraps(function)
     def wrapper(x, *args, **kwargs):

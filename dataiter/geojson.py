@@ -29,7 +29,6 @@ from dataiter import util
 from dataiter import Vector
 from math import inf
 
-
 class GeoJSON(DataFrame):
 
     """
