@@ -1081,12 +1081,14 @@ class DataFrame(dict):
                     raise ValueError("dir should be 1 or -1")
                 column = self[colname]
                 if column.is_object():
-                    # Avoid TypeError trying to compare different types.
+                    # See Vector.sort for comparison.
                     column = column.as_string()
+                if column.is_string():
+                    column[column.is_na()] = "\uffff"
                 if dir < 0 and not (column.is_boolean() or column.is_number()):
-                    # Use rank for non-numeric types so that we can sort descending.
+                    # Use rank for non-numeric so that we can sort descending.
                     column = column.rank(method="min")
-                yield column if dir >= 0 else -column
+                yield column if dir > 0 else -column
         indices = np.lexsort(sort_key())
         for colname, column in self.items():
             yield colname, column[indices].copy()
