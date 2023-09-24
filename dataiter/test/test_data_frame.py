@@ -574,11 +574,22 @@ class TestDataFrame:
         assert data.colnames == orig.colnames
 
     def test_sort(self):
-        orig = test.data_frame("vehicles.csv")
+        orig = test.data_frame("vehicles.csv").sort(id=1)
         data = orig.sort(year=-1, make=1, model=1)
         assert data.nrow == orig.nrow
         assert data.ncol == orig.ncol
         assert data.year.tolist() == sorted(data.year, reverse=True)
+
+    def test_sort_object(self):
+        orig1 = test.data_frame("vehicles.csv").sort(id=1)
+        data1 = orig1.sort(year=-1, make=1, model=1)
+        orig2 = test.data_frame("vehicles.csv").sort(id=1)
+        orig2.make = orig2.make.as_object()
+        orig2.model = orig2.model.as_object()
+        data2 = orig2.sort(year=-1, make=1, model=1)
+        assert (data1.year == data2.year).all()
+        assert (data1.make == data2.make).all()
+        assert (data1.model == data2.model).all()
 
     def test_split(self):
         data = DataFrame(
