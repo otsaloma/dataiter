@@ -294,6 +294,7 @@ class DataFrame(dict):
         raise ValueError(f"Bad dimensions: {nrows!r}")
 
     def clear(self):
+        """"""
         return self._new()
 
     @property
@@ -779,6 +780,7 @@ class DataFrame(dict):
         return Vector.fast(rows, int)
 
     def pop(self, key, *args, **kwargs):
+        """"""
         value = super().pop(key, *args, **kwargs)
         if hasattr(self, key):
             if not self.__is_builtin_attr(key):
@@ -786,6 +788,7 @@ class DataFrame(dict):
         return value
 
     def popitem(self):
+        """"""
         key, value = super().popitem()
         if hasattr(self, key):
             if not self.__is_builtin_attr(key):
