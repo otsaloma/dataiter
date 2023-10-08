@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.48
-======================
+2023-10-08: Dataiter 0.48
+=========================
 
 * `Vector.as_datetime`: Add `precision` argument
 * `Vector.concat`: New method
