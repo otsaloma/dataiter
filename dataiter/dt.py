@@ -193,7 +193,8 @@ def quarter(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.quarter(x)
     """
-    return np.ceil(month(x) / 3)
+    y = np.ceil(month(x) / 3)
+    return y if np.isnan(y).any() else y.astype(int)
 
 def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=None, microsecond=None):
     """

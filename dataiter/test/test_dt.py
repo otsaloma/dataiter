@@ -98,6 +98,8 @@ class TestDT:
         assert isinstance(dt.now(), np.datetime64)
 
     def test_quarter(self):
+        a = dt.new(["2022-10-15"])
+        assert dt.quarter(a).tolist() == [4]
         a = dt.new(["2022-10-15", NaT])
         assert dt.quarter(a).tolist() == [4, None]
 
