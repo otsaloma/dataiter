@@ -154,6 +154,7 @@ def _pull_datetime(x, function):
     out = np.full_like(x, np.nan)
     out = Vector.fast(out, np.datetime64)
     na = np.isnat(x)
+    if na.all(): return out
     f = np.vectorize(function)
     out[~na] = f(x[~na].astype(object))
     return out
@@ -168,6 +169,7 @@ def _pull_int(x, function):
     out = np.full_like(x, np.nan, float)
     out = Vector.fast(out, float)
     na = np.isnat(x)
+    if na.all(): return out
     f = np.vectorize(function)
     out[~na] = f(x[~na].astype(object))
     return out if na.any() else out.as_integer()
@@ -182,6 +184,7 @@ def _pull_str(x, function):
     out = np.full_like(x, "", object)
     out = Vector.fast(out, object)
     na = np.isnat(x)
+    if na.all(): return out
     f = np.vectorize(function)
     out[~na] = f(x[~na].astype(object))
     return out.as_string()

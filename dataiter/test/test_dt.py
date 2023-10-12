@@ -33,6 +33,9 @@ class TestDT:
         a = dt.new(["2022-10-15", NaT])
         assert dt.day(a).tolist() == [15, None]
 
+    def test_day_nat(self):
+        assert np.isnan(dt.day(NaT))
+
     def test_day_numpy(self):
         a = np.array(["2022-10-15", NaT], np.datetime64)
         assert dt.day(a).tolist() == [15, None]
@@ -76,8 +79,12 @@ class TestDT:
         assert dt.minute(a).tolist() == [34, None]
 
     def test_month(self):
+        a = dt.new([NaT, NaT])
+        assert dt.month(a).tolist() == [None, None]
         a = dt.new(["2022-10-15", NaT])
         assert dt.month(a).tolist() == [10, None]
+        a = dt.new(["2022-10-15", "2022-11-15"])
+        assert dt.month(a).tolist() == [10, 11]
 
     def test_new_date(self):
         a = dt.new(["2022-10-15"])
@@ -98,6 +105,9 @@ class TestDT:
         assert isinstance(dt.now(), np.datetime64)
 
     def test_quarter(self):
+        a = dt.new("2022-10-15")
+        assert dt.quarter(a) == 4
+        assert np.isnan(dt.quarter(NaT))
         a = dt.new(["2022-10-15"])
         assert dt.quarter(a).tolist() == [4]
         a = dt.new(["2022-10-15", NaT])

@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.49
+======================
+
+* `dt`: Handle all NaT input
+
 2023-10-08: Dataiter 0.48
 =========================
 
