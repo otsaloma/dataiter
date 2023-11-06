@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dataiter"
+dynamic = ["version"]
+description = "Classes for data manipulation"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.6.0"
+authors = [{ name = "Osmo Salomaa", email = "otsaloma@iki.fi" }]
+dependencies = ["attd>=0.3", "numpy>=1.7", "pandas>=1.0"]
+
+[project.urls]
+Homepage = "https://github.com/otsaloma/dataiter"
+
+[tool.hatch.version]
+path = "dataiter/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/dataiter"]

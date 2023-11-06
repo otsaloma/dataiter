@@ -2,6 +2,7 @@ PENDING: Dataiter 0.49
 ======================
 
 * `dt`: Handle all NaT input
+* Migrate from `setup.py` to `hatch` and `pyproject.toml`
 
 2023-10-08: Dataiter 0.48
 =========================
