@@ -220,6 +220,18 @@ class ListOfDicts(list):
         return self.__deepcopy__()
 
     @deco.new_from_generator
+    def drop_na(self, *keys):
+        """
+        Return list without items that have missing values in `keys`.
+
+        >>> data = di.read_json("data/listings.json")
+        >>> data.drop_na("sqft")
+        """
+        for item in self:
+            if not any(item.get(x, None) is None for x in keys):
+                yield item
+
+    @deco.new_from_generator
     def extend(self, other):
         """
         Return list with items from `other` added to the end.

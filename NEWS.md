@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.50
+======================
+
+* `ListOfDicts.drop_na`: New method
+
 2023-11-08: Dataiter 0.49
 =========================
 

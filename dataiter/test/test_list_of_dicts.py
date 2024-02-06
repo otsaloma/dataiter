@@ -171,6 +171,12 @@ class TestListOfDicts:
         assert b._predecessor is a
         assert c._predecessor is None
 
+    def test_drop_na(self):
+        data = test.list_of_dicts("listings.json")
+        data = data.drop_na("sqft")
+        assert len(data) == 396
+        assert None not in data.pluck("sqft")
+
     def test_extend(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.extend(orig)
