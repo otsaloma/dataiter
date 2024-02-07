@@ -19,6 +19,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.head`
 :meth:`~dataiter.ListOfDicts.inner_join`
 :meth:`~dataiter.ListOfDicts.insert`
+:meth:`~dataiter.ListOfDicts.keys`
 :meth:`~dataiter.ListOfDicts.left_join`
 :meth:`~dataiter.ListOfDicts.map`
 :meth:`~dataiter.ListOfDicts.modify`

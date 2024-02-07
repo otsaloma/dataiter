@@ -257,8 +257,7 @@ class ListOfDicts(list):
         >>> data = data.fill_missing_keys()
         """
         if not key_value_pairs:
-            keys = util.unique_keys(itertools.chain(*self))
-            key_value_pairs = dict.fromkeys(keys, None)
+            key_value_pairs = dict.fromkeys(self.keys(), None)
         key_value_pairs = key_value_pairs.items()
         for item in self:
             for key, value in key_value_pairs:
@@ -435,6 +434,15 @@ class ListOfDicts(list):
                 yield item
             yield self[i]
 
+    def keys(self):
+        """
+        Return an iterator over unique keys in all items.
+
+        >>> data = di.read_json("data/listings.json")
+        >>> list(data.keys())
+        """
+        yield from dict.fromkeys(itertools.chain(*self))
+
     @deco.obsoletes
     @deco.new_from_generator
     def left_join(self, other, *by):
@@ -562,7 +570,7 @@ class ListOfDicts(list):
         >>> data.print_na_counts()
         """
         print("Missing counts:")
-        for key in util.unique_keys(itertools.chain(*self)):
+        for key in self.keys():
             n = sum(x.get(key, None) is None for x in self)
             if n == 0: continue
             pc = 100 * n / len(self)
@@ -850,7 +858,7 @@ class ListOfDicts(list):
         if not self:
             raise ValueError("Cannot write empty CSV file")
         # Take a superset of all keys.
-        keys = util.unique_keys(itertools.chain(*self))
+        keys = list(self.keys())
         util.makedirs_for_file(path)
         with util.xopen(path, "wt", encoding=encoding) as f:
             writer = csv.DictWriter(f,

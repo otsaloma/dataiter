@@ -266,6 +266,10 @@ class TestListOfDicts:
         assert isinstance(data[100], AttributeDict)
         assert data[100] == item
 
+    def test_keys(self):
+        data = test.list_of_dicts("listings.json")
+        assert list(data.keys()) == ["id", "hood", "zipcode", "guests", "sqft", "price"]
+
     def test_left_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
