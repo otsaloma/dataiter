@@ -8,6 +8,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.clear`
 :meth:`~dataiter.ListOfDicts.copy`
 :meth:`~dataiter.ListOfDicts.deepcopy`
+:meth:`~dataiter.ListOfDicts.drop_na`
 :meth:`~dataiter.ListOfDicts.extend`
 :meth:`~dataiter.ListOfDicts.fill_missing_keys`
 :meth:`~dataiter.ListOfDicts.filter`
