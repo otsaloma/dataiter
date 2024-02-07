@@ -332,6 +332,12 @@ class TestListOfDicts:
         assert sum(downloads) == 541300639
 
     @patch("builtins.print")
+    def test_print_memory_use(self, mock_print):
+        data = test.list_of_dicts("vehicles.json")
+        data.print_memory_use()
+        mock_print.assert_called()
+
+    @patch("builtins.print")
     def test_print_na_counts(self, mock_print):
         data = test.list_of_dicts("vehicles.json")
         data.print_na_counts()

@@ -26,6 +26,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.modify_if`
 :meth:`~dataiter.ListOfDicts.pluck`
 :meth:`~dataiter.ListOfDicts.print_`
+:meth:`~dataiter.ListOfDicts.print_memory_use`
 :meth:`~dataiter.ListOfDicts.print_na_counts`
 :meth:`~dataiter.ListOfDicts.read_csv`
 :meth:`~dataiter.ListOfDicts.read_json`

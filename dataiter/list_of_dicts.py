@@ -28,6 +28,7 @@ import json
 import operator
 import pickle
 import random
+import sys
 
 from attd import AttributeDict
 from dataiter import deco
@@ -558,6 +559,36 @@ class ListOfDicts(list):
         >>> di.read_json("data/listings.json").print_()
         """
         print(self.to_string(max_items=max_items))
+
+    def print_memory_use(self):
+        """
+        Print memory use by key and total.
+
+        >>> data = di.read_json("data/listings.json")
+        >>> data.print_memory_use()
+        """
+        from dataiter import DataFrame
+        mem = DataFrame()
+        for key in self.keys():
+            new = DataFrame(key=key)
+            values = self.pluck(key)
+            values_real = list(filter(None, values))
+            first = values_real[0] if values_real else None
+            total = sum(sys.getsizeof(x) for x in values)
+            new.type = first.__class__.__name__
+            new.item_size = int(round(total / len(values)))
+            new.total_size = total
+            mem = mem.rbind(new)
+        new = DataFrame(key="TOTAL")
+        new.type = "--"
+        new.item_size = mem.item_size.sum()
+        new.total_size = mem.total_size.sum()
+        mem = mem.rbind(new)
+        # Format sizes into sensible values for display.
+        mem.item_size = [f"{x:.0f} B" for x in mem.item_size]
+        mem.total_size = [f"{x/1024**2:,.0f} MB" for x in mem.total_size]
+        mem.colnames = [x.upper() for x in mem.colnames]
+        print(mem)
 
     def print_na_counts(self):
         """
