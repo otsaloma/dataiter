@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.50
-======================
+2024-04-06: Dataiter 0.50
+=========================
 
 * `ListOfDicts.drop_na`: New method
 * `ListOfDicts.keys`: New method
