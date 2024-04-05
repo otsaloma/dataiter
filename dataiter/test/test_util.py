@@ -112,10 +112,6 @@ class TestUtil:
         assert util.length([1]) == 1
         assert util.length([1, 2]) == 2
 
-    def test_pad(self):
-        assert util.pad(["a", "aa", "aaa"], align="right") == ["  a", " aa", "aaa"]
-        assert util.pad(["a", "aa", "aaa"], align="left")  == ["a  ", "aa ", "aaa"]
-
     def test_quote(self):
         assert util.quote("hello") == '"hello"'
         assert util.quote('"hello"') == '"\\"hello\\""'
@@ -139,6 +135,15 @@ class TestUtil:
 
     def test_unique_types(self):
         assert util.unique_types([1, 2, 3.3, np.nan, None]) == {int, float}
+
+    def test_upad(self):
+        assert util.upad(["a", "aa", "aaa"], align="right") == ["  a", " aa", "aaa"]
+        assert util.upad(["a", "aa", "aaa"], align="left")  == ["a  ", "aa ", "aaa"]
+
+    def test_utruncate(self):
+        assert util.utruncate("abcdef", 4) == "abcd"
+        assert util.utruncate("abc\u200bdef", 4) == "abc\u200bd"
+        assert util.utruncate("abc\u200bdef\u200b", 4) == "abc\u200bd"
 
     def test_xopen_bz2(self):
         text = "test åäö"

@@ -4,6 +4,8 @@ PENDING: Dataiter 0.50
 * `ListOfDicts.drop_na`: New method
 * `ListOfDicts.keys`: New method
 * `ListOfDicts.print_memory_use`: New method
+* Fix tabular display of Unicode characters with width != 1
+* Add dependency on wcwidth: https://pypi.org/project/wcwidth
 
 2023-11-08: Dataiter 0.49
 =========================

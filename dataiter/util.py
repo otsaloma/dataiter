@@ -31,6 +31,7 @@ import numpy as np
 import os
 import shutil
 import string
+import wcwidth
 
 from dataiter import deco
 from pathlib import Path
@@ -91,15 +92,6 @@ def length(value):
 def makedirs_for_file(path):
     return Path(path).parent.mkdir(parents=True, exist_ok=True)
 
-@deco.listify
-def pad(strings, *, align="right"):
-    width = max(ulen(x) for x in strings)
-    for value in strings:
-        padding = " " * (width - ulen(value))
-        yield (padding + value
-               if align == "right"
-               else value + padding)
-
 def parse_env_boolean(name):
     return {
         "1":     True,
@@ -132,18 +124,33 @@ def unique_keys(keys):
 
 def ulen(string):
     # Return the display length of string accounting for
-    # Unicode characters that have a display width of zero.
-    return len(string
-               .replace("\u200b", "") # zero width space
-               .replace("\u200c", "") # zero width non-joiner
-               .replace("\u200d", "") # zero width joiner
-               .replace("\u2060", "") # word joiner
-               )
+    # Unicode characters that have a display width != 1.
+    length = wcwidth.wcswidth(string)
+    return length if length >= 0 else 0
 
 def unique_types(seq):
     return set(x.__class__ for x in seq if
                x is not None and
                not (isinstance(x, float) and np.isnan(x)))
+
+@deco.listify
+def upad(strings, *, align="right"):
+    # Pad strings for display accounting for
+    # Unicode characters that have a display width != 1.
+    width = max(ulen(x) for x in strings)
+    for value in strings:
+        padding = " " * (width - ulen(value))
+        yield (padding + value
+               if align == "right"
+               else value + padding)
+
+def utruncate(string, width):
+    # Truncate string to display width accounting for
+    # Unicode characters that have a display width != 1.
+    for i in range(1, len(string)):
+        if ulen(string[:i]) > width:
+            return string[:(i-1)]
+    return string
 
 def xopen(path, mode="r", **kwargs):
     if "b" not in mode:

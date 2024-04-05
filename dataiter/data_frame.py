@@ -1185,7 +1185,7 @@ class DataFrame(dict):
         max_width = max_width or util.get_print_width()
         truncate_width = truncate_width or dataiter.PRINT_TRUNCATE_WIDTH
         n = min(self.nrow, max_rows)
-        columns = {colname: util.pad(
+        columns = {colname: util.upad(
             [colname] +
             [str(column.dtype)] +
             [str(x) for x in column[:n].to_strings(
@@ -1194,7 +1194,7 @@ class DataFrame(dict):
         for column in columns.values():
             column.insert(2, "─" * util.ulen(column[0]))
         row_numbers = [str(i) for i in range(n)]
-        row_numbers = util.pad(["", "", ""] + row_numbers)
+        row_numbers = util.upad(["", "", ""] + row_numbers)
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []

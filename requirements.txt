@@ -6,3 +6,4 @@ numpy==1.23.5
 pandas==1.5.3
 pyarrow==14.0.1
 pytest==7.2.1
+wcwidth==0.2.13

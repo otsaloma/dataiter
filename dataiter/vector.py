@@ -647,7 +647,7 @@ class Vector(np.ndarray):
         if ksep is None:
             ksep = dataiter.PRINT_THOUSAND_SEPARATOR
         quote = util.quote if quote else identity
-        pad = util.pad if pad else identity
+        pad = util.upad if pad else identity
         if self.is_float():
             strings = util.format_floats(self, ksep=ksep)
             return self.__class__.fast(pad(strings), str)
@@ -660,7 +660,7 @@ class Vector(np.ndarray):
                 lines = strings[i].splitlines()
                 if (util.ulen(strings[i]) > truncate_width or
                     (len(lines) > 1 and truncate_width < inf)):
-                    strings[i] = lines[0][:(truncate_width-1)] + "…"
+                    strings[i] = util.utruncate(lines[0], truncate_width-1) + "…"
             return self.__class__.fast(pad(strings), str)
         if self.is_string():
             strings = [quote(x) for x in self]
@@ -668,7 +668,7 @@ class Vector(np.ndarray):
                 lines = strings[i].splitlines()
                 if (util.ulen(strings[i]) > truncate_width or
                     (len(lines) > 1 and truncate_width < inf)):
-                    strings[i] = lines[0][:(truncate_width-1)] + "…"
+                    strings[i] = util.utruncate(lines[0], truncate_width-1) + "…"
             return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]
         return self.__class__.fast(pad(strings), str)
