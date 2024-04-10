@@ -1,2 +1,2 @@
-df[["a", "b", "c"]]
-df.drop(columns=["a", "b", "c"])
+data[["a", "b", "c"]]
+data.drop(columns=["a", "b", "c"])
