@@ -11,6 +11,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install -U attd flake8 numpy pandas pyarrow pytest wcwidth
+      - run: pip install -U attd flake8 'numpy<2.0' pandas pyarrow pytest wcwidth
       - run: make check
       - run: make test

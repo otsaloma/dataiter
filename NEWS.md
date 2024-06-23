@@ -1,3 +1,8 @@
+PENDING: Dataiter 0.51
+======================
+
+* Mark NumPy dependency as < 2.0
+
 2024-04-06: Dataiter 0.50
 =========================
 
