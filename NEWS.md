@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.99
-======================
+2024-08-17: Dataiter 0.99
+=========================
 
 * Adapt to changes in NumPy 2.0
 * Bump NumPy dependency to >= 2.0
