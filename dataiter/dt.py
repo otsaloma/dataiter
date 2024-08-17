@@ -50,7 +50,7 @@ def from_string(x, format):
         return from_string(x, format)[0]
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.unicode_)
+    assert np.issubdtype(x.dtype, np.str_)
     out = np.full_like(x, None, object)
     out = Vector.fast(out, object)
     na = x == ""

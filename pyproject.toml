@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.6.0"
 authors = [{ name = "Osmo Salomaa", email = "otsaloma@iki.fi" }]
-dependencies = ["attd>=0.3", "numpy>=1.7,<2.0", "pandas>=1.0", "wcwidth>=0.1"]
+dependencies = ["attd>=0.3", "numpy>=2.0,<3.0", "pandas>=1.0", "wcwidth>=0.1"]
 
 [project.urls]
 Homepage = "https://github.com/otsaloma/dataiter"

@@ -46,7 +46,7 @@ class TestVector:
         assert Vector([np.bool_(True)]).is_boolean()
         assert Vector([np.datetime64(DATE)]).is_datetime()
         assert Vector([np.datetime64(DATETIME)]).is_datetime()
-        assert Vector([np.float_(0.5)]).is_float()
+        assert Vector([np.float64(0.5)]).is_float()
         assert Vector([np.int_(1)]).is_integer()
         assert Vector([np.object_(np)]).is_object()
         assert Vector([np.str_("")]).is_string()

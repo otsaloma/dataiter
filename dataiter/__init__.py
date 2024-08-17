@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import contextlib
+import numpy as np
 
 from dataiter import util
 
@@ -38,6 +39,9 @@ PRINT_THOUSAND_SEPARATOR = ""
 PRINT_TRUNCATE_WIDTH = 36
 USE_NUMBA = False
 USE_NUMBA_CACHE = True
+
+if not np.__version__.startswith("2."):
+    raise Exception("NumPy 2.x required")
 
 with contextlib.suppress(LookupError):
     USE_NUMBA_CACHE = util.parse_env_boolean("DATAITER_USE_NUMBA_CACHE")
@@ -61,6 +65,7 @@ except LookupError:
 
 globals().pop("check", None)
 globals().pop("contextlib", None)
+globals().pop("np", None)
 globals().pop("numba", None)
 globals().pop("util", None)
 

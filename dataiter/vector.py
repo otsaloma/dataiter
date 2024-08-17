@@ -78,10 +78,12 @@ class Vector(np.ndarray):
         """
         self._check_dimensions()
 
-    def __array_wrap__(self, array, context=None):
+    def __array_wrap__(self, array, context=None, return_scalar=False):
         # Avoid returning 0-dimensional arrays.
         # https://github.com/numpy/numpy/issues/7403
-        return array[()] if array.shape == () else array
+        if not array.shape or return_scalar:
+            return array.dtype.type(array)
+        return array.view(self.__class__)
 
     def __repr__(self):
         return self.to_string()
@@ -322,7 +324,7 @@ class Vector(np.ndarray):
         """
         Return whether vector data type is string.
         """
-        return np.issubdtype(self.dtype, np.unicode_)
+        return np.issubdtype(self.dtype, np.str_)
 
     def is_timedelta(self):
         """

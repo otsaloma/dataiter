@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Dataiter'
-copyright = '2020–2023 Osmo Salomaa'
+copyright = '2020–2024 Osmo Salomaa'
 author = 'Osmo Salomaa'
 
 # The full version, including alpha/beta/rc tags

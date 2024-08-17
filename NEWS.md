@@ -1,3 +1,15 @@
+PENDING: Dataiter 0.99
+======================
+
+* Adapt to changes in NumPy 2.0
+* Bump NumPy dependency to >= 2.0
+
+This is a minimal change to be NumPy 2.0 compatible. In the 0.99+
+releases, we plan to adopt the new NumPy string dtype and fix any
+regressions that come up, leading to a 1.0 release when everything looks
+to be working reliably (#26). Anyone looking for extreme stability
+should consider avoiding the 0.99+ releases and waiting for 1.0.
+
 2024-06-24: Dataiter 0.51
 =========================
 
