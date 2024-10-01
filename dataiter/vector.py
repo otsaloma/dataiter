@@ -306,7 +306,8 @@ class Vector(np.ndarray):
             return np.isnan(self)
         if self.is_string():
             return self == ""
-        return np.isin(self, [None])
+        # Can't use np.isin here since elements can be arrays.
+        return self.fast([x is None for x in self], bool)
 
     def is_number(self):
         """

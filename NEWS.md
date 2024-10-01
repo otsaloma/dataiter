@@ -1,3 +1,9 @@
+PENDING: Dataiter 0.999
+=======================
+
+* `Vector.is_na`: Fix to work in multidimensional cases where the
+  elements of an object vector are arrays/vectors
+
 2024-08-17: Dataiter 0.99
 =========================
 
