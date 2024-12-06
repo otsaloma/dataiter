@@ -2,8 +2,8 @@ attd==1.0
 click==8.1.7
 flake8==7.1.1
 numba==0.60.0
-numpy==2.0.1
-pandas==2.2.2
-pyarrow==17.0.0
-pytest==8.3.2
+numpy==2.0.2
+pandas==2.2.3
+pyarrow==18.1.0
+pytest==8.3.4
 wcwidth==0.2.13

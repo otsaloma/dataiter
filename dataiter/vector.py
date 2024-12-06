@@ -27,6 +27,13 @@ import sys
 
 from dataiter import util
 from math import inf
+from numpy.dtypes import StringDType
+
+# Use a blank string as missing value sentinel (1) because that's what we used
+# prior to the NumPy 2.0 StringDType and (2) because with the common case of
+# CSV input, a distinction between NA and blank cannot usually be made.
+# https://numpy.org/doc/stable/user/basics.strings.html#missing-data-support
+string_dtype = StringDType(na_object="")
 
 TYPE_CONVERSIONS = {
     datetime.date: "datetime64[D]",
@@ -50,7 +57,7 @@ class Vector(np.ndarray):
         # If given a NumPy array, we can do a fast initialization.
         if isinstance(object, np.ndarray):
             dtype = dtype or object.dtype
-            return np.array(object, dtype).view(cls)
+            return cls._np_array(object, dtype).view(cls)
         # If given a Python list, or something else generic, we need
         # to convert certain types and special values. This is really
         # slow, see Vector.fast for faster initialization.
@@ -162,15 +169,14 @@ class Vector(np.ndarray):
         """
         return self.__class__(self.tolist(), object)
 
-    def as_string(self, length=None):
+    def as_string(self):
         """
         Return vector converted to string data type.
 
         >>> vector = di.Vector([1, 2, 3])
         >>> vector.as_string()
-        >>> vector.as_string(64)
         """
-        return self.astype(f"U{length}" if length else str)
+        return self.astype(string_dtype)
 
     def _check_dimensions(self):
         if self.ndim == 1: return
@@ -233,7 +239,7 @@ class Vector(np.ndarray):
             not isinstance(object, (np.ndarray, list, tuple))):
             # Evaluate generator/iterator.
             object = list(object)
-        return np.array(object, dtype).view(cls)
+        return cls._np_array(object, dtype).view(cls)
 
     def get_memory_use(self):
         """
@@ -305,7 +311,7 @@ class Vector(np.ndarray):
         if self.is_float():
             return np.isnan(self)
         if self.is_string():
-            return self == ""
+            return self == string_dtype.na_object
         # Can't use np.isin here since elements can be arrays.
         return self.fast([x is None for x in self], bool)
 
@@ -325,7 +331,7 @@ class Vector(np.ndarray):
         """
         Return whether vector data type is string.
         """
-        return np.issubdtype(self.dtype, np.str_)
+        return isinstance(self.dtype, StringDType)
 
     def is_timedelta(self):
         """
@@ -419,10 +425,23 @@ class Vector(np.ndarray):
         if self.is_integer():
             return np.nan
         if self.is_string():
-            return ""
+            return string_dtype.na_object
         # Note that using None, e.g. for a boolean vector,
         # might not work directly as it requires upcasting to object.
         return None
+
+    @staticmethod
+    def _np_array(object, dtype=None):
+        # NumPy still defaults to fixed width strings.
+        # In some cases we can only fix the dtype ex-post.
+        if dtype is None:
+            if util.unique_types(object) == {str}:
+                dtype = string_dtype
+        array = np.array(object, dtype)
+        if dtype is None:
+            if np.issubdtype(array.dtype, np.str_):
+                array = array.astype(string_dtype)
+        return array
 
     def range(self):
         """
@@ -570,14 +589,14 @@ class Vector(np.ndarray):
             if np.issubdtype(dtype, np.integer) and np.nan in seq:
                 # Upcast from integer to float as required.
                 dtype = float
-            return np.array(seq, dtype)
+            return cls._np_array(seq, dtype)
         # NaT values bring in np.datetime64 to types.
         types.discard(np.datetime64)
         for fm, to in TYPE_CONVERSIONS.items():
             if types and all(x == fm for x in types):
-                return np.array(seq, to)
+                return cls._np_array(seq, to)
         # Let NumPy guess the appropriate dtype.
-        return np.array(seq, dtype)
+        return cls._np_array(seq, dtype)
 
     @classmethod
     def _std_to_np_na_value(cls, types):

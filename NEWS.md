@@ -1,8 +1,15 @@
 PENDING: Dataiter 0.999
 =======================
 
+* `Vector.as_string`: `length` argument removed
 * `Vector.is_na`: Fix to work in multidimensional cases where the
   elements of an object vector are arrays/vectors
+
+This is a breaking change to switch the string data type from the
+fixed-width `str_` a.k.a. `<U#` to the variable-width `StringDType`
+introduced in NumPy 2.0. The main benefit is greatly reduced memory use
+in many cases, making strings actually generally usable. The note about
+stability below `0.99` still applies.
 
 2024-08-17: Dataiter 0.99
 =========================

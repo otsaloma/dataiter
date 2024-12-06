@@ -25,6 +25,7 @@ import math
 import numpy as np
 
 from dataiter import Vector
+from numpy.dtypes import StringDType
 
 NaN = np.nan
 NaT = np.datetime64("NaT")
@@ -49,7 +50,8 @@ class TestVector:
         assert Vector([np.float64(0.5)]).is_float()
         assert Vector([np.int_(1)]).is_integer()
         assert Vector([np.object_(np)]).is_object()
-        assert Vector([np.str_("")]).is_string()
+        x = np.array([""], StringDType())[0]
+        assert Vector([x]).is_string()
 
     def test___new___na(self):
         Vector([None])
@@ -215,14 +217,6 @@ class TestVector:
         a = Vector([1, 2]).as_string()
         assert a.is_string()
         assert np.all(a == ["1", "2"])
-
-    def test_as_string_length(self):
-        a = Vector([""]).as_string()
-        a[0] = "hello"
-        assert a[0] == "h"
-        a = Vector([""]).as_string(5)
-        a[0] = "hello"
-        assert a[0] == "hello"
 
     def test_concat(self):
         a = Vector([1, 2, 3])
