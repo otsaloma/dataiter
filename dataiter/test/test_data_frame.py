@@ -22,6 +22,7 @@
 
 import dataiter as di
 import numpy as np
+import pytest
 import tempfile
 
 from dataiter import DataFrame
@@ -29,6 +30,10 @@ from dataiter import DataFrameColumn
 from dataiter import test
 from pathlib import Path
 from unittest.mock import patch
+
+# This UserWarning seems unavaoidable when using StringDtype, which unlike
+# other dtypes must be instantiated and that custom instance used.
+IGNORE_NPZ_PICKLE_WARNING = "ignore:Custom dtypes are saved as python objects using the pickle protocol."
 
 class TestDataFrameColumn:
 
@@ -470,6 +475,7 @@ class TestDataFrame:
     def test_read_json_path(self):
         DataFrame.read_json(test.get_data_path("vehicles.json"))
 
+    @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_read_npz(self):
         orig = test.data_frame("vehicles.csv")
         handle, path = tempfile.mkstemp(".npz")
@@ -477,6 +483,7 @@ class TestDataFrame:
         data = DataFrame.read_npz(path)
         assert data == orig
 
+    @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_read_npz_path(self):
         orig = test.data_frame("vehicles.csv")
         handle, path = tempfile.mkstemp(".npz")
@@ -710,6 +717,7 @@ class TestDataFrame:
         handle, path = tempfile.mkstemp(".json")
         orig.write_json(Path(path))
 
+    @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_write_npz(self):
         orig = test.data_frame("vehicles.csv")
         handle, path = tempfile.mkstemp(".npz")
@@ -717,6 +725,7 @@ class TestDataFrame:
         data = DataFrame.read_npz(path)
         assert data == orig
 
+    @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_write_npz_path(self):
         orig = test.data_frame("vehicles.csv")
         handle, path = tempfile.mkstemp(".npz")
