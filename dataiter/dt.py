@@ -47,7 +47,7 @@ def from_string(x, format):
     >>> dt.from_string(x, "%d.%m.%Y")
     """
     if util.is_scalar(x):
-        x = np.array([x], str)
+        x = Vector([x], str)
         return from_string(x, format)[0]
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
@@ -147,7 +147,7 @@ def now():
 
 def _pull_datetime(x, function):
     if util.is_scalar(x):
-        x = np.array([x], np.datetime64)
+        x = Vector([x], np.datetime64)
         return _pull_datetime(x, function)[0]
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
@@ -162,7 +162,7 @@ def _pull_datetime(x, function):
 
 def _pull_int(x, function):
     if util.is_scalar(x):
-        x = np.array([x], np.datetime64)
+        x = Vector([x], np.datetime64)
         return _pull_int(x, function)[0]
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
@@ -177,7 +177,7 @@ def _pull_int(x, function):
 
 def _pull_str(x, function):
     if util.is_scalar(x):
-        x = np.array([x], np.datetime64)
+        x = Vector([x], np.datetime64)
         return _pull_str(x, function)[0]
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
