@@ -1087,7 +1087,9 @@ class DataFrame(dict):
                     # See Vector.sort for comparison.
                     column = column.as_string()
                 if column.is_string():
-                    column[column.is_na()] = "\uffff"
+                    # XXX: np.lexsort segfaults on StringDType?
+                    # column[column.is_na()] = "\uffff"
+                    column = column.rank(method="min")
                 if dir < 0 and not (column.is_boolean() or column.is_number()):
                     # Use rank for non-numeric so that we can sort descending.
                     column = column.rank(method="min")
@@ -1226,11 +1228,13 @@ class DataFrame(dict):
         """
         colnames = colnames or self.colnames
         if (len(colnames) == 1 and
-            not self[colnames[0]].is_object()):
+            not self[colnames[0]].is_object() and
+            not self[colnames[0]].is_string()):
             # Use a single column directly.
             by = self[colnames[0]]
         elif (len(set(self[x].dtype for x in colnames)) == 1 and
-              not self[colnames[0]].is_object()):
+              not self[colnames[0]].is_object() and
+              not self[colnames[0]].is_string()):
             # Stack matching dtypes directly in a new array.
             by = np.column_stack([self[x] for x in colnames])
         else:

@@ -499,6 +499,11 @@ class TestVector:
         assert a.sort(dir=1).tolist() == [1, "Hello", True, None, None]
         assert a.sort(dir=-1).tolist() == [True, "Hello", 1, None, None]
 
+    def test_sort_string(self):
+        a = Vector(["abc", "def", "", "bcd", "cde"], str)
+        assert a.sort(dir=1).tolist() == ["abc", "bcd", "cde", "def", None]
+        assert a.sort(dir=-1).tolist() == ["def", "cde", "bcd", "abc", None]
+
     def test_sort_na(self):
         a = Vector([None, 1, 2, 3, 4, 5, None])
         assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5, None, None]
