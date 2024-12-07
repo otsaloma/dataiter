@@ -54,6 +54,8 @@ class Vector(np.ndarray):
     """
 
     def __new__(cls, object, dtype=None):
+        if dtype is str:
+            dtype = string_dtype
         # If given a NumPy array, we can do a fast initialization.
         if isinstance(object, np.ndarray):
             dtype = dtype or object.dtype
@@ -239,6 +241,8 @@ class Vector(np.ndarray):
             not isinstance(object, (np.ndarray, list, tuple))):
             # Evaluate generator/iterator.
             object = list(object)
+        if dtype is str:
+            dtype = string_dtype
         return cls._np_array(object, dtype).view(cls)
 
     def get_memory_use(self):
@@ -358,6 +362,8 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(range(10))
         >>> vector.map(math.pow, 2)
         """
+        if dtype is str:
+            dtype = string_dtype
         return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
 
     @property
@@ -437,6 +443,8 @@ class Vector(np.ndarray):
         if dtype is None:
             if util.unique_types(object) == {str}:
                 dtype = string_dtype
+        if dtype is str:
+            dtype = string_dtype
         array = np.array(object, dtype)
         if dtype is None:
             if np.issubdtype(array.dtype, np.str_):
@@ -570,6 +578,8 @@ class Vector(np.ndarray):
     def _std_to_np(cls, seq, dtype=None):
         # Convert missing values in seq to NumPy equivalents.
         # Can be empty if all of seq are missing values.
+        if dtype is str:
+            dtype = string_dtype
         types = util.unique_types(seq)
         if dtype is not None:
             na = Vector.fast([], dtype).na_value
