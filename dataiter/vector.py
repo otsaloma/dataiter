@@ -206,6 +206,20 @@ class Vector(np.ndarray):
         """
         return self[~self.is_na()].copy()
 
+    @property
+    def dtype_label(self):
+        """
+        Return a human-readable label of vector data type.
+
+        >>> vector = di.Vector(["abc", "def"])
+        >>> vector.dtype
+        >>> vector.dtype_label
+        """
+        if self.is_string():
+            # Instead of StringDType(na_object='')
+            return "string"
+        return str(self.dtype)
+
     def equal(self, other):
         """
         Return whether vectors are equal.
@@ -660,7 +674,7 @@ class Vector(np.ndarray):
             add_string_element(string, rows)
         if max_elements < self.length:
             add_string_element("...", rows)
-        add_string_element(f"] {self.dtype}", rows)
+        add_string_element(f"] {self.dtype_label}", rows)
         if len(rows) == 1:
             # Drop padding for single-line output.
             rows[0] = [x.strip() for x in rows[0]]

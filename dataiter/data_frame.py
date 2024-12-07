@@ -1189,7 +1189,7 @@ class DataFrame(dict):
         n = min(self.nrow, max_rows)
         columns = {colname: util.upad(
             [colname] +
-            [str(column.dtype)] +
+            [str(column.dtype_label)] +
             [str(x) for x in column[:n].to_strings(
                 quote=False, pad=True, truncate_width=truncate_width)]
         ) for colname, column in self.items()}
