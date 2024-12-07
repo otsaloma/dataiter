@@ -48,12 +48,6 @@ class TestGeoJSON:
         assert data.neighbourhood.is_object()
         assert data.neighbourhood_group.is_object()
 
-    def test_read_strings_as_object(self):
-        path = test.get_data_path(self.path)
-        data = GeoJSON.read(path, strings_as_object=8)
-        assert data.neighbourhood.is_object()
-        assert data.neighbourhood_group.is_object()
-
     def test_to_data_frame(self):
         orig = test.geojson(self.path)
         data = orig.to_data_frame()

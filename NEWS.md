@@ -1,7 +1,16 @@
 PENDING: Dataiter 0.999
 =======================
 
-* `Vector.as_string`: `length` argument removed
+* `DataFrame.fom_arrow`: Remove `strings_as_object` argument
+* `DataFrame.from_pandas`: Remove `strings_as_object` argument
+* `DataFrame.read_csv`: Remove `strings_as_object` argument
+* `DataFrame.read_parquet`: Remove `strings_as_object` argument
+* `GeoJSON.read`: Remove `strings_as_object` argument
+* `ListOfDicts.to_data_frame`: Remove `strings_as_object` argument
+* `read_csv`: Remove `strings_as_object` argument
+* `read_geojson`: Remove `strings_as_object` argument
+* `read_parquet`: Remove `strings_as_object` argument
+* `Vector.as_string`: Remove `length` argument
 * `Vector.is_na`: Fix to work in multidimensional cases where the
   elements of an object vector are arrays/vectors
 

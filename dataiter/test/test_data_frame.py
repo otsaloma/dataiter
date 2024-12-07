@@ -448,12 +448,6 @@ class TestDataFrame:
         assert data.make.is_object()
         assert data.model.is_object()
 
-    def test_read_csv_strings_as_object(self):
-        path = test.get_data_path("vehicles.csv")
-        data = DataFrame.read_csv(path, strings_as_object=8)
-        assert data.make.is_object()
-        assert data.model.is_object()
-
     def test_read_json(self):
         path = str(test.get_data_path("downloads.json"))
         data = DataFrame.read_json(path)
