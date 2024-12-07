@@ -25,6 +25,7 @@ import numpy as np
 
 from dataiter import util
 from dataiter import Vector
+from numpy.dtypes import StringDType
 
 def day(x):
     """
@@ -50,7 +51,7 @@ def from_string(x, format):
         return from_string(x, format)[0]
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.str_)
+    assert isinstance(x.dtype, StringDType)
     out = np.full_like(x, None, object)
     out = Vector.fast(out, object)
     na = x == ""
