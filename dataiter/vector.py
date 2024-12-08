@@ -25,15 +25,10 @@ import datetime
 import numpy as np
 import sys
 
+from dataiter import dtypes
 from dataiter import util
 from math import inf
 from numpy.dtypes import StringDType
-
-# Use a blank string as missing value sentinel (1) because that's what we used
-# prior to the NumPy 2.0 StringDType and (2) because with the common case of
-# CSV input, a distinction between NA and blank cannot usually be made.
-# https://numpy.org/doc/stable/user/basics.strings.html#missing-data-support
-string_dtype = StringDType(na_object="")
 
 TYPE_CONVERSIONS = {
     datetime.date: "datetime64[D]",
@@ -55,7 +50,7 @@ class Vector(np.ndarray):
 
     def __new__(cls, object, dtype=None):
         if dtype is str:
-            dtype = string_dtype
+            dtype = dtypes.string
         # If given a NumPy array, we can do a fast initialization.
         if isinstance(object, np.ndarray):
             dtype = dtype or object.dtype
@@ -178,7 +173,7 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 2, 3])
         >>> vector.as_string()
         """
-        return self.astype(string_dtype)
+        return self.astype(dtypes.string)
 
     def _check_dimensions(self):
         if self.ndim == 1: return
@@ -256,7 +251,7 @@ class Vector(np.ndarray):
             # Evaluate generator/iterator.
             object = list(object)
         if dtype is str:
-            dtype = string_dtype
+            dtype = dtypes.string
         return cls._np_array(object, dtype).view(cls)
 
     def get_memory_use(self):
@@ -329,7 +324,7 @@ class Vector(np.ndarray):
         if self.is_float():
             return np.isnan(self)
         if self.is_string():
-            return self == string_dtype.na_object
+            return self == dtypes.string.na_object
         # Can't use np.isin here since elements can be arrays.
         return self.fast([x is None for x in self], bool)
 
@@ -377,7 +372,7 @@ class Vector(np.ndarray):
         >>> vector.map(math.pow, 2)
         """
         if dtype is str:
-            dtype = string_dtype
+            dtype = dtypes.string
         return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
 
     @property
@@ -445,7 +440,7 @@ class Vector(np.ndarray):
         if self.is_integer():
             return np.nan
         if self.is_string():
-            return string_dtype.na_object
+            return dtypes.string.na_object
         # Note that using None, e.g. for a boolean vector,
         # might not work directly as it requires upcasting to object.
         return None
@@ -456,13 +451,13 @@ class Vector(np.ndarray):
         # In some cases we can only fix the dtype ex-post.
         if dtype is None:
             if util.unique_types(object) == {str}:
-                dtype = string_dtype
+                dtype = dtypes.string
         if dtype is str:
-            dtype = string_dtype
+            dtype = dtypes.string
         array = np.array(object, dtype)
         if dtype is None:
             if np.issubdtype(array.dtype, np.str_):
-                array = array.astype(string_dtype)
+                array = array.astype(dtypes.string)
         return array
 
     def range(self):
@@ -593,7 +588,7 @@ class Vector(np.ndarray):
         # Convert missing values in seq to NumPy equivalents.
         # Can be empty if all of seq are missing values.
         if dtype is str:
-            dtype = string_dtype
+            dtype = dtypes.string
         types = util.unique_types(seq)
         if dtype is not None:
             na = Vector.fast([], dtype).na_value
