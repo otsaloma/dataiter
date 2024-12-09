@@ -37,24 +37,26 @@ def cached(function):
     return wrapper
 
 @cached
-def data_frame(path):
-    path = get_data_path(path)
+def data_frame(name):
+    path = get_data_path(name)
     extension = path.suffix.lstrip(".")
     read = getattr(DataFrame, f"read_{extension}")
     return read(path)
 
 @cached
-def geojson(path):
-    path = get_data_path(path)
+def geojson(name):
+    path = get_data_path(name)
     return GeoJSON.read(path)
 
-def get_data_path(path):
-    root = Path(__file__).parent.parent.parent.resolve()
-    return root / "data" / str(path)
+def get_data_path(name):
+    for parent in Path(__file__).parents:
+        path = parent / "data" / name
+        if path.exists():
+            return path
 
 @cached
-def list_of_dicts(path):
-    path = get_data_path(path)
+def list_of_dicts(name):
+    path = get_data_path(name)
     extension = path.suffix.lstrip(".")
     read = getattr(ListOfDicts, f"read_{extension}")
     return read(path)

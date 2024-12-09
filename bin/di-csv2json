@@ -2,19 +2,18 @@
 
 import click
 import dataiter as di
-import re
 
 from pathlib import Path
 
-@click.command()
+@click.command(no_args_is_help=True)
 @click.option("-f", "--force", is_flag=True, default=False, help="Overwrite existing file")
 @click.argument("file", nargs=-1, type=click.Path(exists=True))
 def main(force, file):
     """Convert CSV file to JSON file."""
-    for input in file:
-        output = re.sub(r"\.(csv|CSV)$", "", input) + ".json"
+    for input in map(Path, file):
+        output = input.with_suffix(".json")
         click.echo(f"{input} → {output}")
-        if Path(output).exists() and not force:
+        if output.exists() and not force:
             raise SystemExit(
                 f"Output file {output} exists, "
                 f"use -f/--force to overwrite")
