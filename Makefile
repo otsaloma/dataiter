@@ -25,7 +25,7 @@ clean:
 	rm -rf */*/.pytest_cache
 
 doc:
-	$(MAKE) -C doc clean html
+	$(MAKE) SPHINXBUILD=../venv/bin/sphinx-build -C doc clean html
 
 doc-check:
 	PYTHONPATH=. doc/check.py
@@ -34,7 +34,7 @@ doc-open:
 	xdg-open doc/_build/html/index.html
 
 doc-watch:
-	watchexec -e py,rst --workdir doc $(MAKE) html
+	watchexec -e py,rst --workdir doc $(MAKE) SPHINXBUILD=../venv/bin/sphinx-build html
 
 install:
 	pip3 install --break-system-packages .

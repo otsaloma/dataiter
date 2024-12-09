@@ -33,6 +33,15 @@ type, i.e. :class:`.DataFrame` for CSV, NPZ and Parquet,
 :func:`~dataiter.read_npz`
 :func:`~dataiter.read_parquet`
 
+The following constants can be used to customize certain defaults, such as
+formatting and limits for printing.
+
+:attr:`dataiter.PRINT_MAX_WIDTH`
+:attr:`dataiter.PRINT_THOUSAND_SEPARATOR`
+:attr:`dataiter.PRINT_TRUNCATE_WIDTH`
+:attr:`dataiter.USE_NUMBA`
+:attr:`dataiter.USE_NUMBA_CACHE`
+
 .. automodule:: dataiter
    :members: all,
              any,
@@ -54,4 +63,9 @@ type, i.e. :class:`.DataFrame` for CSV, NPZ and Parquet,
              read_parquet,
              std,
              sum,
-             var
+             var,
+             PRINT_MAX_WIDTH,
+             PRINT_THOUSAND_SEPARATOR,
+             PRINT_TRUNCATE_WIDTH,
+             USE_NUMBA,
+             USE_NUMBA_CACHE

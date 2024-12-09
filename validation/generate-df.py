@@ -17,7 +17,7 @@ def read_csv(path):
         if data[name].is_string():
             # Use all lower case for strings to avoid differing
             # sorting of lower vs. upper case characters.
-            data[name] = np.char.lower(data[name])
+            data[name] = np.strings.lower(data[name])
     return data
 
 # AGGREGATE

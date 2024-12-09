@@ -2,7 +2,7 @@ dataiter.dt
 ===========
 
 The ``dt`` module contains helper functions for dealing with vectors of
-dates and datetimes, similar to ``numpy.char`` for vectors of strings.
+dates and datetimes, similar to ``numpy.strings`` for vectors of strings.
 Most of the operations are done via Python's standard library
 ``datetime`` module and subject to any limitations therein.
 

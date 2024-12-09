@@ -34,10 +34,28 @@ PRINT_FLOAT_PRECISION = 6
 PRINT_MAX_ELEMENTS = 100
 PRINT_MAX_ITEMS = 10
 PRINT_MAX_ROWS = 100
+
+#: Maximum amount of columns to wrap print output to. Note that this is only a
+#: fallback in case Python's ``shutil.get_terminal_size`` fails to detect the
+#: width of your terminal. By default the detected full width is used.
 PRINT_MAX_WIDTH = 80
+
+#: Thousand separator to use when formatting numbers. By default this is blank,
+#: meaning no thousand separators are rendered.
 PRINT_THOUSAND_SEPARATOR = ""
+
+#: Maximum width to truncate string columns to in :class:`DataFrame` print
+#: output. When this is exceeded, strings will be cut with an ellipsis (``…``)
+#: at the end.
 PRINT_TRUNCATE_WIDTH = 36
+
+#: ``True`` to use Numba, if available, to speed up :doc:`aggregations
+#: </aggregation>`.
 USE_NUMBA = False
+
+#: ``True`` to use Numba cache for JIT-compiled :doc:`aggregations
+#: </aggregation>`, ``False`` to only keep compiled code in memory for the
+#: duration of the session.
 USE_NUMBA_CACHE = True
 
 if not np.__version__.startswith("2."):
@@ -69,6 +87,7 @@ globals().pop("np", None)
 globals().pop("numba", None)
 globals().pop("util", None)
 
+from dataiter import dtypes # noqa
 from dataiter.vector import Vector # noqa
 from dataiter.data_frame import DataFrame # noqa
 from dataiter.data_frame import DataFrameColumn # noqa

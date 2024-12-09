@@ -1,8 +1,24 @@
 PENDING: Dataiter 0.999
 =======================
 
+* `DataFrame.fom_arrow`: Remove `strings_as_object` argument
+* `DataFrame.from_pandas`: Remove `strings_as_object` argument
+* `DataFrame.read_csv`: Remove `strings_as_object` argument
+* `DataFrame.read_parquet`: Remove `strings_as_object` argument
+* `GeoJSON.read`: Remove `strings_as_object` argument
+* `ListOfDicts.to_data_frame`: Remove `strings_as_object` argument
+* `read_csv`: Remove `strings_as_object` argument
+* `read_geojson`: Remove `strings_as_object` argument
+* `read_parquet`: Remove `strings_as_object` argument
+* `Vector.as_string`: Remove `length` argument
 * `Vector.is_na`: Fix to work in multidimensional cases where the
   elements of an object vector are arrays/vectors
+
+This is a breaking change to switch the string data type from the
+fixed-width `str_` a.k.a. `<U#` to the variable-width `StringDType`
+introduced in NumPy 2.0. The main benefit is greatly reduced memory use
+in many cases, making strings actually generally usable. The note about
+stability below `0.99` still applies.
 
 2024-08-17: Dataiter 0.99
 =========================

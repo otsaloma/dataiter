@@ -24,22 +24,19 @@ from dataiter import DataFrame
 from dataiter import GeoJSON
 from dataiter import ListOfDicts
 from dataiter import util
-from math import inf
 
-def read_csv(path, *, encoding="utf-8", sep=",", header=True, columns=[], strings_as_object=inf, dtypes={}):
+def read_csv(path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
     return DataFrame.read_csv(path,
                               encoding=encoding,
                               sep=sep,
                               header=header,
                               columns=columns,
-                              strings_as_object=strings_as_object,
                               dtypes=dtypes)
 
-def read_geojson(path, *, encoding="utf-8", columns=[], strings_as_object=inf, dtypes={}, **kwargs):
+def read_geojson(path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
     return GeoJSON.read(path,
                         encoding=encoding,
                         columns=columns,
-                        strings_as_object=strings_as_object,
                         dtypes=dtypes,
                         **kwargs)
 
@@ -53,8 +50,8 @@ def read_json(path, *, encoding="utf-8", keys=[], types={}, **kwargs):
 def read_npz(path, *, allow_pickle=True):
     return DataFrame.read_npz(path, allow_pickle=allow_pickle)
 
-def read_parquet(path, *, columns=[], strings_as_object=inf, dtypes={}):
-    return DataFrame.read_parquet(path, columns=[], strings_as_object=inf, dtypes={})
+def read_parquet(path, *, columns=[], dtypes={}):
+    return DataFrame.read_parquet(path, columns=[], dtypes={})
 
 read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)
 read_geojson.__doc__ = util.format_alias_doc(read_geojson, GeoJSON.read)

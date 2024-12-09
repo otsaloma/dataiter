@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import contextlib
 import dataiter
 import functools
 import itertools
@@ -475,24 +474,16 @@ class DataFrame(dict):
             yield colname, np.delete(column, rows)
 
     @classmethod
-    def from_arrow(cls, data, *, strings_as_object=inf, dtypes={}):
+    def from_arrow(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pyarrow.Table`` `data`.
-
-        `strings_as_object` is a cutoff point. If any row has more characters
-        than that, the whole column will use the object data type. This is
-        intended to help limit memory use as NumPy strings are fixed-length and
-        can take a huge amount of memory if even a single row is long. If set,
-        `dtypes` overrides this.
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
         # Arrow's 'to_numpy' is "limited to primitive types for which NumPy has
         # the same physical representation as Arrow, and assuming the Arrow
         # data has no nulls." Using Pandas is easier and probably good enough.
-        return cls.from_pandas(data.to_pandas(),
-                               strings_as_object=strings_as_object,
-                               dtypes=dtypes)
+        return cls.from_pandas(data.to_pandas(), dtypes=dtypes)
 
     @classmethod
     def from_json(cls, string, *, columns=[], dtypes={}, **kwargs):
@@ -517,29 +508,13 @@ class DataFrame(dict):
         return cls(**data)
 
     @classmethod
-    def from_pandas(cls, data, *, strings_as_object=inf, dtypes={}):
+    def from_pandas(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
 
-        `strings_as_object` is a cutoff point. If any row has more characters
-        than that, the whole column will use the object data type. This is
-        intended to help limit memory use as NumPy strings are fixed-length and
-        can take a huge amount of memory if even a single row is long. If set,
-        `dtypes` overrides this.
-
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
-        if (not isinstance(strings_as_object, (int, float)) or
-            isinstance(strings_as_object, bool)):
-            raise TypeError("Expected a number for strings_as_object")
         dtypes = dtypes.copy()
-        from pandas.api.types import is_object_dtype
-        if strings_as_object < inf:
-            for name in data.columns:
-                if name not in dtypes and is_object_dtype(data[name]):
-                    with contextlib.suppress(AttributeError):
-                        if data[name].str.len().max() > strings_as_object:
-                            dtypes[name] = object
         data = {x: data[x].to_numpy(copy=True) for x in data.columns}
         for name, value in data.items():
             # Pandas object columns are likely to be strings,
@@ -875,19 +850,13 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, columns=[], strings_as_object=inf, dtypes={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
 
         `columns` is an optional list of columns to limit to.
-
-        `strings_as_object` is a cutoff point. If any row has more characters
-        than that, the whole column will use the object data type. This is
-        intended to help limit memory use as NumPy strings are fixed-length and
-        can take a huge amount of memory if even a single row is long. If set,
-        `dtypes` overrides this.
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
@@ -903,7 +872,7 @@ class DataFrame(dict):
 
         if not header:
             data.columns = util.generate_colnames(len(data.columns))
-        return cls.from_pandas(data, strings_as_object=strings_as_object, dtypes=dtypes)
+        return cls.from_pandas(data, dtypes=dtypes)
 
     @classmethod
     def read_json(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
@@ -931,24 +900,18 @@ class DataFrame(dict):
             return cls(**data)
 
     @classmethod
-    def read_parquet(cls, path, *, columns=[], strings_as_object=inf, dtypes={}):
+    def read_parquet(cls, path, *, columns=[], dtypes={}):
         """
         Return a new data frame from Parquet file `path`.
 
         `columns` is an optional list of columns to limit to.
-
-        `strings_as_object` is a cutoff point. If any row has more characters
-        than that, the whole column will use the object data type. This is
-        intended to help limit memory use as NumPy strings are fixed-length and
-        can take a huge amount of memory if even a single row is long. If set,
-        `dtypes` overrides this.
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
         import pyarrow.parquet as pq
         columns = columns or None
         data = pq.read_table(path, columns=columns)
-        return cls.from_arrow(data, strings_as_object=strings_as_object, dtypes=dtypes)
+        return cls.from_arrow(data, dtypes=dtypes)
 
     @classmethod
     def read_pickle(cls, path):
@@ -1087,7 +1050,9 @@ class DataFrame(dict):
                     # See Vector.sort for comparison.
                     column = column.as_string()
                 if column.is_string():
-                    column[column.is_na()] = "\uffff"
+                    # XXX: np.lexsort segfaults on StringDType?
+                    # column[column.is_na()] = "\uffff"
+                    column = column.rank(method="min")
                 if dir < 0 and not (column.is_boolean() or column.is_number()):
                     # Use rank for non-numeric so that we can sort descending.
                     column = column.rank(method="min")
@@ -1187,7 +1152,7 @@ class DataFrame(dict):
         n = min(self.nrow, max_rows)
         columns = {colname: util.upad(
             [colname] +
-            [str(column.dtype)] +
+            [str(column.dtype_label)] +
             [str(x) for x in column[:n].to_strings(
                 quote=False, pad=True, truncate_width=truncate_width)]
         ) for colname, column in self.items()}
@@ -1226,11 +1191,13 @@ class DataFrame(dict):
         """
         colnames = colnames or self.colnames
         if (len(colnames) == 1 and
-            not self[colnames[0]].is_object()):
+            not self[colnames[0]].is_object() and
+            not self[colnames[0]].is_string()):
             # Use a single column directly.
             by = self[colnames[0]]
         elif (len(set(self[x].dtype for x in colnames)) == 1 and
-              not self[colnames[0]].is_object()):
+              not self[colnames[0]].is_object() and
+              not self[colnames[0]].is_string()):
             # Stack matching dtypes directly in a new array.
             by = np.column_stack([self[x] for x in colnames])
         else:

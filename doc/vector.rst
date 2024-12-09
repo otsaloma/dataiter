@@ -12,6 +12,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.as_string`
 :meth:`~dataiter.Vector.concat`
 :meth:`~dataiter.Vector.drop_na`
+:attr:`~dataiter.Vector.dtype_label`
 :meth:`~dataiter.Vector.equal`
 :meth:`~dataiter.Vector.fast`
 :meth:`~dataiter.Vector.get_memory_use`
