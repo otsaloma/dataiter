@@ -48,3 +48,8 @@ class TestIO:
         s1 = inspect.signature(io.read_npz)
         s2 = inspect.signature(DataFrame.read_npz)
         assert s1 == s2
+
+    def test_read_parquet(self):
+        s1 = inspect.signature(io.read_parquet)
+        s2 = inspect.signature(DataFrame.read_parquet)
+        assert s1 == s2
