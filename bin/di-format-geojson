@@ -5,7 +5,7 @@ import dataiter as di
 import shutil
 import time
 
-@click.command()
+@click.command(no_args_is_help=True)
 @click.option("-i", "--indent", default=2, help="Indent level")
 @click.option("-p", "--precision", default=9, help="Coordinate precision")
 @click.argument("file", nargs=-1, type=click.Path(exists=True))
