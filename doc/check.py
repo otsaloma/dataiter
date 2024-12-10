@@ -14,6 +14,7 @@ PAGES = {
     "data-frame.rst": di.DataFrame,
     "data-frame-column.rst": di.DataFrameColumn,
     "dt.rst": di.dt,
+    "dtypes.rst": di.dtypes,
     "geojson.rst": di.GeoJSON,
     "list-of-dicts.rst": di.ListOfDicts,
     "vector.rst": di.Vector,
