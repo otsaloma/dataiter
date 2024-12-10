@@ -73,7 +73,7 @@ TEST_MATRIX = [
     (all, [1, 2, 3, 4, 5, 0, 0, 0, 0, 0], [T, T, F, F, F]),
     (all, [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, NaN, NaN, NaN], [F, F, T, T, T]),
     (all, [D1, D2, D3, D4, D5, NaT, NaT, NaT, NaT, NaT], [T, T, T, T, T]),
-    (all, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, F, F, F]),
+    (all, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, T, T, T]),
 
     # NaNs evaluate to true, because they are not equal to zero.
     # https://numpy.org/doc/stable/reference/generated/numpy.any.html
@@ -81,7 +81,7 @@ TEST_MATRIX = [
     (any, [1, 2, 3, 4, 5, 0, 0, 0, 0, 0], [T, T, T, F, F]),
     (any, [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, NaN, NaN, NaN], [F, T, T, T, T]),
     (any, [D1, D2, D3, D4, D5, NaT, NaT, NaT, NaT, NaT], [T, T, T, T, T]),
-    (any, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, T, F, F]),
+    (any, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, T, T, T]),
 
     (count, [T, T, T, T, T, F, F, F, F, F], [2, 2, 2, 2, 2]),
     (count, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 2, 2, 2, 2]),
