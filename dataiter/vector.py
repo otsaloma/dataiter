@@ -49,8 +49,7 @@ class Vector(np.ndarray):
     """
 
     def __new__(cls, object, dtype=None):
-        if dtype is str:
-            dtype = dtypes.string
+        dtype = cls._map_input_dtype(dtype)
         # If given a NumPy array, we can do a fast initialization.
         if isinstance(object, np.ndarray):
             dtype = dtype or object.dtype
@@ -58,10 +57,7 @@ class Vector(np.ndarray):
         # If given a Python list, or something else generic, we need
         # to convert certain types and special values. This is really
         # slow, see Vector.fast for faster initialization.
-        if (hasattr(object, "__iter__") and
-            not isinstance(object, (list, tuple))):
-            # Evaluate generator/iterator.
-            object = list(object)
+        object = util.sequencify(object)
         return cls._std_to_np(object, dtype).view(cls)
 
     def __init__(self, object, dtype=None):
@@ -102,11 +98,6 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([0, 1])
         >>> vector.as_boolean()
         """
-        if self.is_string():
-            # NumPy does bool(int(str)), which is weird.
-            # https://github.com/numpy/numpy/issues/20898
-            # https://github.com/numpy/numpy/pull/21024
-            return self.map(bool)
         return self.astype(bool)
 
     def as_bytes(self):
@@ -246,12 +237,8 @@ class Vector(np.ndarray):
         `object`. Use this only if you know `object` doesn't contain special
         values or if you know they are already of the correct type.
         """
-        if (hasattr(object, "__iter__") and
-            not isinstance(object, (np.ndarray, list, tuple))):
-            # Evaluate generator/iterator.
-            object = list(object)
-        if dtype is str:
-            dtype = dtypes.string
+        object = util.sequencify(object)
+        dtype = cls._map_input_dtype(dtype)
         return cls._np_array(object, dtype).view(cls)
 
     def get_memory_use(self):
@@ -371,9 +358,14 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(range(10))
         >>> vector.map(math.pow, 2)
         """
-        if dtype is str:
-            dtype = dtypes.string
+        dtype = self._map_input_dtype(dtype)
         return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
+
+    @classmethod
+    def _map_input_dtype(cls, dtype):
+        if dtype is str:
+            return dtypes.string
+        return dtype
 
     @property
     def na_dtype(self):
@@ -445,15 +437,14 @@ class Vector(np.ndarray):
         # might not work directly as it requires upcasting to object.
         return None
 
-    @staticmethod
-    def _np_array(object, dtype=None):
+    @classmethod
+    def _np_array(cls, object, dtype=None):
         # NumPy still defaults to fixed width strings.
         # In some cases we can only fix the dtype ex-post.
         if dtype is None:
             if util.unique_types(object) == {str}:
                 dtype = dtypes.string
-        if dtype is str:
-            dtype = dtypes.string
+        dtype = cls._map_input_dtype(dtype)
         array = np.array(object, dtype)
         if dtype is None:
             if np.issubdtype(array.dtype, np.str_):
@@ -587,8 +578,7 @@ class Vector(np.ndarray):
     def _std_to_np(cls, seq, dtype=None):
         # Convert missing values in seq to NumPy equivalents.
         # Can be empty if all of seq are missing values.
-        if dtype is str:
-            dtype = dtypes.string
+        dtype = cls._map_input_dtype(dtype)
         types = util.unique_types(seq)
         if dtype is not None:
             na = Vector.fast([], dtype).na_value
@@ -622,7 +612,7 @@ class Vector(np.ndarray):
         if not types:
             return None
         if str in types:
-            return ""
+            return dtypes.string.na_object
         if all(x in [float, int] or
                np.issubdtype(x, np.floating) or
                np.issubdtype(x, np.integer)
