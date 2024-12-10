@@ -5,9 +5,7 @@
 .pytest_cache
 __pycache__
 benchmark*.csv
-benchmark-head.py
 build
-data/orig
 dataiter.egg-info
 dist
 doc/_build
