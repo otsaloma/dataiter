@@ -45,11 +45,9 @@ def count_digits(value):
     return n, m
 
 def format_alias_doc(alias, target):
-    indent = " " * 8
-    note = (
+    return f"{target.__doc__}\n\n{' '*8}" + (
         ".. note:: :func:`{}` is a convenience alias for :meth:`{}`."
         .format(alias.__name__, target.__qualname__))
-    return target.__doc__ + "\n\n" + indent + note
 
 def format_floats(seq, ksep=None):
     precision = dataiter.PRINT_FLOAT_PRECISION

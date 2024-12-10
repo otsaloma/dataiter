@@ -16,9 +16,9 @@ PENDING: Dataiter 0.999
 
 This is a breaking change to switch the string data type from the
 fixed-width `str_` a.k.a. `<U#` to the variable-width `StringDType`
-introduced in NumPy 2.0. The main benefit is greatly reduced memory use
-in many cases, making strings actually generally usable. The note about
-stability below `0.99` still applies.
+introduced in NumPy 2.0. The main benefit is greatly reduced memory use,
+making strings usable without needing to be careful or falling back to
+object. The note about stability below release 0.99 still applies.
 
 2024-08-17: Dataiter 0.99
 =========================

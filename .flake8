@@ -1,4 +1,4 @@
 [flake8]
 select = E1,E9,F
-ignore = E129
+ignore = E125,E129
 exclude = doc/comparison/blocks,venv
