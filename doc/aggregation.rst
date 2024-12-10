@@ -130,7 +130,7 @@ faster as there's no more need to load anything.
           ``di.USE_NUMBA`` to see if Numba has been found. You can also
           set ``di.USE_NUMBA = False`` if you have Numba installed, but
           it's not working right, or via the environment variable
-          ``DATAITER_USE_NUMBA=false``. Sometimes it's the just the
+          ``DATAITER_USE_NUMBA=false``. Sometimes it's just the
           `caching
           <https://numba.readthedocs.io/en/stable/developer/caching.html>`_
           part of Numba that's causing issues. When upgrading you might
