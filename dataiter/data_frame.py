@@ -514,7 +514,6 @@ class DataFrame(dict):
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
-        dtypes = dtypes.copy()
         data = {x: data[x].to_numpy(copy=True) for x in data.columns}
         for name, value in data.items():
             # Pandas object columns are likely to be strings,
@@ -855,10 +854,8 @@ class DataFrame(dict):
         Return a new data frame from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes.
         """
         import pandas as pd
         data = pd.read_csv(path,
@@ -880,7 +877,6 @@ class DataFrame(dict):
         Return a new data frame from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-
         `columns` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
@@ -904,9 +900,8 @@ class DataFrame(dict):
         """
         Return a new data frame from Parquet file `path`.
 
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes.
         """
         import pyarrow.parquet as pq
         columns = columns or None
@@ -1189,6 +1184,8 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unique("hood")
         """
+        # Strings are not yet usable here, need to work around with rank.
+        # TypeError: The axis argument to unique is not supported for dtype StringDType
         colnames = colnames or self.colnames
         if (len(colnames) == 1 and
             not self[colnames[0]].is_object() and
@@ -1256,7 +1253,6 @@ class DataFrame(dict):
         Write data frame to JSON file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
-
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         return self.to_list_of_dicts().write_json(path, encoding=encoding, **kwargs)

@@ -34,9 +34,9 @@ class GeoJSON(DataFrame):
     A class for GeoJSON data.
 
     GeoJSON is a simple wrapper class that reads GeoJSON features into a
-    :class:`.DataFrame`. Any operations on the data are thus done with
-    methods provided by the data frame class. Geometry is available in the
-    "geometry" column, but no special geometric operations are supported.
+    :class:`.DataFrame`. Any operations on the data are thus done with methods
+    provided by the data frame class. Geometry is available in the "geometry"
+    column, but no special geometric operations are supported.
 
     All other data is available in the "metadata" attribute as an
     ``attd.AttributeDict``.
@@ -88,12 +88,9 @@ class GeoJSON(DataFrame):
         Return data from GeoJSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-
-        `columns` is an optional list of columns to limit to.
-
-        `dtypes` is an optional dict mapping column names to NumPy datatypes.
-
-        `kwargs` are passed to ``json.load``.
+        `columns` is an optional list of columns to limit to. `dtypes` is an
+        optional dict mapping column names to NumPy datatypes. `kwargs` are
+        passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))
@@ -137,7 +134,6 @@ class GeoJSON(DataFrame):
         Write data to GeoJSON file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
-
         `kwargs` are passed to ``json.dump``.
         """
         kwargs.setdefault("default", str)
