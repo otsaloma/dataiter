@@ -168,10 +168,15 @@ class TestVector:
     def test___len__(self):
         assert len(Vector([1, 2, 3])) == 3
 
-    def test_as_boolean(self):
+    def test_as_boolean_int(self):
         a = Vector([1, 0]).as_boolean()
         assert a.is_boolean()
         assert np.all(a == [True, False])
+
+    def test_as_boolean_string(self):
+        a = Vector(["1", "0"]).as_boolean()
+        assert a.is_boolean()
+        assert np.all(a == [True, True])
 
     def test_as_bytes(self):
         a = Vector([0, 1]).as_bytes()
@@ -619,6 +624,10 @@ class TestVector:
         b = [datetime.timedelta(microseconds=1), datetime.timedelta(microseconds=1)]
         assert Vector(a).tolist() == b
 
-    def test_unique(self):
+    def test_unique_int(self):
         a = Vector([1, 2, None, 1, 2, 3])
         assert a.unique().tolist() == [1, 2, None, 3]
+
+    def test_unique_string(self):
+        a = Vector(["a", "b", None, "a", "b", "c"])
+        assert a.unique().tolist() == ["a", "b", None, "c"]
