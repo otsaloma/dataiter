@@ -23,6 +23,7 @@
 import datetime
 import numpy as np
 
+from dataiter import dtypes
 from dataiter import util
 from dataiter import Vector
 from numpy.dtypes import StringDType
@@ -54,7 +55,7 @@ def from_string(x, format):
     assert isinstance(x.dtype, StringDType)
     out = np.full_like(x, None, object)
     out = Vector.fast(out, object)
-    na = x == ""
+    na = x == dtypes.string.na_object
     f = np.vectorize(lambda x: datetime.datetime.strptime(x, format))
     out[~na] = f(x[~na].astype(object))
     out = out.as_datetime()
@@ -182,7 +183,7 @@ def _pull_str(x, function):
     x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
     assert np.issubdtype(x.dtype, np.datetime64)
-    out = np.full_like(x, "", object)
+    out = np.full_like(x, dtypes.string.na_object, object)
     out = Vector.fast(out, object)
     na = np.isnat(x)
     if na.all(): return out
