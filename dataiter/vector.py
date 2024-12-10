@@ -442,7 +442,9 @@ class Vector(np.ndarray):
         # NumPy still defaults to fixed width strings.
         # In some cases we can only fix the dtype ex-post.
         if dtype is None:
-            if util.unique_types(object) == {str}:
+            if object and (
+                isinstance(object[0], str) and
+                isinstance(object[-1], str)):
                 dtype = dtypes.string
         dtype = cls._map_input_dtype(dtype)
         array = np.array(object, dtype)
