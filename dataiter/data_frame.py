@@ -1034,25 +1034,29 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.sort(hood=1, zipcode=1)
         """
-        @deco.tuplefy
-        def sort_key():
-            pairs = colname_dir_pairs.items()
-            for colname, dir in reversed(list(pairs)):
-                if dir not in [1, -1]:
-                    raise ValueError("dir should be 1 or -1")
-                column = self[colname]
-                if column.is_object():
-                    # See Vector.sort for comparison.
-                    column = column.as_string()
-                if column.is_string():
-                    # XXX: np.lexsort segfaults on StringDType?
-                    # column[column.is_na()] = "\uffff"
-                    column = column.rank(method="min")
-                if dir < 0 and not (column.is_boolean() or column.is_number()):
-                    # Use rank for non-numeric so that we can sort descending.
-                    column = column.rank(method="min")
-                yield column if dir > 0 else -column
-        indices = np.lexsort(sort_key())
+        def sort_key(colname, dir):
+            if dir not in [1, -1]:
+                raise ValueError("dir should be 1 or -1")
+            column = self[colname]
+            column = column._optimize_for_sort()
+            if column._is_string_fixed():
+                column[column.is_na()] = "\uffff"
+            if dir > 0 and any((
+                # No strings here due to lexsort segfault.
+                # https://github.com/numpy/numpy/issues/27984
+                column._is_string_fixed(),
+                column.is_boolean(),
+                column.is_bytes(),
+                column.is_datetime(),
+                column.is_float(),
+                column.is_integer(),
+            )): return column
+            column = column.rank(method="min")
+            return column if dir > 0 else -column
+        indices = np.lexsort(tuple(
+            sort_key(colname, dir) for colname, dir in
+            reversed(colname_dir_pairs.items())
+        ))
         for colname, column in self.items():
             yield colname, column[indices].copy()
 
@@ -1184,25 +1188,31 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unique("hood")
         """
-        # Strings are not yet usable here, need to work around with rank.
-        # TypeError: The axis argument to unique is not supported for dtype StringDType
+        # Strangely, standard Python is a lot faster here than np.unique
+        # with all the extra needed across columns of different type.
+        # We just need to avoid NaN and NaT for the 'in' checks to work.
         colnames = colnames or self.colnames
-        if (len(colnames) == 1 and
-            not self[colnames[0]].is_object() and
-            not self[colnames[0]].is_string()):
-            # Use a single column directly.
-            by = self[colnames[0]]
-        elif (len(set(self[x].dtype for x in colnames)) == 1 and
-              not self[colnames[0]].is_object() and
-              not self[colnames[0]].is_string()):
-            # Stack matching dtypes directly in a new array.
-            by = np.column_stack([self[x] for x in colnames])
-        else:
-            # Use rank for differing dtypes.
-            by = np.column_stack([self[x].rank(method="min") for x in colnames])
-        indices = np.sort(np.unique(by, return_index=True, axis=0)[1])
+        columns = [self[x] for x in colnames]
+        for i, column in enumerate(columns):
+            if column.is_datetime():
+                flag = np.nanmin(column) - np.timedelta64(1, "D")
+                if np.isnat(flag):
+                    flag = np.datetime64("-001-01-01")
+                columns[i] = column.replace_na(flag)
+            if column.is_float():
+                flag = np.nanmin(column) - 1
+                if np.isnan(flag):
+                    flag = -1
+                columns[i] = column.replace_na(flag)
+        rows = list(zip(*columns))
+        seen = set()
+        keep = []
+        for i in range(self.nrow):
+            if rows[i] not in seen:
+                seen.add(rows[i])
+                keep.append(i)
         for colname, column in self.items():
-            yield colname, column[indices].copy()
+            yield colname, column[keep].copy()
 
     @deco.new_from_generator
     def unselect(self, *colnames):

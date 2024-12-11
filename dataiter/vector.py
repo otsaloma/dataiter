@@ -237,8 +237,10 @@ class Vector(np.ndarray):
         `object`. Use this only if you know `object` doesn't contain special
         values or if you know they are already of the correct type.
         """
-        object = util.sequencify(object)
         dtype = cls._map_input_dtype(dtype)
+        if isinstance(object, np.ndarray):
+            dtype = dtype or object.dtype
+        object = util.sequencify(object)
         return cls._np_array(object, dtype).view(cls)
 
     def get_memory_use(self):
@@ -312,6 +314,10 @@ class Vector(np.ndarray):
             return np.isnan(self)
         if self.is_string():
             return self == dtypes.string.na_object
+        if self._is_string_fixed():
+            # Include old-style fixed-width strings here
+            # as we use them in a couple places for a speed boost.
+            return self == dtypes.string.na_object
         # Can't use np.isin here since elements can be arrays.
         return self.fast([x is None for x in self], bool)
 
@@ -332,6 +338,10 @@ class Vector(np.ndarray):
         Return whether vector data type is string.
         """
         return isinstance(self.dtype, StringDType)
+
+    def _is_string_fixed(self):
+        # Old-style fixed-width string type
+        return np.issubdtype(self.dtype, np.str_)
 
     def is_timedelta(self):
         """
@@ -453,6 +463,15 @@ class Vector(np.ndarray):
                 array = array.astype(dtypes.string)
         return array
 
+    def _optimize_for_sort(self):
+        if (self.is_string() and
+            (n := np.strings.str_len(self).max()) < 100):
+            # XXX: We get a huge speed boost often by converting
+            # to the old-style fixed-width strings! This is probably
+            # temporary and can be removed once StringDType has matured.
+            return self.astype(f"U{n}")
+        return self
+
     def range(self):
         """
         Return the minimum and maximum values as a two-element vector.
@@ -463,7 +482,7 @@ class Vector(np.ndarray):
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
 
-    def rank(self, *, method="average"):
+    def rank(self, *, method="min"):
         """
         Return the order of elements in a sorted vector.
 
@@ -488,39 +507,39 @@ class Vector(np.ndarray):
         >>> vector.rank(method="ordinal")
         """
         if self.length == 0:
-            return self.__class__([], int)
+            return self.fast([], int)
         if method not in ["min", "max", "average", "ordinal"]:
             raise ValueError(f"Unexpected method: {method!r}")
         na = self.is_na()
         if na.all():
             # Avoid trying to evaluate min/max/mean of all NA.
-            x = self.__class__(np.repeat(1, self.length))
-            return x.rank(method=method)
+            self = self.fast(np.repeat(1, self.length))
+        self = self._optimize_for_sort()
         if method == "average":
             rank_min = self.rank(method="min")
             rank_max = self.rank(method="max")
             rank = np.mean([rank_min, rank_max], axis=0)
-            return self.__class__(rank)
+            return self.fast(rank, rank.dtype)
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
             inv = np.unique(self[~na], return_inverse=True)[1]
-            arank = np.concatenate(([0], np.bincount(inv))).cumsum()[inv]
-            zrank = arank.max() + 1
+            rank = np.concatenate(([0], np.bincount(inv))).cumsum()[inv]
+            narank = rank.max() + 1
         if method == "max":
             # https://stackoverflow.com/a/14672797/16369038
             inv = np.unique(self[~na], return_inverse=True)[1]
-            arank = np.bincount(inv).cumsum()[inv] - 1
-            zrank = len(self) - 1
+            rank = np.bincount(inv).cumsum()[inv] - 1
+            narank = len(self) - 1
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
             indices = self[~na].argsort()
-            arank = np.empty_like(indices)
-            arank[indices] = np.arange(len(indices))
-            zrank = arank.max() + 1 + np.arange(na.sum())
+            rank = np.empty_like(indices)
+            rank[indices] = np.arange(len(indices))
+            narank = rank.max() + 1 + np.arange(na.sum())
         out = np.zeros_like(self, int)
-        out[~na] = arank + 1
-        out[na] = zrank + 1
-        return self.__class__(out)
+        out[~na] = rank + 1
+        out[na] = narank + 1
+        return self.fast(out, int)
 
     def replace_na(self, value):
         """
@@ -568,13 +587,12 @@ class Vector(np.ndarray):
             na = new.is_na()
             new = new[~na].concat(new[na])
             return self.fast(new, object)
-        new = self.copy()
-        np.ndarray.sort(new)
+        opt = self._optimize_for_sort()
+        new = self[opt.argsort(kind="stable")]
         if dir < 0:
             new = new[::-1]
         na = new.is_na()
-        new = new[~na].concat(new[na])
-        return self.fast(new, self.dtype)
+        return new[~na].concat(new[na])
 
     @classmethod
     def _std_to_np(cls, seq, dtype=None):
@@ -721,5 +739,6 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 1, 1, 2, 2, 3])
         >>> vector.unique()
         """
-        u, indices = np.unique(self, return_index=True)
+        opt = self._optimize_for_sort()
+        u, indices = np.unique(opt, return_index=True)
         return self[indices.sort()].copy()

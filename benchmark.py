@@ -2,6 +2,7 @@
 
 import click
 import dataiter as di
+import functools
 import numpy as np
 import random
 import time
@@ -10,11 +11,15 @@ from dataiter import test
 from statistics import mean
 from unittest.mock import patch
 
-def data_frame(path, nrow=1_000_000):
+@functools.cache
+def _data_frame(path, nrow):
     data = test.data_frame(path)
     n = nrow // data.nrow
     data = data.rbind(*([data] * n))
     return data.head(nrow)
+
+def data_frame(path, nrow=1_000_000):
+    return _data_frame(path, nrow).deepcopy()
 
 def data_frame_random(nrows, ngroups):
     return di.DataFrame(g=np.random.choice(ngroups, nrows, replace=True),
@@ -137,7 +142,13 @@ def data_frame_rbind_100000():
 def data_frame_sort():
     data = data_frame("vehicles.csv")
     start = time.time()
-    data.sort(make=1, model=1, year=-1)
+    data.sort(make=1, model=1, year=1)
+    return time.time() - start
+
+def data_frame_unique():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.unique("make", "model", "year")
     return time.time() - start
 
 def list_of_dicts(path, length=100_000):
@@ -237,6 +248,42 @@ def vector_new_np():
     seq = np.array(seq)
     start = time.time()
     di.Vector(seq)
+    return time.time() - start
+
+def vector_rank_average():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.model.rank(method="average")
+    return time.time() - start
+
+def vector_rank_max():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.model.rank(method="max")
+    return time.time() - start
+
+def vector_rank_min():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.model.rank(method="min")
+    return time.time() - start
+
+def vector_rank_ordinal():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.model.rank(method="ordinal")
+    return time.time() - start
+
+def vector_sort():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.model.sort()
+    return time.time() - start
+
+def vector_unique():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.model.unique()
     return time.time() - start
 
 BENCHMARKS = sorted([
