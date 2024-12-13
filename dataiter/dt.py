@@ -59,11 +59,11 @@ def from_string(x, format):
     f = np.vectorize(lambda x: datetime.datetime.strptime(x, format))
     out[~na] = f(x[~na].astype(object))
     out = out.as_datetime()
-    if len(out[~na]) > 0:
-        if (hour(out[~na]) == 0).all():
-            if (minute(out[~na]) == 0).all():
-                if (second(out[~na]) == 0).all():
-                    out = out.as_date()
+    if (len(out[~na]) > 0 and
+        (hour(out[~na])   == 0).all() and
+        (minute(out[~na]) == 0).all() and
+        (second(out[~na]) == 0).all()):
+        out = out.as_date()
     return out
 
 def hour(x):

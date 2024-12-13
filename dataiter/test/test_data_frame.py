@@ -31,7 +31,7 @@ from dataiter import test
 from pathlib import Path
 from unittest.mock import patch
 
-# This UserWarning seems unavaoidable when using StringDtype, which unlike
+# This UserWarning seems unavoidable when using StringDtype, which unlike
 # other dtypes must be instantiated and that custom instance used.
 IGNORE_NPZ_PICKLE_WARNING = "ignore:Custom dtypes are saved as python objects using the pickle protocol."
 

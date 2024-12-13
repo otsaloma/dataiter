@@ -1038,11 +1038,12 @@ class DataFrame(dict):
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
-            column = column._optimize_for_sort()
+            column = column._optimize_for_argsort()
             if column._is_string_fixed():
                 column[column.is_na()] = "\uffff"
             if dir > 0 and any((
                 # No strings here due to lexsort segfault.
+                # Need to require NumPy >= 2.2.1 to fix this.
                 # https://github.com/numpy/numpy/issues/27984
                 column._is_string_fixed(),
                 column.is_boolean(),
@@ -1050,13 +1051,13 @@ class DataFrame(dict):
                 column.is_datetime(),
                 column.is_float(),
                 column.is_integer(),
+                column.is_timedelta(),
             )): return column
-            column = column.rank(method="min")
+            if not column.is_number():
+                column = column.rank(method="min")
             return column if dir > 0 else -column
         indices = np.lexsort(tuple(
-            sort_key(colname, dir) for colname, dir in
-            reversed(colname_dir_pairs.items())
-        ))
+            sort_key(*x) for x in reversed(colname_dir_pairs.items())))
         for colname, column in self.items():
             yield colname, column[indices].copy()
 

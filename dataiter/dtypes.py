@@ -28,4 +28,5 @@ string = StringDType(na_object="")
 # Use a blank string as missing value sentinel (1) because that's what we used
 # prior to the NumPy 2.0 StringDType and (2) because in many cases, such as CSV
 # input, a distinction between NA and blank cannot usually be made.
+# TODO: Consider changing this to something like ':NA:'.
 # https://numpy.org/doc/stable/user/basics.strings.html#missing-data-support

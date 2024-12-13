@@ -36,10 +36,8 @@ class GeoJSON(DataFrame):
     GeoJSON is a simple wrapper class that reads GeoJSON features into a
     :class:`.DataFrame`. Any operations on the data are thus done with methods
     provided by the data frame class. Geometry is available in the "geometry"
-    column, but no special geometric operations are supported.
-
-    All other data is available in the "metadata" attribute as an
-    ``attd.AttributeDict``.
+    column, but no special geometric operations are supported. All other data
+    is available in the "metadata" attribute as an ``attd.AttributeDict``.
     """
 
     # List of names that are actual attributes, not columns
@@ -123,18 +121,17 @@ class GeoJSON(DataFrame):
         return DataFrame(**data)
 
     def to_string(self, *, max_rows=None, max_width=None):
-        data = self
-        if "geometry" in data.colnames:
-            geometry = [f"<{x['type']}>" for x in data.geometry]
-            data = data.modify(geometry=Vector.fast(geometry, object))
-        return DataFrame.to_string(data, max_rows=max_rows, max_width=max_width)
+        if "geometry" in self.colnames:
+            geometry = [f"<{x['type']}>" for x in self.geometry]
+            self = self.modify(geometry=Vector.fast(geometry, object))
+        return DataFrame.to_string(self, max_rows=max_rows, max_width=max_width)
 
     def write(self, path, *, encoding="utf-8", **kwargs):
         """
         Write data to GeoJSON file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
-        `kwargs` are passed to ``json.dump``.
+        `kwargs` are passed to ``json.dumps``.
         """
         kwargs.setdefault("default", str)
         kwargs.setdefault("ensure_ascii", False)

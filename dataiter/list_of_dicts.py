@@ -612,7 +612,6 @@ class ListOfDicts(list):
         Return a new list from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-
         `keys` is an optional list of keys to limit to. `types` is an optional
         dict mapping keys to datatypes.
         """
@@ -640,7 +639,6 @@ class ListOfDicts(list):
         Return a new list from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-
         `keys` is an optional list of keys to limit to. `types` is an optional
         dict mapping keys to datatypes. `kwargs` are passed to ``json.load``.
         """
@@ -896,7 +894,6 @@ class ListOfDicts(list):
         Write list to JSON file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
-
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         kwargs.setdefault("default", str)

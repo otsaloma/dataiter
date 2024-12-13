@@ -202,7 +202,6 @@ class Vector(np.ndarray):
         >>> vector.dtype_label
         """
         if self.is_string():
-            # Instead of StringDType(na_object='')
             return "string"
         return str(self.dtype)
 
@@ -312,11 +311,7 @@ class Vector(np.ndarray):
             return np.isnat(self)
         if self.is_float():
             return np.isnan(self)
-        if self.is_string():
-            return self == dtypes.string.na_object
-        if self._is_string_fixed():
-            # Include old-style fixed-width strings here
-            # as we use them in a couple places for a speed boost.
+        if self.is_string() or self._is_string_fixed():
             return self == dtypes.string.na_object
         # Can't use np.isin here since elements can be arrays.
         return self.fast([x is None for x in self], bool)
@@ -400,7 +395,7 @@ class Vector(np.ndarray):
             return self.dtype
         if self.is_integer():
             return float
-        if self.is_string():
+        if self.is_string() or self._is_string_fixed():
             return self.dtype
         return object
 
@@ -441,7 +436,7 @@ class Vector(np.ndarray):
             return np.nan
         if self.is_integer():
             return np.nan
-        if self.is_string():
+        if self.is_string() or self._is_string_fixed():
             return dtypes.string.na_object
         # Note that using None, e.g. for a boolean vector,
         # might not work directly as it requires upcasting to object.
@@ -452,9 +447,7 @@ class Vector(np.ndarray):
         # NumPy still defaults to fixed width strings.
         # In some cases we can only fix the dtype ex-post.
         if dtype is None:
-            if object and (
-                isinstance(object[0], str) and
-                isinstance(object[-1], str)):
+            if object and isinstance(object[0], str):
                 dtype = dtypes.string
         dtype = cls._map_input_dtype(dtype)
         array = np.array(object, dtype)
@@ -463,9 +456,8 @@ class Vector(np.ndarray):
                 array = array.astype(dtypes.string)
         return array
 
-    def _optimize_for_sort(self):
-        if (self.is_string() and
-            (n := np.strings.str_len(self).max()) < 100):
+    def _optimize_for_argsort(self):
+        if self.is_string() and (n := np.strings.str_len(self).max()) < 50:
             # XXX: We get a huge speed boost often by converting
             # to the old-style fixed-width strings! This is probably
             # temporary and can be removed once StringDType has matured.
@@ -490,9 +482,8 @@ class Vector(np.ndarray):
         equal values the same rank, the minimum of the set (also called
         "competition ranking"). **'max'** is the same, but assigning the
         maximum of the set. **'ordinal'** gives each element a distinct rank
-        with equal values ranked by their order in input.
-
-        Ranks begin at 1. Missing values are ranked last.
+        with equal values ranked by their order in input. Ranks begin at 1.
+        Missing values are ranked last.
 
         **References**
 
@@ -506,33 +497,33 @@ class Vector(np.ndarray):
         """
         if self.length == 0:
             return self.fast([], int)
-        if method not in ["min", "max", "ordinal"]:
-            raise ValueError(f"Unexpected method: {method!r}")
         na = self.is_na()
         if na.all():
             # Avoid trying to evaluate min/max/mean of all NA.
             self = self.fast(np.repeat(1, self.length))
-        self = self._optimize_for_sort()
+        self = self._optimize_for_argsort()
+        out = np.zeros_like(self, int)
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
             inv = np.unique(self[~na], return_inverse=True)[1]
-            rank = np.concatenate(([0], np.bincount(inv))).cumsum()[inv]
-            narank = rank.max() + 1
+            out[~na] = np.concatenate(([0], np.bincount(inv))).cumsum()[inv] + 1
+            out[na] = out[~na].max() + 1
+            return out.view(self.__class__)
         if method == "max":
             # https://stackoverflow.com/a/14672797/16369038
             inv = np.unique(self[~na], return_inverse=True)[1]
-            rank = np.bincount(inv).cumsum()[inv] - 1
-            narank = len(self) - 1
+            out[~na] = np.bincount(inv).cumsum()[inv]
+            out[na] = len(self)
+            return out.view(self.__class__)
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
-            indices = self[~na].argsort()
-            rank = np.empty_like(indices)
-            rank[indices] = np.arange(len(indices))
-            narank = rank.max() + 1 + np.arange(na.sum())
-        out = np.zeros_like(self, int)
-        out[~na] = rank + 1
-        out[na] = narank + 1
-        return self.fast(out, int)
+            indices = self[~na].argsort(kind="stable")
+            rank = np.zeros_like(indices)
+            rank[indices] = np.arange(len(indices)) + 1
+            out[~na] = rank
+            out[na] = rank.max() + np.arange(na.sum()) + 1
+            return out.view(self.__class__)
+        raise ValueError(f"Unexpected method: {method!r}")
 
     def replace_na(self, value):
         """
@@ -562,25 +553,20 @@ class Vector(np.ndarray):
         """
         Return elements in sorted order.
 
-        `dir` is ``1`` for ascending sort, ``-1`` for descending.
-
-        Missing values are sorted last, regardless of `dir`.
+        `dir` is ``1`` for ascending sort, ``-1`` for descending. Missing
+        values are sorted last, regardless of `dir`.
 
         >>> vector = di.Vector([1, 2, 3, None])
         >>> vector.sort(dir=1)
         >>> vector.sort(dir=-1)
         """
         if self.is_object():
-            # It's not really clear how objects should be sorted.
-            # Let's use strings, since (1) object vectors are often
-            # used to hold strings and (2) most types probably
-            # implement __str__, so this is actually doable.
+            # Let's compare objects via str(x).
             lst = sorted(self, key=str, reverse=dir<0)
             new = self.fast(lst, object)
             na = new.is_na()
-            new = new[~na].concat(new[na])
-            return self.fast(new, object)
-        opt = self._optimize_for_sort()
+            return new[~na].concat(new[na])
+        opt = self._optimize_for_argsort()
         new = self[opt.argsort(kind="stable")]
         if dir < 0:
             new = new[::-1]
@@ -732,6 +718,6 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 1, 1, 2, 2, 3])
         >>> vector.unique()
         """
-        opt = self._optimize_for_sort()
+        opt = self._optimize_for_argsort()
         u, indices = np.unique(opt, return_index=True)
         return self[indices.sort()].copy()
