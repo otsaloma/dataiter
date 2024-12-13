@@ -250,12 +250,6 @@ def vector_new_np():
     di.Vector(seq)
     return time.time() - start
 
-def vector_rank_average():
-    data = data_frame("vehicles.csv")
-    start = time.time()
-    data.model.rank(method="average")
-    return time.time() - start
-
 def vector_rank_max():
     data = data_frame("vehicles.csv")
     start = time.time()

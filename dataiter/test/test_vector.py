@@ -427,26 +427,6 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5, None])
         assert a.range().tolist() == [1, 5]
 
-    def test_rank_average(self):
-        a = Vector([3, 1, 1, 1, 2, 2])
-        b = a.rank(method="average")
-        assert b.tolist() == [6, 2, 2, 2, 4.5, 4.5]
-
-    def test_rank_average_blank(self):
-        a = Vector([], float)
-        b = a.rank(method="average")
-        assert b.tolist() == []
-
-    def test_rank_average_na(self):
-        a = Vector([NaN, 1, 2, 3, NaN])
-        b = a.rank(method="average")
-        assert b.tolist() == [4.5, 1, 2, 3, 4.5]
-
-    def test_rank_average_na_all(self):
-        a = Vector([NaN, NaN, NaN], float)
-        b = a.rank(method="average")
-        assert b.tolist() == [2, 2, 2]
-
     def test_rank_max(self):
         a = Vector([1, 2, 1, 2, 3])
         b = a.rank(method="max")
@@ -480,9 +460,7 @@ class TestVector:
     def test_rank_without_ties(self):
         # Without ties, all methods should give the same result.
         a = Vector([NaN, 3, 2, 4, 5, 1])
-        assert a.rank(method="min").equal(a.rank(method="average"))
         assert a.rank(method="min").equal(a.rank(method="max"))
-        assert a.rank(method="min").equal(a.rank(method="min"))
         assert a.rank(method="min").equal(a.rank(method="ordinal"))
 
     def test_replace_na(self):

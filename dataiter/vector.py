@@ -489,9 +489,8 @@ class Vector(np.ndarray):
         `method` determines how ties are resolved. **'min'** assigns each of
         equal values the same rank, the minimum of the set (also called
         "competition ranking"). **'max'** is the same, but assigning the
-        maximum of the set. **'average'** is the mean of 'min' and 'max'.
-        **'ordinal'** gives each element a distinct rank with equal values
-        ranked by their order in input.
+        maximum of the set. **'ordinal'** gives each element a distinct rank
+        with equal values ranked by their order in input.
 
         Ranks begin at 1. Missing values are ranked last.
 
@@ -503,23 +502,17 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([3, 1, 1, 1, 2, 2])
         >>> vector.rank(method="min")
         >>> vector.rank(method="max")
-        >>> vector.rank(method="average")
         >>> vector.rank(method="ordinal")
         """
         if self.length == 0:
             return self.fast([], int)
-        if method not in ["min", "max", "average", "ordinal"]:
+        if method not in ["min", "max", "ordinal"]:
             raise ValueError(f"Unexpected method: {method!r}")
         na = self.is_na()
         if na.all():
             # Avoid trying to evaluate min/max/mean of all NA.
             self = self.fast(np.repeat(1, self.length))
         self = self._optimize_for_sort()
-        if method == "average":
-            rank_min = self.rank(method="min")
-            rank_max = self.rank(method="max")
-            rank = np.mean([rank_min, rank_max], axis=0)
-            return self.fast(rank, rank.dtype)
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
             inv = np.unique(self[~na], return_inverse=True)[1]

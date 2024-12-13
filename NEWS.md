@@ -14,6 +14,7 @@ PENDING: Dataiter 0.999
 * `Vector.is_na`: Fix to work in multidimensional cases where the
   elements of an object vector are arrays/vectors
 * `Vector.rank`: Change default `method` to "min"
+* `Vector.rank`: Remove `method` "average"
 
 This is a breaking change to switch the string data type from the
 fixed-width `str_` a.k.a. `<U#` to the variable-width `StringDType`
