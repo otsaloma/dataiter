@@ -32,9 +32,9 @@ currently not a hard dependency, so you need to install it separately.
 ## Quick Start
 
 ```python
-import dataiter as di
-data = di.read_csv("data/listings.csv")
-data.filter(hood="Manhattan", guests=2).sort(price=1).head()
+>>> import dataiter as di
+>>> data = di.read_csv("data/listings.csv")
+>>> data.filter(hood="Manhattan", guests=2).sort(price=1).head()
 .
         id      hood zipcode guests    sqft price
      int64    string  string  int64 float64 int64
