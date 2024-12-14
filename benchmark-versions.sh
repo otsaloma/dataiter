@@ -2,7 +2,7 @@
 
 SCRIPT=benchmark-head.py
 SCRIPT_ARGS="$@"
-OUTPUT_FILE=benchmark-versions.csv
+OUT_FILE=benchmark-versions.csv
 TMP_FILE=tmp.csv
 
 benchmark() {
@@ -10,15 +10,14 @@ benchmark() {
     printf "\n$VERSION:\n"
     git checkout -q $VERSION
     ./$SCRIPT -o $TMP_FILE --version=$VERSION $SCRIPT_ARGS || true
-    tail -n+2 $TMP_FILE >> $OUTPUT_FILE
-    sed -i 's/"//g' $OUTPUT_FILE
+    tail -n+2 $TMP_FILE >> $OUT_FILE
+    sed -i 's/"//g' $OUT_FILE
 }
 
 set -e
-rm -f $OUTPUT_FILE
-echo "name,version,elapsed" > $OUTPUT_FILE
+rm -f $OUT_FILE
+echo "name,version,elapsed" > $OUT_FILE
 cp -fv benchmark.py $SCRIPT
-for VERSION in 0.99 master; do
-    benchmark $VERSION
-done
+benchmark 0.99
+benchmark master
 rm -f $SCRIPT $TMP_FILE

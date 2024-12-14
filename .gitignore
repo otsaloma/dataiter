@@ -4,8 +4,9 @@
 .envrc
 .pytest_cache
 __pycache__
-benchmark*.csv
 benchmark-head.py
+benchmark-versions.csv
+benchmark-versions.ods
 build
 dataiter.egg-info
 dist
