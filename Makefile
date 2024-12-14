@@ -3,6 +3,7 @@
 # EDITOR must wait!
 EDITOR = nano
 PREFIX = /usr/local
+PYTHON = python3
 
 check:
 	flake8 .
@@ -49,11 +50,6 @@ install-cli:
 	chmod +x $(PREFIX)/bin/$$X; \
 	done
 
-# Use @profile decorator from line-profiler.
-# https://github.com/pyutils/line_profiler
-profile:
-	kernprof -lvu 1e-3 test.py
-
 # Interactive!
 publish:
 	$(MAKE) clean
@@ -92,4 +88,11 @@ validate:
 	cd validation && DATAITER_USE_NUMBA=true ./validate-df.sh
 	cd validation && ./validate-ld.sh
 
-.PHONY: check clean doc doc-check doc-open doc-watch install install-cli profile publish release test test-installed validate
+venv:
+	rm -rf venv
+	$(PYTHON) -m venv venv
+	. venv/bin/activate && \
+	  pip install -U pip setuptools wheel && \
+	  pip install -r requirements.txt
+
+.PHONY: check clean doc doc-check doc-open doc-watch install install-cli publish release test test-installed validate venv

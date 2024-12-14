@@ -54,3 +54,13 @@ comparison table in the documentation will give you a quick overview of
 the differences and similarities.
 
 https://dataiter.readthedocs.io/en/latest/comparison.html
+
+## Development
+
+To install a virtualenv for development, use
+
+    make venv
+
+or, for a specific Python version
+
+    make PYTHON=python3.X venv
