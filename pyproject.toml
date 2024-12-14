@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "dataiter"
 dynamic = ["version"]
-description = "Classes for data manipulation"
+description = "Simple, light-weight data frames for Python"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9.0"
