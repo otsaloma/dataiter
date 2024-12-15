@@ -103,13 +103,13 @@ Going Fast with Numba
 
 The common aggregation functions listed above are implemented in
 Dataiter as both pure Python code (slow) and JIT-compiled `Numba
-<https://numba.pydata.org/>`_ code (fast). If you have Numba installed
-and importing it succeeds, then Dataiter will **automatically** use it
-for aggregation involving **boolean**, **integer**, **float**, **date**,
-and **datetime** columns. If Numba is not available, Dataiter will
-automatically fall back on the slower pure Python implementations. The
-result should be the same, whether Numba is used or not, excluding some
-minor rounding or float precision differences.
+<https://numba.pydata.org/>`_ code (fast). If you have Numba installed,
+then Dataiter will **automatically** use it for aggregation involving
+**boolean**, **integer**, **float**, **date**, and **datetime** columns.
+If Numba is not available, Dataiter will automatically fall back on the
+slower pure Python implementations. The result should be the same,
+whether Numba is used or not, excluding some minor rounding or float
+precision differences.
 
 Numba is currently not a hard dependency of Dataiter, so you'll need to
 install it separately::
