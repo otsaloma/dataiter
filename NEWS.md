@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.999
-=======================
+2024-12-15: Dataiter 0.999
+==========================
 
 * `DataFrame.fom_arrow`: Remove `strings_as_object` argument
 * `DataFrame.from_pandas`: Remove `strings_as_object` argument
@@ -21,6 +21,11 @@ fixed-width `str_` a.k.a. `<U#` to the variable-width `StringDType`
 introduced in NumPy 2.0. The main benefit is greatly reduced memory use,
 making strings usable without needing to be careful or falling back to
 `object`. The note about stability below release 0.99 still applies.
+
+Note that as `StringDType` is only in NumPy >= 2.0, any NPZ or Pickle
+files saved cannot be opened using Dataiter < 0.99 and NumPy < 2.0. If
+you need that kind of interoperability, consider using the Parquet file
+format.
 
 2024-08-17: Dataiter 0.99
 =========================
