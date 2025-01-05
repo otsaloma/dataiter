@@ -1,3 +1,15 @@
+PENDING: Dataiter 0.9999
+========================
+
+* Use PyArrow instead of Pandas to read and write CSV files
+* Replace Pandas dependency with PyArrow
+
+This is likely to be a breaking change in some rare weirdly formatted
+CSV files that Pandas and PyArrow might parse differently, resulting in
+something like diffently guessed data types or differently detected
+missing value markers. The note about stability below release 0.99 still
+applies.
+
 2024-12-15: Dataiter 0.999
 ==========================
 
