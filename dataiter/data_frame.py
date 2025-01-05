@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import codecs
 import dataiter
 import functools
 import itertools
@@ -474,16 +475,29 @@ class DataFrame(dict):
             yield colname, np.delete(column, rows)
 
     @classmethod
+    @deco.new_from_generator
     def from_arrow(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pyarrow.Table`` `data`.
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
-        # Arrow's 'to_numpy' is "limited to primitive types for which NumPy has
-        # the same physical representation as Arrow, and assuming the Arrow
-        # data has no nulls." Using Pandas is easier and probably good enough.
-        return cls.from_pandas(data.to_pandas(), dtypes=dtypes)
+        for name, column in zip(data.column_names, data.columns):
+            req_dtype = dtypes.get(name, None)
+            na = column.is_null(nan_is_null=True).to_numpy()
+            column = column.to_numpy()
+            if np.issubdtype(column.dtype, np.object_):
+                if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
+                    # Likely to be strings, but not necessarily.
+                    # Force type-guessing in Vector.fast.
+                    column = column.tolist()
+            column = DataFrameColumn.fast(column, req_dtype)
+            if na.any():
+                if column.dtype != column.na_dtype:
+                    # Upcast integer to float if needed.
+                    column = column.astype(column.na_dtype)
+                column[na] = column.na_value
+            yield name, column
 
     @classmethod
     def from_json(cls, string, *, columns=[], dtypes={}, **kwargs):
@@ -508,21 +522,29 @@ class DataFrame(dict):
         return cls(**data)
 
     @classmethod
+    @deco.new_from_generator
     def from_pandas(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
-        data = {x: data[x].to_numpy(copy=True) for x in data.columns}
-        for name, value in data.items():
-            # Pandas object columns are likely to be strings,
-            # convert to list to force type guessing in Vector.__init__.
-            if np.issubdtype(value.dtype, np.object_):
-                data[name] = data[name].tolist()
-        for name, dtype in dtypes.items():
-            data[name] = DataFrameColumn(data[name], dtype)
-        return cls(**data)
+        for name in data.columns:
+            req_dtype = dtypes.get(name, None)
+            na = data[name].isna().to_numpy(copy=True)
+            column = data[name].to_numpy(copy=True)
+            if np.issubdtype(column.dtype, np.object_):
+                if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
+                    # Likely to be strings, but not necessarily.
+                    # Force type-guessing in Vector.fast.
+                    column = column.tolist()
+            column = DataFrameColumn.fast(column, req_dtype)
+            if na.any():
+                if column.dtype != column.na_dtype:
+                    # Upcast integer to float if needed.
+                    column = column.astype(column.na_dtype)
+                column[na] = column.na_value
+            yield name, column
 
     def full_join(self, other, *by):
         """
@@ -720,8 +742,9 @@ class DataFrame(dict):
         self._check_dimensions()
         return len(self)
 
-    def _new(self, *args, **kwargs):
-        return self.__class__(*args, **kwargs)
+    @classmethod
+    def _new(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
 
     @property
     def nrow(self):
@@ -857,19 +880,17 @@ class DataFrame(dict):
         `columns` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes.
         """
-        import pandas as pd
-        data = pd.read_csv(path,
-                           sep=sep,
-                           header=0 if header else None,
-                           usecols=columns or None,
-                           dtype=dtypes,
-                           parse_dates=False,
-                           encoding=encoding,
-                           low_memory=False)
+        from pyarrow import csv
+        table = csv.read_csv(
+            path,
+            read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
+            parse_options=csv.ParseOptions(delimiter=sep, newlines_in_values=True),
+            convert_options=csv.ConvertOptions(include_columns=columns))
 
         if not header:
-            data.columns = util.generate_colnames(len(data.columns))
-        return cls.from_pandas(data, dtypes=dtypes)
+            names = util.generate_colnames(table.shape[1])
+            table = table.rename_columns(names)
+        return cls.from_arrow(table, dtypes=dtypes)
 
     @classmethod
     def read_json(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
@@ -1255,9 +1276,18 @@ class DataFrame(dict):
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        data = self.to_pandas()
+        from pyarrow import csv
+        table = self.to_arrow()
         util.makedirs_for_file(path)
-        data.to_csv(path, sep=sep, header=header, index=False, encoding=encoding)
+        csv.write_csv(table, path, write_options=csv.WriteOptions(include_header=header,
+                                                                  delimiter=sep,
+                                                                  quoting_style="needed"))
+
+        # XXX: Arrow's WriteOptions doesn't include encoding.
+        # If user requested something else than UTF-8, we need to rewrite!
+        if codecs.lookup(encoding) != codecs.lookup("utf-8"):
+            with util.xopen(path, "rt", encoding="utf-8") as f: text = f.read()
+            with util.xopen(path, "wt", encoding=encoding) as f: f.write(text)
 
     def write_json(self, path, *, encoding="utf-8", **kwargs):
         """

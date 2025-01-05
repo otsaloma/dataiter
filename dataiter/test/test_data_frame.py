@@ -448,6 +448,70 @@ class TestDataFrame:
         assert data.make.is_object()
         assert data.model.is_object()
 
+    def test_read_csv_missing_blank(self):
+        text = """
+int,float,string,bool,date
+,2.5,"test",TRUE,2025-01-01
+1,,"test",TRUE,2025-01-01
+1,2.5,"",TRUE,2025-01-01
+1,2.5,"test",,2025-01-01
+1,2.5,"test",TRUE,
+""".strip()
+        handle, path = tempfile.mkstemp(".csv")
+        Path(path).write_text(text, "utf-8")
+        data = DataFrame.read_csv(path)
+        for i, column in enumerate(data.columns):
+            assert column.is_na().sum() == 1
+            assert column.is_na()[i]
+
+    def test_read_csv_missing_excel(self):
+        text = """
+int,float,string,bool,date
+#N/A,2.5,"test",TRUE,2025-01-01
+1,#N/A,"test",TRUE,2025-01-01
+1,2.5,"",TRUE,2025-01-01
+1,2.5,"test",#N/A,2025-01-01
+1,2.5,"test",TRUE,#N/A
+""".strip()
+        handle, path = tempfile.mkstemp(".csv")
+        Path(path).write_text(text, "utf-8")
+        data = DataFrame.read_csv(path)
+        for i, column in enumerate(data.columns):
+            assert column.is_na().sum() == 1
+            assert column.is_na()[i]
+
+    def test_read_csv_missing_na(self):
+        text = """
+int,float,string,bool,date
+NA,2.5,"test",TRUE,2025-01-01
+1,NA,"test",TRUE,2025-01-01
+1,2.5,"",TRUE,2025-01-01
+1,2.5,"test",NA,2025-01-01
+1,2.5,"test",TRUE,NA
+""".strip()
+        handle, path = tempfile.mkstemp(".csv")
+        Path(path).write_text(text, "utf-8")
+        data = DataFrame.read_csv(path)
+        for i, column in enumerate(data.columns):
+            assert column.is_na().sum() == 1
+            assert column.is_na()[i]
+
+    def test_read_csv_missing_null(self):
+        text = """
+int,float,string,bool,date
+NULL,2.5,"test",TRUE,2025-01-01
+1,NULL,"test",TRUE,2025-01-01
+1,2.5,"",TRUE,2025-01-01
+1,2.5,"test",NULL,2025-01-01
+1,2.5,"test",TRUE,NULL
+""".strip()
+        handle, path = tempfile.mkstemp(".csv")
+        Path(path).write_text(text, "utf-8")
+        data = DataFrame.read_csv(path)
+        for i, column in enumerate(data.columns):
+            assert column.is_na().sum() == 1
+            assert column.is_na()[i]
+
     def test_read_json(self):
         path = str(test.get_data_path("downloads.json"))
         data = DataFrame.read_json(path)
