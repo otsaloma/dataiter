@@ -1,6 +1,8 @@
 PENDING: Dataiter 0.9999
 ========================
 
+* Add proxy object `Vector.dt` for `dataiter.dt`
+* Add proxy object `Vector.str` for `numpy.strings`
 * Use PyArrow instead of Pandas to read and write CSV files
 * Replace Pandas dependency with PyArrow
 
