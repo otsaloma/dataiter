@@ -162,9 +162,9 @@ class Vector(np.ndarray):
 
         >>> di.Vector([1, 2, 3], int)
         """
+        # Note that when we call array.view(Vector) for a numpy.ndarray,
+        # this will not be called and no attributes added here will exist!
         self._check_dimensions()
-        self._dt = DtProxy(self)
-        self._str = StrProxy(self)
 
     def __array_wrap__(self, array, context=None, return_scalar=False):
         # Avoid returning 0-dimensional arrays.
@@ -196,8 +196,7 @@ class Vector(np.ndarray):
         >>> vector.as_bytes()
         """
         if self.is_string():
-            array = np.strings.encode(self, "utf-8")
-            return array.view(self.__class__)
+            return self.str.encode("utf-8")
         return self.astype(bytes)
 
     def as_date(self):
@@ -281,8 +280,6 @@ class Vector(np.ndarray):
         return self[~self.is_na()].copy()
 
     @property
-    # This is a simple property-attribute wrapper,
-    # needed just to get nicer API documentation.
     def dt(self) -> DtProxy:
         """
         Proxy object for calling :mod:`dataiter.dt` functions.
@@ -292,6 +289,8 @@ class Vector(np.ndarray):
         >>> x.dt.month()
         >>> x.dt.day()
         """
+        if not hasattr(self, "_dt"):
+            self._dt = DtProxy(self)
         return self._dt
 
     @property
@@ -559,7 +558,7 @@ class Vector(np.ndarray):
         return array
 
     def _optimize_for_argsort(self):
-        if self.is_string() and (n := np.strings.str_len(self).max()) < 50:
+        if self.is_string() and (n := self.str.str_len().max()) < 50:
             # XXX: We get a huge speed boost often by converting
             # to the old-style fixed-width strings! This is probably
             # temporary and can be removed once StringDType has matured.
@@ -726,8 +725,6 @@ class Vector(np.ndarray):
         return None
 
     @property
-    # This is a simple property-attribute wrapper,
-    # needed just to get nicer API documentation.
     def str(self) -> StrProxy:
         """
         Proxy object for calling ``numpy.strings`` functions.
@@ -739,6 +736,8 @@ class Vector(np.ndarray):
         >>> x.str.str_len()
         >>> x.str.upper()
         """
+        if not hasattr(self, "_str"):
+            self._str = StrProxy(self)
         return self._str
 
     def tail(self, n=None):

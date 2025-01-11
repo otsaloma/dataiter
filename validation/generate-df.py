@@ -4,7 +4,6 @@ import sys
 sys.path.insert(0, "..")
 
 import dataiter as di
-import numpy as np
 
 print(f"USE_NUMBA: {di.USE_NUMBA}")
 
@@ -17,7 +16,7 @@ def read_csv(path):
         if data[name].is_string():
             # Use all lower case for strings to avoid differing
             # sorting of lower vs. upper case characters.
-            data[name] = np.strings.lower(data[name])
+            data[name] = data[name].str.lower()
     return data
 
 # AGGREGATE
