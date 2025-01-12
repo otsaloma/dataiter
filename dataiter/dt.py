@@ -50,7 +50,6 @@ def from_string(x, format):
     if util.is_scalar(x):
         x = Vector([x], str)
         return from_string(x, format)[0]
-    x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
     assert isinstance(x.dtype, StringDType)
     out = np.full_like(x, None, object)
@@ -150,7 +149,6 @@ def _pull_datetime(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return _pull_datetime(x, function)[0]
-    x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
     assert np.issubdtype(x.dtype, np.datetime64)
     out = np.full_like(x, np.nan)
@@ -165,7 +163,6 @@ def _pull_int(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return _pull_int(x, function)[0]
-    x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
     assert np.issubdtype(x.dtype, np.datetime64)
     out = np.full_like(x, np.nan, float)
@@ -180,7 +177,6 @@ def _pull_str(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return _pull_str(x, function)[0]
-    x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
     assert np.issubdtype(x.dtype, np.datetime64)
     out = np.full_like(x, dtypes.string.na_object, object)
@@ -216,7 +212,6 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     scalar_keys = [x for x in kwargs if util.is_scalar(kwargs[x])]
     vector_keys = [x for x in kwargs if x not in scalar_keys]
     # Like _pull_datetime, but no vectorized function.
-    x = util.sequencify(x)
     assert isinstance(x, np.ndarray)
     assert np.issubdtype(x.dtype, np.datetime64)
     out = np.full_like(x, np.nan)

@@ -66,6 +66,18 @@ class DtProxy:
         self.weekday = wrap(dt.weekday)
         self.year = wrap(dt.year)
 
+class ReProxy:
+    def __init__(self, vector):
+        from dataiter import regex
+        wrap = lambda f: functools.partial(f, string=vector)
+        self.findall = wrap(regex.findall)
+        self.fullmatch = wrap(regex.fullmatch)
+        self.match = wrap(regex.match)
+        self.search = wrap(regex.search)
+        self.split = wrap(regex.split)
+        self.sub = wrap(regex.sub)
+        self.subn = wrap(regex.subn)
+
 class StrProxy:
     def __init__(self, vector):
         wrap = lambda name: as_vector(functools.partial(
@@ -625,6 +637,18 @@ class Vector(np.ndarray):
             out[na] = rank.max() + np.arange(na.sum()) + 1
             return out.view(self.__class__)
         raise ValueError(f"Unexpected method: {method!r}")
+
+    @property
+    def re(self) -> ReProxy:
+        """
+        Proxy object for calling :mod:`dataiter.regex` functions.
+
+        >>> x = di.Vector(["great", "fantastic"])
+        >>> x.re.sub(r"$", r"!")
+        """
+        if not hasattr(self, "_re"):
+            self._re = ReProxy(self)
+        return self._re
 
     def replace_na(self, value):
         """

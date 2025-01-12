@@ -31,5 +31,6 @@ frame.
    geojson
    list-of-dicts
    vector
-   dtypes
    dt
+   dtypes
+   regex

@@ -34,6 +34,7 @@ dataiter.Vector
 :attr:`~dataiter.Vector.na_value`
 :meth:`~dataiter.Vector.range`
 :meth:`~dataiter.Vector.rank`
+:attr:`~dataiter.Vector.re`
 :meth:`~dataiter.Vector.replace_na`
 :meth:`~dataiter.Vector.sample`
 :meth:`~dataiter.Vector.sort`

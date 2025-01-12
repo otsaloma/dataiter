@@ -469,6 +469,10 @@ class TestVector:
         assert a.rank(method="min").equal(a.rank(method="max"))
         assert a.rank(method="min").equal(a.rank(method="ordinal"))
 
+    def test_re(self):
+        a = Vector(["great", "fantastic"])
+        assert a.re.sub(r"$", r"!").tolist() == ["great!", "fantastic!"]
+
     def test_replace_na(self):
         a = Vector([1, 2, 3, None])
         assert a.replace_na(0).tolist() == [1, 2, 3, 0]
