@@ -234,6 +234,12 @@ class TestVector:
         b = a.drop_na()
         assert b.tolist() == [1, 2, 3]
 
+    def test_dt(self):
+        a = Vector(["2025-01-11"], np.datetime64)
+        assert a.dt.year().tolist() == [2025]
+        assert a.dt.month().tolist() == [1]
+        assert a.dt.day().tolist() == [11]
+
     def test_equal_boolean(self):
         a = Vector([True, False])
         b = Vector([True, False])
@@ -463,6 +469,10 @@ class TestVector:
         assert a.rank(method="min").equal(a.rank(method="max"))
         assert a.rank(method="min").equal(a.rank(method="ordinal"))
 
+    def test_re(self):
+        a = Vector(["great", "fantastic"])
+        assert a.re.sub(r"$", r"!").tolist() == ["great!", "fantastic!"]
+
     def test_replace_na(self):
         a = Vector([1, 2, 3, None])
         assert a.replace_na(0).tolist() == [1, 2, 3, 0]
@@ -491,6 +501,12 @@ class TestVector:
         a = Vector([None, 1, 2, 3, 4, 5, None])
         assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5, None, None]
         assert a.sort(dir=-1).tolist() == [5, 4, 3, 2, 1, None, None]
+
+    def test_str(self):
+        a = Vector(["asdf", "1234"])
+        assert a.str.isalpha().tolist() == [True, False]
+        assert a.str.str_len().tolist() == [4, 4]
+        assert a.str.upper().tolist() == ["ASDF", "1234"]
 
     def test_tail(self):
         a = Vector([1, 2, 3, 4, 5])

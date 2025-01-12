@@ -22,6 +22,7 @@
 
 import dataiter
 import datetime
+import functools
 import numpy as np
 import sys
 
@@ -34,6 +35,103 @@ TYPE_CONVERSIONS = {
     datetime.date: "datetime64[D]",
     datetime.datetime: "datetime64[us]",
 }
+
+def as_vector(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        array = function(*args, **kwargs)
+        return array.view(Vector)
+    return wrapper
+
+def not_implemented(*args, **kwargs):
+    raise NotImplementedError
+
+class DtProxy:
+    def __init__(self, vector):
+        from dataiter import dt
+        wrap = lambda f: functools.partial(f, vector)
+        self.day = wrap(dt.day)
+        self.from_string = wrap(dt.from_string)
+        self.hour = wrap(dt.hour)
+        self.isoweek = wrap(dt.isoweek)
+        self.isoweekday = wrap(dt.isoweekday)
+        self.microsecond = wrap(dt.microsecond)
+        self.minute = wrap(dt.minute)
+        self.month = wrap(dt.month)
+        self.new = wrap(dt.new)
+        self.quarter = wrap(dt.quarter)
+        self.replace = wrap(dt.replace)
+        self.second = wrap(dt.second)
+        self.to_string = wrap(dt.to_string)
+        self.weekday = wrap(dt.weekday)
+        self.year = wrap(dt.year)
+
+class ReProxy:
+    def __init__(self, vector):
+        from dataiter import regex
+        wrap = lambda f: functools.partial(f, string=vector)
+        self.findall = wrap(regex.findall)
+        self.fullmatch = wrap(regex.fullmatch)
+        self.match = wrap(regex.match)
+        self.search = wrap(regex.search)
+        self.split = wrap(regex.split)
+        self.sub = wrap(regex.sub)
+        self.subn = wrap(regex.subn)
+
+class StrProxy:
+    def __init__(self, vector):
+        wrap = lambda name: as_vector(functools.partial(
+            getattr(np.strings, name, not_implemented),
+            vector))
+
+        # https://numpy.org/doc/stable/reference/routines.strings.html
+        self.add = wrap("add")
+        self.capitalize = wrap("capitalize")
+        self.center = wrap("center")
+        self.count = wrap("count")
+        self.decode = wrap("decode")
+        self.encode = wrap("encode")
+        self.endswith = wrap("endswith")
+        self.equal = wrap("equal")
+        self.expandtabs = wrap("expandtabs")
+        self.find = wrap("find")
+        self.greater = wrap("greater")
+        self.greater_equal = wrap("greater_equal")
+        self.index = wrap("index")
+        self.isalnum = wrap("isalnum")
+        self.isalpha = wrap("isalpha")
+        self.isdecimal = wrap("isdecimal")
+        self.isdigit = wrap("isdigit")
+        self.islower = wrap("islower")
+        self.isnumeric = wrap("isnumeric")
+        self.isspace = wrap("isspace")
+        self.istitle = wrap("istitle")
+        self.isupper = wrap("isupper")
+        self.less = wrap("less")
+        self.less_equal = wrap("less_equal")
+        self.ljust = wrap("ljust")
+        self.lower = wrap("lower")
+        self.lstrip = wrap("lstrip")
+        self.mod = wrap("mod")
+        self.multiply = wrap("multiply")
+        self.not_equal = wrap("not_equal")
+        self.replace = wrap("replace")
+        self.rfind = wrap("rfind")
+        self.rindex = wrap("rindex")
+        self.rjust = wrap("rjust")
+        self.rstrip = wrap("rstrip")
+        self.startswith = wrap("startswith")
+        self.str_len = wrap("str_len")
+        self.strip = wrap("strip")
+        self.swapcase = wrap("swapcase")
+        self.title = wrap("title")
+        self.translate = wrap("translate")
+        self.upper = wrap("upper")
+        self.zfill = wrap("zfill")
+
+        # Skip functions that have a difficult return value.
+        # self.partition = wrap("partition")
+        # self.rpartition = wrap("rpartition")
 
 class Vector(np.ndarray):
 
@@ -76,6 +174,8 @@ class Vector(np.ndarray):
 
         >>> di.Vector([1, 2, 3], int)
         """
+        # Note that when we call array.view(Vector) for a numpy.ndarray,
+        # this will not be called and no attributes added here will exist!
         self._check_dimensions()
 
     def __array_wrap__(self, array, context=None, return_scalar=False):
@@ -108,8 +208,7 @@ class Vector(np.ndarray):
         >>> vector.as_bytes()
         """
         if self.is_string():
-            array = np.strings.encode(self, "utf-8")
-            return array.view(self.__class__)
+            return self.str.encode("utf-8")
         return self.astype(bytes)
 
     def as_date(self):
@@ -191,6 +290,20 @@ class Vector(np.ndarray):
         >>> vector.drop_na()
         """
         return self[~self.is_na()].copy()
+
+    @property
+    def dt(self) -> DtProxy:
+        """
+        Proxy object for calling :mod:`dataiter.dt` functions.
+
+        >>> x = di.Vector(["2025-01-11"], np.datetime64)
+        >>> x.dt.year()
+        >>> x.dt.month()
+        >>> x.dt.day()
+        """
+        if not hasattr(self, "_dt"):
+            self._dt = DtProxy(self)
+        return self._dt
 
     @property
     def dtype_label(self):
@@ -457,7 +570,7 @@ class Vector(np.ndarray):
         return array
 
     def _optimize_for_argsort(self):
-        if self.is_string() and (n := np.strings.str_len(self).max()) < 50:
+        if self.is_string() and (n := self.str.str_len().max()) < 50:
             # XXX: We get a huge speed boost often by converting
             # to the old-style fixed-width strings! This is probably
             # temporary and can be removed once StringDType has matured.
@@ -524,6 +637,18 @@ class Vector(np.ndarray):
             out[na] = rank.max() + np.arange(na.sum()) + 1
             return out.view(self.__class__)
         raise ValueError(f"Unexpected method: {method!r}")
+
+    @property
+    def re(self) -> ReProxy:
+        """
+        Proxy object for calling :mod:`dataiter.regex` functions.
+
+        >>> x = di.Vector(["great", "fantastic"])
+        >>> x.re.sub(r"$", r"!")
+        """
+        if not hasattr(self, "_re"):
+            self._re = ReProxy(self)
+        return self._re
 
     def replace_na(self, value):
         """
@@ -622,6 +747,22 @@ class Vector(np.ndarray):
             return np.datetime64("NaT")
         # Usually causes dtype to be object!
         return None
+
+    @property
+    def str(self) -> StrProxy:
+        """
+        Proxy object for calling ``numpy.strings`` functions.
+
+        https://numpy.org/doc/stable/reference/routines.strings.html
+
+        >>> x = di.Vector(["asdf", "1234"])
+        >>> x.str.isalpha()
+        >>> x.str.str_len()
+        >>> x.str.upper()
+        """
+        if not hasattr(self, "_str"):
+            self._str = StrProxy(self)
+        return self._str
 
     def tail(self, n=None):
         """

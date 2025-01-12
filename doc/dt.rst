@@ -1,10 +1,10 @@
 dataiter.dt
 ===========
 
-The ``dt`` module contains helper functions for dealing with vectors of
-dates and datetimes, similar to ``numpy.strings`` for vectors of strings.
-Most of the operations are done via Python's standard library
-``datetime`` module and subject to any limitations therein.
+The ``dt`` module contains vectorized functions for dealing with dates and
+datetimes, similar to ``numpy.strings`` for strings. This is mostly a
+convenience wrapper around Python's standard library ``datetime`` module, not
+any efficient reimplementation.
 
 :func:`~dataiter.dt.day`
 :func:`~dataiter.dt.from_string`

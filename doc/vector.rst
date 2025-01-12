@@ -12,6 +12,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.as_string`
 :meth:`~dataiter.Vector.concat`
 :meth:`~dataiter.Vector.drop_na`
+:attr:`~dataiter.Vector.dt`
 :attr:`~dataiter.Vector.dtype_label`
 :meth:`~dataiter.Vector.equal`
 :meth:`~dataiter.Vector.fast`
@@ -33,9 +34,11 @@ dataiter.Vector
 :attr:`~dataiter.Vector.na_value`
 :meth:`~dataiter.Vector.range`
 :meth:`~dataiter.Vector.rank`
+:attr:`~dataiter.Vector.re`
 :meth:`~dataiter.Vector.replace_na`
 :meth:`~dataiter.Vector.sample`
 :meth:`~dataiter.Vector.sort`
+:attr:`~dataiter.Vector.str`
 :meth:`~dataiter.Vector.tail`
 :meth:`~dataiter.Vector.to_string`
 :meth:`~dataiter.Vector.tolist`

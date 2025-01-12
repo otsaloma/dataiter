@@ -17,6 +17,7 @@ PAGES = {
     "dtypes.rst": di.dtypes,
     "geojson.rst": di.GeoJSON,
     "list-of-dicts.rst": di.ListOfDicts,
+    "regex.rst": di.regex,
     "vector.rst": di.Vector,
 }
 

@@ -1,6 +1,10 @@
 PENDING: Dataiter 0.9999
 ========================
 
+* New module `dataiter.regex` for vectorized regular expressions
+* Add proxy object `Vector.dt` for `dataiter.dt`
+* Add proxy object `Vector.re` for `dataiter.regex`
+* Add proxy object `Vector.str` for `numpy.strings`
 * Use PyArrow instead of Pandas to read and write CSV files
 * Replace Pandas dependency with PyArrow
 
