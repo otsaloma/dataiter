@@ -1,5 +1,5 @@
-PENDING: Dataiter 0.9999
-========================
+2025-01-12: Dataiter 0.9999
+===========================
 
 * New module `dataiter.regex` for vectorized regular expressions
 * Add proxy object `Vector.dt` for `dataiter.dt`
