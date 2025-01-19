@@ -129,7 +129,7 @@ def sub(pattern, repl, string, count=0, flags=0):
     out, na = _prep(string, dtypes.string, dtypes.string.na_object)
     for i in np.flatnonzero(~na):
         out[i] = re.sub(pattern, repl, string[i], count=count, flags=flags)
-    return Vector.fast(out, dtypes.string)
+    return Vector.fast(out, str)
 
 def subn(pattern, repl, string, count=0, flags=0):
     """
