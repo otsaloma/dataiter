@@ -1,3 +1,11 @@
+PENDING: Dataiter 1.0
+=====================
+
+* Silence warnings about writing NPZ files with StringDType:
+  "UserWarning: Custom dtypes are saved as python objects using the
+  pickle protocol. Loading this file requires allow_pickle=True to be
+  set."
+
 2025-01-12: Dataiter 0.9999
 ===========================
 
