@@ -1,10 +1,13 @@
-PENDING: Dataiter 1.0
-=====================
+2025-02-07: Dataiter 1.0
+========================
 
 * Silence warnings about writing NPZ files with StringDType:
   "UserWarning: Custom dtypes are saved as python objects using the
   pickle protocol. Loading this file requires allow_pickle=True to be
   set."
+
+  Dataiter can now be considered stable. If upgrading from <= 0.51,
+  please read the release notes for 0.99–0.9999.
 
 2025-01-12: Dataiter 0.9999
 ===========================
