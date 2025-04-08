@@ -69,6 +69,7 @@ publish:
 release:
 	$(MAKE) check doc-check test validate clean
 	@echo "BUMP VERSION NUMBERS"
+	$(EDITOR) bin/di-open
 	$(EDITOR) dataiter/__init__.py
 	$(EDITOR) benchmark-versions.sh
 	@echo "ADD RELEASE NOTES"
