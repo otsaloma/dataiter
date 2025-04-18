@@ -59,11 +59,10 @@ publish:
 	ls -l dist
 	@printf "Press Enter to upload or Ctrl+C to abort: "; read _
 	twine upload dist/*
-	# XXX: Debian still has NumPy 1.x.
-	# sudo pip3 uninstall --break-system-packages -y dataiter || true
-	# sudo pip3 uninstall --break-system-packages -y dataiter || true
-	# sudo pip3 install   --break-system-packages -U dataiter
-	# $(MAKE) test-installed
+	sudo pip3 uninstall --break-system-packages -y dataiter || true
+	sudo pip3 uninstall --break-system-packages -y dataiter || true
+	sudo pip3 install   --break-system-packages -U dataiter
+	$(MAKE) test-installed
 
 # Interactive!
 release:
@@ -74,9 +73,8 @@ release:
 	$(EDITOR) benchmark-versions.sh
 	@echo "ADD RELEASE NOTES"
 	$(EDITOR) NEWS.md
-	# XXX: Debian still has NumPy 1.x.
-	# sudo $(MAKE) install clean
-	# $(MAKE) test-installed
+	sudo $(MAKE) install clean
+	$(MAKE) test-installed
 	tools/release
 
 test:
