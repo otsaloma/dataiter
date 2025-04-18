@@ -155,13 +155,13 @@ def data_frame_unique():
     data.unique("make", "model", "year")
     return time.time() - start
 
+@functools.cache
 def _list_of_dicts(path, length):
     data = test.list_of_dicts(path)
     n = length // len(data) + 1
     data = data * n
     return data.head(length)
 
-@functools.cache
 def list_of_dicts(path, length=100_000):
     return _list_of_dicts(path, length).deepcopy()
 
