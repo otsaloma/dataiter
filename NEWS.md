@@ -1,3 +1,9 @@
+PENDING: Dataiter 1.1
+=====================
+
+* `DataFrame.pivot_longer`: TODO
+* `DataFrame.pivot_wider`: New method
+
 2025-02-07: Dataiter 1.0
 ========================
 

@@ -375,6 +375,24 @@ class TestDataFrame:
         data = test.data_frame("vehicles.csv")
         assert data.nrow == 33442
 
+    def test_pivot_longer(self):
+        pass
+
+    def test_pivot_wider(self):
+        long = test.data_frame("downloads.csv")
+        long = long.sort(date=1).tail(100)
+        wide = long.pivot_wider(ids="date",
+                                names_from="category",
+                                values_from="downloads",
+                                rename_function=lambda x: f"dl_{x.lower()}")
+
+        assert wide.nrow == 20
+        assert wide.ncol == 6
+        total_downloads = sum(
+            sum(wide[x]) for x in wide.colnames
+            if x.startswith("dl_"))
+        assert total_downloads == sum(long.downloads)
+
     def test_pop(self):
         data = test.data_frame("vehicles.csv")
         data.pop("fuel")

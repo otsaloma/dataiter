@@ -26,6 +26,8 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.modify`
 :attr:`~dataiter.DataFrame.ncol`
 :attr:`~dataiter.DataFrame.nrow`
+:meth:`~dataiter.DataFrame.pivot_longer`
+:meth:`~dataiter.DataFrame.pivot_wider`
 :meth:`~dataiter.DataFrame.print_`
 :meth:`~dataiter.DataFrame.print_memory_use`
 :meth:`~dataiter.DataFrame.print_na_counts`

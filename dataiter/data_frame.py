@@ -776,6 +776,53 @@ class DataFrame(dict):
     def _parse_rows_from_integer(self, rows):
         return Vector.fast(rows, int)
 
+    def pivot_longer(self, *, colnames=None, names_to=None, values_to=None):
+        """
+        Pivot data from wide to long format.
+        """
+        raise NotImplementedError
+
+    def pivot_wider(self, *, ids=None, names_from=None, values_from=None, rename_function=None):
+        """
+        Pivot data from long to wide format.
+
+        `ids` should be the name or a list of names of identifier columns by
+        which the result will be unique. If `ids` is not given, it defaults to
+        all columns except `names_from` and `values_from`. `names_from` should
+        be the name of the column that contains the names of fields, which
+        become new columns. `values_from` should be the name of the column that
+        contains the corresponding values. `rename_function` is an optional
+        function that you can use to e.g. lowercase the new column names or add
+        a prefix or suffix.
+
+        >>> long = di.read_csv("data/downloads.csv")
+        >>> long = long.sort(date=1)
+        >>> long
+        >>> long.pivot_wider(ids="date", names_from="category", values_from="downloads", rename_function=str.lower)
+        """
+        if names_from not in self:
+            raise ValueError(f"Bad {names_from=}")
+        if values_from not in self:
+            raise ValueError(f"Bad {values_from=}")
+        if isinstance(ids, str):
+            ids = [ids]
+        if isinstance(ids, tuple):
+            ids = list(ids)
+        if not ids:
+            ids = [x for x in self if x not in [names_from, values_from]]
+        if not all(x in self for x in ids):
+            raise ValueError(f"Bad {ids=}")
+        long = self.copy()
+        wide = self.select(*ids).unique(*ids)
+        if rename_function:
+            long[names_from] = long[names_from].map(rename_function)
+        for name in long[names_from].unique().sort():
+            part = long.filter(long[names_from] == name)
+            part = part.select(*ids, values_from)
+            part = part.rename(**{name: values_from})
+            wide = wide.left_join(part, *ids)
+        return wide
+
     def pop(self, key, *args, **kwargs):
         """"""
         value = super().pop(key, *args, **kwargs)
