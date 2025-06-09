@@ -798,7 +798,7 @@ class DataFrame(dict):
             part[names] = name
             # Maybe we could avoid using object here,
             # but it gets complicated.
-            part[values] = self[name].astype(object)
+            part[values] = self[name].as_object()
             long = long.rbind(part)
         return long.sort(**dict.fromkeys(ids, 1))
 
