@@ -376,15 +376,23 @@ class TestDataFrame:
         assert data.nrow == 33442
 
     def test_pivot_longer(self):
-        pass
+        wide = test.data_frame("listings.csv")
+        wide = wide.sort(id=1).head(10)
+        long = wide.pivot_longer(ids="id",
+                                 names="name",
+                                 values="value")
+
+        assert long.nrow == 50
+        assert long.ncol == 3
+        assert all(np.isin(long.name, wide.colnames))
 
     def test_pivot_wider(self):
         long = test.data_frame("downloads.csv")
         long = long.sort(date=1).tail(100)
         wide = long.pivot_wider(ids="date",
-                                names_from="category",
-                                values_from="downloads",
-                                rename_function=lambda x: f"dl_{x.lower()}")
+                                names="category",
+                                values="downloads",
+                                rename=lambda x: f"dl_{x.lower()}")
 
         assert wide.nrow == 20
         assert wide.ncol == 6

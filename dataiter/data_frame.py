@@ -776,50 +776,66 @@ class DataFrame(dict):
     def _parse_rows_from_integer(self, rows):
         return Vector.fast(rows, int)
 
-    def pivot_longer(self, *, colnames=None, names_to=None, values_to=None):
+    def pivot_longer(self, *, ids=None, names=None, values=None):
         """
         Pivot data from wide to long format.
-        """
-        raise NotImplementedError
 
-    def pivot_wider(self, *, ids=None, names_from=None, values_from=None, rename_function=None):
+        `ids` should be the name or a list of names of identifier columns. All
+        other columns are considered variable columns and will be pivoted.
+        `names` and `values` are names of columns into which the variable names
+        and values are put in the result.
+
+        >>> wide = di.read_csv("data/listings.csv")
+        >>> wide
+        >>> wide.pivot_longer(ids="id", names="name", values="value")
+        """
+        ids = util.sequencify(ids)
+        if not all(x in self for x in ids):
+            raise ValueError(f"Bad {ids=}")
+        long = self.__class__()
+        for name in (x for x in self if x not in ids):
+            part = self.select(*ids)
+            part[names] = name
+            # Maybe we could avoid using object here,
+            # but it gets complicated.
+            part[values] = self[name].astype(object)
+            long = long.rbind(part)
+        return long.sort(**dict.fromkeys(ids, 1))
+
+    def pivot_wider(self, *, ids=None, names=None, values=None, rename=None):
         """
         Pivot data from long to wide format.
 
         `ids` should be the name or a list of names of identifier columns by
         which the result will be unique. If `ids` is not given, it defaults to
-        all columns except `names_from` and `values_from`. `names_from` should
-        be the name of the column that contains the names of fields, which
-        become new columns. `values_from` should be the name of the column that
-        contains the corresponding values. `rename_function` is an optional
-        function that you can use to e.g. lowercase the new column names or add
-        a prefix or suffix.
+        all columns except `names` and `values`. `names` should be the name of
+        the column that contains the names of variables, which become new
+        columns. `values` should be the name of the column that contains the
+        corresponding values. `rename` is an optional function that you can use
+        to e.g. lowercase the new column names or add a prefix or suffix.
 
         >>> long = di.read_csv("data/downloads.csv")
         >>> long = long.sort(date=1)
         >>> long
-        >>> long.pivot_wider(ids="date", names_from="category", values_from="downloads", rename_function=str.lower)
+        >>> long.pivot_wider(ids="date", names="category", values="downloads", rename=str.lower)
         """
-        if names_from not in self:
-            raise ValueError(f"Bad {names_from=}")
-        if values_from not in self:
-            raise ValueError(f"Bad {values_from=}")
-        if isinstance(ids, str):
-            ids = [ids]
-        if isinstance(ids, tuple):
-            ids = list(ids)
+        if names not in self:
+            raise ValueError(f"Bad {names=}")
+        if values not in self:
+            raise ValueError(f"Bad {values=}")
         if not ids:
-            ids = [x for x in self if x not in [names_from, values_from]]
+            ids = [x for x in self if x not in [names, values]]
+        ids = util.sequencify(ids)
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
         long = self.copy()
         wide = self.select(*ids).unique(*ids)
-        if rename_function:
-            long[names_from] = long[names_from].map(rename_function)
-        for name in long[names_from].unique().sort():
-            part = long.filter(long[names_from] == name)
-            part = part.select(*ids, values_from)
-            part = part.rename(**{name: values_from})
+        if rename:
+            long[names] = long[names].map(rename)
+        for name in long[names].unique().sort():
+            part = long.filter(long[names] == name)
+            part = part.select(*ids, values)
+            part = part.rename(**{name: values})
             wide = wide.left_join(part, *ids)
         return wide
 
