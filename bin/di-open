@@ -1,5 +1,5 @@
 #!/bin/sh
-uv run --no-project --with "dataiter==1.0,numba,pytz" python3.12 -i -c "
+uv run --no-project --with "dataiter==1.1,numba,pytz" python3.12 -i -c "
 import dataiter as di
 import os
 import sys

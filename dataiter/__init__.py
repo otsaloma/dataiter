@@ -25,7 +25,7 @@ import numpy as np
 
 from dataiter import util
 
-__version__ = "1.0"
+__version__ = "1.1"
 
 DEFAULT_PEEK_ELEMENTS = 10
 DEFAULT_PEEK_ITEMS = 3

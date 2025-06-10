@@ -1,5 +1,5 @@
-PENDING: Dataiter 1.1
-=====================
+2025-06-10: Dataiter 1.1
+========================
 
 * `DataFrame.pivot_longer`: New method
 * `DataFrame.pivot_wider`: New method
@@ -12,8 +12,8 @@ PENDING: Dataiter 1.1
   pickle protocol. Loading this file requires allow_pickle=True to be
   set."
 
-  Dataiter can now be considered stable. If upgrading from <= 0.51,
-  please read the release notes for 0.99–0.9999.
+Dataiter can now be considered stable. If upgrading from <= 0.51,
+please read the release notes for 0.99–0.9999.
 
 2025-01-12: Dataiter 0.9999
 ===========================
