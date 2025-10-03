@@ -396,7 +396,12 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.count("hood")
         """
-        return self.copy().group_by(*colnames).aggregate(n=dataiter.count())
+        stat = self.copy().group_by(*colnames).aggregate(_n_=dataiter.count())
+        if (name := "n") in stat:
+            while name in stat: name += "_"
+            stat = stat.rename(**{name: "n"})
+        stat.n = stat.pop("_n_")
+        return stat
 
     def deepcopy(self):
         """

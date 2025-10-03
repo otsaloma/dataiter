@@ -1,3 +1,8 @@
+PENDING: Dataiter 1.2
+=====================
+
+* `DataFrame.count`: Avoid name clash if column `n` already exists
+
 2025-06-10: Dataiter 1.1
 ========================
 

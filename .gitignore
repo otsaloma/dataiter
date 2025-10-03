@@ -1,5 +1,6 @@
 *.lprof
 *.prof
+.claude
 .env
 .envrc
 .pytest_cache

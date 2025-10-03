@@ -229,6 +229,15 @@ class TestDataFrame:
         assert stat.hood.equal(data.hood.unique().sort())
         assert stat.n.sum() == data.nrow
 
+    def test_count_n_exists(self):
+        data = test.data_frame("listings.csv")
+        stat1 = data.count("zipcode")
+        stat2 = data.count("zipcode").count("n")
+        assert stat1.colnames == ["zipcode", "n"]
+        assert stat2.colnames == ["n_", "n"]
+        assert stat2.nrow == len(stat1.n.unique())
+        assert sum(stat2.n) == stat1.nrow
+
     def test_deepcopy(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.copy()
