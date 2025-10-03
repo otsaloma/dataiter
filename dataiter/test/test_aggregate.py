@@ -171,6 +171,8 @@ class TestAggregate:
                 assert stat.a.equal(expected)
             except AssertionError:
                 print("")
+                print("Function:", function.__name__)
+                print("Numba:", use_numba)
                 print(data)
                 print("Expected:")
                 print(expected)

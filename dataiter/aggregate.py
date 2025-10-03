@@ -415,12 +415,14 @@ def mode_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
         if len(xg) > 0:
-            ng = np.full(len(xg), 0)
+            best_found = xg[0]
+            best_count = 1
             for i in range(len(xg)):
-                for j in range(len(xg)):
-                    if xg[j] == xg[i]:
-                        ng[i] += 1
-            out.append(xg[np.argmax(ng)])
+                count = np.sum(xg == xg[i])
+                if count > best_count:
+                    best_found = xg[i]
+                    best_count = count
+            out.append(best_found)
         else:
             out.append(None)
     return out
