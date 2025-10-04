@@ -25,7 +25,6 @@ import functools
 import numpy as np
 import statistics
 
-from collections import Counter
 from dataiter import deco
 from dataiter import Vector
 
@@ -403,12 +402,12 @@ def mode(x, *, drop_na=True):
         aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
-    return mode1(x) if len(x) >= 1 else x.na_value
+    return statistics.mode(x) if len(x) >= 1 else x.na_value
 
 @deco.listify
 def mode_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
-        yield mode1(xg) if len(xg) >= 1 else None
+        yield statistics.mode(xg) if len(xg) >= 1 else None
 
 @njit(cache=dataiter.USE_NUMBA_CACHE)
 def mode_apply_numba(x, group, drop_na):
@@ -426,14 +425,6 @@ def mode_apply_numba(x, group, drop_na):
         else:
             out.append(None)
     return out
-
-def mode1(x):
-    try:
-        return statistics.mode(x)
-    except statistics.StatisticsError:
-        # Python < 3.8 with several elements tied for mode.
-        # Return the first encountered of the tied elements.
-        return Counter(x).most_common(1)[0][0]
 
 @composite
 def nth(x, index, *, drop_na=False):
