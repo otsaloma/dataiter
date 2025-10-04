@@ -9,6 +9,7 @@ any efficient reimplementation.
 :func:`~dataiter.dt.day`
 :func:`~dataiter.dt.from_string`
 :func:`~dataiter.dt.hour`
+:func:`~dataiter.dt.isoformat`
 :func:`~dataiter.dt.isoweek`
 :func:`~dataiter.dt.isoweekday`
 :func:`~dataiter.dt.microsecond`

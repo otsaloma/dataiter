@@ -74,6 +74,17 @@ def hour(x):
     """
     return _pull_int(x, lambda y: y.hour)
 
+def isoformat(x):
+    """
+    Return datetime `x` as a string in ISO 8601 format.
+
+    For dates, return `YYYY-MM-DD`, for datetimes `YYYY-MM-DDTHH:MM:SS.ffffff`.
+
+    >>> dt.isoformat(dt.today())
+    >>> dt.isoformat(dt.now())
+    """
+    return _pull_str(x, lambda x: x.isoformat())
+
 def isoweek(x):
     """
     Extract ISO 8601 week from datetime `x`.

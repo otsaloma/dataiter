@@ -2,6 +2,7 @@ PENDING: Dataiter 1.2
 =====================
 
 * `DataFrame.count`: Avoid name clash if column `n` already exists
+* `dt.isoformat`: New function
 * `mode`: Fix Numba variant on some recent versions of Numba
 
 2025-06-10: Dataiter 1.1

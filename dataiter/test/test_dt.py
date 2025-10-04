@@ -62,6 +62,22 @@ class TestDT:
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.hour(a).tolist() == [12, None]
 
+    def test_isoformat_date(self):
+        a = np.array(["2022-10-15", NaT], np.datetime64)
+        assert dt.isoformat(a).tolist() == ["2022-10-15", None]
+
+    def test_isoformat_date_scalar(self):
+        x = np.datetime64("2022-10-15")
+        assert dt.isoformat(x) == "2022-10-15"
+
+    def test_isoformat_datetime(self):
+        a = np.array(["2022-10-15T12:34:56.789", NaT], np.datetime64)
+        assert dt.isoformat(a).tolist() == ["2022-10-15T12:34:56.789000", None]
+
+    def test_isoformat_datetime_scalar(self):
+        x = np.datetime64("2022-10-15T12:34:56.789")
+        assert dt.isoformat(x) == "2022-10-15T12:34:56.789000"
+
     def test_isoweek(self):
         a = dt.new(["2022-10-15", NaT])
         assert dt.isoweek(a).tolist() == [41, None]
