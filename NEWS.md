@@ -1,5 +1,5 @@
-PENDING: Dataiter 1.2
-=====================
+2025-10-05: Dataiter 1.2
+========================
 
 * `DataFrame.count`: Avoid name clash if column `n` already exists
 * `dt.isoformat`: New function

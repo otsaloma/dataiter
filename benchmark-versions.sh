@@ -18,6 +18,6 @@ set -e
 rm -f $OUT_FILE
 echo "name,version,elapsed" > $OUT_FILE
 cp -fv benchmark.py $SCRIPT
-benchmark 1.1
+benchmark 1.2
 benchmark master
 rm -f $SCRIPT $TMP_FILE

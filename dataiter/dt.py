@@ -81,9 +81,9 @@ def isoformat(x):
     For dates, return `YYYY-MM-DD`, for datetimes `YYYY-MM-DDTHH:MM:SS.ffffff`.
 
     >>> x = dt.new([dt.today()])
-    >>> x.isoformat()
+    >>> dt.isoformat(x)
     >>> y = dt.new([dt.now()])
-    >>> y.isoformat()
+    >>> dt.isoformat(y)
     """
     return _pull_str(x, lambda x: x.isoformat())
 
