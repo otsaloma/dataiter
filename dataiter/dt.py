@@ -80,8 +80,10 @@ def isoformat(x):
 
     For dates, return `YYYY-MM-DD`, for datetimes `YYYY-MM-DDTHH:MM:SS.ffffff`.
 
-    >>> dt.isoformat(dt.today())
-    >>> dt.isoformat(dt.now())
+    >>> x = dt.new([dt.today()])
+    >>> x.isoformat()
+    >>> y = dt.new([dt.now()])
+    >>> y.isoformat()
     """
     return _pull_str(x, lambda x: x.isoformat())
 
