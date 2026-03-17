@@ -1,3 +1,8 @@
+PENDING: Dataiter 1.3
+=====================
+
+* `Vector.str.contains`: New proxy method (equivalent to find(x) > -1)
+
 2025-10-05: Dataiter 1.2
 ========================
 

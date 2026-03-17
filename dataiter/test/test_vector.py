@@ -508,6 +508,11 @@ class TestVector:
         assert a.str.str_len().tolist() == [4, 4]
         assert a.str.upper().tolist() == ["ASDF", "1234"]
 
+    def test_str_contains(self):
+        a = Vector(["asdf", "1234"])
+        assert a.str.contains("df").tolist() == [True, False]
+        assert a.str.contains("23").tolist() == [False, True]
+
     def test_tail(self):
         a = Vector([1, 2, 3, 4, 5])
         assert a.tail(3).tolist() == [3, 4, 5]

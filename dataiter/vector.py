@@ -88,6 +88,7 @@ class StrProxy:
         self.add = wrap("add")
         self.capitalize = wrap("capitalize")
         self.center = wrap("center")
+        self.contains = lambda x: self.find(x) > -1
         self.count = wrap("count")
         self.decode = wrap("decode")
         self.encode = wrap("encode")
