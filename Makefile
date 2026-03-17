@@ -3,7 +3,9 @@
 # EDITOR must wait!
 EDITOR = nano
 PREFIX = /usr/local
-PYTHON = python3
+
+# Latest Numba-compatible
+PYTHON = python3.12
 
 check:
 	flake8 .
