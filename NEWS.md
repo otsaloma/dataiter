@@ -1,5 +1,5 @@
-PENDING: Dataiter 1.3
-=====================
+2026-04-12: Dataiter 1.3
+========================
 
 * `Vector.str.contains`: New proxy method (equivalent to find(x) > -1)
 * Remove StringDType sort and unique performance workarounds which are
