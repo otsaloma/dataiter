@@ -75,8 +75,8 @@ release:
 	$(EDITOR) benchmark-versions.sh
 	@echo "ADD RELEASE NOTES"
 	$(EDITOR) NEWS.md
-	# sudo $(MAKE) install clean
-	# $(MAKE) test-installed
+	sudo $(MAKE) install clean
+	$(MAKE) test-installed
 	tools/release
 
 test:
