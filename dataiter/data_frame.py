@@ -1127,7 +1127,6 @@ class DataFrame(dict):
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
-            column = column._optimize_for_argsort()
             if column._is_string_fixed():
                 column[column.is_na()] = "\uffff"
             if dir > 0 and any((

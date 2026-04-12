@@ -570,14 +570,6 @@ class Vector(np.ndarray):
                 array = array.astype(dtypes.string)
         return array
 
-    def _optimize_for_argsort(self):
-        if self.is_string() and (n := self.str.str_len().max()) < 50:
-            # XXX: We get a huge speed boost often by converting
-            # to the old-style fixed-width strings! This is probably
-            # temporary and can be removed once StringDType has matured.
-            return self.astype(f"U{n}")
-        return self
-
     def range(self):
         """
         Return the minimum and maximum values as a two-element vector.
@@ -615,7 +607,6 @@ class Vector(np.ndarray):
         if na.all():
             # Avoid trying to evaluate min/max/mean of all NA.
             self = self.fast(np.repeat(1, self.length))
-        self = self._optimize_for_argsort()
         out = np.zeros_like(self, int)
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
@@ -692,8 +683,8 @@ class Vector(np.ndarray):
             new = self.fast(lst, object)
             na = new.is_na()
             return new[~na].concat(new[na])
-        opt = self._optimize_for_argsort()
-        new = self[opt.argsort(kind="stable")]
+        new = self.copy()
+        np.ndarray.sort(new, kind="stable")
         if dir < 0:
             new = new[::-1]
         na = new.is_na()
@@ -860,6 +851,5 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 1, 1, 2, 2, 3])
         >>> vector.unique()
         """
-        opt = self._optimize_for_argsort()
-        u, indices = np.unique(opt, return_index=True)
+        u, indices = np.unique(self, return_index=True)
         return self[indices.sort()].copy()
