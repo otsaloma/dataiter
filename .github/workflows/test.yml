@@ -5,12 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install -U attd flake8 'numpy>=2.0,<3.0' pandas pyarrow pytest wcwidth
+      - run: pip install -U attd flake8 'numpy>=2.4.0,<3.0' pandas pyarrow pytest wcwidth
       - run: make check
       - run: make test
