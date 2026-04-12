@@ -1,3 +1,9 @@
+2026-04-12: Dataiter 1.3.1
+==========================
+
+* Fix NumPy version dependency in `pyproject.toml` for PyPI
+* Fix Python version dependency in `pyproject.toml` for PyPI
+
 2026-04-12: Dataiter 1.3
 ========================
 
