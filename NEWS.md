@@ -5,6 +5,8 @@ PENDING: Dataiter 1.3
 * Remove StringDType sort and unique performance workarounds which are
   no longer needed since NumPy >= 2.4.0 as the sorting performance
   issues have been fixed in NumPy
+* Speed up data frame string column sorting by removing workaround for
+  StringDType lexsort segfault, which has been fixed in NumPy >= 2.2.1
 
 2025-10-05: Dataiter 1.2
 ========================

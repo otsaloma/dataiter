@@ -1130,15 +1130,15 @@ class DataFrame(dict):
             if column._is_string_fixed():
                 column[column.is_na()] = "\uffff"
             if dir > 0 and any((
-                # No strings here due to lexsort segfault.
-                # Need to require NumPy >= 2.2.1 to fix this.
-                # https://github.com/numpy/numpy/issues/27984
                 column._is_string_fixed(),
                 column.is_boolean(),
                 column.is_bytes(),
                 column.is_datetime(),
                 column.is_float(),
                 column.is_integer(),
+                # Segfaults on NumPy < 2.2.1!
+                # https://github.com/numpy/numpy/issues/27984
+                column.is_string(),
                 column.is_timedelta(),
             )): return column
             if not column.is_number():

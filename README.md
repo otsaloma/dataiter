@@ -25,6 +25,9 @@ pip install -U git+https://github.com/otsaloma/dataiter
 pip install -U numba
 ```
 
+Recommended NumPy version is currently >= 2.4.0 due to various
+StringDType fixes that have landed in NumPy 2.2.1 and 2.4.0.
+
 Dataiter optionally uses **Numba** to speed up certain operations. If
 you have Numba installed, Dataiter will use it automatically. It's
 currently not a hard dependency, so you need to install it separately.
