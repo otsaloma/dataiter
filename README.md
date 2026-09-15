@@ -1,5 +1,4 @@
-Simple, Light-Weight Data Frames for Python
-===========================================
+# Simple, Light-Weight Data Frames for Python
 
 [![PyPI](https://img.shields.io/pypi/v/dataiter.svg)](https://pypi.org/project/dataiter)
 [![Downloads](https://pepy.tech/badge/dataiter/month)](https://pepy.tech/project/dataiter)
