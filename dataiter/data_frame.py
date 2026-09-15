@@ -1117,18 +1117,8 @@ class DataFrame(dict):
             column = self[colname]
             if column._is_string_fixed():
                 column[column.is_na()] = "\uffff"
-            if dir > 0 and any((
-                column._is_string_fixed(),
-                column.is_boolean(),
-                column.is_bytes(),
-                column.is_datetime(),
-                column.is_float(),
-                column.is_integer(),
-                # Segfaults on NumPy < 2.2.1!
-                # https://github.com/numpy/numpy/issues/27984
-                column.is_string(),
-                column.is_timedelta(),
-            )): return column
+            if dir > 0 and not column.is_object():
+                return column
             if not column.is_number():
                 column = column.rank(method="min")
             return column if dir > 0 else -column
