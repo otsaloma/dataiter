@@ -28,7 +28,7 @@ from dataiter import Vector
 from numpy.dtypes import StringDType
 
 NaN = np.nan
-NaT = np.datetime64("NaT")
+NaT = np.datetime64("NaT", "D")
 DATE = datetime.date.today()
 DATETIME = datetime.datetime.now()
 

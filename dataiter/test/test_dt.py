@@ -25,7 +25,7 @@ import numpy as np
 from dataiter import dt
 from dataiter import Vector
 
-NaT = np.datetime64("NaT")
+NaT = np.datetime64("NaT", "D")
 
 class TestDT:
 

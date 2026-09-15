@@ -542,10 +542,13 @@ class Vector(np.ndarray):
         false and 1.0 for true. Depending on how you use the data, that might
         work as well as an object vector of ``True``, ``False`` and ``None``.
         """
-        if self.is_datetime():
-            return np.datetime64("NaT")
-        if self.is_timedelta():
-            return np.timedelta64("NaT")
+        if self.is_datetime() or self.is_timedelta():
+            unit = np.datetime_data(self.dtype)
+            # Use a coarse unit for generic dtype so that
+            # a finer unit from actual data wins in upcasting.
+            if unit[0] == "generic":
+                unit = "D"
+            return self.dtype.type("NaT", unit)
         if self.is_float():
             return np.nan
         if self.is_integer():
@@ -701,7 +704,7 @@ class Vector(np.ndarray):
         elif len(types) == 1 and types.copy().pop().__module__ == "numpy":
             # If we have a regular Python list of NumPy scalars,
             # infer type. This should be rare, but can happen.
-            dtype = types.copy().pop()().dtype
+            dtype = np.dtype(types.copy().pop())
             na = Vector.fast([], dtype).na_value
         else:
             # Guess the missing value based on types in seq.
@@ -736,7 +739,7 @@ class Vector(np.ndarray):
             return np.nan
         datetimes = [datetime.date, datetime.datetime, np.datetime64]
         if all(x in datetimes for x in types):
-            return np.datetime64("NaT")
+            return np.datetime64("NaT", "D")
         # Usually causes dtype to be object!
         return None
 

@@ -1,3 +1,7 @@
+# PENDING: Dataiter 1.4
+
+- Fix NumPy deprecation warnings about `NaT` values missing unit
+
 # 2026-04-12: Dataiter 1.3.1
 
 - Fix NumPy version dependency in `pyproject.toml` for PyPI

@@ -57,7 +57,7 @@ D6 = D1 + datetime.timedelta(days=5)
 D7 = D1 + datetime.timedelta(days=6)
 
 NaN = np.nan
-NaT = np.datetime64("NaT")
+NaT = np.datetime64("NaT", "D")
 
 EMPTY_VECTOR = Vector([], float)
 GROUPS = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
