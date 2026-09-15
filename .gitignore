@@ -9,7 +9,6 @@ benchmark-head.py
 benchmark-versions.csv
 benchmark-versions.ods
 build
-dataiter.egg-info
 dist
 doc/_build
 doc/comparison/comparison.html

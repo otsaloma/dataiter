@@ -15,7 +15,6 @@ clean:
 	rm -rf *.lprof
 	rm -rf *.prof
 	rm -rf build
-	rm -rf dataiter.egg-info
 	rm -rf dist
 	rm -rf doc/_build
 	rm -rf doc/comparison/comparison.html
@@ -80,7 +79,7 @@ release:
 	tools/release
 
 test:
-	py.test .
+	pytest .
 
 test-installed:
 	cd && python3 -c "import dataiter; dataiter.DataFrame()"
