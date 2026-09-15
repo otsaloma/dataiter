@@ -1054,7 +1054,7 @@ class DataFrame(dict):
         >>> listings.semi_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.unique(*by2)
+        other = other.drop_na(*by2).unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column[found].copy()
