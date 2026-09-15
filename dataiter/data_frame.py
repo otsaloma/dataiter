@@ -22,7 +22,6 @@
 
 import codecs
 import dataiter
-import functools
 import itertools
 import json
 import numpy as np
@@ -143,7 +142,7 @@ class DataFrame(dict):
     def __delitem__(self, key):
         # Note that this is not called for some methods,
         # at least pop, popitem and clear.
-        if self[key] is self.COLUMN_PLACEHOLDER:
+        if vars(self).get(key) is self.COLUMN_PLACEHOLDER:
             super().__delattr__(key)
         return super().__delitem__(key)
 
@@ -170,15 +169,6 @@ class DataFrame(dict):
     def __hasattr(self, name):
         # Return True if attribute exists and is not a column.
         return hasattr(self, name) and not isinstance(getattr(self, name), DataFrameColumn)
-
-    @classmethod
-    def __is_builtin_attr(cls, name):
-        return name in cls.__list_builtin_attrs()
-
-    @classmethod
-    @functools.lru_cache(None)
-    def __list_builtin_attrs(cls):
-        return set(dir(cls()))
 
     def __setattr__(self, name, value):
         if name in self.ATTRIBUTES:
@@ -847,17 +837,15 @@ class DataFrame(dict):
     def pop(self, key, *args, **kwargs):
         """"""
         value = super().pop(key, *args, **kwargs)
-        if hasattr(self, key):
-            if not self.__is_builtin_attr(key):
-                super().__delattr__(key)
+        if vars(self).get(key) is self.COLUMN_PLACEHOLDER:
+            super().__delattr__(key)
         return value
 
     def popitem(self):
         """"""
         key, value = super().popitem()
-        if hasattr(self, key):
-            if not self.__is_builtin_attr(key):
-                super().__delattr__(key)
+        if vars(self).get(key) is self.COLUMN_PLACEHOLDER:
+            super().__delattr__(key)
         return key, value
 
     def print_(self, *, max_rows=None, max_width=None, truncate_width=None):

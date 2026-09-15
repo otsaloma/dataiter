@@ -1,6 +1,7 @@
 # PENDING: Dataiter 1.4
 
 - Fix NumPy deprecation warnings about `NaT` values missing unit
+- Fix deleting a data frame column leaving behind a bogus attribute
 
 # 2026-04-12: Dataiter 1.3.1
 
