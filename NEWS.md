@@ -1,5 +1,6 @@
 # PENDING: Dataiter 1.4
 
+- `read_parquet`: Fix ignoring `columns` and `dtypes` arguments
 - Fix NumPy deprecation warnings about `NaT` values missing unit
 - Fix deleting a data frame column leaving behind a bogus attribute
 

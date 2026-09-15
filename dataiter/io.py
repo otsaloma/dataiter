@@ -51,7 +51,7 @@ def read_npz(path, *, allow_pickle=True):
     return DataFrame.read_npz(path, allow_pickle=allow_pickle)
 
 def read_parquet(path, *, columns=[], dtypes={}):
-    return DataFrame.read_parquet(path, columns=[], dtypes={})
+    return DataFrame.read_parquet(path, columns=columns, dtypes=dtypes)
 
 read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)
 read_geojson.__doc__ = util.format_alias_doc(read_geojson, GeoJSON.read)
