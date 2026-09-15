@@ -5,7 +5,7 @@ EDITOR = nano
 PREFIX = /usr/local
 
 # Latest Numba-compatible
-PYTHON = python3.12
+PYTHON = python3.14
 
 check:
 	flake8 .
