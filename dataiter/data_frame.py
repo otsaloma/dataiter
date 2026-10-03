@@ -678,7 +678,7 @@ class DataFrame(dict):
         vectorized form.
 
         >>> data = di.read_csv("data/listings-reviews.csv")
-        >>> data.map(lambda x, i: (x.reviews[i], x.rating[i]))
+        >>> data.map(lambda x, i: (x.reviews[i], x.rating[i]))[:3]
         """
         return [function(self, i) for i in range(self.nrow)]
 
