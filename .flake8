@@ -1,4 +1,6 @@
 [flake8]
 select = E1,E9,F
 ignore = E125,E129
+per-file-ignores =
+    __init__.py:F401
 exclude = doc/comparison/blocks,venv
