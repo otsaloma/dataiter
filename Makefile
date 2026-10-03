@@ -85,7 +85,7 @@ venv:
 	rm -rf venv
 	$(PYTHON) -m venv venv
 	. venv/bin/activate && \
-	  pip install -U pip setuptools wheel && \
+	  pip install -U pip && \
 	  pip install -r requirements.txt
 
 .PHONY: check clean doc doc-check doc-open doc-watch install install-cli publish release test test-installed validate venv
