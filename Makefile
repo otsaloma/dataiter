@@ -12,19 +12,13 @@ check:
 	flake8 . `grep -Fl '#!/usr/bin/env python3' bin/*`
 
 clean:
-	rm -rf *.lprof
-	rm -rf *.prof
 	rm -rf build
 	rm -rf dist
 	rm -rf doc/_build
 	rm -rf doc/comparison/comparison.html
 	rm -rf validation/*.csv
-	rm -rf __pycache__
-	rm -rf */__pycache__
-	rm -rf */*/__pycache__
-	rm -rf .pytest_cache
-	rm -rf */.pytest_cache
-	rm -rf */*/.pytest_cache
+	find . -type d -name __pycache__ -prune -exec rm -rf {} +
+	find . -type d -name .pytest_cache -prune -exec rm -rf {} +
 
 doc:
 	$(MAKE) SPHINXBUILD=../venv/bin/sphinx-build -C doc clean html
@@ -39,7 +33,7 @@ doc-watch:
 	watchexec -e py,rst --workdir doc $(MAKE) SPHINXBUILD=../venv/bin/sphinx-build html
 
 install:
-	pip3 install --break-system-packages .
+	pip install --break-system-packages .
 
 # Non-essential scripts, not installed by default.
 # Note that these don't go through setuptools rewriting,
@@ -54,16 +48,13 @@ install-cli:
 # Interactive!
 publish:
 	$(MAKE) clean
-	python3 -m build
+	python -m build
 	test -s dist/dataiter-*-py3-none-any.whl
 	test -s dist/dataiter-*.tar.gz
+	twine check dist/*
 	ls -l dist
 	@printf "Press Enter to upload or Ctrl+C to abort: "; read _
 	twine upload dist/*
-	sudo pip3 uninstall --break-system-packages -y dataiter || true
-	sudo pip3 uninstall --break-system-packages -y dataiter || true
-	sudo pip3 install   --break-system-packages -U dataiter
-	$(MAKE) test-installed
 
 # Interactive!
 release:
@@ -82,8 +73,8 @@ test:
 	pytest .
 
 test-installed:
-	cd && python3 -c "import dataiter; dataiter.DataFrame()"
-	cd && python3 -c "import dataiter; dataiter.ListOfDicts()"
+	cd && python -c "import dataiter; dataiter.DataFrame()"
+	cd && python -c "import dataiter; dataiter.ListOfDicts()"
 
 validate:
 	cd validation && DATAITER_USE_NUMBA=false ./validate-df.sh
