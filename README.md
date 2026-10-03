@@ -64,6 +64,14 @@ the differences and similarities in common operations.
 
 https://dataiter.readthedocs.io/en/stable/comparison.html
 
+For coding agents and LLMs, each documentation page is also available as
+Markdown by replacing `.html` with `.md` in the URL. There's also an
+`llms.txt` index and complete documentation as `llms-full.txt`. See
+
+- https://dataiter.readthedocs.io/en/stable/data-frame.md
+- https://dataiter.readthedocs.io/en/stable/llms.txt
+- https://dataiter.readthedocs.io/en/stable/llms-full.txt
+
 ## Development
 
 To install a virtualenv for development, use

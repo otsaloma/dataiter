@@ -4,6 +4,8 @@
 - `read_parquet`: Fix ignoring `columns` and `dtypes` arguments
 - Fix NumPy deprecation warnings about `NaT` values missing unit
 - Fix deleting a data frame column leaving behind a bogus attribute
+- Add Markdown versions of documentation pages, `llms.txt` and
+  `llms-full.txt` for coding agents and LLMs
 
 # 2026-04-12: Dataiter 1.3.1
 

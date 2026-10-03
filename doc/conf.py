@@ -34,7 +34,10 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'output']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx_llm.txt', 'output']
+
+llms_txt_full_build = True
+llms_txt_suffix_mode = 'replace'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
