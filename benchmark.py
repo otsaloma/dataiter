@@ -303,7 +303,7 @@ def run_benchmarks(benchmarks, output, rounds):
         try:
             f = globals()[benchmark]
             elapsed = 1000 * min(f() for i in range(rounds))
-            print("{:5.0f} ms".format(elapsed), flush=True)
+            print(f"{elapsed:5.0f} ms", flush=True)
         except Exception as error:
             elapsed = -1
             print(error.__class__.__name__)

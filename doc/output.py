@@ -25,7 +25,6 @@ def get_output(lines):
             cwd=Path("..").resolve(),
             encoding="utf-8",
             errors="replace",
-            universal_newlines=True,
             text=True,
             timeout=30,
         ).splitlines()

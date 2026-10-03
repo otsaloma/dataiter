@@ -818,7 +818,7 @@ class Vector(np.ndarray):
             strings = util.format_floats(self, ksep=ksep)
             return self.__class__.fast(pad(strings), str)
         if self.is_integer() and not self.is_timedelta():
-            strings = ["{:,d}".format(x).replace(",", ksep) for x in self]
+            strings = [f"{x:,d}".replace(",", ksep) for x in self]
             return self.__class__.fast(pad(strings), str)
         if self.is_object():
             strings = [str(x) for x in self]

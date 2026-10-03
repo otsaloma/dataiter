@@ -45,9 +45,9 @@ def count_digits(value):
     return n, m
 
 def format_alias_doc(alias, target):
-    return f"{target.__doc__}\n\n{' '*8}" + (
-        ".. note:: :func:`{}` is a convenience alias for :meth:`{}`."
-        .format(alias.__name__, target.__qualname__))
+    return (f"{target.__doc__}\n\n{' '*8}"
+            f".. note:: :func:`{alias.__name__}` is a convenience "
+            f"alias for :meth:`{target.__qualname__}`.")
 
 def format_floats(seq, ksep=None):
     precision = dataiter.PRINT_FLOAT_PRECISION
@@ -62,8 +62,7 @@ def format_floats(seq, ksep=None):
     n = max(x[0] for x in digits)
     m = max(x[1] for x in digits)
     precision = min(m, max(0, precision - n))
-    return [f"{{:,.{precision}f}}".format(x).replace(",", ksep)
-            for x in seq]
+    return [f"{x:,.{precision}f}".replace(",", ksep) for x in seq]
 
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
