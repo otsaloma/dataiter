@@ -102,10 +102,6 @@ class DataFrame(dict):
     # List of names that are actual attributes, not columns
     ATTRIBUTES = ["colnames", "_group_colnames"]
 
-    # Use dummy attributes corresponding to dictionary keys so that
-    # Tab completion of column names at a Python shell would work.
-    COLUMN_PLACEHOLDER = type("COLUMN_PLACEHOLDER", (), {})
-
     def __init__(self, *args, **kwargs):
         """
         Return a new data frame.
@@ -121,9 +117,6 @@ class DataFrame(dict):
                 value.nrow == nrow): continue
             column = DataFrameColumn(value, nrow=nrow)
             super().__setitem__(key, column)
-        for key in self:
-            if not self.__hasattr(key) and key.isidentifier():
-                super().__setattr__(key, self.COLUMN_PLACEHOLDER)
         # Check that we have a uniform table.
         self._check_dimensions()
         self._group_colnames = ()
@@ -139,12 +132,13 @@ class DataFrame(dict):
             return self.__delitem__(name)
         return super().__delattr__(name)
 
-    def __delitem__(self, key):
-        # Note that this is not called for some methods,
-        # at least pop, popitem and clear.
-        if vars(self).get(key) is self.COLUMN_PLACEHOLDER:
-            super().__delattr__(key)
-        return super().__delitem__(key)
+    def __dir__(self):
+        # Used for tab completion of column names at a Python shell.
+        names = super().__dir__()
+        return names + [x for x in self if
+                        isinstance(x, str) and
+                        x.isidentifier() and
+                        x not in names]
 
     def __eq__(self, other):
         return (isinstance(other, DataFrame) and
@@ -158,18 +152,6 @@ class DataFrame(dict):
             return self.__getitem__(name)
         raise AttributeError(name)
 
-    def __getattribute__(self, name):
-        value = super().__getattribute__(name)
-        if name == "COLUMN_PLACEHOLDER":
-            return value
-        if value is self.COLUMN_PLACEHOLDER and name in self:
-            return self[name]
-        return value
-
-    def __hasattr(self, name):
-        # Return True if attribute exists and is not a column.
-        return hasattr(self, name) and not isinstance(getattr(self, name), DataFrameColumn)
-
     def __setattr__(self, name, value):
         if name in self.ATTRIBUTES:
             return super().__setattr__(name, value)
@@ -177,8 +159,6 @@ class DataFrame(dict):
 
     def __setitem__(self, key, value):
         value = self._reconcile_column(value)
-        if not self.__hasattr(key) and key.isidentifier():
-            super().__setattr__(key, self.COLUMN_PLACEHOLDER)
         return super().__setitem__(key, value)
 
     def __repr__(self):
@@ -833,20 +813,6 @@ class DataFrame(dict):
             part = part.rename(**{name: values})
             wide = wide.left_join(part, *ids)
         return wide
-
-    def pop(self, key, *args, **kwargs):
-        """"""
-        value = super().pop(key, *args, **kwargs)
-        if vars(self).get(key) is self.COLUMN_PLACEHOLDER:
-            super().__delattr__(key)
-        return value
-
-    def popitem(self):
-        """"""
-        key, value = super().popitem()
-        if vars(self).get(key) is self.COLUMN_PLACEHOLDER:
-            super().__delattr__(key)
-        return key, value
 
     def print_(self, *, max_rows=None, max_width=None, truncate_width=None):
         """

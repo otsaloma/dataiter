@@ -112,12 +112,14 @@ class TestDataFrame:
         data = test.data_frame("vehicles.csv")
         assert data.make is data["make"]
 
-    def test___hasattr(self):
-        data = DataFrame(a=[1, 2, 3])
-        data._DataFrame__hasattr("left_join")
-        data._DataFrame__hasattr("items")
-        assert not data._DataFrame__hasattr("a")
-        assert not data._DataFrame__hasattr("xxx")
+    def test___dir__(self):
+        data = DataFrame(a=[1, 2, 3], items=[1, 2, 3])
+        data["b c"] = 1
+        names = dir(data)
+        assert "a" in names
+        assert "b c" not in names
+        assert names.count("items") == 1
+        assert "left_join" in names
 
     def test___setattr__(self):
         data = test.data_frame("vehicles.csv")
