@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import tempfile
-
 from dataiter import GeoJSON
 from dataiter import test
 from pathlib import Path
@@ -74,15 +72,15 @@ class TestGeoJSON:
         assert data.head(0).to_string()
         assert data.head(5).to_string()
 
-    def test_write(self):
+    def test_write(self, tmp_path):
         orig = test.geojson(self.path)
-        handle, path = tempfile.mkstemp(".geojson")
+        path = str(tmp_path / "test.geojson")
         orig.write(path)
         data = GeoJSON.read(path)
         assert data == orig
         assert data.metadata == orig.metadata
 
-    def test_write_path(self):
+    def test_write_path(self, tmp_path):
         orig = test.geojson(self.path)
-        handle, path = tempfile.mkstemp(".geojson")
+        path = str(tmp_path / "test.geojson")
         orig.write(Path(path))

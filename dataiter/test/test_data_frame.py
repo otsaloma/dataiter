@@ -23,7 +23,6 @@
 import dataiter as di
 import numpy as np
 import pytest
-import tempfile
 
 from dataiter import DataFrame
 from dataiter import DataFrameColumn
@@ -484,7 +483,7 @@ class TestDataFrame:
         assert data.make.is_object()
         assert data.model.is_object()
 
-    def test_read_csv_missing_blank(self):
+    def test_read_csv_missing_blank(self, tmp_path):
         text = """
 int,float,string,bool,date
 ,2.5,"test",TRUE,2025-01-01
@@ -493,14 +492,14 @@ int,float,string,bool,date
 1,2.5,"test",,2025-01-01
 1,2.5,"test",TRUE,
 """.strip()
-        handle, path = tempfile.mkstemp(".csv")
+        path = str(tmp_path / "test.csv")
         Path(path).write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
             assert column.is_na()[i]
 
-    def test_read_csv_missing_excel(self):
+    def test_read_csv_missing_excel(self, tmp_path):
         text = """
 int,float,string,bool,date
 #N/A,2.5,"test",TRUE,2025-01-01
@@ -509,14 +508,14 @@ int,float,string,bool,date
 1,2.5,"test",#N/A,2025-01-01
 1,2.5,"test",TRUE,#N/A
 """.strip()
-        handle, path = tempfile.mkstemp(".csv")
+        path = str(tmp_path / "test.csv")
         Path(path).write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
             assert column.is_na()[i]
 
-    def test_read_csv_missing_na(self):
+    def test_read_csv_missing_na(self, tmp_path):
         text = """
 int,float,string,bool,date
 NA,2.5,"test",TRUE,2025-01-01
@@ -525,14 +524,14 @@ NA,2.5,"test",TRUE,2025-01-01
 1,2.5,"test",NA,2025-01-01
 1,2.5,"test",TRUE,NA
 """.strip()
-        handle, path = tempfile.mkstemp(".csv")
+        path = str(tmp_path / "test.csv")
         Path(path).write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
             assert column.is_na()[i]
 
-    def test_read_csv_missing_null(self):
+    def test_read_csv_missing_null(self, tmp_path):
         text = """
 int,float,string,bool,date
 NULL,2.5,"test",TRUE,2025-01-01
@@ -541,7 +540,7 @@ NULL,2.5,"test",TRUE,2025-01-01
 1,2.5,"test",NULL,2025-01-01
 1,2.5,"test",TRUE,NULL
 """.strip()
-        handle, path = tempfile.mkstemp(".csv")
+        path = str(tmp_path / "test.csv")
         Path(path).write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
@@ -570,37 +569,37 @@ NULL,2.5,"test",TRUE,2025-01-01
         DataFrame.read_json(test.get_data_path("vehicles.json"))
 
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
-    def test_read_npz(self):
+    def test_read_npz(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".npz")
+        path = str(tmp_path / "test.npz")
         orig.write_npz(path)
         data = DataFrame.read_npz(path)
         assert data == orig
 
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
-    def test_read_npz_path(self):
+    def test_read_npz_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".npz")
+        path = str(tmp_path / "test.npz")
         orig.write_npz(path)
         DataFrame.read_npz(Path(path))
 
-    def test_read_parquet(self):
+    def test_read_parquet(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".parquet")
+        path = str(tmp_path / "test.parquet")
         orig.write_parquet(path)
         data = DataFrame.read_parquet(path)
         assert data == orig
 
-    def test_read_pickle(self):
+    def test_read_pickle(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".pkl")
+        path = str(tmp_path / "test.pkl")
         orig.write_pickle(path)
         data = DataFrame.read_pickle(path)
         assert data == orig
 
-    def test_read_pickle_path(self):
+    def test_read_pickle_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".pkl")
+        path = str(tmp_path / "test.pkl")
         orig.write_pickle(path)
         DataFrame.read_pickle(Path(path))
 
@@ -787,59 +786,59 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert np.all(data.make == "Talbot")
         assert np.all(data.test == 1)
 
-    def test_write_csv(self):
+    def test_write_csv(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".csv")
+        path = str(tmp_path / "test.csv")
         orig.write_csv(path)
         data = DataFrame.read_csv(path)
         assert data == orig
 
-    def test_write_csv_path(self):
+    def test_write_csv_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".csv")
+        path = str(tmp_path / "test.csv")
         orig.write_csv(Path(path))
 
-    def test_write_json(self):
+    def test_write_json(self, tmp_path):
         orig = test.data_frame("downloads.json")
-        handle, path = tempfile.mkstemp(".json")
+        path = str(tmp_path / "test.json")
         orig.write_json(path)
         data = DataFrame.read_json(path)
         assert data == orig
 
-    def test_write_json_path(self):
+    def test_write_json_path(self, tmp_path):
         orig = test.data_frame("downloads.json")
-        handle, path = tempfile.mkstemp(".json")
+        path = str(tmp_path / "test.json")
         orig.write_json(Path(path))
 
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
-    def test_write_npz(self):
+    def test_write_npz(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".npz")
+        path = str(tmp_path / "test.npz")
         orig.write_npz(path)
         data = DataFrame.read_npz(path)
         assert data == orig
 
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
-    def test_write_npz_path(self):
+    def test_write_npz_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".npz")
+        path = str(tmp_path / "test.npz")
         orig.write_npz(Path(path))
 
-    def test_write_parquet(self):
+    def test_write_parquet(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".parquet")
+        path = str(tmp_path / "test.parquet")
         orig.write_parquet(path)
         data = DataFrame.read_parquet(path)
         assert data == orig
 
-    def test_write_pickle(self):
+    def test_write_pickle(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".pkl")
+        path = str(tmp_path / "test.pkl")
         orig.write_pickle(path)
         data = DataFrame.read_pickle(path)
         assert data == orig
 
-    def test_write_pickle_path(self):
+    def test_write_pickle_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        handle, path = tempfile.mkstemp(".pkl")
+        path = str(tmp_path / "test.pkl")
         orig.write_pickle(Path(path))

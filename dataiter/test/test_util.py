@@ -23,7 +23,6 @@
 import datetime
 import math
 import numpy as np
-import tempfile
 
 from dataiter import util
 
@@ -145,33 +144,33 @@ class TestUtil:
         assert util.utruncate("abc\u200bdef", 4) == "abc\u200bd"
         assert util.utruncate("abc\u200bdef\u200b", 4) == "abc\u200bd"
 
-    def test_xopen_bz2(self):
+    def test_xopen_bz2(self, tmp_path):
         text = "test åäö"
-        handle, path = tempfile.mkstemp(".bz2")
+        path = str(tmp_path / "test.bz2")
         with util.xopen(path, "wt") as f:
             f.write(text)
         with util.xopen(path, "rt") as f:
             assert f.read() == text
 
-    def test_xopen_gz(self):
+    def test_xopen_gz(self, tmp_path):
         text = "test åäö"
-        handle, path = tempfile.mkstemp(".gz")
+        path = str(tmp_path / "test.gz")
         with util.xopen(path, "wt") as f:
             f.write(text)
         with util.xopen(path, "rt") as f:
             assert f.read() == text
 
-    def test_xopen_txt(self):
+    def test_xopen_txt(self, tmp_path):
         text = "test åäö"
-        handle, path = tempfile.mkstemp(".txt")
+        path = str(tmp_path / "test.txt")
         with util.xopen(path, "wt") as f:
             f.write(text)
         with util.xopen(path, "rt") as f:
             assert f.read() == text
 
-    def test_xopen_xz(self):
+    def test_xopen_xz(self, tmp_path):
         text = "test åäö"
-        handle, path = tempfile.mkstemp(".xz")
+        path = str(tmp_path / "test.xz")
         with util.xopen(path, "wt") as f:
             f.write(text)
         with util.xopen(path, "rt") as f:
