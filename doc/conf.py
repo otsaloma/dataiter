@@ -39,6 +39,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx_llm.txt', 'ou
 llms_txt_description = 'Simple, light-weight data frames for Python'
 llms_txt_full_build = True
 llms_txt_suffix_mode = 'replace'
+llms_txt_suppress_unknown_node_warnings = ['meta']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
