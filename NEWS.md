@@ -1,5 +1,6 @@
 # PENDING: Dataiter 1.4
 
+- `Vector.is_na`: Speed up for integer and boolean vectors
 - `DataFrame.semi_join`: Fix matching on missing values in `by` columns
 - `read_parquet`: Fix ignoring `columns` and `dtypes` arguments
 - Fix NumPy deprecation warnings about `NaT` values missing unit

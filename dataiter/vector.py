@@ -427,6 +427,8 @@ class Vector(np.ndarray):
             return np.isnan(self)
         if self.is_string() or self._is_string_fixed():
             return self == dtypes.string.na_object
+        if self.is_integer() or self.is_boolean():
+            return self.fast(np.zeros(len(self), bool))
         # Can't use np.isin here since elements can be arrays.
         return self.fast([x is None for x in self], bool)
 
