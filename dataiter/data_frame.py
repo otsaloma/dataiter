@@ -192,12 +192,10 @@ class DataFrame(dict):
         data._index_ = np.arange(data.nrow)
         starts = data._get_group_starts(*group_colnames)
         stat = data.select("_index_", *group_colnames).slice(starts)
-        indices = np.split(data._index_, starts[1:])
         group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
         if any(group_aware):
-            groups = Vector.fast(range(len(indices)), int)
-            n = Vector.fast(map(len, indices), int)
-            data._group_ = np.repeat(groups, n)
+            n = np.diff(starts, append=data.nrow)
+            data._group_ = np.repeat(np.arange(len(starts)), n)
         slices = None
         for colname, function in colname_function_pairs.items():
             if getattr(function, "group_aware", False):
@@ -217,6 +215,7 @@ class DataFrame(dict):
                 # what special values to expect and thus we end up
                 # needing to use the slow Vector.__init__.
                 if slices is None:
+                    indices = np.split(data._index_, starts[1:])
                     slices = [data._view_rows(x) for x in indices]
                 stat[colname] = [function(x) for x in slices]
         return stat.unselect("_index_", "_group_")
