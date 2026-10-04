@@ -190,8 +190,9 @@ class DataFrame(dict):
         group_colnames = self._group_colnames
         data = self.sort(**dict.fromkeys(group_colnames, 1))
         data._index_ = np.arange(data.nrow)
-        stat = data.unique(*group_colnames).select("_index_", *group_colnames)
-        indices = np.split(data._index_, stat._index_[1:])
+        starts = data._get_group_starts(*group_colnames)
+        stat = data.select("_index_", *group_colnames).slice(starts)
+        indices = np.split(data._index_, starts[1:])
         group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
         if any(group_aware):
             groups = Vector.fast(range(len(indices)), int)
@@ -558,6 +559,16 @@ class DataFrame(dict):
             if isinstance(item, (list, tuple)):
                 ba[item[0]] = ba.pop(item[1])
         return ab.rbind(ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
+
+    def _get_group_starts(self, *colnames):
+        # Assumes data is sorted by colnames, i.e. groups are contiguous.
+        change = np.zeros(self.nrow, bool)
+        change[:1] = True
+        for colname in colnames:
+            column = self[colname]
+            na = column.is_na()
+            change[1:] |= (column[1:] != column[:-1]) & ~(na[1:] & na[:-1])
+        return np.flatnonzero(change)
 
     def _get_join_indices(self, other, by1, by2):
         other_ids = list(zip(*[other[x] for x in by2]))
@@ -1103,9 +1114,8 @@ class DataFrame(dict):
         data = self.select(*by)
         data._index_ = np.arange(data.nrow)
         data = data.sort(**dict.fromkeys(by, 1))
-        data._sorted_index_ = np.arange(data.nrow)
-        stat = data.unique(*by)
-        return np.split(data._index_, stat._sorted_index_[1:])
+        starts = data._get_group_starts(*by)
+        return np.split(data._index_, starts[1:])
 
     def _split_join_by(self, *by):
         by1 = [x if isinstance(x, str) else x[0] for x in by]
