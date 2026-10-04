@@ -186,6 +186,10 @@ class Vector(np.ndarray):
             return array.dtype.type(array)
         return array.view(self.__class__)
 
+    def __iter__(self):
+        # NumPy iterates subclasses ~2x slower than base arrays.
+        return iter(self.view(np.ndarray))
+
     def __repr__(self):
         return self.to_string()
 

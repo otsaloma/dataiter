@@ -6,6 +6,7 @@
 - `DataFrame.unique`: Fix missing timedelta values not being considered equal
 - `read_parquet`: Fix ignoring `columns` and `dtypes` arguments
 - `Vector.is_na`: Speed up for integer and boolean vectors
+- Speed up iterating over vectors and data frame columns, e.g. in joins
 - Fix NumPy deprecation warnings about `NaT` values missing unit
 - Fix deleting a data frame column leaving behind a bogus attribute
 - Add Markdown versions of documentation pages, `llms.txt` and
