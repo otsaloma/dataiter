@@ -1,6 +1,9 @@
 dataiter.regex
 ==============
 
+.. meta::
+   :description: Vectorized regular expression functions
+
 The ``regex`` module contains vectorized versions of regular expression matching
 operations, similar to ``numpy.strings`` for string operations. This is a
 convenience wrapper around Python's standard library ``re`` module, not any

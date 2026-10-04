@@ -1,6 +1,9 @@
 Aggregation
 ===========
 
+.. meta::
+   :description: Guide to grouping and aggregating data frames
+
 .. note:: The following applies currently only to the
           :class:`.DataFrame` class. Aggregation with a
           :class:`.ListOfDicts` is simpler and covered by the

@@ -1,6 +1,9 @@
 dataiter.DataFrame
 ==================
 
+.. meta::
+   :description: A class for tabular data
+
 :meth:`~dataiter.DataFrame.__init__`
 :meth:`~dataiter.DataFrame.aggregate`
 :meth:`~dataiter.DataFrame.anti_join`

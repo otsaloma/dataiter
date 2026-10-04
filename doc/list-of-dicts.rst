@@ -1,6 +1,9 @@
 dataiter.ListOfDicts
 ====================
 
+.. meta::
+   :description: A class for data as a list of dicts
+
 :meth:`~dataiter.ListOfDicts.__init__`
 :meth:`~dataiter.ListOfDicts.aggregate`
 :meth:`~dataiter.ListOfDicts.anti_join`

@@ -1,6 +1,9 @@
 dataiter.dt
 ===========
 
+.. meta::
+   :description: Vectorized functions for dates and datetimes
+
 The ``dt`` module contains vectorized functions for dealing with dates and
 datetimes, similar to ``numpy.strings`` for strings. This is mostly a
 convenience wrapper around Python's standard library ``datetime`` module, not

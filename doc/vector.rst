@@ -1,6 +1,9 @@
 dataiter.Vector
 ===============
 
+.. meta::
+   :description: A one-dimensional array
+
 :meth:`~dataiter.Vector.__init__`
 :meth:`~dataiter.Vector.as_boolean`
 :meth:`~dataiter.Vector.as_bytes`

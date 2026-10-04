@@ -1,6 +1,9 @@
 Dataiter Documentation
 ======================
 
+.. meta::
+   :description: Overview of Dataiter, a light-weight data frame library built on NumPy
+
 Dataiter's :class:`.DataFrame` is a class for tabular data similar to R's
 ``data.frame``, implementing all common operations to manipulate data. It is
 under the hood a dictionary of NumPy arrays and thus capable of fast vectorized

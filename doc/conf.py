@@ -36,6 +36,7 @@ root_doc = 'index'
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx_llm.txt', 'output']
 
+llms_txt_description = 'Simple, light-weight data frames for Python'
 llms_txt_full_build = True
 llms_txt_suffix_mode = 'replace'
 

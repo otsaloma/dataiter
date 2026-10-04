@@ -1,6 +1,9 @@
 Quick Start
 ===========
 
+.. meta::
+   :description: Short examples of using DataFrame, GeoJSON and ListOfDicts
+
 DataFrame
 ---------
 

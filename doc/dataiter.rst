@@ -1,6 +1,9 @@
 dataiter
 ========
 
+.. meta::
+   :description: Helper functions for use with DataFrame.aggregate
+
 The following functions are shorthand helpers for use in conjunction
 with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
 </aggregation>` for details.

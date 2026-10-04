@@ -1,6 +1,9 @@
 dataiter.GeoJSON
 ================
 
+.. meta::
+   :description: A class for GeoJSON data
+
 :meth:`~dataiter.GeoJSON.__init__`
 :meth:`~dataiter.GeoJSON.read`
 :meth:`~dataiter.GeoJSON.to_data_frame`
