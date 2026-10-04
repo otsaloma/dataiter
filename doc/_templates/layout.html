@@ -1,0 +1,9 @@
+{% extends "!layout.html" %}
+{% block menu %}
+  {{ super() }}
+  <p class="caption" role="heading"><span class="caption-text">For Coding Agents</span></p>
+  <ul>
+    <li class="toctree-l1"><a class="reference external" href="{{ pathto('llms.txt', 1) }}">llms.txt</a></li>
+    <li class="toctree-l1"><a class="reference external" href="{{ pathto('llms-full.txt', 1) }}">llms-full.txt</a></li>
+  </ul>
+{% endblock %}

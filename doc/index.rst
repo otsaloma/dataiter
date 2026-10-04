@@ -34,3 +34,9 @@ frame.
    dt
    dtypes
    regex
+
+For Coding Agents
+-----------------
+
+* `llms.txt <llms.txt>`_
+* `llms-full.txt <llms-full.txt>`_
