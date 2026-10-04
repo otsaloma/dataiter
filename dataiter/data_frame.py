@@ -1231,11 +1231,22 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unique("hood")
         """
-        # Strangely, standard Python is a lot faster here than np.unique
-        # with all the extra needed across columns of different type.
-        # We just need to avoid NaN and NaT for the 'in' checks to work.
         colnames = colnames or self.colnames
         columns = [self[x] for x in colnames]
+        if all(x.is_number() or
+               x.is_boolean() or
+               x.is_datetime() or
+               x.is_timedelta() for x in columns):
+            # np.lexsort is stable, so the first row of each group
+            # in sorted order is the first occurrence in self.
+            order = np.lexsort(columns[::-1])
+            starts = self.select(*colnames).slice(order)._get_group_starts(*colnames)
+            keep = np.sort(order[starts])
+            for colname, column in self.items():
+                yield colname, column[keep].copy()
+            return
+        # For strings and objects, a Python set is faster than sorting.
+        # We just need to avoid NaN and NaT for the 'in' checks to work.
         for i, column in enumerate(columns):
             if column.is_datetime():
                 flag = np.nanmin(column) - np.timedelta64(1, "D")
