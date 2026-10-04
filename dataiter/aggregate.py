@@ -242,7 +242,6 @@ def is_na_numba(x):
         na[i] = is_na_item_numba(x[i])
     return na
 
-@composite
 def last(x, *, drop_na=False):
     """
     Return the last element of `x`.
