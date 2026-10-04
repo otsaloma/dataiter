@@ -1253,6 +1253,12 @@ class DataFrame(dict):
                 if np.isnat(flag):
                     flag = np.datetime64("-001-01-01")
                 columns[i] = column.replace_na(flag)
+            if column.is_timedelta():
+                unit = np.datetime_data(column.dtype)[0]
+                flag = np.nanmin(column) - np.timedelta64(1, unit)
+                if np.isnat(flag):
+                    flag = np.timedelta64(0, unit)
+                columns[i] = column.replace_na(flag)
             if column.is_float():
                 flag = np.nanmin(column) - 1
                 if np.isnan(flag):
