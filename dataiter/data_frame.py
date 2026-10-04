@@ -1263,12 +1263,11 @@ class DataFrame(dict):
                 if np.isnan(flag):
                     flag = -1
                 columns[i] = column.replace_na(flag)
-        rows = list(zip(*columns))
         seen = set()
         keep = []
-        for i in range(self.nrow):
-            if rows[i] not in seen:
-                seen.add(rows[i])
+        for i, row in enumerate(zip(*columns)):
+            if row not in seen:
+                seen.add(row)
                 keep.append(i)
         for colname, column in self.items():
             yield colname, column[keep].copy()
