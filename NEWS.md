@@ -1,4 +1,4 @@
-# PENDING: Dataiter 1.4
+# 2026-10-05: Dataiter 1.4
 
 - `DataFrame.aggregate`, `DataFrame.split`: Speed up
 - `DataFrame.semi_join`: Fix matching on missing values in `by` columns
