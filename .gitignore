@@ -1,6 +1,4 @@
-*.lprof
-*.prof
-.claude
+.claude/settings.local.json
 .env
 .envrc
 .pytest_cache
