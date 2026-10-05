@@ -391,6 +391,27 @@ class DataFrame(dict):
             drop = drop | self[colname].is_na()
         return self.filter_out(drop)
 
+    @classmethod
+    def expand_grid(cls, **colname_value_pairs):
+        """
+        Return a new data frame with all combinations of values.
+
+        Rows are ordered so that the first column varies the slowest. A common
+        use is completing data to include missing combinations by following up
+        with a :meth:`left_join`.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> stat = data.group_by("hood", "guests").aggregate(n=di.count())
+        >>> grid = di.DataFrame.expand_grid(hood=stat.hood.unique(), guests=stat.guests.unique())
+        >>> grid.left_join(stat, "hood", "guests")
+        """
+        values = [DataFrameColumn(x) for x in colname_value_pairs.values()]
+        indices = np.meshgrid(*[np.arange(len(x)) for x in values], indexing="ij")
+        return cls(**{
+            colname: value[index.ravel()]
+            for colname, value, index in zip(colname_value_pairs, values, indices)
+        })
+
     @deco.new_from_generator
     def filter(self, rows=None, **colname_value_pairs):
         """

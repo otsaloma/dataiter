@@ -176,6 +176,11 @@ class TestListOfDicts:
         assert len(data) == 396
         assert None not in data.pluck("sqft")
 
+    def test_expand_grid(self):
+        data = ListOfDicts.expand_grid(x=[1, 2], y=["a", "b", "c"])
+        assert data.pluck("x") == [1, 1, 1, 2, 2, 2]
+        assert data.pluck("y") == ["a", "b", "c", "a", "b", "c"]
+
     def test_extend(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.extend(orig)

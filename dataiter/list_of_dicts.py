@@ -231,6 +231,25 @@ class ListOfDicts(list):
             if not any(item.get(x, None) is None for x in keys):
                 yield item
 
+    @classmethod
+    def expand_grid(cls, **key_value_pairs):
+        """
+        Return a new list of dicts with all combinations of values.
+
+        Items are ordered so that the first key varies the slowest. A common
+        use is completing data to include missing combinations by following up
+        with a :meth:`left_join`.
+
+        >>> data = di.read_json("data/listings.json")
+        >>> stat = data.group_by("hood", "guests").aggregate(n=len)
+        >>> hoods = sorted(set(stat.pluck("hood")))
+        >>> guests = sorted(set(stat.pluck("guests")))
+        >>> grid = di.ListOfDicts.expand_grid(hood=hoods, guests=guests)
+        >>> grid.left_join(stat, "hood", "guests")
+        """
+        keys = list(key_value_pairs)
+        return cls(dict(zip(keys, x)) for x in itertools.product(*key_value_pairs.values()))
+
     @deco.new_from_generator
     def extend(self, other):
         """

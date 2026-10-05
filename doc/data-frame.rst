@@ -15,6 +15,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.count`
 :meth:`~dataiter.DataFrame.deepcopy`
 :meth:`~dataiter.DataFrame.drop_na`
+:meth:`~dataiter.DataFrame.expand_grid`
 :meth:`~dataiter.DataFrame.filter`
 :meth:`~dataiter.DataFrame.filter_out`
 :meth:`~dataiter.DataFrame.from_arrow`

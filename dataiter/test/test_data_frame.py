@@ -251,6 +251,12 @@ class TestDataFrame:
         assert data.nrow == 396
         assert not (data.sqft.is_na()).any()
 
+    def test_expand_grid(self):
+        data = DataFrame.expand_grid(x=[1, 2], y=["a", "b", "c"])
+        assert data.colnames == ["x", "y"]
+        assert data.x.tolist() == [1, 1, 1, 2, 2, 2]
+        assert data.y.tolist() == ["a", "b", "c", "a", "b", "c"]
+
     def test_filter_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter(data.make == "Saab")
