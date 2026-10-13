@@ -2,6 +2,7 @@
 
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.modify`: Speed up when grouped
+- `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `ListOfDicts.expand_grid`: New classmethod
 

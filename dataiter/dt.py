@@ -53,15 +53,13 @@ def from_string(x, format):
     assert isinstance(x, np.ndarray)
     assert isinstance(x.dtype, StringDType)
     out = np.full_like(x, None, object)
-    out = Vector.fast(out, object)
+    out = Vector.fast(out, object).as_datetime()
     na = x == dtypes.string.na_object
+    if na.all(): return out
+    unique, inverse = np.unique(x[~na], return_inverse=True)
     f = np.vectorize(lambda x: datetime.datetime.strptime(x, format))
-    out[~na] = f(x[~na].astype(object))
-    out = out.as_datetime()
-    if (len(out[~na]) > 0 and
-        (hour(out[~na])   == 0).all() and
-        (minute(out[~na]) == 0).all() and
-        (second(out[~na]) == 0).all()):
+    out[~na] = f(unique.astype(object)).astype(out.dtype)[inverse]
+    if (out[~na] == out[~na].as_date()).all():
         out = out.as_date()
     return out
 
