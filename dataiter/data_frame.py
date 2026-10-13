@@ -1109,25 +1109,25 @@ class DataFrame(dict):
         Return rows in sorted order.
 
         `colname_dir_pairs` defines the sort order by column name with `dir`
-        being ``1`` for ascending sort, ``-1`` for descending.
+        being ``1`` for ascending sort, ``-1`` for descending. Missing values
+        are sorted last, regardless of `dir`.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.sort(hood=1, zipcode=1)
         """
-        def sort_key(colname, dir):
+        def sort_keys(colname, dir):
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
-            if column._is_string_fixed():
-                column = column.copy()
-                column[column.is_na()] = "\uffff"
-            if dir > 0 and not column.is_object():
-                return column
-            if not column.is_number():
+            na = column.is_na()
+            if column.is_object() or (dir < 0 and not column.is_number()):
                 column = column.rank(method="min")
-            return column if dir > 0 else -column
-        indices = np.lexsort(tuple(
-            sort_key(*x) for x in reversed(colname_dir_pairs.items())))
+            yield column if dir > 0 else -column
+            # np.lexsort sorts by the last key first,
+            # so yielding na after the values takes precedence.
+            if na.any(): yield na
+        indices = np.lexsort(tuple(itertools.chain.from_iterable(
+            sort_keys(*x) for x in reversed(colname_dir_pairs.items()))))
         for colname, column in self.items():
             yield colname, column[indices].copy()
 

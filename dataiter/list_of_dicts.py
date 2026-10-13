@@ -751,7 +751,8 @@ class ListOfDicts(list):
         Return items in sorted order.
 
         `key_dir_pairs` defines the sort order by key with `dir` being ``1``
-        for ascending sort, ``-1`` for descending.
+        for ascending sort, ``-1`` for descending. Missing values are sorted
+        last, regardless of `dir`.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.sort(hood=1, zipcode=1)

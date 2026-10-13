@@ -27,6 +27,7 @@ import pytest
 from dataiter import DataFrame
 from dataiter import DataFrameColumn
 from dataiter import test
+from dataiter import Vector
 from pathlib import Path
 from unittest.mock import patch
 
@@ -716,6 +717,20 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = orig.sort(x=1)
         assert orig.x.tolist() == ["b", None, "a"]
         assert data.x.tolist() == ["a", "b", None]
+
+    @pytest.mark.parametrize("values", [
+        np.array(["b", "", "a"]),
+        Vector(["b", None, "a"]),
+        Vector(["b", None, "a"], object),
+        Vector([2.0, None, 1.0]),
+        Vector([np.datetime64("2020-01-02"), None, np.datetime64("2020-01-01")]),
+    ])
+    def test_sort_na(self, values):
+        data = DataFrame(g=[1, 1, 1], x=values)
+        assert data.sort(x=1).x.is_na().tolist() == [False, False, True]
+        assert data.sort(x=-1).x.is_na().tolist() == [False, False, True]
+        assert data.sort(g=1, x=-1).x.is_na().tolist() == [False, False, True]
+        assert data.sort(x=-1).x[0] == values[0]
 
     def test_split(self):
         data = DataFrame(
