@@ -44,6 +44,23 @@ class TestDT:
         x = np.datetime64("2022-10-15")
         assert dt.day(x) == 15
 
+    def test_floor_date(self):
+        a = dt.new(["2022-10-15", "2022-11-20", "1969-12-31", NaT])
+        assert dt.floor(a, "year").equal(dt.new(["2022-01-01", "2022-01-01", "1969-01-01", NaT]))
+        assert dt.floor(a, "quarter").equal(dt.new(["2022-10-01", "2022-10-01", "1969-10-01", NaT]))
+        assert dt.floor(a, "month").equal(dt.new(["2022-10-01", "2022-11-01", "1969-12-01", NaT]))
+        assert dt.floor(a, "week").equal(dt.new(["2022-10-10", "2022-11-14", "1969-12-29", NaT]))
+        assert dt.floor(a, "day").equal(a)
+
+    def test_floor_datetime(self):
+        a = dt.new(["2022-10-15T12:34:56.789", NaT])
+        assert dt.floor(a, "week").equal(dt.new(["2022-10-10T00:00:00.000", NaT]))
+        assert dt.floor(a, "hour").equal(dt.new(["2022-10-15T12:00:00.000", NaT]))
+        assert dt.floor(a, "second").equal(dt.new(["2022-10-15T12:34:56.000", NaT]))
+
+    def test_floor_scalar(self):
+        assert dt.floor(dt.new("2022-10-15"), "week") == dt.new("2022-10-10")
+
     def test_from_string_date(self):
         a = Vector(["14.11.2022", ""], str)
         b = dt.from_string(a, "%d.%m.%Y")

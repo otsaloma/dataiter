@@ -9,6 +9,7 @@
 - `DataFrame.rbind`: Fix upcasting integers to float with an empty data frame
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
+- `dt.floor`: New function
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both

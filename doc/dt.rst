@@ -10,6 +10,7 @@ convenience wrapper around Python's standard library ``datetime`` module, not
 any efficient reimplementation.
 
 :func:`~dataiter.dt.day`
+:func:`~dataiter.dt.floor`
 :func:`~dataiter.dt.from_string`
 :func:`~dataiter.dt.hour`
 :func:`~dataiter.dt.isoformat`

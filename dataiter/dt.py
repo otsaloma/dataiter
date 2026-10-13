@@ -37,6 +37,36 @@ def day(x):
     """
     return _pull_int(x, lambda y: y.day)
 
+def floor(x, unit):
+    """
+    Round datetime `x` down to the start of `unit`.
+
+    `unit` can be "year", "quarter", "month", "week", "day", "hour", "minute"
+    or "second". Weeks start on Monday, as in ISO 8601. The data type of `x`
+    is retained.
+
+    >>> x = dt.new(["2022-10-15", "2022-11-20"])
+    >>> dt.floor(x, "month")
+    """
+    if util.is_scalar(x):
+        x = Vector([x], np.datetime64)
+        return floor(x, unit)[0]
+    assert isinstance(x, np.ndarray)
+    assert np.issubdtype(x.dtype, np.datetime64)
+    if unit == "quarter":
+        out = x.astype("datetime64[M]")
+        out -= (out.astype(int) % 3).astype("timedelta64[M]")
+    elif unit == "week":
+        # 1970-01-01 was a Thursday.
+        out = x.astype("datetime64[D]")
+        out -= ((out.astype(int) + 3) % 7).astype("timedelta64[D]")
+    else:
+        codes = dict(year="Y", month="M", day="D", hour="h", minute="m", second="s")
+        if unit not in codes:
+            raise ValueError(f"Bad {unit=}")
+        out = x.astype(f"datetime64[{codes[unit]}]")
+    return Vector.fast(out.astype(x.dtype), x.dtype)
+
 def from_string(x, format):
     """
     Initialize a datetime scalar or vector from `x`.
