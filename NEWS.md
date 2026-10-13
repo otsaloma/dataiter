@@ -5,6 +5,7 @@
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.rbind`: Fix upcasting integers to float with an empty data frame
+- `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `ListOfDicts.aggregate`: Return single item when ungrouped

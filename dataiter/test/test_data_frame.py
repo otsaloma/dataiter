@@ -711,6 +711,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert (data1.make == data2.make).all()
         assert (data1.model == data2.model).all()
 
+    def test_sort_string_fixed_na(self):
+        orig = DataFrame(x=np.array(["b", "", "a"]))
+        data = orig.sort(x=1)
+        assert orig.x.tolist() == ["b", None, "a"]
+        assert data.x.tolist() == ["a", "b", None]
+
     def test_split(self):
         data = DataFrame(
             x=[1, 2, 2, 3, 3, 3],

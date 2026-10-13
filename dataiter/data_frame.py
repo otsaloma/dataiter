@@ -1119,6 +1119,7 @@ class DataFrame(dict):
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
             if column._is_string_fixed():
+                column = column.copy()
                 column[column.is_na()] = "\uffff"
             if dir > 0 and not column.is_object():
                 return column
