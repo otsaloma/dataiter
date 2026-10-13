@@ -13,7 +13,7 @@ DataFrame
 >>> data.head()
 .
      id      hood zipcode guests    sqft price price_per_guest
-  int64      <U13    <U11  int64 float64 int64         float64
+  int64    string  string  int64 float64 int64         float64
   ───── ───────── ─────── ────── ─────── ───── ───────────────
 0  2060 Manhattan   10040      2     nan   100          50.000
 1  2595 Manhattan   10018      2     nan   225         112.500
@@ -29,7 +29,7 @@ DataFrame
 >>> data.filter(hood="Manhattan").filter(guests=2).sort(price=1).head()
 .
         id      hood zipcode guests    sqft price price_per_guest
-     int64      <U13    <U11  int64 float64 int64         float64
+     int64    string  string  int64 float64 int64         float64
   ──────── ───────── ─────── ────── ─────── ───── ───────────────
 0 42279170 Manhattan   10013      2     nan     0             0.0
 1 42384530 Manhattan   10036      2     nan     0             0.0
@@ -51,7 +51,7 @@ GeoJSON
 >>> data.head()
 .
      neighbourhood neighbourhood_group       geometry
-              <U26                <U13         object
+            string              string         object
   ──────────────── ─────────────────── ──────────────
 0        Bayswater              Queens <MultiPolygon>
 1         Allerton               Bronx <MultiPolygon>

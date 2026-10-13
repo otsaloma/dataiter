@@ -27,7 +27,7 @@ sections for what kinds of aggregation functions you can use.
 >>> data.group_by("hood").aggregate(n=di.count(), price=di.mean("price"))
 .
            hood     n   price
-           <U13 int64 float64
+         string int64 float64
   ───────────── ───── ───────
 0         Bronx  1198  90.176
 1      Brooklyn 19931 125.056
@@ -93,7 +93,7 @@ common sizes of input, it should be well usable.
 >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
 .
            hood     n   price
-           <U13 int64 float64
+         string int64 float64
   ───────────── ───── ───────
 0         Bronx  1198  90.176
 1      Brooklyn 19931 125.056
