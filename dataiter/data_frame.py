@@ -554,6 +554,10 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
+        Columns other than `by` found in both `self` and `other` keep their
+        values from `self` for rows found in `self`. Rename such columns before
+        joining if you need both.
+
         >>> listings = di.read_csv("data/listings.csv")
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.full_join(reviews, "id")
@@ -632,6 +636,9 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
+        Columns other than `by` found in both `self` and `other` keep their
+        values from `self`. Rename such columns before joining if you need both.
+
         >>> listings = di.read_csv("data/listings.csv")
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.inner_join(reviews, "id")
@@ -658,6 +665,9 @@ class DataFrame(dict):
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
         `other`.
+
+        Columns other than `by` found in both `self` and `other` keep their
+        values from `self`. Rename such columns before joining if you need both.
 
         >>> listings = di.read_csv("data/listings.csv")
         >>> reviews = di.read_csv("data/listings-reviews.csv")

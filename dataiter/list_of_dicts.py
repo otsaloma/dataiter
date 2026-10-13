@@ -372,6 +372,10 @@ class ListOfDicts(list):
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
 
+        Keys other than `by` found in both `self` and `other` keep their values
+        from `self` for items found in `self`. Rename such keys before joining
+        if you need both.
+
         >>> listings = di.read_json("data/listings.json")
         >>> reviews = di.read_json("data/listings-reviews.json")
         >>> listings.full_join(reviews, "id")
@@ -424,6 +428,9 @@ class ListOfDicts(list):
 
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
+
+        Keys other than `by` found in both `self` and `other` keep their values
+        from `self`. Rename such keys before joining if you need both.
 
         >>> listings = di.read_json("data/listings.json")
         >>> reviews = di.read_json("data/listings-reviews.json")
@@ -478,6 +485,9 @@ class ListOfDicts(list):
 
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
+
+        Keys other than `by` found in both `self` and `other` keep their values
+        from `self`. Rename such keys before joining if you need both.
 
         >>> listings = di.read_json("data/listings.json")
         >>> reviews = di.read_json("data/listings-reviews.json")
