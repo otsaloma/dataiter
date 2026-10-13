@@ -721,16 +721,21 @@ class DataFrame(dict):
         for colname, column in self.items():
             yield colname, column.copy()
         if self._group_colnames:
-            slices = self.split(*self._group_colnames)
-            # Mapping over slices will produce contiguous groups in order
-            # of self._group_colnames. Calculate and apply indexing that
-            # will restore the original order.
-            restore_indices = np.argsort(np.concatenate(slices))
-            slices = [self._view_rows(x) for x in slices]
+            group_colnames = self._group_colnames
+            data = self.__class__(self)
+            data._index_ = np.arange(data.nrow)
+            data = data.sort(**dict.fromkeys(group_colnames, 1))
+            restore_indices = np.argsort(data.pop("_index_"))
+            starts = data._get_group_starts(*group_colnames)
+            ends = np.append(starts[1:], data.nrow)
+            # Contiguous slices make cheap NumPy views instead of copies.
+            # Create them lazily, as holding hundreds of thousands
+            # of views alive at once makes garbage collection slow.
+            slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
             for colname, function in colname_value_pairs.items():
                 if not callable(function):
                     raise ValueError(f"{colname} argument not callable")
-                column = [DataFrameColumn(function(x), nrow=x.nrow) for x in slices]
+                column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
                 yield colname, np.concatenate(column)[restore_indices]
         else:
             for colname, value in colname_value_pairs.items():

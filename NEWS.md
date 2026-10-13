@@ -1,6 +1,7 @@
 # PENDING: Dataiter 1.5
 
 - `DataFrame.expand_grid`: New classmethod
+- `DataFrame.modify`: Speed up when grouped
 - `ListOfDicts.expand_grid`: New classmethod
 
 # 2026-10-05: Dataiter 1.4
