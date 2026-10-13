@@ -478,6 +478,13 @@ class TestDataFrame:
         assert np.all(np.isnan(data.test2[:3]))
         assert np.all(data.test2[-3:] == 2)
 
+    def test_rbind_onto_empty(self):
+        data = DataFrame().rbind(DataFrame(a=[1, 2]))
+        assert data.a.is_integer()
+        data = data.rbind(DataFrame(b=[3]))
+        assert data.a.is_float()
+        assert data.b.is_float()
+
     def test_read_csv(self):
         path = str(test.get_data_path("vehicles.csv"))
         data = DataFrame.read_csv(path)

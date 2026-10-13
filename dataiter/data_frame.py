@@ -926,7 +926,7 @@ class DataFrame(dict):
                 dtype = ref[colname].na_dtype
                 return Vector.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
-            parts = [get_part(x, colname) for x in data_frames]
+            parts = [get_part(x, colname) for x in data_frames if colname in x or x.nrow > 0]
             total = DataFrameColumn(np.concatenate(parts))
             yield colname, total
 

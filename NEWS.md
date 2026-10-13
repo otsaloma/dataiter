@@ -4,6 +4,7 @@
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.modify`: Speed up when grouped
+- `DataFrame.rbind`: Fix upcasting integers to float with an empty data frame
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `ListOfDicts.aggregate`: Return single item when ungrouped
