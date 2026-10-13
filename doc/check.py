@@ -24,7 +24,6 @@ PAGES = {
 SKIP = [
     "DataFrame.clear",
     "GeoJSON.to_string",
-    "Vector.to_strings",
 ]
 
 DIRECTORY = Path(__file__).parent
@@ -48,5 +47,7 @@ for page, obj in PAGES.items():
         full_name = f"{obj.__name__}.{name}"
         if full_name in SKIP: continue
         print(f"... {full_name}")
-        if full_name not in text:
+        # Match the closing backtick to not accept prefixes,
+        # e.g. Vector.to_string for Vector.to_strings.
+        if f"{full_name}`" not in text:
             raise Exception("Not found")

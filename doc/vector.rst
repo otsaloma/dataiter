@@ -44,6 +44,7 @@ dataiter.Vector
 :attr:`~dataiter.Vector.str`
 :meth:`~dataiter.Vector.tail`
 :meth:`~dataiter.Vector.to_string`
+:meth:`~dataiter.Vector.to_strings`
 :meth:`~dataiter.Vector.tolist`
 :meth:`~dataiter.Vector.unique`
 
