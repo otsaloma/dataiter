@@ -23,6 +23,7 @@
 import datetime
 import math
 import numpy as np
+import pytest
 
 from dataiter import Vector
 from numpy.dtypes import StringDType
@@ -212,6 +213,15 @@ class TestVector:
         a = Vector([1.1, 2.2]).as_integer()
         assert a.is_integer()
         assert np.all(a == [1, 2])
+
+    @pytest.mark.parametrize("values", [
+        [1.0, None],
+        [np.datetime64("2020-01-01"), None],
+        ["1", None],
+    ])
+    def test_as_integer_na(self, values):
+        with pytest.raises(ValueError):
+            Vector(values).as_integer()
 
     def test_as_object(self):
         a = Vector([1, 2]).as_object()
