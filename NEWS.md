@@ -4,6 +4,8 @@
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.modify`: Speed up when grouped
+- `DataFrame.pivot_wider`: Fix error with non-string names
+- `DataFrame.pivot_wider`: Fix to sort new columns before applying `rename`
 - `DataFrame.rbind`: Fix upcasting integers to float with an empty data frame
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last

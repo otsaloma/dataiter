@@ -425,6 +425,13 @@ class TestDataFrame:
             if x.startswith("dl_"))
         assert total_downloads == sum(long.downloads)
 
+    def test_pivot_wider_integer_names(self):
+        long = DataFrame(id=[1, 1, 2], m=[2, 10, 1], value=[1, 2, 3])
+        wide = long.pivot_wider(ids="id", names="m", values="value")
+        assert wide.colnames == ["id", "1", "2", "10"]
+        wide = long.pivot_wider(ids="id", names="m", values="value", rename=lambda x: f"m{x}")
+        assert wide.colnames == ["id", "m1", "m2", "m10"]
+
     def test_pop(self):
         data = test.data_frame("vehicles.csv")
         data.pop("fuel")

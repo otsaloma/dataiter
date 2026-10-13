@@ -840,14 +840,12 @@ class DataFrame(dict):
         ids = util.sequencify(ids)
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
-        long = self.copy()
         wide = self.select(*ids).unique(*ids)
-        if rename:
-            long[names] = long[names].map(rename)
-        for name in long[names].unique().sort():
-            part = long.filter(long[names] == name)
+        for name in self[names].unique().sort():
+            part = self.filter(self[names] == name)
             part = part.select(*ids, values)
-            part = part.rename(**{name: values})
+            colname = rename(name) if rename else str(name)
+            part = part.rename(**{colname: values})
             wide = wide.left_join(part, *ids)
         return wide
 
