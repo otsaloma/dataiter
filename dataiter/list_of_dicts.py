@@ -394,8 +394,9 @@ class ListOfDicts(list):
         """
         Return list with `keys` set for grouped operations, such as :meth:`aggregate`.
         """
-        self._group_keys = tuple(keys)
-        return self
+        data = self.copy()
+        data._group_keys = tuple(keys)
+        return data
 
     def head(self, n=None):
         """

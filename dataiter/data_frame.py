@@ -366,7 +366,7 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.count("hood")
         """
-        stat = self.copy().group_by(*colnames).aggregate(_n_=dataiter.count())
+        stat = self.group_by(*colnames).aggregate(_n_=dataiter.count())
         if (name := "n") in stat:
             while name in stat: name += "_"
             stat = stat.rename(**{name: "n"})
@@ -603,8 +603,9 @@ class DataFrame(dict):
         """
         Return data frame with `colnames` set for grouped operations, such as :meth:`aggregate`.
         """
-        self._group_colnames = tuple(colnames)
-        return self
+        data = self.copy()
+        data._group_colnames = tuple(colnames)
+        return data
 
     def head(self, n=None):
         """
