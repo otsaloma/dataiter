@@ -15,6 +15,7 @@
 - `ListOfDicts.aggregate`: Return single item when ungrouped
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.group_by`: Fix to group only returned copy
+- `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
 - `Vector.as_integer`: Raise `ValueError` for missing values
 
 # 2026-10-05: Dataiter 1.4

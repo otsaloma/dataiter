@@ -36,6 +36,16 @@ def new_from_generator(function):
         return self._new(value)
     return wrapper
 
+def new_independent_from_generator(function):
+    @functools.wraps(function)
+    def wrapper(self, *args, **kwargs):
+        value = function(self, *args, **kwargs)
+        new = self._new(value)
+        # New dicts aren't shared, so successors can't obsolete self.
+        new._predecessor = None
+        return new
+    return wrapper
+
 def obsoletes(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):

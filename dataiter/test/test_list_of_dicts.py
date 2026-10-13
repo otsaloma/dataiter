@@ -152,7 +152,7 @@ class TestListOfDicts:
 
     def test_copy_handle_predecessor(self):
         a = test.list_of_dicts("downloads.json")
-        b = a.select("date")
+        b = a.head(10)
         c = b.copy()
         assert a._predecessor is None
         assert b._predecessor is a
@@ -169,7 +169,7 @@ class TestListOfDicts:
 
     def test_deepcopy_handle_predecessor(self):
         a = test.list_of_dicts("downloads.json")
-        b = a.select("date")
+        b = a.head(10)
         c = b.deepcopy()
         assert a._predecessor is None
         assert b._predecessor is a
@@ -317,6 +317,13 @@ class TestListOfDicts:
         data = data.modify(b=lambda x: 2)
         data = data.modify(c=lambda x: 3)
 
+    def test__mark_obsolete_not_after_new_dicts(self):
+        orig = test.list_of_dicts("downloads.json")
+        orig.select("date").modify(a=lambda x: 1)
+        orig.rename(ymd="date").modify(a=lambda x: 1)
+        orig.group_by("category").aggregate(n=len).modify(a=lambda x: 1)
+        assert not orig._obsolete
+
     def test_modify(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.modify(year=lambda x: int(x.date[:4]))
@@ -428,7 +435,7 @@ class TestListOfDicts:
         assert len(data) == len(orig)
         assert all("ymd" in x for x in data)
         assert all("date" not in x for x in data)
-        assert orig._obsolete
+        assert not orig._obsolete
 
     def test_reverse(self):
         orig = test.list_of_dicts("downloads.json")
@@ -447,7 +454,7 @@ class TestListOfDicts:
         assert all(len(x) == 2 for x in data)
         assert all("date" in x for x in data)
         assert all("downloads" in x for x in data)
-        assert orig._obsolete
+        assert not orig._obsolete
 
     def test_select_order(self):
         data1 = test.list_of_dicts("downloads.json").select("date", "downloads")

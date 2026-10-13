@@ -133,7 +133,7 @@ class ListOfDicts(list):
     def __str__(self):
         return self.to_string()
 
-    @deco.new_from_generator
+    @deco.new_independent_from_generator
     def aggregate(self, **key_function_pairs):
         """
         Return group-wise calculated summaries.
@@ -688,8 +688,7 @@ class ListOfDicts(list):
         with util.xopen(path, "rb") as f:
             return cls(pickle.load(f))
 
-    @deco.obsoletes
-    @deco.new_from_generator
+    @deco.new_independent_from_generator
     def rename(self, **to_from_pairs):
         """
         Return items with keys renamed.
@@ -723,8 +722,7 @@ class ListOfDicts(list):
         for i in sorted(random.sample(range(len(self)), n)):
             yield self[i]
 
-    @deco.obsoletes
-    @deco.new_from_generator
+    @deco.new_independent_from_generator
     def select(self, *keys):
         """
         Return items, keeping only `keys`.
