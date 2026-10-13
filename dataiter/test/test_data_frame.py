@@ -147,6 +147,13 @@ class TestDataFrame:
         assert np.isclose(np.sum(stat.cyl), 19964.5, atol=0.1)
         assert np.isclose(np.sum(stat.displ), 11430.1, atol=0.1)
 
+    def test_aggregate_ungrouped(self):
+        data = test.data_frame("downloads.csv")
+        stat = data.aggregate(n=di.count(), downloads=lambda x: x.downloads.sum())
+        assert stat.nrow == 1
+        assert stat.n[0] == data.nrow
+        assert stat.downloads[0] == data.downloads.sum()
+
     def test_anti_join(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")

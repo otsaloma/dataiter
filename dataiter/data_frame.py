@@ -188,7 +188,7 @@ class DataFrame(dict):
         >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
         """
         group_colnames = self._group_colnames
-        data = self.sort(**dict.fromkeys(group_colnames, 1))
+        data = self.sort(**dict.fromkeys(group_colnames, 1)) if group_colnames else self.copy()
         data._index_ = np.arange(data.nrow)
         starts = data._get_group_starts(*group_colnames)
         stat = data.select("_index_", *group_colnames).slice(starts)

@@ -116,6 +116,11 @@ class TestListOfDicts:
             "downloads": 58299,
         }]
 
+    def test_aggregate_ungrouped(self):
+        data = test.list_of_dicts("downloads.json")
+        stat = data.aggregate(n=len, downloads=lambda x: sum(x.pluck("downloads")))
+        assert stat == [{"n": len(data), "downloads": sum(data.pluck("downloads"))}]
+
     def test_anti_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")

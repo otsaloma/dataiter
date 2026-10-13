@@ -150,7 +150,10 @@ class ListOfDicts(list):
         >>> data.group_by("hood").aggregate(n=len, price=lambda x: mean(x.pluck("price")))
         """
         by = self._group_keys
-        groups = self.unique(*by).deepcopy().select(*by)
+        if not by:
+            yield AttributeDict({k: f(self) for k, f in key_function_pairs.items()})
+            return
+        groups =self.unique(*by).deepcopy().select(*by)
         extract = operator.itemgetter(*by)
         items_by_group = {}
         for item in self:
