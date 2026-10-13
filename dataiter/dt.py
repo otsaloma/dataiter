@@ -168,8 +168,9 @@ def _pull_datetime(x, function):
     out = Vector.fast(out, np.datetime64)
     na = np.isnat(x)
     if na.all(): return out
+    unique, inverse = np.unique(x[~na], return_inverse=True)
     f = np.vectorize(function)
-    out[~na] = f(x[~na].astype(object))
+    out[~na] = f(unique.astype(object)).astype(x.dtype)[inverse]
     return out
 
 def _pull_int(x, function):
@@ -196,8 +197,9 @@ def _pull_str(x, function):
     out = Vector.fast(out, object)
     na = np.isnat(x)
     if na.all(): return out
+    unique, inverse = np.unique(x[~na], return_inverse=True)
     f = np.vectorize(function)
-    out[~na] = f(x[~na].astype(object))
+    out[~na] = f(unique.astype(object))[inverse]
     return out.as_string()
 
 def quarter(x):

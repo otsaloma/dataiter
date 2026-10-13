@@ -2,6 +2,7 @@
 
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.modify`: Speed up when grouped
+- `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `ListOfDicts.expand_grid`: New classmethod
 
 # 2026-10-05: Dataiter 1.4
