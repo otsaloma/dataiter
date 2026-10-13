@@ -437,7 +437,7 @@ class ListOfDicts(list):
             id = extract1(item)
             if id in other_by_id:
                 new = other_by_id[id]
-                new = {k: v for k, v in new.items() if k not in by2}
+                new = {k: v for k, v in new.items() if k not in by2 and k not in item}
                 item.update(new)
                 yield item
 
@@ -489,7 +489,7 @@ class ListOfDicts(list):
         other_by_id = {extract2(x): x for x in reversed(other)}
         for item in self:
             new = other_by_id.get(extract1(item), {})
-            new = {k: v for k, v in new.items() if k not in by2}
+            new = {k: v for k, v in new.items() if k not in by2 and k not in item}
             item.update(new)
             yield item
 

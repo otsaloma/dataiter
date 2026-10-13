@@ -297,6 +297,13 @@ class TestListOfDicts:
         assert sum("holiday_date" in x for x in data) == 0
         assert sum(data.pluck("downloads")) == 541335745
 
+    def test_join_common_keys(self):
+        a = ListOfDicts([{"id": 1, "x": 1}, {"id": 2, "x": 2}])
+        b = ListOfDicts([{"id": 1, "x": 3}, {"id": 3, "x": 4}])
+        assert a.deepcopy().left_join(b, "id").pluck("x") == [1, 2]
+        assert a.deepcopy().inner_join(b, "id").pluck("x") == [1]
+        assert a.deepcopy().full_join(b, "id").pluck("x") == [1, 2, 4]
+
     def test_map(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.map(lambda x: {**x, "year": int(x.date[:4])})
