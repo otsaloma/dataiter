@@ -132,12 +132,6 @@ def data_frame_read_csv():
     di.DataFrame.read_csv(path)
     return time.time() - start
 
-def data_frame_read_json():
-    path = test.get_data_path("vehicles.json")
-    start = time.time()
-    di.DataFrame.read_json(path)
-    return time.time() - start
-
 def data_frame_read_parquet():
     data = data_frame("vehicles.csv")
     with tempfile.TemporaryDirectory() as tmp:
@@ -198,13 +192,6 @@ def data_frame_write_csv():
     with tempfile.TemporaryDirectory() as tmp:
         start = time.time()
         data.write_csv(f"{tmp}/vehicles.csv")
-        return time.time() - start
-
-def data_frame_write_json():
-    data = data_frame("vehicles.csv")
-    with tempfile.TemporaryDirectory() as tmp:
-        start = time.time()
-        data.write_json(f"{tmp}/vehicles.json")
         return time.time() - start
 
 def data_frame_write_parquet():
@@ -275,12 +262,6 @@ def list_of_dicts_left_join():
     data.left_join(meta, "make", "model")
     return time.time() - start
 
-def list_of_dicts_read_csv():
-    path = test.get_data_path("vehicles.csv")
-    start = time.time()
-    di.ListOfDicts.read_csv(path)
-    return time.time() - start
-
 def list_of_dicts_read_json():
     path = test.get_data_path("vehicles.json")
     start = time.time()
@@ -292,6 +273,13 @@ def list_of_dicts_sort():
     start = time.time()
     data.sort(make=1, model=1, year=1)
     return time.time() - start
+
+def list_of_dicts_write_json():
+    data = list_of_dicts("vehicles.json")
+    with tempfile.TemporaryDirectory() as tmp:
+        start = time.time()
+        data.write_json(f"{tmp}/vehicles.json")
+        return time.time() - start
 
 def vector_fast_list():
     seq = list(range(1_000_000))
