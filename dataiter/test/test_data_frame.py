@@ -511,6 +511,12 @@ class TestDataFrame:
         assert data.make.is_object()
         assert data.model.is_object()
 
+    def test_read_csv_dtypes_string(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text("zip\n02134\n", "utf-8")
+        data = DataFrame.read_csv(path, dtypes={"zip": str})
+        assert data.zip.tolist() == ["02134"]
+
     def test_read_csv_missing_blank(self, tmp_path):
         text = """
 int,float,string,bool,date

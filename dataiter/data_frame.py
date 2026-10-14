@@ -947,12 +947,16 @@ class DataFrame(dict):
         `columns` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes.
         """
+        import pyarrow as pa
         from pyarrow import csv
+        # Strings need to be requested already at parse time,
+        # otherwise e.g. leading zeros would be lost to type guessing.
+        column_types = {k: pa.string() for k, v in dtypes.items() if Vector.fast([], v).is_string()}
         table = csv.read_csv(
             path,
             read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
             parse_options=csv.ParseOptions(delimiter=sep, newlines_in_values=True),
-            convert_options=csv.ConvertOptions(include_columns=columns))
+            convert_options=csv.ConvertOptions(include_columns=columns, column_types=column_types))
 
         if not header:
             names = util.generate_colnames(table.shape[1])
