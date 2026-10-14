@@ -54,7 +54,7 @@ def composite(function):
     return wrapper
 
 @composite
-def all(x):
+def all(x, *, drop_na=True):
     """
     Return whether all elements of `x` evaluate to ``True``.
 
@@ -68,24 +68,35 @@ def all(x):
     >>> di.all(di.Vector([True, True]))
     >>> di.all("x")
     """
+    return all_any(x, np.all, True, drop_na)
+
+def all_any(x, function, empty, drop_na):
+    # Replacing missing values with the result for empty input
+    # gives the same result as dropping missing values.
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.all)
-            aggregate.default = True
-            return f(data[x].as_boolean(),
-                     data._group_,
-                     drop_na=False,
-                     default=True,
-                     nrequired=0)
+            column = data[x]
+            na = column.is_na()
+            xb = Vector.fast(np.full(len(column), empty), bool)
+            xb[~na] = column[~na].as_boolean()
+            f = (generic, generic_numba)[use_numba(xb)]
+            aggregate.default = empty
+            out = f(function)(xb, data._group_, drop_na=False, default=empty, nrequired=0)
+            if drop_na or not na.any(): return out
+            has_na = f(np.any)(na, data._group_, drop_na=False, default=False, nrequired=0)
+            # Prevent replacing the below missing values with the default.
+            aggregate.default = None
+            return [None if y == empty and z else bool(y)
+                    for y, z in zip(out, has_na)]
 
         aggregate.group_aware = True
         return aggregate
-    x = x.as_boolean()
-    return np.all(x).item()
+    na = x.is_na()
+    out = function(x[~na].as_boolean()).item()
+    return None if not drop_na and out == empty and na.any() else out
 
 @composite
-def any(x):
+def any(x, *, drop_na=True):
     """
     Return whether any element of `x` evaluates to ``True``.
 
@@ -99,21 +110,7 @@ def any(x):
     >>> di.any(di.Vector([True, False]))
     >>> di.any("x")
     """
-    if isinstance(x, str):
-        def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.any)
-            aggregate.default = False
-            return f(data[x].as_boolean(),
-                     data._group_,
-                     drop_na=False,
-                     default=False,
-                     nrequired=0)
-
-        aggregate.group_aware = True
-        return aggregate
-    x = x.as_boolean()
-    return np.any(x).item()
+    return all_any(x, np.any, False, drop_na)
 
 # @composite skipped on purpose due to allowing calls with no x given.
 def count(x="", *, drop_na=False):

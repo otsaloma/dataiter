@@ -67,21 +67,17 @@ quantile05 = lambda x: quantile(x, 0.5)
 
 TEST_MATRIX = [
 
-    # NaNs evaluate to true, because they are not equal to zero.
-    # https://numpy.org/doc/stable/reference/generated/numpy.all.html
     (all, [T, T, T, T, T, F, F, F, F, F], [T, T, F, F, F]),
     (all, [1, 2, 3, 4, 5, 0, 0, 0, 0, 0], [T, T, F, F, F]),
     (all, [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, NaN, NaN, NaN], [F, F, T, T, T]),
     (all, [D1, D2, D3, D4, D5, NaT, NaT, NaT, NaT, NaT], [T, T, T, T, T]),
     (all, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, T, T, T]),
 
-    # NaNs evaluate to true, because they are not equal to zero.
-    # https://numpy.org/doc/stable/reference/generated/numpy.any.html
     (any, [T, T, T, T, T, F, F, F, F, F], [T, T, T, F, F]),
     (any, [1, 2, 3, 4, 5, 0, 0, 0, 0, 0], [T, T, T, F, F]),
-    (any, [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, NaN, NaN, NaN], [F, T, T, T, T]),
-    (any, [D1, D2, D3, D4, D5, NaT, NaT, NaT, NaT, NaT], [T, T, T, T, T]),
-    (any, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, T, T, T]),
+    (any, [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, NaN, NaN, NaN], [F, T, T, T, F]),
+    (any, [D1, D2, D3, D4, D5, NaT, NaT, NaT, NaT, NaT], [T, T, T, F, F]),
+    (any, ["a", "b", "c", "d", "e", "", "", "", "", ""], [T, T, T, F, F]),
 
     (count, [T, T, T, T, T, F, F, F, F, F], [2, 2, 2, 2, 2]),
     (count, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 2, 2, 2, 2]),
@@ -196,11 +192,39 @@ class TestAggregate:
         assert not all(Vector([T, F]))
         assert not all(Vector([F, F]))
 
+    def test_all_na(self):
+        assert all(Vector([1.0, NaN])) is True
+        assert all(Vector([1.0, NaN]), drop_na=False) is None
+        assert all(Vector([0.0, NaN]), drop_na=False) is False
+
+    @pytest.mark.parametrize("use_numba", [False, True])
+    def test_all_na_grouped(self, use_numba):
+        if use_numba and not dataiter.USE_NUMBA:
+            pytest.skip("No Numba")
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = DataFrame(g=[1, 1, 2, 2, 3, 3], a=[1.0, NaN, 0.0, NaN, 1.0, 1.0])
+            stat = data.group_by("g").aggregate(a=all("a", drop_na=False))
+            assert stat.a.tolist() == [None, False, True]
+
     def test_any(self):
         assert not any(EMPTY_VECTOR)
         assert any(Vector([T, T]))
         assert any(Vector([T, F]))
         assert not any(Vector([F, F]))
+
+    def test_any_na(self):
+        assert any(Vector([0.0, NaN])) is False
+        assert any(Vector([0.0, NaN]), drop_na=False) is None
+        assert any(Vector([1.0, NaN]), drop_na=False) is True
+
+    @pytest.mark.parametrize("use_numba", [False, True])
+    def test_any_na_grouped(self, use_numba):
+        if use_numba and not dataiter.USE_NUMBA:
+            pytest.skip("No Numba")
+        with patch("dataiter.USE_NUMBA", use_numba):
+            data = DataFrame(g=[1, 1, 2, 2, 3, 3], a=[0.0, NaN, 1.0, NaN, 0.0, 0.0])
+            stat = data.group_by("g").aggregate(a=any("a", drop_na=False))
+            assert stat.a.tolist() == [None, True, False]
 
     def test_count(self):
         assert count(EMPTY_VECTOR) == 0

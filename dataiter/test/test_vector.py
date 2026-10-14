@@ -179,6 +179,16 @@ class TestVector:
         assert a.is_boolean()
         assert np.all(a == [True, True])
 
+    @pytest.mark.parametrize("values", [
+        [1.0, None],
+        [np.datetime64("2020-01-01"), None],
+        ["1", None],
+        [True, None],
+    ])
+    def test_as_boolean_na(self, values):
+        with pytest.raises(ValueError):
+            Vector(values).as_boolean()
+
     def test_as_bytes(self):
         a = Vector([0, 1]).as_bytes()
         assert a.is_bytes()

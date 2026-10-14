@@ -200,9 +200,15 @@ class Vector(np.ndarray):
         """
         Return vector converted to boolean data type.
 
+        Raise ``ValueError`` if the vector contains missing values, since
+        booleans can't represent them. Use :meth:`replace_na` or
+        :meth:`drop_na` first to handle them.
+
         >>> vector = di.Vector([0, 1])
         >>> vector.as_boolean()
         """
+        if self.is_na().any():
+            raise ValueError("Can't convert missing values to boolean, use replace_na or drop_na first")
         return self.astype(bool)
 
     def as_bytes(self):

@@ -1,5 +1,6 @@
 # PENDING: Dataiter 1.5
 
+- `all`, `any`: Add `drop_na` argument, default true
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.group_by`: Fix to group only returned copy
@@ -17,6 +18,7 @@
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.group_by`: Fix to group only returned copy
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
+- `Vector.as_boolean`: Raise `ValueError` for missing values
 - `Vector.as_integer`: Raise `ValueError` for missing values
 
 # 2026-10-05: Dataiter 1.4
