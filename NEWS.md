@@ -12,6 +12,7 @@ New:
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
+- `Vector.rank`: Add `dir` argument for descending order
 
 Speed-ups:
 - `DataFrame.aggregate`: Speed up by sorting only columns needed

@@ -490,6 +490,14 @@ class TestVector:
         b = a.rank(method="ordinal")
         assert b.tolist() == [4, 1, 2, 3, 5]
 
+    def test_rank_descending(self):
+        a = Vector([1, 2, 1, NaN, 3])
+        assert a.rank(method="min", dir=-1).tolist() == [3, 2, 3, 4, 1]
+        assert a.rank(method="max", dir=-1).tolist() == [4, 2, 4, 5, 1]
+        assert a.rank(method="ordinal", dir=-1).tolist() == [3, 2, 4, 5, 1]
+        b = Vector(["b", "a", "c", ""])
+        assert b.rank(dir=-1).tolist() == [2, 3, 1, 4]
+
     def test_rank_without_ties(self):
         # Without ties, all methods should give the same result.
         a = Vector([NaN, 3, 2, 4, 5, 1])

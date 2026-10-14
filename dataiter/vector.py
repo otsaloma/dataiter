@@ -598,7 +598,7 @@ class Vector(np.ndarray):
         rng = [np.nanmin(self), np.nanmax(self)]
         return self.__class__(rng, self.dtype)
 
-    def rank(self, *, method="min"):
+    def rank(self, *, method="min", dir=1):
         """
         Return the order of elements in a sorted vector.
 
@@ -607,7 +607,8 @@ class Vector(np.ndarray):
         "competition ranking"). **'max'** is the same, but assigning the
         maximum of the set. **'ordinal'** gives each element a distinct rank
         with equal values ranked by their order in input. Ranks begin at 1.
-        Missing values are ranked last.
+        `dir` is ``1`` for ascending order, ``-1`` for descending. Missing
+        values are ranked last, regardless of `dir`.
 
         **References**
 
@@ -626,21 +627,26 @@ class Vector(np.ndarray):
             # Avoid trying to evaluate min/max/mean of all NA.
             self = self.fast(np.repeat(1, self.length))
         out = np.zeros_like(self, int)
+        def codes():
+            unique, inv = np.unique(self[~na], return_inverse=True)
+            return inv if dir > 0 else len(unique) - 1 - inv
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
-            inv = np.unique(self[~na], return_inverse=True)[1]
+            inv = codes()
             out[~na] = np.concatenate(([0], np.bincount(inv))).cumsum()[inv] + 1
             out[na] = out[~na].max() + 1
             return out.view(self.__class__)
         if method == "max":
             # https://stackoverflow.com/a/14672797/16369038
-            inv = np.unique(self[~na], return_inverse=True)[1]
+            inv = codes()
             out[~na] = np.bincount(inv).cumsum()[inv]
             out[na] = len(self)
             return out.view(self.__class__)
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
-            indices = self[~na].argsort(kind="stable")
+            # Sorting values directly is faster than via codes.
+            keys = self[~na] if dir > 0 else codes()
+            indices = keys.argsort(kind="stable")
             rank = np.zeros_like(indices)
             rank[indices] = np.arange(len(indices)) + 1
             out[~na] = rank
