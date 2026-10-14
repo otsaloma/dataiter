@@ -36,7 +36,8 @@ class GeoJSON(DataFrame):
     GeoJSON is a simple wrapper class that reads GeoJSON features into a
     :class:`.DataFrame`. Any operations on the data are thus done with methods
     provided by the data frame class. Geometry is available in the "geometry"
-    column, but no special geometric operations are supported. All other data
+    column, but no special geometric operations are supported. Feature
+    identifiers, if present, are available in the "id" column. All other data
     is available in the "metadata" attribute as an ``attd.AttributeDict``.
     """
 
@@ -44,7 +45,7 @@ class GeoJSON(DataFrame):
     ATTRIBUTES = DataFrame.ATTRIBUTES + ["metadata"]
 
     # Lists of supported GeoJSON keys and types
-    FEATURE_KEYS = ["type", "properties", "geometry"]
+    FEATURE_KEYS = ["type", "id", "properties", "geometry"]
     FEATURE_TYPES = ["Feature"]
     PROPERTY_TYPES = [bool, int, float, str, type(None)]
     TOP_LEVEL_TYPES = ["FeatureCollection"]
@@ -97,12 +98,18 @@ class GeoJSON(DataFrame):
         for feature in raw.features:
             for key in feature.properties:
                 data.setdefault(key, [])
+        has_ids = any("id" in x for x in raw.features)
+        if has_ids and "id" in data:
+            print("Warning: Ignoring feature key 'id' in favor of property 'id'")
+            has_ids = False
         if columns:
             data = {k: v for k, v in data.items() if k in columns}
         for feature in raw.features:
             for key in data:
                 value = feature.properties.get(key, None)
                 data[key].append(value)
+        if has_ids and (not columns or "id" in columns):
+            data = {"id": [x.get("id") for x in raw.features], **data}
         data["geometry"] = [x.geometry for x in raw.features]
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
@@ -150,7 +157,10 @@ class GeoJSON(DataFrame):
             f.write(f'{indent1}"features": [\n')
             for i, item in enumerate(data):
                 geometry = item.pop("geometry")
-                blob = {"type": "Feature", "properties": item, "geometry": geometry}
+                id = item.pop("id", None)
+                blob = {"type": "Feature", "id": id, "properties": item, "geometry": geometry}
+                if id is None:
+                    del blob["id"]
                 blob = json.dumps(blob, **kwargs)
                 comma = "," if i < len(data) - 1 else ""
                 f.write(f"{indent2}{blob}{comma}\n")

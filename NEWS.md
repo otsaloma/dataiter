@@ -16,6 +16,7 @@
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
+- `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both
 - `ListOfDicts.*_join`: Fix matching on missing values in `by` keys
