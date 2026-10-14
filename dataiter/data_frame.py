@@ -45,7 +45,7 @@ class DataFrameColumn(Vector):
         object = util.sequencify(object)
         column = Vector(object, dtype)
         if nrow is not None and nrow != column.length:
-            if column.length != 1 or nrow < 1:
+            if column.length != 1 or nrow < 0:
                 raise ValueError("Bad arguments for broadcast")
             column = column.repeat(nrow)
         return column.view(cls)
@@ -223,7 +223,7 @@ class DataFrame(dict):
                 # what special values to expect and thus we end up
                 # needing to use the slow Vector.__init__.
                 if slices is None:
-                    indices = np.split(data._index_, starts[1:])
+                    indices = np.split(data._index_, starts[1:]) if len(starts) > 0 else []
                     slices = [self._view_rows(x) for x in indices]
                 stat[colname] = [function(x) for x in slices]
         return stat.unselect("_index_", "_group_")
@@ -751,6 +751,9 @@ class DataFrame(dict):
             # Create them lazily, as holding hundreds of thousands
             # of views alive at once makes garbage collection slow.
             slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
+            # Without rows, call functions once with an empty group
+            # to get a column of the correct data type.
+            slices = slices or [slice(0, 0)]
             for colname, function in colname_value_pairs.items():
                 if not callable(function):
                     raise ValueError(f"{colname} argument not callable")
@@ -898,8 +901,8 @@ class DataFrame(dict):
             mem = mem.rbind(new)
         new = DataFrame(column="TOTAL")
         new.dtype = "--"
-        new.item_size = mem.item_size.sum()
-        new.total_size = mem.total_size.sum()
+        new.item_size = sum(x.itemsize for x in self.values())
+        new.total_size = sum(x.get_memory_use() for x in self.values())
         mem = mem.rbind(new)
         # Format sizes into sensible values for display.
         mem.item_size = [f"{x:.0f} B" for x in mem.item_size]
@@ -1182,7 +1185,7 @@ class DataFrame(dict):
         data._index_ = np.arange(data.nrow)
         data = data.sort(**dict.fromkeys(by, 1))
         starts = data._get_group_starts(*by)
-        return np.split(data._index_, starts[1:])
+        return np.split(data._index_, starts[1:]) if len(starts) > 0 else []
 
     def _split_join_by(self, *by):
         by1 = [x if isinstance(x, str) else x[0] for x in by]
@@ -1315,6 +1318,7 @@ class DataFrame(dict):
         # For strings and objects, a Python set is faster than sorting.
         # We just need to avoid NaN and NaT for the 'in' checks to work.
         for i, column in enumerate(columns):
+            if not column.is_na().any(): continue
             if column.is_datetime():
                 flag = np.nanmin(column) - np.timedelta64(1, "D")
                 if np.isnat(flag):

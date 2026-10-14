@@ -1,6 +1,7 @@
 # PENDING: Dataiter 1.5
 
 - `all`, `any`: Add `drop_na` argument, default true
+- `DataFrame.*`: Handle empty data frames gracefully
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped
 - `DataFrame.expand_grid`: New classmethod
