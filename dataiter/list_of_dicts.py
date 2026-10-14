@@ -196,6 +196,7 @@ class ListOfDicts(list):
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        other = other.drop_na(*by2)
         extract1 = itemgetter(*by1)
         extract2 = itemgetter(*by2)
         other_ids = set(map(extract2, other))
@@ -452,6 +453,7 @@ class ListOfDicts(list):
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        other = other.drop_na(*by2)
         extract1 = itemgetter(*by1)
         extract2 = itemgetter(*by2)
         other_by_id = {extract2(x): x for x in reversed(other)}
@@ -509,6 +511,7 @@ class ListOfDicts(list):
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        other = other.drop_na(*by2)
         extract1 = itemgetter(*by1)
         extract2 = itemgetter(*by2)
         other_by_id = {extract2(x): x for x in reversed(other)}
@@ -762,6 +765,7 @@ class ListOfDicts(list):
         >>> listings.semi_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
+        other = other.drop_na(*by2)
         extract1 = itemgetter(*by1)
         extract2 = itemgetter(*by2)
         other_ids = set(map(extract2, other))

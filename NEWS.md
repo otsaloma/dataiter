@@ -18,6 +18,7 @@
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both
+- `ListOfDicts.*_join`: Fix matching on missing values in `by` keys
 - `ListOfDicts.aggregate`: Return single item when ungrouped
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.group_by`: Fix to group only returned copy

@@ -135,7 +135,7 @@ class TestListOfDicts:
 
     def test_anti_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
-        other = ListOfDicts([{"b": 2, "c": 1}])
+        other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])
         data = orig.anti_join(other, "b")
         assert data.pluck("a") == [2, 3]
 
@@ -278,9 +278,9 @@ class TestListOfDicts:
 
     def test_full_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
-        other = ListOfDicts([{"b": 2, "c": 1}])
+        other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])
         data = orig.full_join(other, "b")
-        assert data.pluck("c") == [1, None, None]
+        assert data.pluck("c") == [1, None, None, 2]
 
     def test_head(self):
         data = test.list_of_dicts("downloads.json")
@@ -296,7 +296,7 @@ class TestListOfDicts:
 
     def test_inner_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
-        other = ListOfDicts([{"b": 2, "c": 1}])
+        other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])
         data = orig.inner_join(other, "b")
         assert data.pluck("a") == [1]
 
@@ -332,7 +332,7 @@ class TestListOfDicts:
 
     def test_left_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
-        other = ListOfDicts([{"b": 2, "c": 1}])
+        other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])
         data = orig.left_join(other, "b")
         assert data.pluck("c") == [1, None, None]
 
@@ -510,7 +510,7 @@ class TestListOfDicts:
 
     def test_semi_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
-        other = ListOfDicts([{"b": 2, "c": 1}])
+        other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])
         data = orig.semi_join(other, "b")
         assert data.pluck("a") == [1]
 
