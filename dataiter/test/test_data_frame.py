@@ -303,6 +303,12 @@ class TestDataFrame:
         data = DataFrame.from_arrow(data)
         assert data == orig
 
+    def test_from_arrow_string_first_missing(self):
+        orig = DataFrame(a=["", "x"])
+        data = DataFrame.from_arrow(orig.to_arrow())
+        assert data.a.is_string()
+        assert data.a.tolist() == [None, "x"]
+
     def test_from_json(self):
         orig = test.data_frame("downloads.json")
         text = orig.to_json()

@@ -486,8 +486,14 @@ class DataFrame(dict):
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
+        import pyarrow as pa
         for name, column in zip(data.column_names, data.columns):
             req_dtype = dtypes.get(name, None)
+            if (req_dtype is None and
+                (pa.types.is_string(column.type) or
+                 pa.types.is_large_string(column.type))):
+                # Vector.fast assumes object if the first element is missing i.e. None.
+                req_dtype = str
             na = column.is_null(nan_is_null=True).to_numpy()
             column = column.to_numpy()
             if (req_dtype is None and

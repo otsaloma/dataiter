@@ -20,6 +20,7 @@ Fixes:
 - `DataFrame.*`: Handle empty data frames gracefully
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
+- `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.pivot_longer`: Keep data type of values if same in all pivoted columns
 - `DataFrame.pivot_wider`: Fix error with non-string names
