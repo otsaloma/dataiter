@@ -19,6 +19,7 @@
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.group_by`: Fix to group only returned copy
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
+- `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
 - `Vector.as_boolean`: Raise `ValueError` for missing values
 - `Vector.as_integer`: Raise `ValueError` for missing values
 

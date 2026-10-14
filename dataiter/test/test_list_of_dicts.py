@@ -549,6 +549,12 @@ class TestListOfDicts:
         assert data.nrow == len(orig)
         assert data.ncol == len(orig[0])
 
+    def test_to_data_frame_missing_keys(self):
+        orig = ListOfDicts([{"a": 1}, {"a": 2, "b": 3}])
+        data = orig.to_data_frame()
+        assert data.colnames == ["a", "b"]
+        assert data.b.is_na().tolist() == [True, False]
+
     def test_to_json(self):
         orig = test.list_of_dicts("downloads.json")
         text = orig.to_json()
@@ -560,6 +566,11 @@ class TestListOfDicts:
         data = orig.to_pandas()
         assert data.shape[0] == len(orig)
         assert data.shape[1] == len(orig[0])
+
+    def test_to_pandas_missing_keys(self):
+        orig = ListOfDicts([{"a": 1}, {"a": 2, "b": 3}])
+        data = orig.to_pandas()
+        assert data.columns.tolist() == ["a", "b"]
 
     def test_to_string(self):
         data = test.list_of_dicts("downloads.json")

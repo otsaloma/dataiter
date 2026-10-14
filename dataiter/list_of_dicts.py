@@ -809,7 +809,7 @@ class ListOfDicts(list):
         return self._new(self[-n:])
 
     def _to_columns(self):
-        return {k: self.pluck(k) for k in self[0]} if self else {}
+        return {k: self.pluck(k) for k in self.keys()}
 
     def to_data_frame(self):
         """
