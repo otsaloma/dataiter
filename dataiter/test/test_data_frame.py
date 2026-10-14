@@ -738,6 +738,10 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert (data1.make == data2.make).all()
         assert (data1.model == data2.model).all()
 
+    def test_sort_descending_unsigned(self):
+        data = DataFrame(x=np.array([0, 3, 1], np.uint8))
+        assert data.sort(x=-1).x.tolist() == [3, 1, 0]
+
     def test_sort_string_fixed_na(self):
         orig = DataFrame(x=np.array(["b", "", "a"]))
         data = orig.sort(x=1)

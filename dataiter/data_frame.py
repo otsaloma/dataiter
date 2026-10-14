@@ -1149,14 +1149,25 @@ class DataFrame(dict):
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
             na = column.is_na()
-            if column.is_object() or (dir < 0 and not column.is_number()):
-                column = column.rank(method="min")
-            yield column if dir > 0 else -column
-            # np.lexsort sorts by the last key first,
+            yield column.rank(method="min") if column.is_object() else column, dir
+            # Keys are sorted by least significant first,
             # so yielding na after the values takes precedence.
-            if na.any(): yield na
-        indices = np.lexsort(tuple(itertools.chain.from_iterable(
-            sort_keys(*x) for x in reversed(colname_dir_pairs.items()))))
+            if na.any(): yield na, 1
+        # Chained stable argsorts give the same result as np.lexsort,
+        # but are faster, especially for strings.
+        indices = None
+        for key, dir in itertools.chain.from_iterable(
+                sort_keys(*x) for x in reversed(colname_dir_pairs.items())):
+            if indices is not None:
+                key = key[indices]
+            if dir > 0:
+                order = np.argsort(key, kind="stable")
+            else:
+                # Sort reversed to keep ties in their original order.
+                order = len(key) - 1 - np.argsort(key[::-1], kind="stable")[::-1]
+            indices = order if indices is None else indices[order]
+        if indices is None:
+            indices = np.arange(self.nrow)
         for colname, column in self.items():
             yield colname, column[indices].copy()
 

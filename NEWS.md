@@ -12,6 +12,8 @@
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
 - `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
 - `DataFrame.rbind`: Fix upcasting integers to float with an empty data frame
+- `DataFrame.sort`: Speed up, especially for strings
+- `DataFrame.sort`: Fix descending sort of unsigned integers
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
 - `dt.floor`: New function
