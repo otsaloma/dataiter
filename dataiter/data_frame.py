@@ -805,7 +805,8 @@ class DataFrame(dict):
         `ids` should be the name or a list of names of identifier columns. All
         other columns are considered variable columns and will be pivoted.
         `names` and `values` are names of columns into which the variable names
-        and values are put in the result.
+        and values are put in the result. If all variable columns have the
+        same data type, `values` will have that data type, otherwise object.
 
         >>> wide = di.read_csv("data/listings.csv")
         >>> wide
@@ -815,12 +816,12 @@ class DataFrame(dict):
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
         long = self.__class__()
-        for name in (x for x in self if x not in ids):
+        value_colnames = [x for x in self if x not in ids]
+        same_dtype = len(set(self[x].dtype for x in value_colnames)) == 1
+        for name in value_colnames:
             part = self.select(*ids)
             part[names] = name
-            # Maybe we could avoid using object here,
-            # but it gets complicated.
-            part[values] = self[name].as_object()
+            part[values] = self[name] if same_dtype else self[name].as_object()
             long = long.rbind(part)
         return long.sort(**dict.fromkeys(ids, 1))
 

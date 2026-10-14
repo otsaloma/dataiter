@@ -5,6 +5,7 @@
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.modify`: Speed up when grouped
+- `DataFrame.pivot_longer`: Keep data type of values if same in all pivoted columns
 - `DataFrame.pivot_wider`: Fix error with non-string names
 - `DataFrame.pivot_wider`: Fix to sort new columns before applying `rename`
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
