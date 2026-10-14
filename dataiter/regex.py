@@ -35,8 +35,10 @@ def _apply(function, string, dtype=object, na_value=None):
     assert isinstance(string.dtype, StringDType)
     out = np.full_like(string, na_value, dtype)
     na = string == dtypes.string.na_object
-    for i in np.flatnonzero(~na):
-        out[i] = function(string[i])
+    # np.fromiter keeps e.g. lists from findall as elements,
+    # where assigning a list could make a multidimensional array.
+    values = string[~na].tolist()
+    out[~na] = np.fromiter(map(function, values), dtype, count=len(values))
     return Vector.fast(out, dtype)
 
 def findall(pattern, string, flags=0):
@@ -48,7 +50,7 @@ def findall(pattern, string, flags=0):
     >>> x = di.Vector(["asdf", "1234"])
     >>> regex.findall(r"[a-z]", x)
     """
-    f = lambda x: re.findall(pattern, x, flags=flags)
+    f = re.compile(pattern, flags).findall
     return _apply(f, string)
 
 def fullmatch(pattern, string, flags=0):
@@ -60,7 +62,7 @@ def fullmatch(pattern, string, flags=0):
     >>> x = di.Vector(["asdf", "1234"])
     >>> regex.fullmatch(r"[a-z]+", x)
     """
-    f = lambda x: re.fullmatch(pattern, x, flags=flags)
+    f = re.compile(pattern, flags).fullmatch
     return _apply(f, string)
 
 def match(pattern, string, flags=0):
@@ -72,7 +74,7 @@ def match(pattern, string, flags=0):
     >>> x = di.Vector(["asdf", "1234"])
     >>> regex.match(r"[a-z]", x)
     """
-    f = lambda x: re.match(pattern, x, flags=flags)
+    f = re.compile(pattern, flags).match
     return _apply(f, string)
 
 def search(pattern, string, flags=0):
@@ -84,7 +86,7 @@ def search(pattern, string, flags=0):
     >>> x = di.Vector(["asdf", "1234"])
     >>> regex.search(r"[a-z]", x)
     """
-    f = lambda x: re.search(pattern, x, flags=flags)
+    f = re.compile(pattern, flags).search
     return _apply(f, string)
 
 def split(pattern, string, maxsplit=0, flags=0):
@@ -96,7 +98,8 @@ def split(pattern, string, maxsplit=0, flags=0):
     >>> x = di.Vector(["one two three", "four"])
     >>> regex.split(r" +", x)
     """
-    f = lambda x: re.split(pattern, x, maxsplit=maxsplit, flags=flags)
+    p = re.compile(pattern, flags)
+    f = lambda x: p.split(x, maxsplit=maxsplit)
     return _apply(f, string)
 
 def sub(pattern, repl, string, count=0, flags=0):
@@ -108,7 +111,8 @@ def sub(pattern, repl, string, count=0, flags=0):
     >>> x = di.Vector(["great", "fantastic"])
     >>> regex.sub(r"$", r"!", x)
     """
-    f = lambda x: re.sub(pattern, repl, x, count=count, flags=flags)
+    p = re.compile(pattern, flags)
+    f = lambda x: p.sub(repl, x, count=count)
     return _apply(f, string, dtypes.string, dtypes.string.na_object)
 
 def subn(pattern, repl, string, count=0, flags=0):
@@ -120,5 +124,6 @@ def subn(pattern, repl, string, count=0, flags=0):
     >>> x = di.Vector(["great", "fantastic"])
     >>> regex.subn(r"$", r"!", x)
     """
-    f = lambda x: re.subn(pattern, repl, x, count=count, flags=flags)
+    p = re.compile(pattern, flags)
+    f = lambda x: p.subn(repl, x, count=count)
     return _apply(f, string)

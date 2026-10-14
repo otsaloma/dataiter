@@ -20,6 +20,7 @@ Speed-ups:
 - `DataFrame.sort`: Speed up, especially for strings
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
+- `regex.*`: Speed up
 
 Fixes:
 - `DataFrame.*`: Handle empty data frames gracefully
