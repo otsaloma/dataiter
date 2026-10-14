@@ -5,7 +5,9 @@ import dataiter as di
 import functools
 import numpy as np
 import random
+import tempfile
 import time
+import uuid
 
 from dataiter import test
 from statistics import mean
@@ -16,7 +18,11 @@ def _data_frame(path, nrow):
     data = test.data_frame(path)
     n = nrow // data.nrow
     data = data.rbind(*([data] * n))
-    return data.head(nrow)
+    data = data.head(nrow)
+    # The source data is sorted, shuffle to avoid unrealistically
+    # fast sorting of already sorted rows.
+    rng = np.random.default_rng(0)
+    return data.slice(rng.permutation(data.nrow))
 
 def data_frame(path, nrow=1_000_000):
     return _data_frame(path, nrow).deepcopy()
@@ -112,6 +118,14 @@ def data_frame_left_join():
     data.left_join(meta, "make", "model")
     return time.time() - start
 
+def data_frame_modify_grouped():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    (data
+     .group_by("make", "model")
+     .modify(hwy_share=lambda x: x.hwy / x.hwy.sum()))
+    return time.time() - start
+
 def data_frame_read_csv():
     start = time.time()
     test.data_frame("vehicles.csv")
@@ -121,6 +135,15 @@ def data_frame_read_json():
     start = time.time()
     test.data_frame("vehicles.json")
     return time.time() - start
+
+def data_frame_read_parquet():
+    data = data_frame("vehicles.csv")
+    with tempfile.TemporaryDirectory() as tmp:
+        path = f"{tmp}/vehicles.parquet"
+        data.write_parquet(path)
+        start = time.time()
+        di.read_parquet(path)
+        return time.time() - start
 
 def data_frame_rbind_2():
     # 2 * 500,000 = 1,000,000
@@ -149,11 +172,45 @@ def data_frame_sort():
     data.sort(make=1, model=1, year=1)
     return time.time() - start
 
+def data_frame_sort_categorical():
+    data = data_frame("vehicles.csv")
+    start = time.time()
+    data.sort(make=1)
+    return time.time() - start
+
+def data_frame_sort_unique():
+    data = data_frame("vehicles.csv")
+    data.uuid = [str(uuid.uuid4()) for i in range(data.nrow)]
+    start = time.time()
+    data.sort(uuid=1)
+    return time.time() - start
+
 def data_frame_unique():
     data = data_frame("vehicles.csv")
     start = time.time()
     data.unique("make", "model", "year")
     return time.time() - start
+
+def data_frame_write_csv():
+    data = data_frame("vehicles.csv")
+    with tempfile.TemporaryDirectory() as tmp:
+        start = time.time()
+        data.write_csv(f"{tmp}/vehicles.csv")
+        return time.time() - start
+
+def data_frame_write_json():
+    data = data_frame("vehicles.csv")
+    with tempfile.TemporaryDirectory() as tmp:
+        start = time.time()
+        data.write_json(f"{tmp}/vehicles.json")
+        return time.time() - start
+
+def data_frame_write_parquet():
+    data = data_frame("vehicles.csv")
+    with tempfile.TemporaryDirectory() as tmp:
+        start = time.time()
+        data.write_parquet(f"{tmp}/vehicles.parquet")
+        return time.time() - start
 
 @functools.cache
 def _list_of_dicts(path, length):
