@@ -237,6 +237,10 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
+        Rows with missing values in `by` never match. Note that for strings,
+        missing values are empty strings. If you need those to match, use
+        e.g. :meth:`.Vector.replace_na` before joining.
+
         >>> # All listings that don't have reviews
         >>> listings = di.read_csv("data/listings.csv")
         >>> reviews = di.read_csv("data/listings-reviews.csv")
@@ -575,6 +579,10 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
+        Rows with missing values in `by` never match. Note that for strings,
+        missing values are empty strings. If you need those to match, use
+        e.g. :meth:`.Vector.replace_na` before joining.
+
         Columns other than `by` found in both `self` and `other` keep their
         values from `self` for rows found in `self`. Rename such columns before
         joining if you need both.
@@ -657,6 +665,10 @@ class DataFrame(dict):
         column names if the correspoding column name differs between `self` and
         `other`.
 
+        Rows with missing values in `by` never match. Note that for strings,
+        missing values are empty strings. If you need those to match, use
+        e.g. :meth:`.Vector.replace_na` before joining.
+
         Columns other than `by` found in both `self` and `other` keep their
         values from `self`. Rename such columns before joining if you need both.
 
@@ -686,6 +698,10 @@ class DataFrame(dict):
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
         `other`.
+
+        Rows with missing values in `by` never match. Note that for strings,
+        missing values are empty strings. If you need those to match, use
+        e.g. :meth:`.Vector.replace_na` before joining.
 
         Columns other than `by` found in both `self` and `other` keep their
         values from `self`. Rename such columns before joining if you need both.
@@ -1100,6 +1116,10 @@ class DataFrame(dict):
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
         `other`.
+
+        Rows with missing values in `by` never match. Note that for strings,
+        missing values are empty strings. If you need those to match, use
+        e.g. :meth:`.Vector.replace_na` before joining.
 
         >>> # All listings that have reviews
         >>> listings = di.read_csv("data/listings.csv")
