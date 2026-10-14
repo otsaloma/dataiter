@@ -655,11 +655,11 @@ class DataFrame(dict):
         other = other.drop_na(*by2).unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
-            yield colname, column[found].copy()
+            yield colname, column[found]
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
-            yield colname, column[src[found]].copy()
+            yield colname, column[src[found]]
 
     @deco.new_from_generator
     def left_join(self, other, *by):
@@ -693,7 +693,7 @@ class DataFrame(dict):
             dtype = column.na_dtype
             new = DataFrameColumn(value, dtype, self.nrow)
             new[found] = column[src[found]]
-            yield colname, new.copy()
+            yield colname, new
 
     def map(self, function):
         """
@@ -1089,7 +1089,7 @@ class DataFrame(dict):
         other = other.drop_na(*by2).unique(*by2)
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
-            yield colname, column[found].copy()
+            yield colname, column[found]
 
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
@@ -1109,7 +1109,7 @@ class DataFrame(dict):
         rows = self._parse_rows_from_integer(rows)
         cols = self._parse_cols_from_integer(cols)
         for colname in (self.colnames[x] for x in cols):
-            yield colname, self[colname][rows].copy()
+            yield colname, self[colname][rows]
 
     @deco.new_from_generator
     def slice_off(self, rows=None, cols=None):
@@ -1169,7 +1169,7 @@ class DataFrame(dict):
         if indices is None:
             indices = np.arange(self.nrow)
         for colname, column in self.items():
-            yield colname, column[indices].copy()
+            yield colname, column[indices]
 
     def split(self, *by):
         """
@@ -1310,7 +1310,7 @@ class DataFrame(dict):
             starts = self.select(*colnames).slice(order)._get_group_starts(*colnames)
             keep = np.sort(order[starts])
             for colname, column in self.items():
-                yield colname, column[keep].copy()
+                yield colname, column[keep]
             return
         # For strings and objects, a Python set is faster than sorting.
         # We just need to avoid NaN and NaT for the 'in' checks to work.
@@ -1338,7 +1338,7 @@ class DataFrame(dict):
                 seen.add(row)
                 keep.append(i)
         for colname, column in self.items():
-            yield colname, column[keep].copy()
+            yield colname, column[keep]
 
     @deco.new_from_generator
     def unselect(self, *colnames):
