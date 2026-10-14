@@ -13,6 +13,7 @@
 - `dt.floor`: New function
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
+- `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both
 - `ListOfDicts.aggregate`: Return single item when ungrouped
 - `ListOfDicts.expand_grid`: New classmethod

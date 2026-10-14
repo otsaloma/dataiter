@@ -209,7 +209,15 @@ def generic_numba(function):
     def aggregate(x, group, drop_na, default, nrequired):
         out = []
         for xg in yield_groups_numba(x, group, drop_na):
-            out.append(function(xg) if len(xg) >= nrequired else default)
+            # A conditional expression here (x if y else z) would be
+            # miscompiled for datetimes, returning wrong values and breaking
+            # also other functions compiled later that return lists of
+            # datetimes. This is likely a bug in Numba (observed on version
+            # 0.67 with Python 3.14), but easy to work around.
+            if len(xg) >= nrequired:
+                out.append(function(xg))
+            else:
+                out.append(default)
         return out
     return aggregate
 
