@@ -14,6 +14,7 @@
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
 - `dt.floor`: New function
+- `dt.from_string`: Add `errors` argument for unparseable values
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped

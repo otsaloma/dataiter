@@ -67,29 +67,42 @@ def floor(x, unit):
         out = x.astype(f"datetime64[{codes[unit]}]")
     return Vector.fast(out.astype(x.dtype), x.dtype)
 
-def from_string(x, format):
+def from_string(x, format, *, errors="strict"):
     """
     Initialize a datetime scalar or vector from `x`.
 
     `format` uses Python ``strptime`` format codes:
     https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 
-    >>> x = di.Vector(["15.10.2022"])
-    >>> dt.from_string(x, "%d.%m.%Y")
+    `errors` determines how to handle strings that can't be parsed:
+    ``"strict"`` to raise ``ValueError``, ``"replace"`` to replace them
+    with missing values.
+
+    >>> x = di.Vector(["15.10.2022", "32.10.2022"])
+    >>> dt.from_string(x, "%d.%m.%Y", errors="replace")
     """
+    if errors not in ["strict", "replace"]:
+        raise ValueError(f"Bad {errors=}")
     if util.is_scalar(x):
         x = Vector([x], str)
-        return from_string(x, format)[0]
+        return from_string(x, format, errors=errors)[0]
     assert isinstance(x, np.ndarray)
     assert isinstance(x.dtype, StringDType)
     out = np.full_like(x, None, object)
     out = Vector.fast(out, object).as_datetime()
     na = x == dtypes.string.na_object
     if na.all(): return out
+    def parse(x):
+        try:
+            return datetime.datetime.strptime(x, format)
+        except ValueError:
+            if errors == "strict": raise
+            return None
     unique, inverse = np.unique(x[~na], return_inverse=True)
-    f = np.vectorize(lambda x: datetime.datetime.strptime(x, format))
+    f = np.vectorize(parse, otypes=[object])
     out[~na] = f(unique.astype(object)).astype(out.dtype)[inverse]
-    if (out[~na] == out[~na].as_date()).all():
+    valid = ~out.is_na()
+    if valid.any() and (out[valid] == out[valid].as_date()).all():
         out = out.as_date()
     return out
 

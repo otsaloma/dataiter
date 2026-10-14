@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import numpy as np
+import pytest
 
 from dataiter import dt
 from dataiter import Vector
@@ -74,6 +75,18 @@ class TestDT:
         assert b.is_datetime()
         assert b[0] == np.datetime64("2022-11-14T22:49:00")
         assert np.isnat(b[1])
+
+    def test_from_string_errors_replace(self):
+        a = Vector(["14.11.2022", "32.11.2022"], str)
+        b = dt.from_string(a, "%d.%m.%Y", errors="replace")
+        assert b.dtype == np.dtype("datetime64[D]")
+        assert b[0] == np.datetime64("2022-11-14")
+        assert np.isnat(b[1])
+
+    def test_from_string_errors_strict(self):
+        a = Vector(["14.11.2022", "32.11.2022"], str)
+        with pytest.raises(ValueError):
+            dt.from_string(a, "%d.%m.%Y")
 
     def test_hour(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
