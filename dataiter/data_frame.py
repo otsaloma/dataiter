@@ -952,6 +952,12 @@ class DataFrame(dict):
         # Strings need to be requested already at parse time,
         # otherwise e.g. leading zeros would be lost to type guessing.
         column_types = {k: pa.string() for k, v in dtypes.items() if Vector.fast([], v).is_string()}
+        if not header and (columns or column_types):
+            # Translate our generated column names to pyarrow's f0, f1, ...
+            names = list(util.yield_colnames())
+            to_arrow = {x: f"f{names.index(x)}" for x in [*columns, *column_types] if x in names}
+            columns = [to_arrow.get(x, x) for x in columns]
+            column_types = {to_arrow.get(k, k): v for k, v in column_types.items()}
         table = csv.read_csv(
             path,
             read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
@@ -959,8 +965,10 @@ class DataFrame(dict):
             convert_options=csv.ConvertOptions(include_columns=columns, column_types=column_types))
 
         if not header:
-            names = util.generate_colnames(table.shape[1])
-            table = table.rename_columns(names)
+            # Translate pyarrow's f0, f1, ... back to our generated column names.
+            indices = [int(x[1:]) for x in table.column_names]
+            names = util.generate_colnames(max(indices, default=-1) + 1)
+            table = table.rename_columns([names[i] for i in indices])
         return cls.from_arrow(table, dtypes=dtypes)
 
     @classmethod

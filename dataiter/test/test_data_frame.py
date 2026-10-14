@@ -517,6 +517,19 @@ class TestDataFrame:
         data = DataFrame.read_csv(path, dtypes={"zip": str})
         assert data.zip.tolist() == ["02134"]
 
+    def test_read_csv_no_header_columns(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text("1,2,3\n", "utf-8")
+        data = DataFrame.read_csv(path, header=False, columns=["c", "a"])
+        assert data.colnames == ["c", "a"]
+        assert data.c.tolist() == [3]
+
+    def test_read_csv_no_header_dtypes(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text("02134,007\n", "utf-8")
+        data = DataFrame.read_csv(path, header=False, dtypes={"b": str})
+        assert data.b.tolist() == ["007"]
+
     def test_read_csv_missing_blank(self, tmp_path):
         text = """
 int,float,string,bool,date
