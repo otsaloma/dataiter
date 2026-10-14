@@ -127,13 +127,15 @@ def data_frame_modify_grouped():
     return time.time() - start
 
 def data_frame_read_csv():
+    path = test.get_data_path("vehicles.csv")
     start = time.time()
-    test.data_frame("vehicles.csv")
+    di.DataFrame.read_csv(path)
     return time.time() - start
 
 def data_frame_read_json():
+    path = test.get_data_path("vehicles.json")
     start = time.time()
-    test.data_frame("vehicles.json")
+    di.DataFrame.read_json(path)
     return time.time() - start
 
 def data_frame_read_parquet():
@@ -274,13 +276,15 @@ def list_of_dicts_left_join():
     return time.time() - start
 
 def list_of_dicts_read_csv():
+    path = test.get_data_path("vehicles.csv")
     start = time.time()
-    test.list_of_dicts("vehicles.csv")
+    di.ListOfDicts.read_csv(path)
     return time.time() - start
 
 def list_of_dicts_read_json():
+    path = test.get_data_path("vehicles.json")
     start = time.time()
-    test.list_of_dicts("vehicles.json")
+    di.ListOfDicts.read_json(path)
     return time.time() - start
 
 def list_of_dicts_sort():
