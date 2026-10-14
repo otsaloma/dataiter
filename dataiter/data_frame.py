@@ -188,12 +188,20 @@ class DataFrame(dict):
         >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
         """
         group_colnames = self._group_colnames
-        data = self.sort(**dict.fromkeys(group_colnames, 1)) if group_colnames else self.copy()
-        data._index_ = np.arange(data.nrow)
+        data = self.select(*group_colnames)
+        data._index_ = np.arange(self.nrow)
+        if group_colnames:
+            data = data.sort(**dict.fromkeys(group_colnames, 1))
         starts = data._get_group_starts(*group_colnames)
-        stat = data.select("_index_", *group_colnames).slice(starts)
+        stat = data.slice(starts)
         group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
         if any(group_aware):
+            # Group-aware functions declare the columns they use,
+            # sort only those instead of the whole data frame.
+            for function in colname_function_pairs.values():
+                for colname in getattr(function, "colnames", []):
+                    if colname not in data:
+                        data[colname] = self[colname][data._index_]
             n = np.diff(starts, append=data.nrow)
             data._group_ = np.repeat(np.arange(len(starts)), n)
         slices = None
@@ -216,7 +224,7 @@ class DataFrame(dict):
                 # needing to use the slow Vector.__init__.
                 if slices is None:
                     indices = np.split(data._index_, starts[1:])
-                    slices = [data._view_rows(x) for x in indices]
+                    slices = [self._view_rows(x) for x in indices]
                 stat[colname] = [function(x) for x in slices]
         return stat.unselect("_index_", "_group_")
 

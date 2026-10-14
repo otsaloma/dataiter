@@ -90,6 +90,7 @@ def all_any(x, function, empty, drop_na):
                     for y, z in zip(out, has_na)]
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     na = x.is_na()
     out = function(x[~na].as_boolean()).item()
@@ -144,6 +145,7 @@ def count(x="", *, drop_na=False):
                      nrequired=0)
 
         aggregate.group_aware = True
+        aggregate.colnames = [x] if x else []
         return aggregate
     x = handle_na(x, drop_na)
     return len(x)
@@ -171,6 +173,7 @@ def count_unique(x, *, drop_na=False):
                          data[x].is_na().any()))
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     return len(set(x))
@@ -301,6 +304,7 @@ def max(x, *, drop_na=True):
                      nrequired=1)
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     return np.amax(x).item() if len(x) >= 1 else x.na_value
@@ -334,6 +338,7 @@ def mean(x, *, drop_na=True):
             return datetime_from_float(out, data[x])
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     if x.is_datetime():
@@ -369,6 +374,7 @@ def median(x, *, drop_na=True):
             return datetime_from_float(out, data[x])
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     if x.is_datetime():
@@ -400,6 +406,7 @@ def min(x, *, drop_na=True):
                      nrequired=1)
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     return np.amin(x).item() if len(x) >= 1 else x.na_value
@@ -427,6 +434,7 @@ def mode(x, *, drop_na=True):
                          data[x].is_na().any()))
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     return statistics.mode(x) if len(x) >= 1 else x.na_value
@@ -477,6 +485,7 @@ def nth(x, index, *, drop_na=False):
                          data[x].is_na().any()))
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     try:
@@ -530,6 +539,7 @@ def quantile(x, q, *, drop_na=True):
             return datetime_from_float(out, data[x])
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
     if x.is_datetime():
@@ -585,6 +595,7 @@ def std(x, *, ddof=0, drop_na=True):
                      nrequired=2)
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "std")
     x = handle_na(x, drop_na)
@@ -616,6 +627,7 @@ def sum(x, *, drop_na=True):
                      nrequired=0)
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "sum")
     x = handle_na(x, drop_na)
@@ -665,6 +677,7 @@ def var(x, *, ddof=0, drop_na=True):
                      nrequired=2)
 
         aggregate.group_aware = True
+        aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "var")
     x = handle_na(x, drop_na)
