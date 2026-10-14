@@ -18,6 +18,7 @@ Speed-ups:
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.sort`: Speed up, especially for strings
+- `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `regex.*`: Speed up

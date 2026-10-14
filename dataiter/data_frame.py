@@ -1278,7 +1278,11 @@ class DataFrame(dict):
         >>> data.to_arrow()
         """
         import pyarrow as pa
-        data = [pa.array(self[x].tolist()) for x in self.colnames]
+        data = []
+        for column in self.columns:
+            # Arrow doesn't support StringDType.
+            values = column.astype(object) if column.is_string() else np.asarray(column)
+            data.append(pa.array(values, mask=np.asarray(column.is_na())))
         return pa.table(data, names=self.colnames)
 
     def to_json(self, **kwargs):
@@ -1313,8 +1317,7 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.to_pandas()
         """
-        import pandas as pd
-        return pd.DataFrame({x: self[x].tolist() for x in self.colnames})
+        return self.to_arrow().to_pandas()
 
     def to_string(self, *, max_rows=None, max_width=None, truncate_width=None):
         """
