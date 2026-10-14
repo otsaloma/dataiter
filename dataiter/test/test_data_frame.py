@@ -283,6 +283,13 @@ class TestDataFrame:
         assert np.all(data.make == "Saab")
         assert np.sum(data.hwy) == 10672
 
+    def test_filter_given_colname_sequence_pairs(self):
+        data = DataFrame(x=["a", "b", "c", "d"], y=[1, 2, 3, 4])
+        for value in [["a", "c"], ("a", "c"), {"a", "c"}, np.array(["a", "c"]), Vector(["a", "c"])]:
+            assert data.filter(x=value).y.tolist() == [1, 3]
+        assert data.filter(x=["a", "c"], y=3).y.tolist() == [3]
+        assert data.filter_out(x=["a", "c"]).y.tolist() == [2, 4]
+
     def test_filter_out_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter_out(data.make == "Saab")

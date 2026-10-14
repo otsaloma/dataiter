@@ -21,10 +21,12 @@
 # THE SOFTWARE.
 
 import datetime
+import numpy as np
 
 from attd import AttributeDict
 from dataiter import ListOfDicts
 from dataiter import test
+from dataiter import Vector
 from pathlib import Path
 from unittest.mock import patch
 
@@ -246,6 +248,14 @@ class TestListOfDicts:
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
         data = orig.filter(b=None)
         assert data.pluck("a") == [2, 3]
+
+    def test_filter_given_key_sequence_pairs(self):
+        data = ListOfDicts([{"x": "a", "y": 1}, {"x": "b", "y": 2}, {"x": "c", "y": 3}, {"y": 4}])
+        for value in [["a", "c"], ("a", "c"), {"a", "c"}, np.array(["a", "c"]), Vector(["a", "c"])]:
+            assert data.filter(x=value).pluck("y") == [1, 3]
+        assert data.filter(x=["a", "c"], y=3).pluck("y") == [3]
+        assert data.filter(x=["a", None]).pluck("y") == [1, 4]
+        assert data.filter_out(x=["a", "c"]).pluck("y") == [2, 4]
 
     def test_filter_out_given_function(self):
         orig = test.list_of_dicts("downloads.json")

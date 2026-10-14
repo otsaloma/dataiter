@@ -319,7 +319,8 @@ class ListOfDicts(list):
         Filtering can be done either by `function`, which receives an
         individual item as its argument and returns ``True`` or ``False``, or
         by `key_value_pairs`, which are a shorthand to check against a fixed
-        value. See the example below of equivalent filtering with both ways.
+        value, or if `value` is a sequence, such as a list, against any of its
+        elements. See the example below of equivalent filtering with both ways.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.filter(lambda x: x.hood == "Manhattan" and x.guests == 2)
@@ -330,11 +331,8 @@ class ListOfDicts(list):
                 if function(item):
                     yield item
         elif key_value_pairs:
-            extract = itemgetter(*key_value_pairs.keys())
-            values = tuple(key_value_pairs.values())
-            values = values[0] if len(values) == 1 else values
-            for item in self:
-                if extract(item) == values:
+            for item, match in zip(self, self._match_pairs(key_value_pairs)):
+                if match:
                     yield item
 
     @deco.new_from_generator
@@ -345,7 +343,8 @@ class ListOfDicts(list):
         Filtering can be done either by `function`, which receives an
         individual item as its argument and returns ``True`` or ``False``, or
         by `key_value_pairs`, which are a shorthand to check against a fixed
-        value. See the example below of equivalent filtering with both ways.
+        value, or if `value` is a sequence, such as a list, against any of its
+        elements. See the example below of equivalent filtering with both ways.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.filter_out(lambda x: x.hood == "Manhattan")
@@ -356,11 +355,8 @@ class ListOfDicts(list):
                 if not function(item):
                     yield item
         elif key_value_pairs:
-            extract = itemgetter(*key_value_pairs.keys())
-            values = tuple(key_value_pairs.values())
-            values = values[0] if len(values) == 1 else values
-            for item in self:
-                if extract(item) != values:
+            for item, match in zip(self, self._match_pairs(key_value_pairs)):
+                if not match:
                     yield item
 
     @classmethod
@@ -560,6 +556,20 @@ class ListOfDicts(list):
         if isinstance(self._predecessor, ListOfDicts):
             self._predecessor._mark_obsolete()
         self._obsolete = True
+
+    def _match_pairs(self, key_value_pairs):
+        extract = itemgetter(*key_value_pairs.keys())
+        if all(map(util.is_scalar, key_value_pairs.values())):
+            values = tuple(key_value_pairs.values())
+            values = values[0] if len(values) == 1 else values
+            for item in self:
+                yield extract(item) == values
+            return
+        scalars = {k: v for k, v in key_value_pairs.items() if util.is_scalar(v)}
+        sequences = {k: list(v) for k, v in key_value_pairs.items() if not util.is_scalar(v)}
+        for item in self:
+            yield (all(item.get(k, None) == v for k, v in scalars.items()) and
+                   all(item.get(k, None) in v for k, v in sequences.items()))
 
     @deco.obsoletes
     @deco.new_from_generator

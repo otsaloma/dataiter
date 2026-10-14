@@ -437,7 +437,8 @@ class DataFrame(dict):
         especially useful in a method chaining context where you don't have
         direct access to the data frame in question. Alternatively,
         `colname_value_pairs` provides a shorthand to check against a fixed
-        value. See the example below of equivalent filtering all three ways.
+        value, or if `value` is a sequence, such as a list, against any of its
+        elements. See the example below of equivalent filtering all three ways.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
@@ -448,9 +449,7 @@ class DataFrame(dict):
             if callable(rows):
                 rows = rows(self)
         elif colname_value_pairs:
-            rows = Vector.fast([True], bool).repeat(self.nrow)
-            for colname, value in colname_value_pairs.items():
-                rows = rows & (self[colname] == value)
+            rows = self._match_pairs(colname_value_pairs)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.take(column, rows)
@@ -466,7 +465,8 @@ class DataFrame(dict):
         especially useful in a method chaining context where you don't have
         direct access to the data frame in question. Alternatively,
         `colname_value_pairs` provides a shorthand to check against a fixed
-        value. See the example below of equivalent filtering all three ways.
+        value, or if `value` is a sequence, such as a list, against any of its
+        elements. See the example below of equivalent filtering all three ways.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.filter_out(data.hood == "Manhattan")
@@ -477,9 +477,7 @@ class DataFrame(dict):
             if callable(rows):
                 rows = rows(self)
         elif colname_value_pairs:
-            rows = Vector.fast([True], bool).repeat(self.nrow)
-            for colname, value in colname_value_pairs.items():
-                rows = rows & (self[colname] == value)
+            rows = self._match_pairs(colname_value_pairs)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
             yield colname, np.delete(column, rows)
@@ -747,6 +745,18 @@ class DataFrame(dict):
         >>> data.map(lambda x, i: (x.reviews[i], x.rating[i]))[:3]
         """
         return [function(self, i) for i in range(self.nrow)]
+
+    def _match_pairs(self, colname_value_pairs):
+        rows = Vector.fast([True], bool).repeat(self.nrow)
+        for colname, value in colname_value_pairs.items():
+            if util.is_scalar(value):
+                rows = rows & (self[colname] == value)
+            else:
+                if not isinstance(value, np.ndarray):
+                    # np.isin treats sets and other non-sequences as a single element.
+                    value = list(value)
+                rows = rows & np.isin(self[colname], value)
+        return rows
 
     @deco.new_from_generator
     def modify(self, **colname_value_pairs):
