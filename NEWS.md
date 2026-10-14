@@ -51,6 +51,7 @@ Fixes:
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector.as_boolean`: Raise `ValueError` for missing values
 - `Vector.as_integer`: Raise `ValueError` for missing values
+- `Vector.rank`: Fix error when all values are missing
 
 # 2026-10-05: Dataiter 1.4
 

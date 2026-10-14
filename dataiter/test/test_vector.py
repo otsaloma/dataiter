@@ -490,6 +490,12 @@ class TestVector:
         b = a.rank(method="ordinal")
         assert b.tolist() == [4, 1, 2, 3, 5]
 
+    def test_rank_na_all(self):
+        a = Vector([NaN, NaN, NaN])
+        assert a.rank(method="min").tolist() == [1, 1, 1]
+        assert a.rank(method="max").tolist() == [3, 3, 3]
+        assert a.rank(method="ordinal").tolist() == [1, 2, 3]
+
     def test_rank_descending(self):
         a = Vector([1, 2, 1, NaN, 3])
         assert a.rank(method="min", dir=-1).tolist() == [3, 2, 3, 4, 1]

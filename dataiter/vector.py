@@ -625,7 +625,7 @@ class Vector(np.ndarray):
         na = self.is_na()
         if na.all():
             # Avoid trying to evaluate min/max/mean of all NA.
-            self = self.fast(np.repeat(1, self.length))
+            return self.fast(np.repeat(1, self.length)).rank(method=method, dir=dir)
         out = np.zeros_like(self, int)
         def codes():
             unique, inv = np.unique(self[~na], return_inverse=True)
