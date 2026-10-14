@@ -1,37 +1,42 @@
 # PENDING: Dataiter 1.5
 
+New:
 - `all`, `any`: Add `drop_na` argument, default true
-- `DataFrame.*`: Handle empty data frames gracefully
-- `DataFrame.aggregate`: Speed up by sorting only columns needed
-- `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped
 - `DataFrame.expand_grid`: New classmethod
-- `DataFrame.group_by`: Fix to group only returned copy
+- `dt.floor`: New function
+- `dt.from_string`: Add `errors` argument for unparseable values
+- `GeoJSON`: Read and write feature identifiers as column "id"
+- `ListOfDicts.expand_grid`: New classmethod
+- `mean`, `median`, `quantile`: Support dates and datetimes
+
+Speed-ups:
+- `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.modify`: Speed up when grouped
+- `DataFrame.sort`: Speed up, especially for strings
+- `dt.from_string`: Speed up, especially when values repeat
+- `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
+
+Fixes:
+- `DataFrame.*`: Handle empty data frames gracefully
+- `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped
+- `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.pivot_longer`: Keep data type of values if same in all pivoted columns
 - `DataFrame.pivot_wider`: Fix error with non-string names
 - `DataFrame.pivot_wider`: Fix to sort new columns before applying `rename`
-- `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
-- `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
 - `DataFrame.rbind`: Fix upcasting integers to float with an empty data frame
-- `DataFrame.sort`: Speed up, especially for strings
+- `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
+- `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
 - `DataFrame.sort`: Fix descending sort of unsigned integers
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
-- `dt.floor`: New function
-- `dt.from_string`: Add `errors` argument for unparseable values
-- `dt.from_string`: Speed up, especially when values repeat
-- `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
-- `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`
-- `ListOfDicts.*_join`: Keep values of `self` for keys found in both
 - `ListOfDicts.*_join`: Fix matching on missing values in `by` keys
+- `ListOfDicts.*_join`: Keep values of `self` for keys found in both
 - `ListOfDicts.aggregate`: Return single item when ungrouped
-- `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.group_by`: Fix to group only returned copy
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
-- `mean`, `median`, `quantile`: Support dates and datetimes
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector.as_boolean`: Raise `ValueError` for missing values
