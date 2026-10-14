@@ -113,10 +113,12 @@ TEST_MATRIX = [
     (mean, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (mean, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
     (mean, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.5, 3.5, 5.5, 7.0, NaN]),
+    (mean, [D1, D3, D3, D5, D5, D7, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
 
     (median, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (median, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
     (median, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.5, 3.5, 5.5, 7.0, NaN]),
+    (median, [D1, D3, D3, D5, D5, D7, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
 
     (min, [T, T, T, T, T, F, F, F, F, F], [T, T, F, F, F]),
     (min, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 3, 5, 7, 9]),
@@ -138,6 +140,7 @@ TEST_MATRIX = [
     (quantile05, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (quantile05, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
     (quantile05, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.5, 3.5, 5.5, 7.0, NaN]),
+    (quantile05, [D1, D3, D3, D5, D5, D7, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
 
     (std, [T, T, T, T, T, F, F, F, F, F], [0.0, 0.0, 0.5, 0.0, 0.0]),
     (std, [1, 1, 2, 3, 5, 7, 8, 12, 13, 21], [0.0, 0.5, 1.0, 2.0, 4.0]),
@@ -269,6 +272,9 @@ class TestAggregate:
         assert np.isclose(mean(Vector([1, 2, 10])), 4.333333)
         assert np.isclose(mean(Vector([1, 2, NaN])), 1.5)
 
+    def test_mean_date(self):
+        assert mean(Vector([D1, D3, NaT])) == D2
+
     def test_mean_nan(self):
         assert np.isnan(mean(EMPTY_VECTOR))
         assert np.isnan(mean(Vector([1, 2, NaN]), drop_na=False))
@@ -276,6 +282,9 @@ class TestAggregate:
     def test_median(self):
         assert median(Vector([1, 4, 6, 8, 5])) == 5
         assert median(Vector([1, 4, 6, NaN, NaN])) == 4
+
+    def test_median_date(self):
+        assert median(Vector([D1, D2, D7, NaT])) == D2
 
     def test_median_nan(self):
         assert np.isnan(median(EMPTY_VECTOR))
@@ -312,6 +321,9 @@ class TestAggregate:
         assert quantile(Vector([1, 4, 6, 8, 5]), 0.5) == 5
         assert quantile(Vector([1, 4, 6, NaN, NaN]), 0.5) == 4
 
+    def test_quantile_date(self):
+        assert quantile(Vector([D1, D3, NaT]), 0.5) == D2
+
     def test_quantile_nan(self):
         assert np.isnan(quantile(EMPTY_VECTOR, 0.5))
         assert np.isnan(quantile(Vector([1, 4, NaN]), 0.5, drop_na=False))
@@ -319,6 +331,12 @@ class TestAggregate:
     def test_std(self):
         assert np.isclose(std(Vector([3, 6, 7])), 1.699673)
         assert np.isclose(std(Vector([3, 6, NaN])), 1.5)
+
+    def test_std_date(self):
+        with pytest.raises(TypeError):
+            std(Vector([D1, D2]))
+        with pytest.raises(TypeError):
+            DataFrame(g=[1, 1], a=[D1, D2]).group_by("g").aggregate(a=std("a"))
 
     def test_std_nan(self):
         assert np.isnan(std(EMPTY_VECTOR))
@@ -331,12 +349,24 @@ class TestAggregate:
         assert sum(Vector([1, 2])) == 3
         assert sum(Vector([1, 2, NaN])) == 3
 
+    def test_sum_date(self):
+        with pytest.raises(TypeError):
+            sum(Vector([D1, D2]))
+        with pytest.raises(TypeError):
+            DataFrame(g=[1, 1], a=[D1, D2]).group_by("g").aggregate(a=sum("a"))
+
     def test_sum_nan(self):
         assert np.isnan(sum(Vector([1, 2, NaN]), drop_na=False))
 
     def test_var(self):
         assert np.isclose(var(Vector([3, 6, 7])), 2.888889)
         assert np.isclose(var(Vector([3, 6, NaN])), 2.25)
+
+    def test_var_date(self):
+        with pytest.raises(TypeError):
+            var(Vector([D1, D2]))
+        with pytest.raises(TypeError):
+            DataFrame(g=[1, 1], a=[D1, D2]).group_by("g").aggregate(a=var("a"))
 
     def test_var_nan(self):
         assert np.isnan(var(EMPTY_VECTOR))

@@ -112,6 +112,10 @@ def any(x, *, drop_na=True):
     """
     return all_any(x, np.any, False, drop_na)
 
+def check_not_datetime(x, name):
+    if x.is_datetime():
+        raise TypeError(f"Can't calculate {name} of datetimes")
+
 # @composite skipped on purpose due to allowing calls with no x given.
 def count(x="", *, drop_na=False):
     """
@@ -182,6 +186,19 @@ def count_unique_apply_numba(x, group, drop_na):
     for xg in yield_groups_numba(x, group, drop_na):
         out.append(len(np.unique(xg)))
     return out
+
+def datetime_as_float(x):
+    if not x.is_datetime(): return x
+    # NaT would otherwise become the smallest int64 as float.
+    out = x.as_float()
+    out[x.is_na()] = np.nan
+    return out
+
+def datetime_from_float(value, x):
+    if not x.is_datetime(): return value
+    # Float conversion loses precision for datetime64[ns],
+    # results are exact to only about a microsecond.
+    return np.round(np.asarray(value, float)).astype(x.dtype)
 
 def first(x, *, drop_na=False):
     """
@@ -307,17 +324,20 @@ def mean(x, *, drop_na=True):
             f = (generic, generic_numba)
             f = select(f, data, x)(np.mean)
             aggregate.default = np.nan
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=np.nan,
-                     nrequired=1)
+            out = f(datetime_as_float(data[x]),
+                    data._group_,
+                    drop_na=(
+                        drop_na and
+                        data[x].is_na().any()),
+                    default=np.nan,
+                    nrequired=1)
+            return datetime_from_float(out, data[x])
 
         aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
+    if x.is_datetime():
+        return datetime_from_float(mean(datetime_as_float(x)), x).item()
     return np.mean(x).item() if len(x) >= 1 else np.nan
 
 @composite
@@ -339,17 +359,20 @@ def median(x, *, drop_na=True):
             f = (generic, generic_numba)
             f = select(f, data, x)(np.median)
             aggregate.default = np.nan
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=np.nan,
-                     nrequired=1)
+            out = f(datetime_as_float(data[x]),
+                    data._group_,
+                    drop_na=(
+                        drop_na and
+                        data[x].is_na().any()),
+                    default=np.nan,
+                    nrequired=1)
+            return datetime_from_float(out, data[x])
 
         aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
+    if x.is_datetime():
+        return datetime_from_float(median(datetime_as_float(x)), x).item()
     return np.median(x).item() if len(x) >= 1 else np.nan
 
 @composite
@@ -498,16 +521,19 @@ def quantile(x, q, *, drop_na=True):
             f = (quantile_apply, quantile_apply_numba)
             f = select(f, data, x)
             aggregate.default = np.nan
-            return f(data[x].as_float(),
-                     data._group_,
-                     q,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
+            out = f(datetime_as_float(data[x]).as_float(),
+                    data._group_,
+                    q,
+                    drop_na=(
+                        drop_na and
+                        data[x].is_na().any()))
+            return datetime_from_float(out, data[x])
 
         aggregate.group_aware = True
         return aggregate
     x = handle_na(x, drop_na)
+    if x.is_datetime():
+        return datetime_from_float(quantile(datetime_as_float(x), q), x).item()
     return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
 
 @deco.listify
@@ -541,6 +567,7 @@ def std(x, *, ddof=0, drop_na=True):
     """
     if isinstance(x, str):
         def aggregate(data):
+            check_not_datetime(data[x], "std")
             if ddof == 0:
                 # Numba doesn't support the ddof argument,
                 # so can only handle the default ddof=0.
@@ -559,6 +586,7 @@ def std(x, *, ddof=0, drop_na=True):
 
         aggregate.group_aware = True
         return aggregate
+    check_not_datetime(x, "std")
     x = handle_na(x, drop_na)
     return np.std(x, ddof=ddof).item() if len(x) >= 2 else np.nan
 
@@ -575,6 +603,7 @@ def sum(x, *, drop_na=True):
     """
     if isinstance(x, str):
         def aggregate(data):
+            check_not_datetime(data[x], "sum")
             f = (generic, generic_numba)
             f = select(f, data, x)(np.sum)
             aggregate.default = 0
@@ -588,6 +617,7 @@ def sum(x, *, drop_na=True):
 
         aggregate.group_aware = True
         return aggregate
+    check_not_datetime(x, "sum")
     x = handle_na(x, drop_na)
     return np.sum(x).item()
 
@@ -617,6 +647,7 @@ def var(x, *, ddof=0, drop_na=True):
     """
     if isinstance(x, str):
         def aggregate(data):
+            check_not_datetime(data[x], "var")
             if ddof == 0:
                 # Numba doesn't support the ddof argument,
                 # so can only handle the default ddof=0.
@@ -635,6 +666,7 @@ def var(x, *, ddof=0, drop_na=True):
 
         aggregate.group_aware = True
         return aggregate
+    check_not_datetime(x, "var")
     x = handle_na(x, drop_na)
     return np.var(x, ddof=ddof).item() if len(x) >= 2 else np.nan
 
