@@ -36,6 +36,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.read_json`
 :meth:`~dataiter.ListOfDicts.read_pickle`
 :meth:`~dataiter.ListOfDicts.rename`
+:meth:`~dataiter.ListOfDicts.replace_na`
 :meth:`~dataiter.ListOfDicts.reverse`
 :meth:`~dataiter.ListOfDicts.sample`
 :meth:`~dataiter.ListOfDicts.select`

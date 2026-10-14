@@ -681,6 +681,15 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.ymd.equal(orig.date)
         assert data.downloads.equal(orig.downloads)
 
+    def test_replace_na(self):
+        orig = DataFrame(a=[1, None], b=["", "x"], c=[None, 2])
+        data = orig.replace_na(a=0, b="-")
+        assert data.colnames == ["a", "b", "c"]
+        assert data.a.tolist() == [1, 0]
+        assert data.b.tolist() == ["-", "x"]
+        assert data.c.tolist() == [None, 2]
+        assert orig.a.tolist() == [1, None]
+
     def test_sample(self):
         data = test.data_frame("vehicles.csv")
         assert data.sample(10).nrow == 10

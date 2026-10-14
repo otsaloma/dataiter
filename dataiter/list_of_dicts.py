@@ -191,7 +191,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         Items with missing values in `by`, i.e. ``None`` or missing keys,
-        never match.
+        never match. If you need those to match, use e.g. :meth:`replace_na`
+        before joining.
 
         >>> # All listings that don't have reviews
         >>> listings = di.read_json("data/listings.json")
@@ -292,6 +293,7 @@ class ListOfDicts(list):
         Return list with missing keys added.
 
         If `key_value_pairs` not given, fill all missing keys with ``None``.
+        See also :meth:`replace_na`.
 
         >>> data = di.read_json("data/listings.json")
         >>> data = data.fill_missing_keys(price=None)
@@ -392,7 +394,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         Items with missing values in `by`, i.e. ``None`` or missing keys,
-        never match.
+        never match. If you need those to match, use e.g. :meth:`replace_na`
+        before joining.
 
         Keys other than `by` found in both `self` and `other` keep their values
         from `self` for items found in `self`. Rename such keys before joining
@@ -452,7 +455,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         Items with missing values in `by`, i.e. ``None`` or missing keys,
-        never match.
+        never match. If you need those to match, use e.g. :meth:`replace_na`
+        before joining.
 
         Keys other than `by` found in both `self` and `other` keep their values
         from `self`. Rename such keys before joining if you need both.
@@ -513,7 +517,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         Items with missing values in `by`, i.e. ``None`` or missing keys,
-        never match.
+        never match. If you need those to match, use e.g. :meth:`replace_na`
+        before joining.
 
         Keys other than `by` found in both `self` and `other` keep their values
         from `self`. Rename such keys before joining if you need both.
@@ -731,6 +736,26 @@ class ListOfDicts(list):
             keys = [renames.get(x, x) for x in item.keys()]
             yield AttributeDict(zip(keys, item.values()))
 
+    @deco.obsoletes
+    @deco.new_from_generator
+    def replace_na(self, **key_value_pairs):
+        """
+        Return list with missing values replaced.
+
+        In `key_value_pairs`, missing values of `key`, i.e. ``None`` or
+        missing keys, are replaced with `value`. See also
+        :meth:`fill_missing_keys`.
+
+        >>> data = di.read_json("data/listings.json")
+        >>> data.replace_na(sqft=0)
+        """
+        key_value_pairs = key_value_pairs.items()
+        for item in self:
+            for key, value in key_value_pairs:
+                if item.get(key, None) is None:
+                    item[key] = value
+            yield item
+
     @deco.new_from_generator
     def reverse(self):
         """
@@ -772,7 +797,8 @@ class ListOfDicts(list):
         if the correspoding key differs between `self` and `other`.
 
         Items with missing values in `by`, i.e. ``None`` or missing keys,
-        never match.
+        never match. If you need those to match, use e.g. :meth:`replace_na`
+        before joining.
 
         >>> # All listings that have reviews
         >>> listings = di.read_json("data/listings.json")

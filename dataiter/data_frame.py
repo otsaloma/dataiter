@@ -239,7 +239,7 @@ class DataFrame(dict):
 
         Rows with missing values in `by` never match. Note that for strings,
         missing values are empty strings. If you need those to match, use
-        e.g. :meth:`.Vector.replace_na` before joining.
+        e.g. :meth:`replace_na` before joining.
 
         >>> # All listings that don't have reviews
         >>> listings = di.read_csv("data/listings.csv")
@@ -581,7 +581,7 @@ class DataFrame(dict):
 
         Rows with missing values in `by` never match. Note that for strings,
         missing values are empty strings. If you need those to match, use
-        e.g. :meth:`.Vector.replace_na` before joining.
+        e.g. :meth:`replace_na` before joining.
 
         Columns other than `by` found in both `self` and `other` keep their
         values from `self` for rows found in `self`. Rename such columns before
@@ -667,7 +667,7 @@ class DataFrame(dict):
 
         Rows with missing values in `by` never match. Note that for strings,
         missing values are empty strings. If you need those to match, use
-        e.g. :meth:`.Vector.replace_na` before joining.
+        e.g. :meth:`replace_na` before joining.
 
         Columns other than `by` found in both `self` and `other` keep their
         values from `self`. Rename such columns before joining if you need both.
@@ -701,7 +701,7 @@ class DataFrame(dict):
 
         Rows with missing values in `by` never match. Note that for strings,
         missing values are empty strings. If you need those to match, use
-        e.g. :meth:`.Vector.replace_na` before joining.
+        e.g. :meth:`replace_na` before joining.
 
         Columns other than `by` found in both `self` and `other` keep their
         values from `self`. Rename such columns before joining if you need both.
@@ -1084,6 +1084,22 @@ class DataFrame(dict):
             to = from_to_pairs.get(fm, fm)
             yield to, self[fm].copy()
 
+    @deco.new_from_generator
+    def replace_na(self, **colname_value_pairs):
+        """
+        Return data frame with missing values replaced.
+
+        In `colname_value_pairs`, missing values in column `colname` are
+        replaced with `value`.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> data.replace_na(sqft=0)
+        """
+        for colname, column in self.items():
+            yield colname, column.copy()
+        for colname, value in colname_value_pairs.items():
+            yield colname, self[colname].replace_na(value)
+
     def sample(self, n=None):
         """
         Return randomly chosen `n` rows.
@@ -1119,7 +1135,7 @@ class DataFrame(dict):
 
         Rows with missing values in `by` never match. Note that for strings,
         missing values are empty strings. If you need those to match, use
-        e.g. :meth:`.Vector.replace_na` before joining.
+        e.g. :meth:`replace_na` before joining.
 
         >>> # All listings that have reviews
         >>> listings = di.read_csv("data/listings.csv")

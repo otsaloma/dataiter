@@ -3,10 +3,12 @@
 New:
 - `all`, `any`: Add `drop_na` argument, default true
 - `DataFrame.expand_grid`: New classmethod
+- `DataFrame.replace_na`: New method
 - `dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.expand_grid`: New classmethod
+- `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
 
 Speed-ups:

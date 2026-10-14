@@ -476,6 +476,13 @@ class TestListOfDicts:
         assert all("date" not in x for x in data)
         assert not orig._obsolete
 
+    def test_replace_na(self):
+        orig = ListOfDicts([{"a": 1, "b": None}, {"b": 2}])
+        data = orig.replace_na(a=0, b=-1)
+        assert data.pluck("a") == [1, 0]
+        assert data.pluck("b") == [-1, 2]
+        assert orig._obsolete
+
     def test_reverse(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.reverse()

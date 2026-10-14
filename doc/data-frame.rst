@@ -42,6 +42,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.read_parquet`
 :meth:`~dataiter.DataFrame.read_pickle`
 :meth:`~dataiter.DataFrame.rename`
+:meth:`~dataiter.DataFrame.replace_na`
 :meth:`~dataiter.DataFrame.sample`
 :meth:`~dataiter.DataFrame.select`
 :meth:`~dataiter.DataFrame.semi_join`
