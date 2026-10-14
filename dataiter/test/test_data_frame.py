@@ -259,6 +259,10 @@ class TestDataFrame:
         assert data.nrow == 396
         assert not (data.sqft.is_na()).any()
 
+    def test_drop_na_all(self):
+        data = DataFrame(a=[1, None, 3], b=["x", "y", ""])
+        assert data.drop_na().a.tolist() == [1]
+
     def test_expand_grid(self):
         data = DataFrame.expand_grid(x=[1, 2], y=["a", "b", "c"])
         assert data.colnames == ["x", "y"]

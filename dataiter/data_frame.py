@@ -395,11 +395,13 @@ class DataFrame(dict):
         """
         Return data frame without rows that have missing values in `colnames`.
 
+        If `colnames` not given, use all columns.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.drop_na("sqft")
         """
         drop = Vector.fast([False], bool).repeat(self.nrow)
-        for colname in colnames:
+        for colname in colnames or self.colnames:
             drop = drop | self[colname].is_na()
         return self.filter_out(drop)
 

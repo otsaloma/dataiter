@@ -21,6 +21,7 @@ Speed-ups:
 Fixes:
 - `DataFrame.*`: Handle empty data frames gracefully
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped
+- `DataFrame.drop_na`: Use all columns if none given instead of dropping nothing
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
 - `DataFrame.full_join`, `DataFrame.left_join`, `DataFrame.pivot_wider`: Keep data type of integer and boolean columns if no missing values are added
@@ -39,6 +40,7 @@ Fixes:
 - `ListOfDicts.*_join`: Fix matching on missing values in `by` keys
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both
 - `ListOfDicts.aggregate`: Return single item when ungrouped
+- `ListOfDicts.drop_na`: Use all keys if none given instead of dropping nothing
 - `ListOfDicts.group_by`: Fix to group only returned copy
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item

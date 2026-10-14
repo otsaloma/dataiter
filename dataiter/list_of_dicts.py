@@ -247,9 +247,12 @@ class ListOfDicts(list):
         """
         Return list without items that have missing values in `keys`.
 
+        If `keys` not given, use all keys found in any item.
+
         >>> data = di.read_json("data/listings.json")
         >>> data.drop_na("sqft")
         """
+        keys = keys or list(self.keys())
         for item in self:
             if not any(item.get(x, None) is None for x in keys):
                 yield item
