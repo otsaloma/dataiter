@@ -156,6 +156,10 @@ class TestVector:
         assert a.is_string()
         assert a.equal(b)
 
+    def test___new___string_fixed(self):
+        assert Vector(np.array(["a", "b"])).is_string()
+        assert Vector(np.array(["a", "b"]), "U").dtype == np.dtype("U1")
+
     def test__array_wrap___expect_vector(self):
         result = Vector([1, 2, 3]) * 2
         assert isinstance(result, Vector)
@@ -310,6 +314,9 @@ class TestVector:
         assert a.equal(b)
         assert a.equal(c)
         assert a.equal(d)
+
+    def test_fast_string_fixed(self):
+        assert Vector.fast(np.array(["a", "b"])).is_string()
 
     def test_get_memory_use(self):
         a = Vector(range(100))

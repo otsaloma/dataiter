@@ -151,7 +151,6 @@ class Vector(np.ndarray):
         dtype = cls._map_input_dtype(dtype)
         # If given a NumPy array, we can do a fast initialization.
         if isinstance(object, np.ndarray):
-            dtype = dtype or object.dtype
             return cls._np_array(object, dtype).view(cls)
         # If given a Python list, or something else generic, we need
         # to convert certain types and special values. This is really
@@ -367,8 +366,6 @@ class Vector(np.ndarray):
         values or if you know they are already of the correct type.
         """
         dtype = cls._map_input_dtype(dtype)
-        if isinstance(object, np.ndarray):
-            dtype = dtype or object.dtype
         object = util.sequencify(object)
         return cls._np_array(object, dtype).view(cls)
 
@@ -581,7 +578,7 @@ class Vector(np.ndarray):
     def _np_array(cls, object, dtype=None):
         # NumPy still defaults to fixed width strings.
         # In some cases we can only fix the dtype ex-post.
-        if dtype is None:
+        if dtype is None and not isinstance(object, np.ndarray):
             if object and isinstance(object[0], str):
                 dtype = dtypes.string
         dtype = cls._map_input_dtype(dtype)
