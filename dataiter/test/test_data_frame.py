@@ -517,6 +517,13 @@ class TestDataFrame:
         data = DataFrame.read_csv(path, dtypes={"zip": str})
         assert data.zip.tolist() == ["02134"]
 
+    def test_read_csv_fractional_seconds(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text("time\n2026-01-02 05:36:24.539\n", "utf-8")
+        data = DataFrame.read_csv(path)
+        assert data.time.dtype == np.dtype("datetime64[us]")
+        assert data.time.dt.hour().tolist() == [5]
+
     def test_read_csv_no_header_columns(self, tmp_path):
         path = str(tmp_path / "test.csv")
         Path(path).write_text("1,2,3\n", "utf-8")

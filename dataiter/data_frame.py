@@ -490,6 +490,13 @@ class DataFrame(dict):
             req_dtype = dtypes.get(name, None)
             na = column.is_null(nan_is_null=True).to_numpy()
             column = column.to_numpy()
+            if (req_dtype is None and
+                (np.issubdtype(column.dtype, np.datetime64) or
+                 np.issubdtype(column.dtype, np.timedelta64)) and
+                np.datetime_data(column.dtype)[0] == "ns"):
+                # Python's datetime and timedelta don't support nanoseconds,
+                # breaking conversions to object, e.g. in dt and tolist.
+                column = column.astype(column.dtype.str.replace("ns", "us"))
             if np.issubdtype(column.dtype, np.object_):
                 if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
                     # Likely to be strings, but not necessarily.
