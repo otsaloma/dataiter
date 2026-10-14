@@ -699,9 +699,14 @@ class DataFrame(dict):
         found, src = self._get_join_indices(other, by1, by2)
         for colname, column in self.items():
             yield colname, column.copy()
+        all_found = (src > -1).all()
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
+            if all_found:
+                # No missing values needed, keep data type.
+                yield colname, column[src]
+                continue
             value = column.na_value
             dtype = column.na_dtype
             new = DataFrameColumn(value, dtype, self.nrow)

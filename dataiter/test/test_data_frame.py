@@ -357,6 +357,15 @@ class TestDataFrame:
         assert np.sum(~data.holiday.is_na()) == 35
         assert np.sum(data.downloads) == 541335745
 
+    def test_left_join_all_found(self):
+        a = DataFrame(k=[1, 2])
+        b = DataFrame(k=[2, 1], n=[3, 4], f=[True, False])
+        data = a.left_join(b, "k")
+        assert data.n.is_integer()
+        assert data.f.is_boolean()
+        assert data.n.tolist() == [4, 3]
+        assert data.f.tolist() == [False, True]
+
     def test_left_join_by_tuple(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")
