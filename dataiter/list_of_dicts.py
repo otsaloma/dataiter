@@ -34,6 +34,17 @@ from attd import AttributeDict
 from dataiter import deco
 from dataiter import util
 
+def itemgetter(*keys):
+    # Like operator.itemgetter, but returning None for missing keys.
+    extract = operator.itemgetter(*keys)
+    def get(item):
+        try:
+            return extract(item)
+        except KeyError:
+            values = tuple(item.get(x) for x in keys)
+            return values if len(keys) > 1 else values[0]
+    return get
+
 class ListOfDicts(list):
 
     """
@@ -61,6 +72,10 @@ class ListOfDicts(list):
     dataiter. You'll still need to use the bracket notation for any keys that
     are not valid identifiers, such as keys with spaces, or ones that conflict
     with dict methods, such as "items".
+
+    Items don't need to have the same keys. Methods that take keys as
+    arguments, such as :meth:`sort` or :meth:`group_by`, treat missing keys
+    the same as keys with value ``None``.
 
     https://github.com/otsaloma/attd
     """
@@ -153,8 +168,8 @@ class ListOfDicts(list):
         if not by:
             yield AttributeDict({k: f(self) for k, f in key_function_pairs.items()})
             return
-        groups =self.unique(*by).deepcopy().select(*by)
-        extract = operator.itemgetter(*by)
+        groups = self.unique(*by).deepcopy().select(*by).fill_missing_keys(**dict.fromkeys(by))
+        extract = itemgetter(*by)
         items_by_group = {}
         for item in self:
             id = extract(item)
@@ -181,8 +196,8 @@ class ListOfDicts(list):
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        extract1 = operator.itemgetter(*by1)
-        extract2 = operator.itemgetter(*by2)
+        extract1 = itemgetter(*by1)
+        extract2 = itemgetter(*by2)
         other_ids = set(map(extract2, other))
         for item in self:
             if extract1(item) not in other_ids:
@@ -306,7 +321,7 @@ class ListOfDicts(list):
                 if function(item):
                     yield item
         elif key_value_pairs:
-            extract = operator.itemgetter(*key_value_pairs.keys())
+            extract = itemgetter(*key_value_pairs.keys())
             values = tuple(key_value_pairs.values())
             values = values[0] if len(values) == 1 else values
             for item in self:
@@ -332,7 +347,7 @@ class ListOfDicts(list):
                 if not function(item):
                     yield item
         elif key_value_pairs:
-            extract = operator.itemgetter(*key_value_pairs.keys())
+            extract = itemgetter(*key_value_pairs.keys())
             values = tuple(key_value_pairs.values())
             values = values[0] if len(values) == 1 else values
             for item in self:
@@ -437,8 +452,8 @@ class ListOfDicts(list):
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        extract1 = operator.itemgetter(*by1)
-        extract2 = operator.itemgetter(*by2)
+        extract1 = itemgetter(*by1)
+        extract2 = itemgetter(*by2)
         other_by_id = {extract2(x): x for x in reversed(other)}
         for item in self:
             id = extract1(item)
@@ -494,8 +509,8 @@ class ListOfDicts(list):
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        extract1 = operator.itemgetter(*by1)
-        extract2 = operator.itemgetter(*by2)
+        extract1 = itemgetter(*by1)
+        extract2 = itemgetter(*by2)
         other_by_id = {extract2(x): x for x in reversed(other)}
         for item in self:
             new = other_by_id.get(extract1(item), {})
@@ -747,8 +762,8 @@ class ListOfDicts(list):
         >>> listings.semi_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        extract1 = operator.itemgetter(*by1)
-        extract2 = operator.itemgetter(*by2)
+        extract1 = itemgetter(*by1)
+        extract2 = itemgetter(*by2)
         other_ids = set(map(extract2, other))
         for item in self:
             if extract1(item) in other_ids:
@@ -772,8 +787,9 @@ class ListOfDicts(list):
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
             def sort_key(item):
-                return ((item[key] is None, item[key]) if dir > 0 else
-                        (item[key] is not None, item[key]))
+                value = item.get(key)
+                return ((value is None, value) if dir > 0 else
+                        (value is not None, value))
             data = sorted(data, key=sort_key, reverse=dir < 0)
         return self._new(data)
 
@@ -784,7 +800,7 @@ class ListOfDicts(list):
         >>> data = di.ListOfDicts({"x": x} for x in [1, 2, 2, 3, 3, 3])
         >>> data.split("x")
         """
-        extract = operator.itemgetter(*by)
+        extract = itemgetter(*by)
         indices_by_group = {}
         for i, item in enumerate(self):
             id = extract(item)
@@ -875,7 +891,7 @@ class ListOfDicts(list):
             for item in self:
                 keys &= set(item)
         found_ids = set()
-        extract = operator.itemgetter(*keys)
+        extract = itemgetter(*keys)
         for item in self:
             id = extract(item)
             if id not in found_ids:

@@ -121,12 +121,23 @@ class TestListOfDicts:
         stat = data.aggregate(n=len, downloads=lambda x: sum(x.pluck("downloads")))
         assert stat == [{"n": len(data), "downloads": sum(data.pluck("downloads"))}]
 
+    def test_aggregate_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        stat = orig.group_by("b").aggregate(n=len)
+        assert stat == [{"b": 2, "n": 1}, {"b": None, "n": 2}]
+
     def test_anti_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
         data = orig.anti_join(holidays, "date")
         assert len(data) == 870
         assert sum(data.pluck("downloads")) == 523109256
+
+    def test_anti_join_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        other = ListOfDicts([{"b": 2, "c": 1}])
+        data = orig.anti_join(other, "b")
+        assert data.pluck("a") == [2, 3]
 
     def test_append(self):
         orig = test.list_of_dicts("downloads.json")
@@ -227,6 +238,11 @@ class TestListOfDicts:
         assert len(data) == 181
         assert sum(data.pluck("downloads")) == 510902781
 
+    def test_filter_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        data = orig.filter(b=None)
+        assert data.pluck("a") == [2, 3]
+
     def test_filter_out_given_function(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.filter_out(lambda x: x.category == "Linux")
@@ -238,6 +254,11 @@ class TestListOfDicts:
         data = orig.filter_out(category="Linux")
         assert len(data) == 724
         assert sum(data.pluck("downloads")) == 30432964
+
+    def test_filter_out_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        data = orig.filter_out(b=None)
+        assert data.pluck("a") == [1]
 
     def test_from_json(self):
         orig = test.list_of_dicts("downloads.json")
@@ -255,6 +276,12 @@ class TestListOfDicts:
         assert sum("downloads" not in x for x in data) == 25
         assert sum(data.pluck("downloads", 0)) == 541335745
 
+    def test_full_join_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        other = ListOfDicts([{"b": 2, "c": 1}])
+        data = orig.full_join(other, "b")
+        assert data.pluck("c") == [1, None, None]
+
     def test_head(self):
         data = test.list_of_dicts("downloads.json")
         assert data.head(10) == data[:10]
@@ -266,6 +293,12 @@ class TestListOfDicts:
         assert len(data) == 35
         assert all("holiday" in x for x in data)
         assert sum(data.pluck("downloads")) == 18226489
+
+    def test_inner_join_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        other = ListOfDicts([{"b": 2, "c": 1}])
+        data = orig.inner_join(other, "b")
+        assert data.pluck("a") == [1]
 
     def test_insert(self):
         orig = test.list_of_dicts("downloads.json")
@@ -296,6 +329,12 @@ class TestListOfDicts:
         assert sum("holiday" in x for x in data) == 35
         assert sum("holiday_date" in x for x in data) == 0
         assert sum(data.pluck("downloads")) == 541335745
+
+    def test_left_join_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        other = ListOfDicts([{"b": 2, "c": 1}])
+        data = orig.left_join(other, "b")
+        assert data.pluck("c") == [1, None, None]
 
     def test_join_common_keys(self):
         a = ListOfDicts([{"id": 1, "x": 1}, {"id": 2, "x": 2}])
@@ -469,6 +508,12 @@ class TestListOfDicts:
         assert len(data) == 35
         assert sum(data.pluck("downloads")) == 18226489
 
+    def test_semi_join_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        other = ListOfDicts([{"b": 2, "c": 1}])
+        data = orig.semi_join(other, "b")
+        assert data.pluck("a") == [1]
+
     def test_sort_ascending(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.sort(date=1, category=1)
@@ -490,6 +535,11 @@ class TestListOfDicts:
         assert data[-1].date == min(data.pluck("date"))
         assert data[0].category == max(data.pluck("category"))
         assert data[-1].category == min(data.pluck("category"))
+
+    def test_sort_missing_key(self):
+        orig = ListOfDicts([{"a": 1}, {"a": 2, "b": 1}])
+        data = orig.sort(b=1)
+        assert data.pluck("a") == [2, 1]
 
     def test_sort_with_none_ascending(self):
         # Nones should be sorted last.
@@ -538,6 +588,10 @@ class TestListOfDicts:
         )
         rows = data.split("x", "y")
         assert rows == [[0], [1, 2], [3, 4], [5]]
+
+    def test_split_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        assert orig.split("b") == [[0], [1, 2]]
 
     def test_tail(self):
         data = test.list_of_dicts("downloads.json")
@@ -589,6 +643,11 @@ class TestListOfDicts:
         orig = orig.append(orig[-1])
         data = orig.unique()
         assert len(data) == len(orig) - 1
+
+    def test_unique_missing_key(self):
+        orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
+        data = orig.unique("b")
+        assert data.pluck("a") == [1, 2]
 
     def test_unselect(self):
         orig = test.list_of_dicts("downloads.json")
