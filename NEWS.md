@@ -26,6 +26,7 @@ Speed-ups:
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `regex.*`: Speed up
+- `Vector.unique`: Speed up for strings
 
 Fixes:
 - `DataFrame.*`: Handle empty data frames gracefully

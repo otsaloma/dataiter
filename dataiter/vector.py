@@ -879,5 +879,8 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 1, 1, 2, 2, 3])
         >>> vector.unique()
         """
+        if self.is_string():
+            # Python dict is faster than NumPy's sorting of strings.
+            return self.fast(list(dict.fromkeys(np.ndarray.tolist(self))), self.dtype)
         u, indices = np.unique(self, return_index=True)
-        return self[indices.sort()].copy()
+        return self[indices.sort()]
