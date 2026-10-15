@@ -10,7 +10,8 @@ it makes sense there as well.
 
 After making changes, run `uv run make check` and `uv run make test` (or
 `uv run pytest ...` to test only a subset). uv ensures these use the
-virtualenv present in `.venv`.
+virtualenv present in `.venv`. Similarly, run any benchmark or test
+scripts via `uv run python ...`.
 
 ## API Documentation
 
