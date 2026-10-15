@@ -35,7 +35,7 @@ def day(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.day(x)
     """
-    return _pull_int(x, lambda y: y.day)
+    return _pull_int(x, lambda y: (y.astype("M8[D]") - y.astype("M8[M]").astype("M8[D]")).astype(int) + 1)
 
 def floor(x, unit):
     """
@@ -113,7 +113,7 @@ def hour(x):
     >>> x = dt.new(["2022-10-15T12:34:56"])
     >>> dt.hour(x)
     """
-    return _pull_int(x, lambda y: y.hour)
+    return _pull_int(x, lambda y: (y.astype("M8[h]") - y.astype("M8[D]")).astype(int))
 
 def isoformat(x):
     """
@@ -135,7 +135,7 @@ def isoweek(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.isoweek(x)
     """
-    return _pull_int(x, lambda y: y.isocalendar()[1])
+    return _pull_int(x, lambda y: [z.isocalendar()[1] for z in y.astype(object)])
 
 def isoweekday(x):
     """
@@ -149,7 +149,7 @@ def isoweekday(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.isoweekday(x)
     """
-    return _pull_int(x, lambda y: y.isoweekday())
+    return weekday(x) + 1
 
 def microsecond(x):
     """
@@ -158,7 +158,7 @@ def microsecond(x):
     >>> x = dt.new(["2022-10-15T12:34:56.789"])
     >>> dt.microsecond(x)
     """
-    return _pull_int(x, lambda y: y.microsecond)
+    return _pull_int(x, lambda y: (y.astype("M8[us]") - y.astype("M8[s]")).astype(int))
 
 def minute(x):
     """
@@ -167,7 +167,7 @@ def minute(x):
     >>> x = dt.new(["2022-10-15T12:34:56"])
     >>> dt.minute(x)
     """
-    return _pull_int(x, lambda y: y.minute)
+    return _pull_int(x, lambda y: (y.astype("M8[m]") - y.astype("M8[h]")).astype(int))
 
 def month(x):
     """
@@ -176,7 +176,7 @@ def month(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.month(x)
     """
-    return _pull_int(x, lambda y: y.month)
+    return _pull_int(x, lambda y: y.astype("M8[M]").astype(int) % 12 + 1)
 
 def new(x):
     """
@@ -224,8 +224,7 @@ def _pull_int(x, function):
     out = Vector.fast(out, float)
     na = np.isnat(x)
     if na.all(): return out
-    f = np.vectorize(function)
-    out[~na] = f(x[~na].astype(object))
+    out[~na] = function(np.asarray(x[~na]))
     return out if na.any() else out.as_integer()
 
 def _pull_str(x, function):
@@ -288,7 +287,7 @@ def second(x):
     >>> x = dt.new(["2022-10-15T12:34:56"])
     >>> dt.second(x)
     """
-    return _pull_int(x, lambda y: y.second)
+    return _pull_int(x, lambda y: (y.astype("M8[s]") - y.astype("M8[m]")).astype(int))
 
 def to_string(x, format):
     """
@@ -322,7 +321,8 @@ def weekday(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.weekday(x)
     """
-    return _pull_int(x, lambda y: y.weekday())
+    # 1970-01-01 was a Thursday.
+    return _pull_int(x, lambda y: (y.astype("M8[D]").astype(int) + 3) % 7)
 
 def year(x):
     """
@@ -331,4 +331,4 @@ def year(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.year(x)
     """
-    return _pull_int(x, lambda y: y.year)
+    return _pull_int(x, lambda y: y.astype("M8[Y]").astype(int) + 1970)
