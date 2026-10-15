@@ -642,23 +642,36 @@ class DataFrame(dict):
         # Find for each row of self the range left:right of matching rows
         # in other in stable sorted order, i.e. first and last in order.
         a, b = self[by1[0]], keys[by2[0]]
+        index = keys._index_
         if len(by1) == 1 and a.dtype.kind in "biufmM" and b.dtype.kind in "biufmM":
             order = np.argsort(b, kind="stable")
             left = np.searchsorted(b[order], a, "left")
             right = np.searchsorted(b[order], a, "right")
         else:
+            # Build groups from the smaller side, since inserting
+            # into a dict is slower than looking up from it.
             groups = {}
-            group = (groups.setdefault(x, len(groups)) for x in zip(*[keys[x] for x in by2]))
-            group = np.fromiter(group, int, count=keys.nrow)
-            code = map(lambda x: groups.get(x, -1), zip(*[self[x] for x in by1]))
-            code = np.fromiter(code, int, count=self.nrow)
+            if self.nrow < keys.nrow:
+                code = (groups.setdefault(x, len(groups)) for x in zip(*[self[x] for x in by1]))
+                code = np.fromiter(code, int, count=self.nrow)
+                group = map(lambda x: groups.get(x, -1), zip(*[keys[x] for x in by2]))
+                group = np.fromiter(group, int, count=keys.nrow)
+                index, group = index[group > -1], group[group > -1]
+            else:
+                group = (groups.setdefault(x, len(groups)) for x in zip(*[keys[x] for x in by2]))
+                group = np.fromiter(group, int, count=keys.nrow)
+                code = map(lambda x: groups.get(x, -1), zip(*[self[x] for x in by1]))
+                code = np.fromiter(code, int, count=self.nrow)
             order = np.argsort(group, kind="stable")
             counts = np.bincount(group, minlength=len(groups))
             starts = np.cumsum(counts) - counts
             if multiple != "all":
                 # Faster to look up matches by group than row.
                 pos = starts if multiple == "first" else starts + counts - 1
-                src = np.append(keys._index_[order[pos]], -1)[code]
+                found = counts > 0
+                match = np.full(len(groups), -1)
+                match[found] = index[order[pos[found]]]
+                src = np.append(match, -1)[code]
                 return np.arange(self.nrow), src
             # Append a zero count for code -1, i.e. rows without a match.
             counts = np.append(counts, 0)
@@ -669,7 +682,7 @@ class DataFrame(dict):
         if multiple != "all":
             src = np.full(self.nrow, -1)
             pos = left if multiple == "first" else right - 1
-            src[found] = keys._index_[order[pos[found]]]
+            src[found] = index[order[pos[found]]]
             return np.arange(self.nrow), src
         # Expand each row of self to all of its matches,
         # keeping rows without a match once.
@@ -678,7 +691,7 @@ class DataFrame(dict):
         pos = np.repeat(left, n) + np.arange(len(rows)) - np.repeat(np.cumsum(n) - n, n)
         found = np.repeat(found, n)
         src = np.full(len(rows), -1)
-        src[found] = keys._index_[order[pos[found]]]
+        src[found] = index[order[pos[found]]]
         return rows, src
 
     def group_by(self, *colnames):

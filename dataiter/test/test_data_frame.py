@@ -428,6 +428,17 @@ class TestDataFrame:
         assert data.x.tolist() == [1, 2, 2, 3, 4]
         assert data.y.tolist() == [2, 1, 3, None, None]
 
+    def test_left_join_multiple_strings(self):
+        # Test both self smaller and larger than other.
+        a = DataFrame(k=["b", "a", "c", ""], x=[1, 2, 3, 4])
+        b = DataFrame(k=["a", "b", "a", "", "d", "e"], y=[1, 2, 3, 4, 5, 6])
+        assert a.left_join(b, "k", multiple="first").y.tolist() == [2, 1, None, None]
+        assert a.left_join(b, "k", multiple="last").y.tolist() == [2, 3, None, None]
+        data = a.left_join(b, "k", multiple="all")
+        assert data.x.tolist() == [1, 2, 2, 3, 4]
+        assert data.y.tolist() == [2, 1, 3, None, None]
+        assert b.left_join(a, "k").x.tolist() == [2, 1, 2, None, None, None]
+
     def test_left_join_multiple_empty(self):
         a = DataFrame(k=[1, 2], x=[1, 2])
         b = DataFrame(k=[1, 2], y=[1, 2]).head(0)
