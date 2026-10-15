@@ -346,6 +346,14 @@ class TestDataFrame:
         assert sum(data.downloads.is_na()) == 25
         assert np.nansum(data.downloads) == 541335745
 
+    def test_full_join_multiple(self):
+        a = DataFrame(k=[1, 2, 3], x=[1, 2, 3])
+        b = DataFrame(k=[2, 1, 2, 4], y=[1, 2, 3, 4])
+        data = a.full_join(b, "k", multiple="all")
+        assert data.k.tolist() == [1, 2, 2, 3, 4]
+        assert data.x.tolist() == [1, 2, 2, 3, None]
+        assert data.y.tolist() == [2, 1, 3, None, 4]
+
     def test_head(self):
         data = test.data_frame("vehicles.csv")
         assert data.head(10) == data.slice(list(range(10)))
@@ -358,6 +366,15 @@ class TestDataFrame:
         assert data.ncol == orig.ncol + 1
         assert np.sum(data.holiday.is_na()) == 0
         assert np.sum(data.downloads) == 18226489
+
+    def test_inner_join_multiple(self):
+        a = DataFrame(k=[1, 2, 3], x=[1, 2, 3])
+        b = DataFrame(k=[2, 1, 2], y=[1, 2, 3])
+        assert a.inner_join(b, "k", multiple="first").y.tolist() == [2, 1]
+        assert a.inner_join(b, "k", multiple="last").y.tolist() == [2, 3]
+        data = a.inner_join(b, "k", multiple="all")
+        assert data.x.tolist() == [1, 2, 2]
+        assert data.y.tolist() == [2, 1, 3]
 
     def test_left_join(self):
         orig = test.data_frame("downloads.csv")
@@ -386,6 +403,21 @@ class TestDataFrame:
         assert data.ncol == orig.ncol + 1
         assert np.sum(~data.holiday.is_na()) == 35
         assert np.sum(data.downloads) == 541335745
+
+    def test_left_join_multiple(self):
+        a = DataFrame(k=[1, 2, 3, np.nan], x=[1, 2, 3, 4])
+        b = DataFrame(k=[2, 1, 2, np.nan], y=[1, 2, 3, 4])
+        assert a.left_join(b, "k", multiple="first").y.tolist() == [2, 1, None, None]
+        assert a.left_join(b, "k", multiple="last").y.tolist() == [2, 3, None, None]
+        data = a.left_join(b, "k", multiple="all")
+        assert data.x.tolist() == [1, 2, 2, 3, 4]
+        assert data.y.tolist() == [2, 1, 3, None, None]
+
+    def test_left_join_multiple_empty(self):
+        a = DataFrame(k=[1, 2], x=[1, 2])
+        b = DataFrame(k=[1, 2], y=[1, 2]).head(0)
+        assert a.left_join(b, "k", multiple="all").y.tolist() == [None, None]
+        assert b.left_join(a, "k", multiple="all").nrow == 0
 
     def test_map(self):
         data = test.data_frame("vehicles.csv")

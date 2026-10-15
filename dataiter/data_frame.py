@@ -247,10 +247,10 @@ class DataFrame(dict):
         >>> listings.anti_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.drop_na(*by2).unique(*by2)
-        found, src = self._get_join_indices(other, by1, by2)
+        rows, src = self._get_join_indices(other, by1, by2)
+        rows = rows[src == -1]
         for colname, column in self.items():
-            yield colname, np.delete(column, found)
+            yield colname, column[rows]
 
     @deco.new_from_generator
     def cbind(self, *others):
@@ -567,13 +567,14 @@ class DataFrame(dict):
                 column[na] = column.na_value
             yield name, column
 
-    def full_join(self, other, *by):
+    def full_join(self, other, *by, multiple="first"):
         """
         Return data frame with matching rows merged from `self` and `other`.
 
         `full_join` keeps all rows from both data frames, merging matching
-        ones. If there are multiple matches, the first one will be used. For
-        rows, for which matches are not found, missing values are added.
+        ones. If there are multiple matches, `multiple` determines which to
+        use: ``"first"``, ``"last"`` or ``"all"``. For rows, for which matches
+        are not found, missing values are added.
 
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
@@ -593,7 +594,7 @@ class DataFrame(dict):
         """
         a = self.modify(_aid_=np.arange(self.nrow))
         b = other.modify(_bid_=np.arange(other.nrow))
-        ab = a.left_join(b, *by)
+        ab = a.left_join(b, *by, multiple=multiple)
         # Check which rows of b were not joined into a.
         # If no rows remain, full join is the same as left join ab.
         b = b.anti_join(ab, "_bid_")
@@ -605,7 +606,7 @@ class DataFrame(dict):
             tuple(reversed(x)) if isinstance(x, (list, tuple))
             else x
             for x in by]
-        ba = b.left_join(a, *by_reverse)
+        ba = b.left_join(a, *by_reverse, multiple=multiple)
         for item in by:
             # For identifiers in by whose name differs in a and b,
             # rename and keep the variant found in a.
@@ -623,14 +624,44 @@ class DataFrame(dict):
             change[1:] |= (column[1:] != column[:-1]) & ~(na[1:] & na[:-1])
         return np.flatnonzero(change)
 
-    def _get_join_indices(self, other, by1, by2):
-        other_ids = list(zip(*[other[x] for x in by2]))
-        other_by_id = {other_ids[i]: i for i in range(other.nrow)}
+    def _get_join_indices(self, other, by1, by2, multiple="first"):
+        # Return aligned indices of rows in self and their matches in other.
+        # Rows of self without a match are included once with -1 in other.
+        if multiple not in ["first", "last", "all"]:
+            raise ValueError(f"Bad {multiple=}")
+        keys = other.select(*by2)
+        keys._index_ = np.arange(other.nrow)
+        keys = keys.drop_na(*by2)
+        if multiple == "last":
+            keys = keys.slice(np.arange(keys.nrow)[::-1])
+        if multiple != "all":
+            keys = keys.unique(*by2)
+        other_ids = zip(*[keys[x] for x in by2])
         self_ids = zip(*[self[x] for x in by1])
-        src = map(lambda x: other_by_id.get(x, -1), self_ids)
+        if multiple != "all":
+            other_by_id = dict(zip(other_ids, keys._index_.tolist()))
+            src = map(lambda x: other_by_id.get(x, -1), self_ids)
+            return np.arange(self.nrow), np.fromiter(src, int, count=self.nrow)
+        groups = {}
+        group = (groups.setdefault(x, len(groups)) for x in other_ids)
+        group = np.fromiter(group, int, count=keys.nrow)
+        src = map(lambda x: groups.get(x, -1), self_ids)
         src = np.fromiter(src, int, count=self.nrow)
-        found = np.where(src > -1)
-        return found, src
+        # Expand each row of self to the rows of other in its group,
+        # using a sentinel count of 1 for -1, i.e. rows without a match.
+        order = np.argsort(group, kind="stable")
+        counts = np.bincount(group, minlength=len(groups))
+        starts = np.cumsum(counts) - counts
+        counts = np.append(counts, 1)
+        starts = np.append(starts, 0)
+        n = counts[src]
+        rows = np.repeat(np.arange(self.nrow), n)
+        offsets = np.arange(len(rows)) - np.repeat(np.cumsum(n) - n, n)
+        positions = np.repeat(starts[src], n) + offsets
+        found = np.repeat(src, n) > -1
+        src = np.full(len(rows), -1)
+        src[found] = keys._index_[order[positions[found]]]
+        return rows, src
 
     def group_by(self, *colnames):
         """
@@ -653,13 +684,13 @@ class DataFrame(dict):
         return self.slice(np.arange(n))
 
     @deco.new_from_generator
-    def inner_join(self, other, *by):
+    def inner_join(self, other, *by, multiple="first"):
         """
         Return data frame with matching rows merged from `self` and `other`.
 
         `inner_join` keeps only rows found in both data frames, merging
-        matching ones. If there are multiple matches, the first one will be
-        used.
+        matching ones. If there are multiple matches, `multiple` determines
+        which to use: ``"first"``, ``"last"`` or ``"all"``.
 
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
@@ -677,23 +708,25 @@ class DataFrame(dict):
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.drop_na(*by2).unique(*by2)
-        found, src = self._get_join_indices(other, by1, by2)
+        rows, src = self._get_join_indices(other, by1, by2, multiple)
+        found = src > -1
+        rows, src = rows[found], src[found]
         for colname, column in self.items():
-            yield colname, column[found]
+            yield colname, column[rows]
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
-            yield colname, column[src[found]]
+            yield colname, column[src]
 
     @deco.new_from_generator
-    def left_join(self, other, *by):
+    def left_join(self, other, *by, multiple="first"):
         """
         Return data frame with matching rows merged from `self` and `other`.
 
         `left_join` keeps all rows in `self`, merging matching ones. If there
-        are multiple matches, the first one will be used. For rows, for which
-        matches are not found, missing values are added.
+        are multiple matches, `multiple` determines which to use:
+        ``"first"``, ``"last"`` or ``"all"``. For rows, for which matches are
+        not found, missing values are added.
 
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
@@ -711,21 +744,22 @@ class DataFrame(dict):
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.drop_na(*by2).unique(*by2)
-        found, src = self._get_join_indices(other, by1, by2)
+        rows, src = self._get_join_indices(other, by1, by2, multiple)
+        found = np.flatnonzero(src > -1)
         for colname, column in self.items():
-            yield colname, column.copy()
-        all_found = (src > -1).all()
+            # Copying is faster than indexing, rows is a plain
+            # range if no row of self matched multiple in other.
+            yield colname, column[rows] if len(rows) > self.nrow else column.copy()
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
-            if all_found:
+            if len(found) == len(src):
                 # No missing values needed, keep data type.
                 yield colname, column[src]
                 continue
             value = column.na_value
             dtype = column.na_dtype
-            new = DataFrameColumn(value, dtype, self.nrow)
+            new = DataFrameColumn(value, dtype, len(src))
             new[found] = column[src[found]]
             yield colname, new
 
@@ -1155,10 +1189,10 @@ class DataFrame(dict):
         >>> listings.semi_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.drop_na(*by2).unique(*by2)
-        found, src = self._get_join_indices(other, by1, by2)
+        rows, src = self._get_join_indices(other, by1, by2)
+        rows = rows[src > -1]
         for colname, column in self.items():
-            yield colname, column[found]
+            yield colname, column[rows]
 
     @deco.new_from_generator
     def slice(self, rows=None, cols=None):
