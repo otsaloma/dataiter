@@ -430,6 +430,28 @@ class Vector(np.ndarray):
         """
         return np.issubdtype(self.dtype, np.floating)
 
+    def is_in(self, values):
+        """
+        Return a boolean vector indicating elements found in `values`.
+
+        `values` can be any kind of a sequence or iterable, such as a list, a
+        set or a vector.
+
+        >>> vector = di.Vector(["a", "b", "c", "d"])
+        >>> vector.is_in(["a", "c"])
+        """
+        if util.is_scalar(values):
+            raise TypeError(f"Expected a sequence of values, got {type(values).__name__}, use == for a single value")
+        if not isinstance(values, np.ndarray):
+            # np.isin treats sets and other non-sequences as a single element.
+            values = list(values)
+        if self.is_string() and len(values) >= 10:
+            # StringDType has hasobject set, so np.isin never sorts,
+            # but compares one value at a time, slow for many values.
+            values = set(values)
+            return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
+        return self.fast(np.isin(self, values), bool)
+
     def is_integer(self):
         """
         Return whether vector data type is integer.

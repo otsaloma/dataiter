@@ -290,6 +290,13 @@ class TestDataFrame:
         assert data.filter(x=["a", "c"], y=3).y.tolist() == [3]
         assert data.filter_out(x=["a", "c"]).y.tolist() == [2, 4]
 
+    def test_filter_given_colname_long_sequence_pairs(self):
+        data = test.data_frame("vehicles.csv")
+        makes = data.make.unique()[:20].tolist()
+        expected = data.filter(np.isin(data.make, makes))
+        assert data.filter(make=makes) == expected
+        assert data.filter(make=iter(makes)) == expected
+
     def test_filter_out_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter_out(data.make == "Saab")
@@ -474,7 +481,7 @@ class TestDataFrame:
 
         assert long.nrow == 50
         assert long.ncol == 3
-        assert all(np.isin(long.name, wide.colnames))
+        assert all(long.name.is_in(wide.colnames))
 
     def test_pivot_longer_defaults(self):
         wide = DataFrame(id=[1, 2], a=[3, 4], b=[5, 6])

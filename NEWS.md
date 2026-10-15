@@ -16,6 +16,7 @@ New:
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `regex.extract`: New function to extract a group of the first match
+- `Vector.is_in`: New method, fast also for strings unlike `np.isin`
 - `Vector.rank`: Add `dir` argument for descending order
 
 Speed-ups:

@@ -384,6 +384,20 @@ class TestVector:
         assert not Vector([DATETIME]).is_float()
         assert not Vector([self]).is_float()
 
+    @pytest.mark.parametrize("values", [["a", "c"], ("a", "c"), {"a", "c"}, iter(["a", "c"]), Vector(["a", "c"])])
+    def test_is_in(self, values):
+        a = Vector(["a", "b", "c", "d"])
+        assert a.is_in(values).tolist() == [True, False, True, False]
+
+    def test_is_in_many_strings(self):
+        a = Vector([str(i) for i in range(100)])
+        values = [str(i) for i in range(0, 100, 3)]
+        assert a.is_in(values).tolist() == np.isin(np.array(a.tolist()), values).tolist()
+
+    def test_is_in_scalar(self):
+        with pytest.raises(TypeError):
+            Vector(["ab", "a"]).is_in("ab")
+
     def test_is_integer(self):
         assert not Vector([b"1"]).is_integer()
         assert not Vector([True]).is_integer()
@@ -534,7 +548,7 @@ class TestVector:
 
     def test_sample(self):
         a = Vector([1, 2, 3, 4, 5])
-        assert np.all(np.isin(a.sample(3), a))
+        assert np.all(a.sample(3).is_in(a))
         assert a.sample(5).tolist() == [1, 2, 3, 4, 5]
 
     def test_sort(self):

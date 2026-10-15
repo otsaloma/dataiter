@@ -804,10 +804,7 @@ class DataFrame(dict):
             if util.is_scalar(value):
                 rows = rows & (self[colname] == value)
             else:
-                if not isinstance(value, np.ndarray):
-                    # np.isin treats sets and other non-sequences as a single element.
-                    value = list(value)
-                rows = rows & np.isin(self[colname], value)
+                rows = rows & self[colname].is_in(value)
         return rows
 
     @deco.new_from_generator

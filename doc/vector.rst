@@ -25,6 +25,7 @@ dataiter.Vector
 :meth:`~dataiter.Vector.is_bytes`
 :meth:`~dataiter.Vector.is_datetime`
 :meth:`~dataiter.Vector.is_float`
+:meth:`~dataiter.Vector.is_in`
 :meth:`~dataiter.Vector.is_integer`
 :meth:`~dataiter.Vector.is_na`
 :meth:`~dataiter.Vector.is_number`
