@@ -247,6 +247,13 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 2, 3])
         >>> vector.as_float()
         """
+        na = self.is_na()
+        if na.any():
+            # NumPy can't convert missing strings to float
+            # and converts NaT to its integer sentinel value.
+            result = self.fast(np.full(self.length, np.nan), float)
+            result[~na] = self[~na].astype(float)
+            return result
         return self.astype(float)
 
     def as_integer(self):

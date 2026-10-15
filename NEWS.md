@@ -63,6 +63,7 @@ Fixes:
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector.as_boolean`: Raise `ValueError` for missing values
+- `Vector.as_float`: Convert missing values to NaN, fixing an error for strings and garbage values for datetimes and timedeltas
 - `Vector.as_integer`: Raise `ValueError` for missing values
 - `Vector.rank`: Fix error when all values are missing
 

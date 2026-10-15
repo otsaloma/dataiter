@@ -223,6 +223,16 @@ class TestVector:
         assert a.is_float()
         assert np.all(a == [1.0, 2.0])
 
+    @pytest.mark.parametrize("values", [
+        ["1", "", "3"],
+        np.array([1, None, 3], object),
+        np.array([1, "NaT", 3], "timedelta64[s]"),
+    ])
+    def test_as_float_missing(self, values):
+        a = Vector(values).as_float()
+        assert a.is_float()
+        assert a.equal(Vector([1.0, np.nan, 3.0]))
+
     def test_as_integer(self):
         a = Vector([1.1, 2.2]).as_integer()
         assert a.is_integer()
