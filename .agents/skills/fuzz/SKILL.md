@@ -17,6 +17,12 @@ operations and slow operations. Then write your findings as numbered
 items into ISSUES.md and present them to me, and we'll see if there's
 something in dataiter that we should fix.
 
+Regarding API surprises, note that Pandas is a pile of shit and our goal
+is not to emulate Pandas. Compare broadly across data frame
+implementations in Python and R: Pandas, Polars, Arrow, dplyr. Is there
+a consensus on how certain operations are done? Missing a consensus,
+favor dplyr most as reference, it's the best designed API among those.
+
 Start by reading `doc/_build/html/llms-full.txt` and work based on that,
 since that's what we recommend users point their coding agents at. If it
 doesn't exist, build the documentation first with `uv run make doc`.
@@ -26,9 +32,11 @@ Previously you have used the following datasets. Try something different
 this time. Find preferably something with 1–10M rows. Focus primarily on
 tabular data and the `DataFrame` class.
 
+- Chicago crimes
 - Citi Bike GBFS station feeds
 - Citi Bike trips
 - Helsinki city bikes
+- MovieLens 25M
 - NYC taxi
 - Open-Meteo hourly weather
 - UK Land Registry price paid
