@@ -19,6 +19,7 @@ Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.modify`: Speed up when grouped
+- `DataFrame.pivot_wider`: Speed up, especially with many names
 - `DataFrame.sort`: Speed up, especially for strings
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
 - `dt.day`, `dt.hour`, `dt.isoweekday`, `dt.microsecond`, `dt.minute`, `dt.month`, `dt.quarter`, `dt.second`, `dt.weekday`, `dt.year`: Speed up

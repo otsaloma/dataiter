@@ -961,12 +961,27 @@ class DataFrame(dict):
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
         wide = self.select(*ids).unique(*ids)
-        for name in self[names].unique().sort():
-            part = self.filter(self[names] == name)
-            part = part.select(*ids, values)
-            colname = rename(name) if rename else str(name)
-            part = part.rename(**{colname: values})
-            wide = wide.left_join(part, *ids)
+        _, row = self._get_join_indices(wide, ids, ids)
+        unique, code = np.unique(self[names], return_inverse=True)
+        # Sort by name and row, keeping the first of duplicates.
+        order = np.lexsort((row, code))
+        order = order[row[order] > -1]
+        keep = np.ones(len(order), bool)
+        keep[1:] = (code[order][1:] != code[order][:-1]) | (row[order][1:] != row[order][:-1])
+        order = order[keep]
+        bounds = np.searchsorted(code[order], np.arange(len(unique) + 1))
+        column = self[values]
+        # Loop over names in sorted order, missing values last.
+        for i in np.argsort(Vector.fast(unique).is_na(), kind="stable"):
+            indices = order[bounds[i]:bounds[i+1]]
+            colname = rename(unique[i]) if rename else str(unique[i])
+            if len(indices) == wide.nrow:
+                # No missing values needed, keep data type.
+                wide[colname] = column[indices]
+                continue
+            new = DataFrameColumn(column.na_value, column.na_dtype, wide.nrow)
+            new[row[indices]] = column[indices]
+            wide[colname] = new
         return wide
 
     def print_(self, *, max_rows=None, max_width=None, truncate_width=None):

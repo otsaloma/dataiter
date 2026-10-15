@@ -491,6 +491,13 @@ class TestDataFrame:
             if x.startswith("dl_"))
         assert total_downloads == sum(long.downloads)
 
+    def test_pivot_wider_duplicates_and_missing(self):
+        long = DataFrame(id=[1, 1, 2, 1, 2], m=["a", "b", "a", "a", "a"], value=[1, 2, 3, 4, 5])
+        wide = long.pivot_wider(ids="id", names="m", values="value")
+        assert wide.a.tolist() == [1, 3]
+        assert wide.a.is_integer()
+        assert wide.b.tolist() == [2, None]
+
     def test_pivot_wider_integer_names(self):
         long = DataFrame(id=[1, 1, 2], m=[2, 10, 1], value=[1, 2, 3])
         wide = long.pivot_wider(ids="id", names="m", values="value")
