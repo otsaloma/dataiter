@@ -22,7 +22,6 @@
 
 from dataiter import GeoJSON
 from dataiter import test
-from pathlib import Path
 
 class TestGeoJSON:
 
@@ -82,5 +81,5 @@ class TestGeoJSON:
 
     def test_write_path(self, tmp_path):
         orig = test.geojson(self.path)
-        path = str(tmp_path / "test.geojson")
-        orig.write(Path(path))
+        path = tmp_path / "test.geojson"
+        orig.write(path)

@@ -27,7 +27,6 @@ from attd import AttributeDict
 from dataiter import ListOfDicts
 from dataiter import test
 from dataiter import Vector
-from pathlib import Path
 from unittest.mock import patch
 
 class TestListOfDicts:
@@ -439,8 +438,8 @@ class TestListOfDicts:
         assert list(data[100].keys()) == ["make", "model"]
 
     def test_read_csv_na(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text("a,b\n1,x\n\\N,\\N\n", "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text("a,b\n1,x\n\\N,\\N\n", "utf-8")
         data = ListOfDicts.read_csv(path, na="\\N", types={"a": int})
         assert data.pluck("a") == [1, None]
         assert data.pluck("b") == ["x", None]
@@ -449,8 +448,8 @@ class TestListOfDicts:
         ListOfDicts.read_csv(test.get_data_path("vehicles.csv"))
 
     def test_read_csv_quote(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text('a\tb\n"x\t1\n', "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text('a\tb\n"x\t1\n', "utf-8")
         data = ListOfDicts.read_csv(path, sep="\t", quote=None)
         assert data.pluck("a") == ['"x']
         assert data.pluck("b") == ["1"]
@@ -499,9 +498,9 @@ class TestListOfDicts:
 
     def test_read_pickle_path(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
-        path = str(tmp_path / "test.pkl")
+        path = tmp_path / "test.pkl"
         orig.write_pickle(path)
-        ListOfDicts.read_pickle(Path(path))
+        ListOfDicts.read_pickle(path)
 
     def test_rename(self):
         orig = test.list_of_dicts("downloads.json")
@@ -709,8 +708,8 @@ class TestListOfDicts:
 
     def test_write_csv_path(self, tmp_path):
         orig = test.list_of_dicts("vehicles.csv")
-        path = str(tmp_path / "test.csv")
-        orig.write_csv(Path(path))
+        path = tmp_path / "test.csv"
+        orig.write_csv(path)
 
     def test_write_json(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
@@ -721,8 +720,8 @@ class TestListOfDicts:
 
     def test_write_json_path(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
-        path = str(tmp_path / "test.json")
-        orig.write_json(Path(path))
+        path = tmp_path / "test.json"
+        orig.write_json(path)
 
     def test_write_pickle(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
@@ -733,5 +732,5 @@ class TestListOfDicts:
 
     def test_write_pickle_path(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
-        path = str(tmp_path / "test.pkl")
-        orig.write_pickle(Path(path))
+        path = tmp_path / "test.pkl"
+        orig.write_pickle(path)

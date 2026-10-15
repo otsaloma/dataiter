@@ -28,7 +28,6 @@ from dataiter import DataFrame
 from dataiter import DataFrameColumn
 from dataiter import test
 from dataiter import Vector
-from pathlib import Path
 from unittest.mock import patch
 
 # See dataiter/dtypes.py for the equivalent non-test ignore.
@@ -628,28 +627,28 @@ class TestDataFrame:
         assert data.model.is_object()
 
     def test_read_csv_dtypes_string(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text("zip\n02134\n", "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text("zip\n02134\n", "utf-8")
         data = DataFrame.read_csv(path, dtypes={"zip": str})
         assert data.zip.tolist() == ["02134"]
 
     def test_read_csv_fractional_seconds(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text("time\n2026-01-02 05:36:24.539\n", "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text("time\n2026-01-02 05:36:24.539\n", "utf-8")
         data = DataFrame.read_csv(path)
         assert data.time.dtype == np.dtype("datetime64[us]")
         assert data.time.dt.hour().tolist() == [5]
 
     def test_read_csv_no_header_columns(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text("1,2,3\n", "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text("1,2,3\n", "utf-8")
         data = DataFrame.read_csv(path, header=False, columns=["c", "a"])
         assert data.colnames == ["c", "a"]
         assert data.c.tolist() == [3]
 
     def test_read_csv_no_header_dtypes(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text("02134,007\n", "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text("02134,007\n", "utf-8")
         data = DataFrame.read_csv(path, header=False, dtypes={"b": str})
         assert data.b.tolist() == ["007"]
 
@@ -662,8 +661,8 @@ int,float,string,bool,date
 1,2.5,"test",,2025-01-01
 1,2.5,"test",TRUE,
 """.strip()
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text(text, "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
@@ -678,8 +677,8 @@ int,float,string,bool,date
 1,2.5,"test",#N/A,2025-01-01
 1,2.5,"test",TRUE,#N/A
 """.strip()
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text(text, "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
@@ -694,8 +693,8 @@ NA,2.5,"test",TRUE,2025-01-01
 1,2.5,"test",NA,2025-01-01
 1,2.5,"test",TRUE,NA
 """.strip()
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text(text, "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
@@ -710,8 +709,8 @@ int,float,string,bool,date,other
 1,2.5,test,\\N,2025-01-01,NA
 1,2.5,test,TRUE,\\N,NA
 """.strip()
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text(text, "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text(text, "utf-8")
         data = DataFrame.read_csv(path, na="\\N", dtypes={"other": str})
         for i, column in enumerate(data.columns[:-1]):
             assert column.is_na().sum() == 1
@@ -721,8 +720,8 @@ int,float,string,bool,date,other
         assert data.other.tolist() == ["NA"] * 5
 
     def test_read_csv_quote(self, tmp_path):
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text('a\tb\n"x\t1\n', "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text('a\tb\n"x\t1\n', "utf-8")
         data = DataFrame.read_csv(path, sep="\t", quote=None)
         assert data.a.tolist() == ['"x']
         assert data.b.tolist() == [1]
@@ -736,8 +735,8 @@ NULL,2.5,"test",TRUE,2025-01-01
 1,2.5,"test",NULL,2025-01-01
 1,2.5,"test",TRUE,NULL
 """.strip()
-        path = str(tmp_path / "test.csv")
-        Path(path).write_text(text, "utf-8")
+        path = tmp_path / "test.csv"
+        path.write_text(text, "utf-8")
         data = DataFrame.read_csv(path)
         for i, column in enumerate(data.columns):
             assert column.is_na().sum() == 1
@@ -775,9 +774,9 @@ NULL,2.5,"test",TRUE,2025-01-01
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_read_npz_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        path = str(tmp_path / "test.npz")
+        path = tmp_path / "test.npz"
         orig.write_npz(path)
-        DataFrame.read_npz(Path(path))
+        DataFrame.read_npz(path)
 
     def test_read_parquet(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
@@ -795,9 +794,9 @@ NULL,2.5,"test",TRUE,2025-01-01
 
     def test_read_pickle_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        path = str(tmp_path / "test.pkl")
+        path = tmp_path / "test.pkl"
         orig.write_pickle(path)
-        DataFrame.read_pickle(Path(path))
+        DataFrame.read_pickle(path)
 
     def test_rename(self):
         orig = test.data_frame("downloads.csv")
@@ -1034,8 +1033,8 @@ NULL,2.5,"test",TRUE,2025-01-01
 
     def test_write_csv_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        path = str(tmp_path / "test.csv")
-        orig.write_csv(Path(path))
+        path = tmp_path / "test.csv"
+        orig.write_csv(path)
 
     def test_write_json(self, tmp_path):
         orig = test.data_frame("downloads.json")
@@ -1046,8 +1045,8 @@ NULL,2.5,"test",TRUE,2025-01-01
 
     def test_write_json_path(self, tmp_path):
         orig = test.data_frame("downloads.json")
-        path = str(tmp_path / "test.json")
-        orig.write_json(Path(path))
+        path = tmp_path / "test.json"
+        orig.write_json(path)
 
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_write_npz(self, tmp_path):
@@ -1060,8 +1059,8 @@ NULL,2.5,"test",TRUE,2025-01-01
     @pytest.mark.filterwarnings(IGNORE_NPZ_PICKLE_WARNING)
     def test_write_npz_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        path = str(tmp_path / "test.npz")
-        orig.write_npz(Path(path))
+        path = tmp_path / "test.npz"
+        orig.write_npz(path)
 
     def test_write_parquet(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
@@ -1079,5 +1078,5 @@ NULL,2.5,"test",TRUE,2025-01-01
 
     def test_write_pickle_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
-        path = str(tmp_path / "test.pkl")
-        orig.write_pickle(Path(path))
+        path = tmp_path / "test.pkl"
+        orig.write_pickle(path)
