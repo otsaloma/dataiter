@@ -36,6 +36,7 @@ tabular data and the `DataFrame` class.
 - Citi Bike GBFS station feeds
 - Citi Bike trips
 - Helsinki city bikes
+- IMDb non-commercial datasets
 - MovieLens 25M
 - NYC taxi
 - Open-Meteo hourly weather
