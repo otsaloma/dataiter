@@ -317,7 +317,8 @@ class DataFrame(dict):
         changed values. The first two are basically subsets of the rows of
         `self` and `other`, respectively. Changed values are returned as a data
         frame with one row per differing value (not per differing row). Listing
-        changes will terminate once `max_changed` is reached.
+        changes will terminate once `max_changed` is reached. If no differences
+        are found, the data frames are empty.
 
         .. warning:: `compare` is experimental, do not rely on it reporting all
                      of the differences correctly. Do not try to give it two
@@ -360,9 +361,9 @@ class DataFrame(dict):
                                         xvalue=xvalue,
                                         yvalue=yvalue))
 
-        added = added if added.nrow > 0 else None
-        removed = removed if removed.nrow > 0 else None
-        changed = self.from_json(changed) if changed else None
+        added = added if added.nrow > 0 else self.__class__()
+        removed = removed if removed.nrow > 0 else self.__class__()
+        changed = self.from_json(changed) if changed else self.__class__()
         return added, removed, changed
 
     def copy(self):

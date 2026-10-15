@@ -221,10 +221,17 @@ class TestDataFrame:
         old = test.data_frame("vehicles.csv")
         new = old.modify(hwy=lambda x: np.minimum(100, x.hwy))
         added, removed, changed = new.compare(old, "id")
-        assert added is None
-        assert removed is None
+        assert added.nrow == 0
+        assert removed.nrow == 0
         assert changed.nrow == 9
         assert all(changed.column == "hwy")
+
+    def test_compare_equal(self):
+        data = test.data_frame("vehicles.csv")
+        for value in data.compare(data, "id"):
+            assert isinstance(value, DataFrame)
+            assert value.nrow == 0
+            assert not value
 
     def test_copy(self):
         orig = test.data_frame("vehicles.csv")
