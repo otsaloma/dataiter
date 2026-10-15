@@ -17,7 +17,7 @@ benchmark() {
 
 set -e
 rm -f $OUT_FILE
-echo "name,version,elapsed" > $OUT_FILE
+echo "name,elapsed,version" > $OUT_FILE
 cp -fv tools/benchmark $SCRIPT
 benchmark 1.4
 benchmark master
