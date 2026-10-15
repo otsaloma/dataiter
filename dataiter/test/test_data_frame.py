@@ -476,6 +476,12 @@ class TestDataFrame:
         assert long.ncol == 3
         assert all(np.isin(long.name, wide.colnames))
 
+    def test_pivot_longer_defaults(self):
+        wide = DataFrame(id=[1, 2], a=[3, 4], b=[5, 6])
+        long = wide.pivot_longer(ids="id")
+        assert long.colnames == ["id", "name", "value"]
+        assert long.pivot_wider(ids="id") == wide
+
     def test_pivot_wider(self):
         long = test.data_frame("downloads.csv")
         long = long.sort(date=1).tail(100)

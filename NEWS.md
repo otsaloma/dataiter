@@ -5,6 +5,7 @@ New:
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.filter`, `DataFrame.filter_out`: Match any element if value is a sequence
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
+- `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
 - `DataFrame.replace_na`: New method
 - `dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values

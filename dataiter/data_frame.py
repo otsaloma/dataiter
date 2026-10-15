@@ -907,7 +907,7 @@ class DataFrame(dict):
     def _parse_rows_from_integer(self, rows):
         return Vector.fast(rows, int)
 
-    def pivot_longer(self, *, ids=None, names=None, values=None):
+    def pivot_longer(self, *, ids=None, names="name", values="value"):
         """
         Pivot data from wide to long format.
 
@@ -919,7 +919,7 @@ class DataFrame(dict):
 
         >>> wide = di.read_csv("data/listings.csv")
         >>> wide
-        >>> wide.pivot_longer(ids="id", names="name", values="value")
+        >>> wide.pivot_longer(ids="id")
         """
         ids = util.sequencify(ids)
         if not all(x in self for x in ids):
@@ -934,7 +934,7 @@ class DataFrame(dict):
             long = long.rbind(part)
         return long.sort(**dict.fromkeys(ids, 1))
 
-    def pivot_wider(self, *, ids=None, names=None, values=None, rename=None):
+    def pivot_wider(self, *, ids=None, names="name", values="value", rename=None):
         """
         Pivot data from long to wide format.
 
