@@ -59,7 +59,6 @@ release:
 	@echo "BUMP VERSION NUMBERS"
 	$(EDITOR) bin/di-open
 	$(EDITOR) dataiter/__init__.py
-	$(EDITOR) tools/benchmark-versions
 	@echo "ADD RELEASE NOTES"
 	$(EDITOR) NEWS.md
 	sudo $(MAKE) install clean

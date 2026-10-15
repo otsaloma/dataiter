@@ -4,7 +4,6 @@
 .pytest_cache
 .venv
 __pycache__
-benchmark-head.py
 benchmark-versions.csv
 benchmark-versions.ods
 build
