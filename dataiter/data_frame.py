@@ -1024,16 +1024,19 @@ class DataFrame(dict):
         """
         data_frames = [self] + list(others)
         colnames = util.unique_keys(itertools.chain(*data_frames))
+        # Data types of empty data frames are often guesses, e.g. float64
+        # from aggregating zero groups, use them only if all are empty.
+        nonempty = [x for x in data_frames if any(map(len, x.values()))] or data_frames
         def get_part(data, colname):
             if colname in data:
                 return data[colname]
-            for ref in data_frames:
+            for ref in [*nonempty, *data_frames]:
                 if colname not in ref: continue
                 value = ref[colname].na_value
                 dtype = ref[colname].na_dtype
                 return Vector.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
-            parts = [get_part(x, colname) for x in data_frames if colname in x or x.nrow > 0]
+            parts = [get_part(x, colname) for x in nonempty if colname in x or x.nrow > 0]
             total = DataFrameColumn(np.concatenate(parts))
             yield colname, total
 

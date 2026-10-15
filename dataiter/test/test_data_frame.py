@@ -559,6 +559,18 @@ class TestDataFrame:
         assert data.a.is_float()
         assert data.b.is_float()
 
+    def test_rbind_ignore_empty(self):
+        a = DataFrame(s=["x"], n=[1])
+        b = DataFrame(n=[2])
+        empty = DataFrame(s=[1.5], n=[1.5], x=[1.5]).head(0)
+        data = empty.rbind(a, b)
+        assert data.s.tolist() == ["x", None]
+        assert data.n.tolist() == [1, 2]
+        assert data.x.tolist() == [None, None]
+        assert data.s.is_string()
+        assert data.n.is_integer()
+        assert empty.rbind(empty).n.is_float()
+
     def test_read_csv(self):
         path = str(test.get_data_path("vehicles.csv"))
         data = DataFrame.read_csv(path)
