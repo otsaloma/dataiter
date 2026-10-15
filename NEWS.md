@@ -39,6 +39,7 @@ Fixes:
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
 - `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
+- `DataFrame.print_memory_use`, `Vector.get_memory_use`: Include contents of long strings, previously left out
 - `DataFrame.sort`: Fix descending sort of unsigned integers
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
