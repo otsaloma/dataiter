@@ -724,6 +724,30 @@ class Vector(np.ndarray):
         indices = np.random.choice(self.length, n, replace=False)
         return self[np.sort(indices)].copy()
 
+    def shift(self, n=1):
+        """
+        Return elements shifted by `n` positions.
+
+        Positive `n` shifts later, negative earlier, i.e. ``shift(1)`` gives at
+        each position the previous element and ``shift(-1)`` the next one.
+        Positions left without an element will be missing.
+
+        >>> vector = di.Vector([1, 2, 3, 4])
+        >>> vector.shift(1)
+        >>> vector.shift(-1)
+        """
+        k = min(abs(n), self.length)
+        if k == 0:
+            return self.copy()
+        result = self.astype(self.na_dtype)
+        if n > 0:
+            result[k:] = self[:self.length - k]
+            result[:k] = self.na_value
+        else:
+            result[:self.length - k] = self[k:]
+            result[self.length - k:] = self.na_value
+        return result
+
     def sort(self, *, dir=1):
         """
         Return elements in sorted order.

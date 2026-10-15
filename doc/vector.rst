@@ -41,6 +41,7 @@ dataiter.Vector
 :attr:`~dataiter.Vector.re`
 :meth:`~dataiter.Vector.replace_na`
 :meth:`~dataiter.Vector.sample`
+:meth:`~dataiter.Vector.shift`
 :meth:`~dataiter.Vector.sort`
 :attr:`~dataiter.Vector.str`
 :meth:`~dataiter.Vector.tail`

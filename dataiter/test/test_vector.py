@@ -551,6 +551,19 @@ class TestVector:
         assert np.all(a.sample(3).is_in(a))
         assert a.sample(5).tolist() == [1, 2, 3, 4, 5]
 
+    def test_shift(self):
+        a = Vector([1, 2, 3])
+        assert a.shift().tolist() == [None, 1, 2]
+        assert a.shift(2).tolist() == [None, None, 1]
+        assert a.shift(5).tolist() == [None, None, None]
+        assert a.shift(-1).tolist() == [2, 3, None]
+        assert a.shift(-2).tolist() == [3, None, None]
+        assert a.shift(-5).tolist() == [None, None, None]
+        assert a.shift(0).tolist() == [1, 2, 3]
+        assert a.shift(0).is_integer()
+        assert Vector(["a", "b"]).shift().tolist() == [None, "a"]
+        assert Vector(["a", "b"]).shift(-1).tolist() == ["b", None]
+
     def test_sort(self):
         a = Vector([3, 4, 2, 1, 5])
         assert a.sort(dir=1).tolist() == [1, 2, 3, 4, 5]
