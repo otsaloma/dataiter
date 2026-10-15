@@ -27,6 +27,14 @@ from dataiter import Vector
 
 class TestRegex:
 
+    def test_extract(self):
+        pattern = r"\((\d{4})\)|(none)"
+        string = Vector(["Toy Story (1995)", "none", "Unknown", ""])
+        assert regex.extract(pattern, string).tolist() == ["(1995)", "none", None, None]
+        assert regex.extract(pattern, string, group=1).tolist() == ["1995", None, None, None]
+        assert regex.extract(r"\((?P<year>\d{4})\)", string, group="year")[0] == "1995"
+        assert regex.extract(pattern, string[0], group=1) == "1995"
+
     def test_findall(self):
         pattern = r"[a-z]"
         string = Vector(["asdf", "1234", ""])

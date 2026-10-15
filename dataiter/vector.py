@@ -70,6 +70,7 @@ class ReProxy:
     def __init__(self, vector):
         from dataiter import regex
         wrap = lambda f: functools.partial(f, string=vector)
+        self.extract = wrap(regex.extract)
         self.findall = wrap(regex.findall)
         self.fullmatch = wrap(regex.fullmatch)
         self.match = wrap(regex.match)

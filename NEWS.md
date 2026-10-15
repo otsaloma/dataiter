@@ -13,6 +13,7 @@ New:
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
+- `regex.extract`: New function to extract a group of the first match
 - `Vector.rank`: Add `dir` argument for descending order
 
 Speed-ups:

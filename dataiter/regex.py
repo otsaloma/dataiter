@@ -41,6 +41,22 @@ def _apply(function, string, dtype=object, na_value=None):
     out[~na] = np.fromiter(map(function, values), dtype, count=len(values))
     return Vector.fast(out, dtype)
 
+def extract(pattern, string, group=0, flags=0):
+    r"""
+    Return `group` of the first match of `pattern` in `string`.
+
+    `group` is a group number or name as in ``re.Match.group``, ``0`` for the
+    whole match. Return a missing value if there is no match.
+
+    >>> x = di.Vector(["Toy Story (1995)", "Jumanji (1995)", "No year"])
+    >>> regex.extract(r"\((\d{4})\)", x, group=1)
+    """
+    p = re.compile(pattern, flags)
+    def f(x):
+        m = p.search(x)
+        return (m.group(group) or "") if m else ""
+    return _apply(f, string, dtypes.string, dtypes.string.na_object)
+
 def findall(pattern, string, flags=0):
     """
     Return a list of matches of `pattern` in `string`.
