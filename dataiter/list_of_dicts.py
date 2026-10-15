@@ -680,10 +680,12 @@ class ListOfDicts(list):
         >>> data = di.read_json("data/listings.json")
         >>> data.print_na_counts()
         """
+        counts = {k: sum(x.get(k, None) is None for x in self) for k in self.keys()}
+        counts = {k: v for k, v in counts.items() if v > 0}
+        if not counts:
+            return print("No missing values")
         print("Missing counts:")
-        for key in self.keys():
-            n = sum(x.get(key, None) is None for x in self)
-            if n == 0: continue
+        for key, n in counts.items():
             pc = 100 * n / len(self)
             print(f"... {key}: {n} ({pc:.1f}%)")
 

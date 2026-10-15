@@ -419,6 +419,13 @@ class TestListOfDicts:
         data.print_na_counts()
         mock_print.assert_called()
 
+    @patch("builtins.print")
+    def test_print_na_counts_none(self, mock_print):
+        data = test.list_of_dicts("vehicles.json")
+        data = data.select("id", "make", "model")
+        data.print_na_counts()
+        mock_print.assert_called_once_with("No missing values")
+
     def test_read_csv(self):
         path = str(test.get_data_path("vehicles.csv"))
         data = ListOfDicts.read_csv(path)

@@ -1035,7 +1035,8 @@ class DataFrame(dict):
             n = self[name].is_na().sum()
             if n == 0: continue
             nas = nas.rbind(DataFrame(column=name, nna=n))
-        if not nas: return
+        if not nas:
+            return print("No missing values")
         nas.pna = [f"{100*x/self.nrow:.1f}%" for x in nas.nna]
         nas.colnames = [x.upper() for x in nas.colnames]
         print(nas)

@@ -541,7 +541,7 @@ class TestDataFrame:
         data = test.data_frame("vehicles.csv")
         data = data.select("id", "make", "model")
         data.print_na_counts()
-        mock_print.assert_not_called()
+        mock_print.assert_called_once_with("No missing values")
 
     def test_rbind(self):
         orig = test.data_frame("vehicles.csv")

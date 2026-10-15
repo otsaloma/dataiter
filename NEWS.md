@@ -42,6 +42,7 @@ Fixes:
 - `DataFrame.pivot_longer`: Keep data type of values if same in all pivoted columns
 - `DataFrame.pivot_wider`: Fix error with non-string names
 - `DataFrame.pivot_wider`: Fix to sort new columns before applying `rename`
+- `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
 - `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
