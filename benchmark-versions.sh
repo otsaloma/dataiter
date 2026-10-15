@@ -9,7 +9,7 @@ benchmark() {
     VERSION=$1
     printf "\n$VERSION:\n"
     git checkout -q $VERSION
-    ./$SCRIPT -o $TMP_FILE --version=$VERSION $SCRIPT_ARGS || true
+    uv run --no-sync python $SCRIPT -o $TMP_FILE --version=$VERSION $SCRIPT_ARGS || true
     tail -n+2 $TMP_FILE >> $OUT_FILE
     sed -i 's/"//g' $OUT_FILE
 }

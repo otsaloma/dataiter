@@ -2,6 +2,7 @@
 .env
 .envrc
 .pytest_cache
+.venv
 __pycache__
 benchmark-head.py
 benchmark-versions.csv
@@ -12,5 +13,5 @@ doc/_build
 doc/comparison/comparison.html
 test.py
 tmp.csv
+uv.lock
 validation/*.csv
-venv

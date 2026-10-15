@@ -8,9 +8,8 @@ jobs:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: astral-sh/setup-uv@v10
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install . flake8 pandas pytest
-      - run: make check
-      - run: make test
+      - run: uv run make check
+      - run: uv run make test

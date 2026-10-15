@@ -74,10 +74,6 @@ Markdown by replacing `.html` with `.md` in the URL. There's also an
 
 ## Development
 
-To install a virtualenv for development, use
+Install uv from https://docs.astral.sh/uv/ and then run
 
-    make venv
-
-or, for a specific Python version
-
-    make PYTHON=python3.X venv
+    uv sync

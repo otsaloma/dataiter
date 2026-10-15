@@ -4,9 +4,6 @@
 EDITOR = nano
 PREFIX = /usr/local
 
-# Latest Numba-compatible
-PYTHON = python3.14
-
 check:
 	flake8 .
 	flake8 . `grep -Fl '#!/usr/bin/env python3' bin/*`
@@ -21,7 +18,7 @@ clean:
 	find . -type d -name .pytest_cache -prune -exec rm -rf {} +
 
 doc:
-	$(MAKE) SPHINXBUILD=../venv/bin/sphinx-build -C doc clean html
+	$(MAKE) SPHINXBUILD=../.venv/bin/sphinx-build -C doc clean html
 
 doc-check:
 	PYTHONPATH=. doc/check.py
@@ -30,7 +27,7 @@ doc-open:
 	xdg-open doc/_build/html/index.html
 
 doc-watch:
-	watchexec -e py,rst --workdir doc $(MAKE) SPHINXBUILD=../venv/bin/sphinx-build html
+	watchexec -e py,rst --workdir doc $(MAKE) SPHINXBUILD=../.venv/bin/sphinx-build html
 
 install:
 	pip install --break-system-packages .
@@ -81,11 +78,4 @@ validate:
 	cd validation && DATAITER_USE_NUMBA=true ./validate-df.sh
 	cd validation && ./validate-ld.sh
 
-venv:
-	rm -rf venv
-	$(PYTHON) -m venv venv
-	. venv/bin/activate && \
-	  pip install -U pip && \
-	  pip install -r requirements.txt
-
-.PHONY: check clean doc doc-check doc-open doc-watch install install-cli publish release test test-installed validate venv
+.PHONY: check clean doc doc-check doc-open doc-watch install install-cli publish release test test-installed validate

@@ -8,15 +8,15 @@ it makes sense there as well.
 
 ## Validation, Testing
 
-After making changes, run `direnv exec . make check` and `direnv exec .
-make test` (or `direnv exec . pytest ...` to test only a subset). direnv
-ensures these use the virtualenv present in `venv`.
+After making changes, run `uv run make check` and `uv run make test` (or
+`uv run pytest ...` to test only a subset). uv ensures these use the
+virtualenv present in `.venv`.
 
 ## API Documentation
 
 The API documentation currently requires new methods, properties and
 attributes to be manually added to the index at the top of `doc/*.rst`
-files. Run `direnv exec . make doc-check` to check these are up to date.
+files. Run `uv run make doc-check` to check these are up to date.
 
 ## Known Issues
 

@@ -19,8 +19,8 @@ something in dataiter that we should fix.
 
 Start by reading `doc/_build/html/llms-full.txt` and work based on that,
 since that's what we recommend users point their coding agents at. If it
-doesn't exist, build the documentation first with `direnv exec . make
-doc`. Then read the source code too as you see fit.
+doesn't exist, build the documentation first with `uv run make doc`.
+Then read the source code too as you see fit.
 
 Previously you have used the following datasets. Try something different
 this time. Find preferably something with 1–10M rows. Focus primarily on
