@@ -438,8 +438,22 @@ class TestListOfDicts:
         assert list(data[0].keys()) == ["make", "model"]
         assert list(data[100].keys()) == ["make", "model"]
 
+    def test_read_csv_na(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text("a,b\n1,x\n\\N,\\N\n", "utf-8")
+        data = ListOfDicts.read_csv(path, na="\\N", types={"a": int})
+        assert data.pluck("a") == [1, None]
+        assert data.pluck("b") == ["x", None]
+
     def test_read_csv_path(self):
         ListOfDicts.read_csv(test.get_data_path("vehicles.csv"))
+
+    def test_read_csv_quote(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text('a\tb\n"x\t1\n', "utf-8")
+        data = ListOfDicts.read_csv(path, sep="\t", quote=None)
+        assert data.pluck("a") == ['"x']
+        assert data.pluck("b") == ["1"]
 
     def test_read_csv_types(self):
         path = str(test.get_data_path("vehicles.csv"))

@@ -1068,16 +1068,22 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], columns=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        `quote` is the character used to quote values, ``None`` to disable
+        quoting. `na` is an optional string or list of strings to read as
+        missing values, in addition to the defaults: blanks in all columns
+        and common markers such as "NA" and "NULL" in non-string columns.
         `columns` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes.
         """
         import pyarrow as pa
+        import pyarrow.compute as pc
         from pyarrow import csv
+        na = [na] if isinstance(na, str) else list(na)
         # Strings need to be requested already at parse time,
         # otherwise e.g. leading zeros would be lost to type guessing.
         column_types = {k: pa.string() for k, v in dtypes.items() if Vector.fast([], v).is_string()}
@@ -1090,14 +1096,23 @@ class DataFrame(dict):
         table = csv.read_csv(
             path,
             read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
-            parse_options=csv.ParseOptions(delimiter=sep, newlines_in_values=True),
-            convert_options=csv.ConvertOptions(include_columns=columns, column_types=column_types))
+            parse_options=csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True),
+            convert_options=csv.ConvertOptions(include_columns=columns,
+                                               column_types=column_types,
+                                               null_values=csv.ConvertOptions().null_values + na))
 
         if not header:
             # Translate pyarrow's f0, f1, ... back to our generated column names.
             indices = [int(x[1:]) for x in table.column_names]
             names = util.generate_colnames(max(indices, default=-1) + 1)
             table = table.rename_columns([names[i] for i in indices])
+        for i, column in enumerate(table.columns):
+            if na and (pa.types.is_string(column.type) or pa.types.is_large_string(column.type)):
+                # pyarrow's strings_can_be_null would apply also the default
+                # null_values to strings, so handle our na values separately.
+                missing = pc.is_in(column, pa.array(na, column.type))
+                column = pc.if_else(missing, pa.scalar(None, column.type), column)
+                table = table.set_column(i, table.column_names[i], column)
         return cls.from_arrow(table, dtypes=dtypes)
 
     @classmethod

@@ -25,11 +25,13 @@ from dataiter import GeoJSON
 from dataiter import ListOfDicts
 from dataiter import util
 
-def read_csv(path, *, encoding="utf-8", sep=",", header=True, columns=[], dtypes={}):
+def read_csv(path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], columns=[], dtypes={}):
     return DataFrame.read_csv(path,
                               encoding=encoding,
                               sep=sep,
+                              quote=quote,
                               header=header,
+                              na=na,
                               columns=columns,
                               dtypes=dtypes)
 

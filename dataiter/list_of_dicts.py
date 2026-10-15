@@ -690,16 +690,20 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", header=True, keys=[], types={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], keys=[], types={}):
         """
         Return a new list from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-        `keys` is an optional list of keys to limit to. `types` is an optional
-        dict mapping keys to datatypes.
+        `quote` is the character used to quote values, ``None`` to disable
+        quoting. `na` is an optional string or list of strings to read as
+        ``None``. `keys` is an optional list of keys to limit to. `types` is
+        an optional dict mapping keys to datatypes.
         """
+        na = {na} if isinstance(na, str) else set(na)
+        quoting = csv.QUOTE_MINIMAL if quote else csv.QUOTE_NONE
         with util.xopen(path, "rt", encoding=encoding) as f:
-            rows = list(csv.reader(f, dialect="unix", delimiter=sep))
+            rows = list(csv.reader(f, dialect="unix", delimiter=sep, quotechar=quote or None, quoting=quoting))
             if not rows: return cls([])
             colnames = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
             if keys:
@@ -709,10 +713,12 @@ class ListOfDicts(list):
                     for i in reversed(drop):
                         del row[i]
                 colnames = keys
+            if na:
+                rows = [[None if x in na else x for x in row] for row in rows]
             data = cls(dict(zip(colnames, x)) for x in rows)
             for key, type in types.items():
                 for item in data:
-                    if key in item:
+                    if item.get(key) is not None:
                         item[key] = type(item[key])
             return data
 

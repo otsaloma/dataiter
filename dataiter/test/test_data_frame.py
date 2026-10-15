@@ -676,6 +676,32 @@ NA,2.5,"test",TRUE,2025-01-01
             assert column.is_na().sum() == 1
             assert column.is_na()[i]
 
+    def test_read_csv_na(self, tmp_path):
+        text = """
+int,float,string,bool,date,other
+\\N,2.5,test,TRUE,2025-01-01,NA
+1,\\N,test,TRUE,2025-01-01,NA
+1,2.5,\\N,TRUE,2025-01-01,NA
+1,2.5,test,\\N,2025-01-01,NA
+1,2.5,test,TRUE,\\N,NA
+""".strip()
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text(text, "utf-8")
+        data = DataFrame.read_csv(path, na="\\N", dtypes={"other": str})
+        for i, column in enumerate(data.columns[:-1]):
+            assert column.is_na().sum() == 1
+            assert column.is_na()[i]
+        assert data.int.is_float()
+        assert data.string.is_string()
+        assert data.other.tolist() == ["NA"] * 5
+
+    def test_read_csv_quote(self, tmp_path):
+        path = str(tmp_path / "test.csv")
+        Path(path).write_text('a\tb\n"x\t1\n', "utf-8")
+        data = DataFrame.read_csv(path, sep="\t", quote=None)
+        assert data.a.tolist() == ['"x']
+        assert data.b.tolist() == [1]
+
     def test_read_csv_missing_null(self, tmp_path):
         text = """
 int,float,string,bool,date
