@@ -1,5 +1,6 @@
 #!/bin/sh
 
+cd "$(dirname "$0")/.." || exit 1
 SCRIPT=benchmark-head.py
 SCRIPT_ARGS="$@"
 OUT_FILE=benchmark-versions.csv
@@ -17,7 +18,7 @@ benchmark() {
 set -e
 rm -f $OUT_FILE
 echo "name,version,elapsed" > $OUT_FILE
-cp -fv benchmark.py $SCRIPT
+cp -fv tools/benchmark $SCRIPT
 benchmark 1.4
 benchmark master
 rm -f $SCRIPT $TMP_FILE
