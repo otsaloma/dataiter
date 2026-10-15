@@ -226,7 +226,7 @@ class DataFrame(dict):
                     indices = np.split(data._index_, starts[1:]) if len(starts) > 0 else []
                     slices = [self._view_rows(x) for x in indices]
                 stat[colname] = [function(x) for x in slices]
-        return stat.unselect("_index_", "_group_")
+        return stat.unselect("_index_")
 
     @deco.new_from_generator
     def anti_join(self, other, *by):
@@ -1187,6 +1187,9 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.rename(listing_id="id")
         """
+        for fm in to_from_pairs.values():
+            if fm not in self:
+                raise KeyError(fm)
         from_to_pairs = {v: k for k, v in to_from_pairs.items()}
         for fm in self.colnames:
             to = from_to_pairs.get(fm, fm)
@@ -1517,6 +1520,9 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unselect("guests", "sqft", "price")
         """
+        for colname in colnames:
+            if colname not in self:
+                raise KeyError(colname)
         for colname in self.colnames:
             if colname not in colnames:
                 yield colname, self[colname].copy()

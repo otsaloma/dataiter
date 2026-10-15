@@ -801,6 +801,11 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.ymd.equal(orig.date)
         assert data.downloads.equal(orig.downloads)
 
+    def test_rename_missing(self):
+        data = test.data_frame("downloads.csv")
+        with pytest.raises(KeyError):
+            data.rename(ymd="nope")
+
     def test_replace_na(self):
         orig = DataFrame(a=[1, None], b=["", "x"], c=[None, 2])
         data = orig.replace_na(a=0, b="-")
@@ -999,6 +1004,11 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = orig.unselect("make", "model")
         assert data.colnames == [x for x in orig_colnames if not x in ["make", "model"]]
         assert orig.colnames == orig_colnames
+
+    def test_unselect_missing(self):
+        data = test.data_frame("vehicles.csv")
+        with pytest.raises(KeyError):
+            data.unselect("make", "nope")
 
     def test_update(self):
         orig = test.data_frame("vehicles.csv")
