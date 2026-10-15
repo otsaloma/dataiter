@@ -635,7 +635,6 @@ def sum(x, *, drop_na=True):
 
 def use_numba(x):
     # Numba can't handle all dtypes, use conditionally.
-    # Strings are supported, but performance is bad.
     # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#str
     return dataiter.USE_NUMBA and (
         np.issubdtype(x.dtype, np.bool_) or
