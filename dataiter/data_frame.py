@@ -629,6 +629,13 @@ class DataFrame(dict):
         # Rows of self without a match are included once with -1 in other.
         if multiple not in ["first", "last", "all"]:
             raise ValueError(f"Bad {multiple=}")
+        kind = lambda x: "number" if x.dtype.kind in "biufc" else x.dtype.kind
+        for colname1, colname2 in zip(by1, by2):
+            a, b = self[colname1], other[colname2]
+            if a.is_object() or b.is_object(): continue
+            if kind(a) != kind(b):
+                raise TypeError(f"Can't join {colname1!r} with {colname2!r} due to incompatible "
+                                f"types: {a.dtype_label} vs. {b.dtype_label}")
         keys = other.select(*by2)
         keys._index_ = np.arange(other.nrow)
         keys = keys.drop_na(*by2)

@@ -404,6 +404,14 @@ class TestDataFrame:
         assert np.sum(~data.holiday.is_na()) == 35
         assert np.sum(data.downloads) == 541335745
 
+    def test_left_join_incompatible_types(self):
+        a = DataFrame(k=[1, 2])
+        b = DataFrame(k=["1", "2"], v=[3, 4])
+        with pytest.raises(TypeError):
+            a.left_join(b, "k")
+        b = DataFrame(k=[1.0, 2.0], v=[3, 4])
+        assert a.left_join(b, "k").v.tolist() == [3, 4]
+
     def test_left_join_multiple(self):
         a = DataFrame(k=[1, 2, 3, np.nan], x=[1, 2, 3, 4])
         b = DataFrame(k=[2, 1, 2, np.nan], y=[1, 2, 3, 4])
