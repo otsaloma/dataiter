@@ -639,35 +639,46 @@ class DataFrame(dict):
         keys = other.select(*by2)
         keys._index_ = np.arange(other.nrow)
         keys = keys.drop_na(*by2)
-        if multiple == "last":
-            keys = keys.slice(np.arange(keys.nrow)[::-1])
+        # Find for each row of self the range left:right of matching rows
+        # in other in stable sorted order, i.e. first and last in order.
+        a, b = self[by1[0]], keys[by2[0]]
+        if len(by1) == 1 and a.dtype.kind in "biufmM" and b.dtype.kind in "biufmM":
+            order = np.argsort(b, kind="stable")
+            left = np.searchsorted(b[order], a, "left")
+            right = np.searchsorted(b[order], a, "right")
+        else:
+            groups = {}
+            group = (groups.setdefault(x, len(groups)) for x in zip(*[keys[x] for x in by2]))
+            group = np.fromiter(group, int, count=keys.nrow)
+            code = map(lambda x: groups.get(x, -1), zip(*[self[x] for x in by1]))
+            code = np.fromiter(code, int, count=self.nrow)
+            order = np.argsort(group, kind="stable")
+            counts = np.bincount(group, minlength=len(groups))
+            starts = np.cumsum(counts) - counts
+            if multiple != "all":
+                # Faster to look up matches by group than row.
+                pos = starts if multiple == "first" else starts + counts - 1
+                src = np.append(keys._index_[order[pos]], -1)[code]
+                return np.arange(self.nrow), src
+            # Append a zero count for code -1, i.e. rows without a match.
+            counts = np.append(counts, 0)
+            starts = np.append(starts, 0)
+            left = starts[code]
+            right = left + counts[code]
+        found = right > left
         if multiple != "all":
-            keys = keys.unique(*by2)
-        other_ids = zip(*[keys[x] for x in by2])
-        self_ids = zip(*[self[x] for x in by1])
-        if multiple != "all":
-            other_by_id = dict(zip(other_ids, keys._index_.tolist()))
-            src = map(lambda x: other_by_id.get(x, -1), self_ids)
-            return np.arange(self.nrow), np.fromiter(src, int, count=self.nrow)
-        groups = {}
-        group = (groups.setdefault(x, len(groups)) for x in other_ids)
-        group = np.fromiter(group, int, count=keys.nrow)
-        src = map(lambda x: groups.get(x, -1), self_ids)
-        src = np.fromiter(src, int, count=self.nrow)
-        # Expand each row of self to the rows of other in its group,
-        # using a sentinel count of 1 for -1, i.e. rows without a match.
-        order = np.argsort(group, kind="stable")
-        counts = np.bincount(group, minlength=len(groups))
-        starts = np.cumsum(counts) - counts
-        counts = np.append(counts, 1)
-        starts = np.append(starts, 0)
-        n = counts[src]
+            src = np.full(self.nrow, -1)
+            pos = left if multiple == "first" else right - 1
+            src[found] = keys._index_[order[pos[found]]]
+            return np.arange(self.nrow), src
+        # Expand each row of self to all of its matches,
+        # keeping rows without a match once.
+        n = np.maximum(right - left, 1)
         rows = np.repeat(np.arange(self.nrow), n)
-        offsets = np.arange(len(rows)) - np.repeat(np.cumsum(n) - n, n)
-        positions = np.repeat(starts[src], n) + offsets
-        found = np.repeat(src, n) > -1
+        pos = np.repeat(left, n) + np.arange(len(rows)) - np.repeat(np.cumsum(n) - n, n)
+        found = np.repeat(found, n)
         src = np.full(len(rows), -1)
-        src[found] = keys._index_[order[positions[found]]]
+        src[found] = keys._index_[order[pos[found]]]
         return rows, src
 
     def group_by(self, *colnames):

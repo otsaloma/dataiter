@@ -16,6 +16,7 @@ New:
 - `Vector.rank`: Add `dir` argument for descending order
 
 Speed-ups:
+- `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.sort`: Speed up, especially for strings
