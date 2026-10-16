@@ -41,7 +41,9 @@ tabular data and the `DataFrame` class.
 - NYC taxi
 - Open-Meteo hourly weather
 - UK Land Registry price paid
+- US Census ACS PUMS
 - US flights
+- Wikipedia clickstream
 
 When done, add the datasets you used to the above list in this file
 (`.agents/skills/fuzz/SKILL.md`).
