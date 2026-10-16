@@ -37,10 +37,12 @@ tabular data and the `DataFrame` class.
 - Citi Bike trips
 - Helsinki city bikes
 - IMDb non-commercial datasets
+- MBTA GTFS schedule
 - MovieLens 25M
 - NYC 311 service requests
 - NYC taxi
 - Open-Meteo hourly weather
+- UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
 - US Census ZCTA gazetteer
