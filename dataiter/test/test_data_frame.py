@@ -359,6 +359,17 @@ class TestDataFrame:
         data = DataFrame.from_arrow(data)
         assert data == orig
 
+    def test_from_arrow_decimal(self):
+        import decimal
+        import pyarrow as pa
+        values = [decimal.Decimal("1.10"), None, decimal.Decimal("123456789.25")]
+        table = pa.table({"a": pa.array(values, pa.decimal128(12, 2))})
+        data = DataFrame.from_arrow(table)
+        assert data.a.is_float()
+        assert data.a.tolist() == [1.1, None, 123456789.25]
+        data = DataFrame.from_arrow(table, dtypes={"a": object})
+        assert data.a.tolist() == values
+
     def test_from_arrow_list(self):
         import pyarrow as pa
         orig = DataFrame(a=[[1, 2], None, []], b=[[1, 2], [3, 4], [5, 6]])

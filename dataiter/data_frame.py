@@ -588,6 +588,10 @@ class DataFrame(dict):
                 # Arrow types columns with no values as null, use float
                 # instead of an object column of None, as for numbers.
                 column = column.cast(pa.float64())
+            if req_dtype is None and pa.types.is_decimal(column.type):
+                # NumPy has no decimal type, use float instead
+                # of a slow object column of decimal.Decimal.
+                column = column.cast(pa.float64())
             if (req_dtype is None and
                 (pa.types.is_list(column.type) or
                  pa.types.is_large_list(column.type) or

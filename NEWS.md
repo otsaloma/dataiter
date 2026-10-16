@@ -64,6 +64,7 @@ Fixes:
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read columns with no values as float instead of an object column of `None`
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read times of day as strings instead of an object column of `datetime.time`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix error reading list columns, now read as object columns of lists
+- `DataFrame.from_arrow`, `DataFrame.read_parquet`: Read decimals as float instead of an object column of `decimal.Decimal`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
 - `DataFrame.from_pandas`: Fix dates becoming object, e.g. in a `to_pandas` roundtrip
 - `DataFrame.*_join`: Raise `TypeError` for incompatible types of `by` columns, e.g. string and number, instead of silently matching nothing
