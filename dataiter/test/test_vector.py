@@ -23,6 +23,7 @@
 import datetime
 import math
 import numpy as np
+import operator
 import pytest
 
 from dataiter import Vector
@@ -169,6 +170,20 @@ class TestVector:
         result = np.mean(Vector([1, 2, 3]))
         assert np.isscalar(result)
         assert result == 2
+
+    @pytest.mark.parametrize("op,expected", [
+        (operator.eq, [False, True, False]),
+        (operator.ge, [False, True, False]),
+        (operator.gt, [False, False, False]),
+        (operator.le, [True, True, False]),
+        (operator.lt, [True, False, False]),
+        (operator.ne, [True, False, True]),
+    ])
+    def test___eq___datetime_string(self, op, expected):
+        a = Vector(["2025-01-01", "2025-01-02", None]).as_date()
+        assert op(a, "2025-01-02").tolist() == expected
+        b = Vector(["2025-01-01T12:00:00", "2025-01-02T00:00:00", None]).as_datetime()
+        assert op(b, "2025-01-02").tolist() == expected
 
     def test___len__(self):
         assert len(Vector([1, 2, 3])) == 3
@@ -388,6 +403,11 @@ class TestVector:
     def test_is_in(self, values):
         a = Vector(["a", "b", "c", "d"])
         assert a.is_in(values).tolist() == [True, False, True, False]
+
+    def test_is_in_datetime_string(self):
+        a = Vector(["2025-01-01", "2025-01-02", None]).as_date()
+        assert a.is_in(["2025-01-02"]).tolist() == [False, True, False]
+        assert a.is_in({"2025-01-01", "2025-01-02"}).tolist() == [True, True, False]
 
     def test_is_in_many_strings(self):
         a = Vector([str(i) for i in range(100)])

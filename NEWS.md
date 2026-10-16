@@ -21,7 +21,8 @@ New:
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
 - `regex.extract`: New function to extract a group of the first match
-- `Vector.is_in`: New method, fast also for strings unlike `np.isin`
+- `Vector`: Convert strings when comparing to datetimes, e.g. `x >= "2025-01-01"`, previously raising an error or, for equality, silently not matching
+- `Vector.is_in`: New method, fast also for strings unlike `np.isin`, converting strings when comparing to datetimes
 - `Vector.rank`: Add `dir` argument for descending order
 - `Vector.shift`: New method to shift elements
 - `Vector.str.slice`: New function, wrapping `np.strings.slice` with support for missing values

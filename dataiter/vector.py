@@ -198,9 +198,27 @@ class Vector(np.ndarray):
             return array.dtype.type(array)
         return array.view(self.__class__)
 
+    def __eq__(self, other):
+        return super().__eq__(self._coerce_datetime(other))
+
+    def __ge__(self, other):
+        return super().__ge__(self._coerce_datetime(other))
+
+    def __gt__(self, other):
+        return super().__gt__(self._coerce_datetime(other))
+
     def __iter__(self):
         # NumPy iterates subclasses ~2x slower than base arrays.
         return iter(self.view(np.ndarray))
+
+    def __le__(self, other):
+        return super().__le__(self._coerce_datetime(other))
+
+    def __lt__(self, other):
+        return super().__lt__(self._coerce_datetime(other))
+
+    def __ne__(self, other):
+        return super().__ne__(self._coerce_datetime(other))
 
     def __repr__(self):
         return self.to_string()
@@ -304,6 +322,13 @@ class Vector(np.ndarray):
     def _check_dimensions(self):
         if self.ndim == 1: return
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
+
+    def _coerce_datetime(self, other):
+        # NumPy considers datetimes and strings unequal or raises
+        # for ordering, convert strings to allow e.g. x >= "2025-01-01".
+        if isinstance(other, str) and self.is_datetime():
+            return np.datetime64(other)
+        return other
 
     def concat(self, *others):
         """
@@ -457,6 +482,8 @@ class Vector(np.ndarray):
         if not isinstance(values, np.ndarray):
             # np.isin treats sets and other non-sequences as a single element.
             values = list(values)
+            if self.is_datetime():
+                values = [self._coerce_datetime(x) for x in values]
         if self.is_string() and len(values) >= 10:
             # StringDType has hasobject set, so np.isin never sorts,
             # but compares one value at a time, slow for many values.
