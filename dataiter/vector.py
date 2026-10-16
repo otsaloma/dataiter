@@ -919,7 +919,11 @@ class Vector(np.ndarray):
 
         https://numpy.org/doc/stable/reference/routines.strings.html
 
+        Additionally, ``contains`` is available to check whether strings
+        contain a substring.
+
         >>> x = di.Vector(["asdf", "1234"])
+        >>> x.str.contains("sd")
         >>> x.str.isalpha()
         >>> x.str.str_len()
         >>> x.str.upper()
