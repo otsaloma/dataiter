@@ -17,6 +17,7 @@ New:
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print timedeltas as e.g. "1 day 04:44:39" instead of a count of the unit
 - `dt.floor`, `Vector.dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values
+- `dt.total_seconds`, `Vector.dt.total_seconds`: New function to convert timedeltas to seconds
 - `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence

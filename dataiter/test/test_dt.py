@@ -207,6 +207,22 @@ class TestDT:
     def test_today(self):
         assert isinstance(dt.today(), np.datetime64)
 
+    def test_total_seconds(self):
+        a = dt.new(["2022-10-17", NaT]) - dt.new("2022-10-15")
+        b = dt.new(["2022-10-15T12:00:00.5", NaT]) - dt.new("2022-10-15")
+        assert dt.total_seconds(a).tolist() == [172800, None]
+        assert dt.total_seconds(b).tolist() == [43200.5, None]
+        assert dt.total_seconds(a).is_float()
+
+    def test_total_seconds_scalar(self):
+        assert dt.total_seconds(np.timedelta64(2, "m")) == 120
+        assert dt.total_seconds(datetime.timedelta(hours=1)) == 3600
+
+    def test_total_seconds_type_error(self):
+        a = dt.new(["2022-10-15"])
+        with pytest.raises(TypeError, match="Expected timedelta, got datetime64"):
+            dt.total_seconds(a)
+
     def test_weekday(self):
         a = dt.new(["2022-10-15", NaT])
         assert dt.weekday(a).tolist() == [5, None]

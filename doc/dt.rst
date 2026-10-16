@@ -26,6 +26,7 @@ any efficient reimplementation.
 :func:`~dataiter.dt.second`
 :func:`~dataiter.dt.to_string`
 :func:`~dataiter.dt.today`
+:func:`~dataiter.dt.total_seconds`
 :func:`~dataiter.dt.weekday`
 :func:`~dataiter.dt.year`
 

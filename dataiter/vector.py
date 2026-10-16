@@ -82,6 +82,7 @@ class DtProxy:
         self.replace = wrap(dt.replace)
         self.second = wrap(dt.second)
         self.to_string = wrap(dt.to_string)
+        self.total_seconds = wrap(dt.total_seconds)
         self.weekday = wrap(dt.weekday)
         self.year = wrap(dt.year)
 

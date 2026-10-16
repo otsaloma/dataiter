@@ -316,6 +316,24 @@ def today():
     """
     return np.datetime64(datetime.date.today())
 
+def total_seconds(x):
+    """
+    Return timedelta `x` as a float amount of seconds.
+
+    The result doesn't depend on the unit of `x`. Divide by e.g. 3600 or
+    86400 to get hours or days. Missing values are returned as NaN.
+
+    >>> x = dt.new(["2022-10-15T12:00:00"]) - dt.new(["2022-10-14T00:00:00"])
+    >>> dt.total_seconds(x)
+    >>> dt.total_seconds(x) / 86400
+    """
+    if util.is_scalar(x):
+        x = Vector([x], np.timedelta64)
+        return total_seconds(x)[0]
+    if not (isinstance(x, np.ndarray) and np.issubdtype(x.dtype, np.timedelta64)):
+        raise TypeError(f"Expected timedelta, got {_type_label(x)}")
+    return Vector.fast(x / np.timedelta64(1, "s"), float)
+
 def _type_label(x):
     return x.view(Vector).dtype_label if isinstance(x, np.ndarray) else type(x).__name__
 
