@@ -101,6 +101,50 @@ common sizes of input, it should be well usable.
 3        Queens  6068  99.745
 4 Staten Island   370 116.908
 
+Conditional Aggregation
+-----------------------
+
+A common reason to reach for lambda functions is calculating summaries
+of rows that match a condition, such as the count or share of listings
+priced over 200 dollars.
+
+>>> import dataiter as di
+>>> data = di.read_csv("data/listings.csv")
+>>> data.group_by("hood").aggregate(n=di.count(),
+...                                 n_expensive=lambda x: (x.price > 200).sum(),
+...                                 p_expensive=lambda x: (x.price > 200).mean())
+.
+           hood     n n_expensive p_expensive
+         string int64       int64     float64
+  ───────────── ───── ─────────── ───────────
+0         Bronx  1198          49    0.040902
+1      Brooklyn 19931        2047    0.102704
+2     Manhattan 21963        5494    0.250148
+3        Queens  6068         326    0.053724
+4 Staten Island   370          20    0.054054
+
+You can usually do the same faster by first calculating the condition
+as a boolean column and then using the common aggregation functions:
+:func:`~dataiter.sum` for the count, :func:`~dataiter.mean` for the
+share or :func:`~dataiter.any` for whether there are any matches. With
+a large amount of groups, this can be over ten times faster.
+
+>>> (data
+...  .modify(expensive=lambda x: x.price > 200)
+...  .group_by("hood")
+...  .aggregate(n=di.count(),
+...             n_expensive=di.sum("expensive"),
+...             p_expensive=di.mean("expensive")))
+.
+           hood     n n_expensive p_expensive
+         string int64       int64     float64
+  ───────────── ───── ─────────── ───────────
+0         Bronx  1198          49    0.040902
+1      Brooklyn 19931        2047    0.102704
+2     Manhattan 21963        5494    0.250148
+3        Queens  6068         326    0.053724
+4 Staten Island   370          20    0.054054
+
 Going Fast with Numba
 ---------------------
 
