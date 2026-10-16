@@ -348,6 +348,15 @@ class TestDataFrame:
         data = DataFrame.from_arrow(data)
         assert data == orig
 
+    def test_from_arrow_null(self):
+        import pyarrow as pa
+        table = pa.table({"a": pa.nulls(2)})
+        data = DataFrame.from_arrow(table)
+        assert data.a.is_float()
+        assert data.a.is_na().all()
+        data = DataFrame.from_arrow(table, dtypes={"a": object})
+        assert data.a.is_object()
+
     def test_from_arrow_string_first_missing(self):
         orig = DataFrame(a=["", "x"])
         data = DataFrame.from_arrow(orig.to_arrow())
@@ -743,6 +752,13 @@ class TestDataFrame:
         data = DataFrame.read_csv(path)
         assert data.time.dtype == np.dtype("datetime64[us]")
         assert data.time.dt.hour().tolist() == [5]
+
+    def test_read_csv_empty_column(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("a,b\n1,\n2,\n", "utf-8")
+        data = DataFrame.read_csv(path)
+        assert data.b.is_float()
+        assert data.b.is_na().all()
 
     def test_read_csv_time(self, tmp_path):
         path = tmp_path / "test.csv"

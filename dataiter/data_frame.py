@@ -576,6 +576,10 @@ class DataFrame(dict):
                 for suffix in suffixes:
                     if pc.all(pc.ends_with(column, suffix)).as_py():
                         column = pc.utf8_slice_codeunits(column, 0, -len(suffix))
+            if req_dtype is None and pa.types.is_null(column.type):
+                # Arrow types columns with no values as null, use float
+                # instead of an object column of None, as for numbers.
+                column = column.cast(pa.float64())
             if (req_dtype is None and
                 (pa.types.is_string(column.type) or
                  pa.types.is_large_string(column.type))):
