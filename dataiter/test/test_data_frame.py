@@ -1180,6 +1180,13 @@ NULL,2.5,"test",TRUE,2025-01-01
         path = tmp_path / "test.csv"
         orig.write_csv(path)
 
+    def test_write_csv_timedelta(self, tmp_path):
+        orig = DataFrame(a=np.array([615, 1440, "NaT"], "timedelta64[m]"))
+        path = tmp_path / "test.csv"
+        orig.write_csv(path)
+        assert path.read_text("utf-8") == '"a"\n"10:15:00"\n"1 day 00:00:00"\n\n'
+        assert orig.a.is_timedelta()
+
     def test_write_json(self, tmp_path):
         orig = test.data_frame("downloads.json")
         path = str(tmp_path / "test.json")

@@ -80,6 +80,7 @@ Fixes:
 - `DataFrame.sort`: Fix to sort missing values always last
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix negative floats showing fewer significant digits
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
+- `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`

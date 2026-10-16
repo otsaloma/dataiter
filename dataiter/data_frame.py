@@ -1710,7 +1710,15 @@ class DataFrame(dict):
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
         from pyarrow import csv
-        table = self.to_arrow()
+        data = self.copy()
+        for colname, column in data.items():
+            if column.is_timedelta():
+                # Arrow would write integers with no indication of unit,
+                # write as printed instead, e.g. "1 day 04:44:39".
+                strings = column.to_strings(quote=False)
+                strings[column.is_na()] = ""
+                data[colname] = strings
+        table = data.to_arrow()
         util.makedirs_for_file(path)
         with util.xopen(path, "wb") as f:
             csv.write_csv(table, f, write_options=csv.WriteOptions(include_header=header,
