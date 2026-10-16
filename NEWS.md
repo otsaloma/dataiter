@@ -23,6 +23,7 @@ New:
 - `Vector.is_in`: New method, fast also for strings unlike `np.isin`
 - `Vector.rank`: Add `dir` argument for descending order
 - `Vector.shift`: New method to shift elements
+- `Vector.str.slice`: New function, wrapping `np.strings.slice` with support for missing values
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column

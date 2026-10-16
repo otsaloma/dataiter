@@ -46,6 +46,17 @@ def as_vector(function):
 def not_implemented(*args, **kwargs):
     raise NotImplementedError
 
+def str_slice(vector, *args):
+    # np.strings.slice raises for missing values, i.e. empty strings
+    # with our na_object, so slice only the others.
+    na = vector.is_na()
+    if not na.any():
+        return np.strings.slice(vector, *args)
+    out = np.array(vector, copy=True)
+    args = [x[~na] if np.ndim(x) > 0 else x for x in args]
+    out[~na] = np.strings.slice(out[~na], *args)
+    return out
+
 class DtProxy:
     def __init__(self, vector):
         from dataiter import dt
@@ -122,6 +133,7 @@ class StrProxy:
         self.rindex = wrap("rindex")
         self.rjust = wrap("rjust")
         self.rstrip = wrap("rstrip")
+        self.slice = as_vector(functools.partial(str_slice, vector))
         self.startswith = wrap("startswith")
         self.str_len = wrap("str_len")
         self.strip = wrap("strip")
