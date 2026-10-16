@@ -300,6 +300,8 @@ class TestVector:
         assert a.dt.year().tolist() == [2025]
         assert a.dt.month().tolist() == [1]
         assert a.dt.day().tolist() == [11]
+        assert a.dt.floor("month").tolist() == [datetime.date(2025, 1, 1)]
+        assert a.dt.isoformat().tolist() == ["2025-01-11"]
 
     def test_equal_boolean(self):
         a = Vector([True, False])

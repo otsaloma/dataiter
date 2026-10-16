@@ -15,7 +15,7 @@ New:
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print timedeltas as e.g. "1 day 04:44:39" instead of a count of the unit
-- `dt.floor`: New function
+- `dt.floor`, `Vector.dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.expand_grid`: New classmethod
@@ -95,6 +95,7 @@ Fixes:
 - `Vector.as_boolean`: Raise `ValueError` for missing values
 - `Vector.as_float`: Convert missing values to NaN, fixing an error for strings and garbage values for datetimes and timedeltas
 - `Vector.as_integer`: Raise `ValueError` for missing values
+- `Vector.dt`: Add missing `isoformat`
 - `Vector.range`: Fix to ignore missing values of datetimes and strings
 - `Vector.rank`: Fix error when all values are missing
 

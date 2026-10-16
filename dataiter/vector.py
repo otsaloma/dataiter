@@ -62,8 +62,10 @@ class DtProxy:
         from dataiter import dt
         wrap = lambda f: functools.partial(f, vector)
         self.day = wrap(dt.day)
+        self.floor = wrap(dt.floor)
         self.from_string = wrap(dt.from_string)
         self.hour = wrap(dt.hour)
+        self.isoformat = wrap(dt.isoformat)
         self.isoweek = wrap(dt.isoweek)
         self.isoweekday = wrap(dt.isoweekday)
         self.microsecond = wrap(dt.microsecond)
