@@ -43,6 +43,7 @@ Speed-ups:
 - `dt.day`, `dt.hour`, `dt.isoweekday`, `dt.microsecond`, `dt.minute`, `dt.month`, `dt.quarter`, `dt.second`, `dt.weekday`, `dt.year`: Speed up
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
+- `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
 - `regex.*`: Speed up
 - `Vector.unique`: Speed up for strings
 

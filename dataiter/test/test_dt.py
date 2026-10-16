@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import datetime
 import numpy as np
 import pytest
 
@@ -191,6 +192,12 @@ class TestDT:
         b = dt.to_string(a, "%Y%m%d-%H%M%S")
         assert b.is_string()
         assert b.tolist() == ["20221114-224900", None]
+
+    @pytest.mark.parametrize("format", ["%Y", "%b %Y", "%a", "%G-W%V", "%H %p", "%H:%M", "%S.%f", "%%Y", "const"])
+    def test_to_string_floor(self, format):
+        a = ["2022-01-01T00:00:00", "2022-11-14T22:49:00.5", "2023-01-01T13:01:59"]
+        b = dt.to_string(dt.new(a), format)
+        assert b.tolist() == [datetime.datetime.fromisoformat(x).strftime(format) for x in a]
 
     def test_today(self):
         assert isinstance(dt.today(), np.datetime64)

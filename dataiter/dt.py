@@ -22,6 +22,7 @@
 
 import datetime
 import numpy as np
+import re
 
 from dataiter import dtypes
 from dataiter import util
@@ -299,6 +300,13 @@ def to_string(x, format):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.to_string(x, "%d.%m.%Y")
     """
+    # Floor to the finest unit used in format to reduce the amount
+    # of unique values to format, e.g. to months for "%Y-%m".
+    units = dict(year="CYy", month="Bbhm", day="ADFGUVWadegjuwx", hour="HIklp", minute="MR", second="STXcrs")
+    codes = re.findall(r"%[-_0^#]?(.)", format.replace("%%", ""))
+    if all(any(code in chars for chars in units.values()) for code in codes):
+        found = [unit for unit, chars in units.items() if any(code in chars for code in codes)]
+        x = floor(x, found[-1] if found else "year")
     return _pull_str(x, lambda x: x.strftime(format))
 
 def today():
