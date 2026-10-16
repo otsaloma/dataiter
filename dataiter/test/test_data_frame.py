@@ -1088,6 +1088,14 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = DataFrame.read_csv(path)
         assert data == orig
 
+    @pytest.mark.parametrize("extension", ["bz2", "gz"])
+    def test_write_csv_compressed(self, tmp_path, extension):
+        orig = test.data_frame("vehicles.csv")
+        path = str(tmp_path / f"test.csv.{extension}")
+        orig.write_csv(path)
+        data = DataFrame.read_csv(path)
+        assert data == orig
+
     def test_write_csv_path(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
         path = tmp_path / "test.csv"

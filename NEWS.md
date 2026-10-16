@@ -64,6 +64,7 @@ Fixes:
 - `DataFrame.sort`: Fix descending sort of unsigned integers
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
+- `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`
 - `ListOfDicts.*_join`: Fix matching on missing values in `by` keys

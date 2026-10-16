@@ -1616,9 +1616,10 @@ class DataFrame(dict):
         from pyarrow import csv
         table = self.to_arrow()
         util.makedirs_for_file(path)
-        csv.write_csv(table, path, write_options=csv.WriteOptions(include_header=header,
-                                                                  delimiter=sep,
-                                                                  quoting_style="needed"))
+        with util.xopen(path, "wb") as f:
+            csv.write_csv(table, f, write_options=csv.WriteOptions(include_header=header,
+                                                                   delimiter=sep,
+                                                                   quoting_style="needed"))
 
         # XXX: Arrow's WriteOptions doesn't include encoding.
         # If user requested something else than UTF-8, we need to rewrite!
