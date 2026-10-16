@@ -604,6 +604,13 @@ class TestDataFrame:
         mock_print.assert_called()
 
     @patch("builtins.print")
+    @patch("dataiter.PRINT_MAX_ROWS", 1)
+    def test_print_memory_use_all_rows(self, mock_print):
+        data = test.data_frame("vehicles.csv")
+        data.print_memory_use()
+        assert "TOTAL" in mock_print.call_args.args[0]
+
+    @patch("builtins.print")
     def test_print_na_counts(self, mock_print):
         data = test.data_frame("vehicles.csv")
         data.print_na_counts()

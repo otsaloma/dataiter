@@ -59,6 +59,7 @@ Fixes:
 - `DataFrame.head`, `DataFrame.tail`: Return all rows except the last or first `-n` for negative `n` instead of none
 - `DataFrame.pivot_longer`: Use common data type of values if all pivoted columns are of the same kind, e.g. numbers, instead of object
 - `DataFrame.pivot_wider`: Fix error with non-string names
+- `DataFrame.print_memory_use`, `DataFrame.print_na_counts`, `ListOfDicts.print_memory_use`: Print all rows regardless of `PRINT_MAX_ROWS`
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
 - `DataFrame.rbind`: Name the column and its data types in the error for incompatible types

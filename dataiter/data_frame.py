@@ -1088,7 +1088,7 @@ class DataFrame(dict):
         mem.item_size = [f"{x:.0f} B" for x in mem.item_size]
         mem.total_size = [f"{x/1024**2:,.0f} MB" for x in mem.total_size]
         mem.colnames = [x.upper() for x in mem.colnames]
-        print(mem)
+        mem.print_(max_rows=mem.nrow)
 
     def print_na_counts(self):
         """
@@ -1106,7 +1106,7 @@ class DataFrame(dict):
             return print("No missing values")
         nas.pna = [f"{100*x/self.nrow:.1f}%" for x in nas.nna]
         nas.colnames = [x.upper() for x in nas.colnames]
-        print(nas)
+        nas.print_(max_rows=nas.nrow)
 
     @deco.new_from_generator
     def rbind(self, *others):

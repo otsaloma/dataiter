@@ -690,7 +690,7 @@ class ListOfDicts(list):
         mem.item_size = [f"{x:.0f} B" for x in mem.item_size]
         mem.total_size = [f"{x/1024**2:,.0f} MB" for x in mem.total_size]
         mem.colnames = [x.upper() for x in mem.colnames]
-        print(mem)
+        mem.print_(max_rows=mem.nrow)
 
     def print_na_counts(self):
         """
