@@ -349,6 +349,13 @@ class TestDataFrame:
         data = DataFrame.from_pandas(data)
         assert data == orig
 
+    def test_from_pandas_date(self):
+        orig = test.data_frame("downloads.csv")
+        assert orig.date.dtype == np.dtype("datetime64[D]")
+        data = DataFrame.from_pandas(orig.to_pandas())
+        assert data.date.dtype == np.dtype("datetime64[D]")
+        assert data == orig
+
     def test_full_join(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")

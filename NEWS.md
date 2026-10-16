@@ -43,6 +43,7 @@ Fixes:
 - `DataFrame.drop_na`: Use all columns if none given instead of dropping nothing
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
+- `DataFrame.from_pandas`: Fix dates becoming object, e.g. in a `to_pandas` roundtrip
 - `DataFrame.*_join`: Raise `TypeError` for incompatible types of `by` columns, e.g. string and number, instead of silently matching nothing
 - `DataFrame.full_join`, `DataFrame.left_join`, `DataFrame.pivot_wider`: Keep data type of integer and boolean columns if no missing values are added
 - `DataFrame.group_by`: Fix to group only returned copy

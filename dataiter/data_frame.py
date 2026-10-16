@@ -561,6 +561,11 @@ class DataFrame(dict):
                     # Force type-guessing in Vector.fast.
                     column = column.tolist()
             column = DataFrameColumn.fast(column, req_dtype)
+            if column.is_object() and req_dtype is None:
+                # Vector.fast doesn't recognize e.g. dates,
+                # try the slower full type-guessing of Vector.
+                column[na] = None
+                column = DataFrameColumn(column.tolist())
             if na.any():
                 if column.dtype != column.na_dtype:
                     # Upcast integer to float if needed.
