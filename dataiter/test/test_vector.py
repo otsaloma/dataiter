@@ -270,6 +270,15 @@ class TestVector:
         assert a.is_float()
         assert a.equal(Vector([1.0, np.nan, 3.0]))
 
+    def test_as_float_errors(self):
+        a = Vector(["1", "", "2.5", "DQ", "-3"])
+        with pytest.raises(ValueError):
+            a.as_float()
+        b = a.as_float(errors="replace")
+        assert b.equal(Vector([1.0, np.nan, 2.5, np.nan, -3.0]))
+        c = Vector([1, None, "x", {}], object)
+        assert c.as_float(errors="replace").equal(Vector([1.0, np.nan, np.nan, np.nan]))
+
     def test_as_integer(self):
         a = Vector([1.1, 2.2]).as_integer()
         assert a.is_integer()

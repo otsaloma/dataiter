@@ -275,21 +275,36 @@ class Vector(np.ndarray):
         """
         return self.astype(np.dtype(f"datetime64[{precision}]"))
 
-    def as_float(self):
+    def as_float(self, *, errors="strict"):
         """
         Return vector converted to float data type.
 
+        `errors` determines how to handle values that can't be converted,
+        such as non-numeric strings: ``"strict"`` to raise ``ValueError``,
+        ``"replace"`` to replace them with missing values.
+
         >>> vector = di.Vector([1, 2, 3])
         >>> vector.as_float()
+        >>> vector = di.Vector(["1", "2.5", "???"])
+        >>> vector.as_float(errors="replace")
         """
+        if errors not in ["strict", "replace"]:
+            raise ValueError(f"Bad {errors=}")
         na = self.is_na()
-        if na.any():
+        result = self.fast(np.full(self.length, np.nan), float)
+        try:
             # NumPy can't convert missing strings to float
             # and converts NaT to its integer sentinel value.
-            result = self.fast(np.full(self.length, np.nan), float)
             result[~na] = self[~na].astype(float)
-            return result
-        return self.astype(float)
+        except (TypeError, ValueError):
+            if errors == "strict": raise
+            def parse(x):
+                try:
+                    return float(x)
+                except (TypeError, ValueError):
+                    return np.nan
+            result[~na] = [parse(x) for x in self[~na].tolist()]
+        return result
 
     def as_integer(self):
         """
