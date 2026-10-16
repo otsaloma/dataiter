@@ -18,7 +18,9 @@ it makes sense there as well.
 After making changes, run `uv run make check` and `uv run make test` (or
 `uv run pytest ...` to test only a subset). uv ensures these use the
 virtualenv present in `.venv`. Similarly, run any benchmark or test
-scripts via `uv run python ...`.
+scripts via `uv run python ...`. Generating documentation (`uv run make
+doc`) is slow; skip that when making simple docstring changes that can
+be expected to parse and generate fine.
 
 ## API Documentation
 
