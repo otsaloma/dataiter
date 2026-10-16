@@ -589,6 +589,15 @@ class DataFrame(dict):
                 # instead of an object column of None, as for numbers.
                 column = column.cast(pa.float64())
             if (req_dtype is None and
+                (pa.types.is_list(column.type) or
+                 pa.types.is_large_list(column.type) or
+                 pa.types.is_fixed_size_list(column.type))):
+                # to_numpy would give NumPy arrays as elements,
+                # use lists instead, as DataFrame(...) does.
+                column = column.to_pylist()
+                yield name, DataFrameColumn.fast(np.fromiter(column, object, len(column)), object)
+                continue
+            if (req_dtype is None and
                 (pa.types.is_string(column.type) or
                  pa.types.is_large_string(column.type))):
                 # Vector.fast assumes object if the first element is missing i.e. None.

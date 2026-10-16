@@ -359,6 +359,17 @@ class TestDataFrame:
         data = DataFrame.from_arrow(data)
         assert data == orig
 
+    def test_from_arrow_list(self):
+        import pyarrow as pa
+        orig = DataFrame(a=[[1, 2], None, []], b=[[1, 2], [3, 4], [5, 6]])
+        data = DataFrame.from_arrow(orig.to_arrow())
+        assert data.a.is_object()
+        assert data.a.tolist() == [[1, 2], None, []]
+        assert data.b.tolist() == [[1, 2], [3, 4], [5, 6]]
+        array = pa.array([[1, 2], [3, 4]], pa.list_(pa.int64(), 2))
+        data = DataFrame.from_arrow(pa.table({"a": array}))
+        assert data.a.tolist() == [[1, 2], [3, 4]]
+
     def test_from_arrow_null(self):
         import pyarrow as pa
         table = pa.table({"a": pa.nulls(2)})
