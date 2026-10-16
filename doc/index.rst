@@ -43,3 +43,10 @@ For Coding Agents
 
 * `llms.txt <llms.txt>`_
 * `llms-full.txt <llms-full.txt>`_
+
+Without a terminal, as is usually the case for coding agents, print output
+is wrapped to :attr:`dataiter.PRINT_MAX_WIDTH` columns, which splits wide
+data frames into several blocks of columns. To get one line per row, you
+might want to disable wrapping with ``di.PRINT_MAX_WIDTH = math.inf``. To
+save context, you might also want to print fewer rows, e.g.
+``di.PRINT_MAX_ROWS = 10``. See :doc:`dataiter` for other print settings.

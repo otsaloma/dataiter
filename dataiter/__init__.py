@@ -27,13 +27,30 @@ from dataiter import util
 
 __version__ = "1.4"
 
+#: Default amount of elements to return from :meth:`Vector.head`,
+#: :meth:`Vector.sample` and :meth:`Vector.tail`.
 DEFAULT_PEEK_ELEMENTS = 10
+
+#: Default amount of items to return from :meth:`ListOfDicts.head`,
+#: :meth:`ListOfDicts.sample` and :meth:`ListOfDicts.tail`.
 DEFAULT_PEEK_ITEMS = 3
+
+#: Default amount of rows to return from :meth:`DataFrame.head`,
+#: :meth:`DataFrame.sample` and :meth:`DataFrame.tail`.
 DEFAULT_PEEK_ROWS = 10
+
+#: Amount of significant digits to print floats with, all values of a
+#: column or vector using the decimals that the largest value gets.
 PRINT_FLOAT_PRECISION = 6
+
+#: Maximum amount of elements to show when printing a :class:`Vector`.
 PRINT_MAX_ELEMENTS = 100
+
+#: Maximum amount of items to show when printing a :class:`ListOfDicts`.
 PRINT_MAX_ITEMS = 10
-PRINT_MAX_ROWS = 100
+
+#: Maximum amount of rows to show when printing a :class:`DataFrame`.
+PRINT_MAX_ROWS = 20
 
 #: Maximum amount of columns to wrap print output to. This is only a fallback
 #: in case Python's ``shutil.get_terminal_size`` fails to detect the width of

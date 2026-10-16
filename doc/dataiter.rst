@@ -39,6 +39,13 @@ type, i.e. :class:`.DataFrame` for CSV, NPZ and Parquet,
 The following constants can be used to customize certain defaults, such as
 formatting and limits for printing.
 
+:attr:`dataiter.DEFAULT_PEEK_ELEMENTS`
+:attr:`dataiter.DEFAULT_PEEK_ITEMS`
+:attr:`dataiter.DEFAULT_PEEK_ROWS`
+:attr:`dataiter.PRINT_FLOAT_PRECISION`
+:attr:`dataiter.PRINT_MAX_ELEMENTS`
+:attr:`dataiter.PRINT_MAX_ITEMS`
+:attr:`dataiter.PRINT_MAX_ROWS`
 :attr:`dataiter.PRINT_MAX_WIDTH`
 :attr:`dataiter.PRINT_THOUSAND_SEPARATOR`
 :attr:`dataiter.PRINT_TRUNCATE_WIDTH`
@@ -67,6 +74,13 @@ formatting and limits for printing.
              std,
              sum,
              var,
+             DEFAULT_PEEK_ELEMENTS,
+             DEFAULT_PEEK_ITEMS,
+             DEFAULT_PEEK_ROWS,
+             PRINT_FLOAT_PRECISION,
+             PRINT_MAX_ELEMENTS,
+             PRINT_MAX_ITEMS,
+             PRINT_MAX_ROWS,
              PRINT_MAX_WIDTH,
              PRINT_THOUSAND_SEPARATOR,
              PRINT_TRUNCATE_WIDTH,

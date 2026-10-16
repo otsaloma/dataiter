@@ -19,6 +19,7 @@ New:
 - `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
+- `PRINT_MAX_ROWS`: Lower default from 100 to 20
 - `regex.extract`: New function to extract a group of the first match
 - `Vector.is_in`: New method, fast also for strings unlike `np.isin`
 - `Vector.rank`: Add `dir` argument for descending order
