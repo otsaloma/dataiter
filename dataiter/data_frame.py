@@ -47,7 +47,7 @@ class DataFrameColumn(Vector):
         column = Vector(object, dtype)
         if nrow is not None and nrow != column.length:
             if column.length != 1 or nrow < 0:
-                raise ValueError("Bad arguments for broadcast")
+                raise ValueError(f"Can't broadcast length {column.length} to {nrow} rows")
             column = column.repeat(nrow)
         return column.view(cls)
 
@@ -118,7 +118,10 @@ class DataFrame(dict):
         for key, value in self.items():
             if (isinstance(value, DataFrameColumn) and
                 value.nrow == nrow): continue
-            column = DataFrameColumn(value, nrow=nrow)
+            try:
+                column = DataFrameColumn(value, nrow=nrow)
+            except ValueError as error:
+                raise ValueError(f"Column {key!r}: {error}") from None
             super().__setitem__(key, column)
         # Check that we have a uniform table.
         self._check_dimensions()
@@ -161,7 +164,10 @@ class DataFrame(dict):
         return self.__setitem__(name, value)
 
     def __setitem__(self, key, value):
-        value = self._reconcile_column(value)
+        try:
+            value = self._reconcile_column(value)
+        except ValueError as error:
+            raise ValueError(f"Column {key!r}: {error}") from None
         return super().__setitem__(key, value)
 
     def __repr__(self):

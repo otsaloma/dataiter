@@ -76,6 +76,10 @@ class TestDataFrame:
         assert data.b.tolist() == [1, 1, 1]
         assert data.c.tolist() == [1, 1, 1]
 
+    def test___init___broadcast_error(self):
+        with pytest.raises(ValueError, match="'b'.* length 2 to 3 rows"):
+            DataFrame(a=[1, 2, 3], b=[1, 2])
+
     def test___init___empty(self):
         data = DataFrame()
         assert data.nrow == 0
@@ -133,6 +137,13 @@ class TestDataFrame:
         assert "test" not in data
         data["test"] = 1
         assert "test" in data
+
+    def test___setitem___broadcast_error(self):
+        data = DataFrame(a=[1, 2, 3])
+        with pytest.raises(ValueError, match="'b'.* length 2 to 3 rows"):
+            data["b"] = [1, 2]
+        with pytest.raises(ValueError, match="'b'.* length 2 to 3 rows"):
+            data.modify(b=[1, 2])
 
     def test_aggregate(self):
         data = test.data_frame("vehicles.csv")

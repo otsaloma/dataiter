@@ -56,6 +56,7 @@ Speed-ups:
 - `Vector.unique`: Speed up for strings
 
 Fixes:
+- `DataFrame`: Name the column and lengths in the error for columns of wrong length
 - `DataFrame.*`: Handle empty data frames gracefully
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped, or none for empty data
 - `DataFrame.compare`: Return empty data frames instead of `None` when no differences found
