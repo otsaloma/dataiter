@@ -55,6 +55,18 @@ class TestVector:
         x = np.array([""], StringDType())[0]
         assert Vector([x]).is_string()
 
+    @pytest.mark.parametrize("seq", [
+        [[1, 2], [3, 4]],
+        [[1, 2], [3]],
+        [None, [1, 2], [3, 4]],
+        [(1, 2), (3, 4)],
+        [np.array([1, 2]), np.array([3, 4])],
+    ])
+    def test___new___sequences(self, seq):
+        for x in [Vector(seq), Vector(seq, object), Vector.fast(seq, object)]:
+            assert x.is_object()
+            assert x.length == len(seq)
+
     def test___new___na(self):
         Vector([None])
         Vector([NaN])

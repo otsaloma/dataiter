@@ -452,7 +452,7 @@ class DataFrame(dict):
 
         >>> data = di.DataFrame(id=[1, 2], x=["a, b", "c"], y=["[1, 2]", "[3]"])
         >>> data.explode("x", sep=",").modify(x=lambda x: x.x.str.strip())
-        >>> data.modify(y=lambda x: x.y.map(json.loads, dtype=object)).explode("y", dtype=int)
+        >>> data.modify(y=lambda x: x.y.map(json.loads)).explode("y", dtype=int)
         """
         column = self[colname]
         if column.is_string():

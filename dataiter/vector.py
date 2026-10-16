@@ -655,6 +655,11 @@ class Vector(np.ndarray):
             if object and isinstance(object[0], str):
                 dtype = dtypes.string
         dtype = cls._map_input_dtype(dtype)
+        if (dtype is not None and
+            np.dtype(dtype) == np.object_ and
+            not isinstance(object, np.ndarray)):
+            # np.array would make a 2D array of equal-length sequences.
+            return np.fromiter(object, np.object_, len(object))
         array = np.array(object, dtype)
         if dtype is None:
             if np.issubdtype(array.dtype, np.str_):
@@ -843,6 +848,8 @@ class Vector(np.ndarray):
         for fm, to in TYPE_CONVERSIONS.items():
             if types and all(x == fm for x in types):
                 return cls._np_array(seq, to)
+        if any(issubclass(x, (list, tuple)) for x in types):
+            return cls._np_array(seq, object)
         # Let NumPy guess the appropriate dtype.
         return cls._np_array(seq, dtype)
 

@@ -287,7 +287,7 @@ class TestDataFrame:
 
     def test_explode_given_sequences(self):
         data = DataFrame(id=[1, 2, 3, 4], x=["[1, 2]", "null", "[]", "[3, null]"])
-        data.x = data.x.map(json.loads, dtype=object)
+        data.x = data.x.map(json.loads)
         result = data.explode("x")
         assert result.id.tolist() == [1, 1, 2, 3, 4, 4]
         assert result.x.is_float()
