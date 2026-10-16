@@ -1151,13 +1151,14 @@ class DataFrame(dict):
             to_arrow = {x: f"f{names.index(x)}" for x in [*columns, *column_types] if x in names}
             columns = [to_arrow.get(x, x) for x in columns]
             column_types = {to_arrow.get(k, k): v for k, v in column_types.items()}
-        table = csv.read_csv(
-            path,
-            read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
-            parse_options=csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True),
-            convert_options=csv.ConvertOptions(include_columns=columns,
-                                               column_types=column_types,
-                                               null_values=csv.ConvertOptions().null_values + na))
+        with util.xopen(path, "rb") as f:
+            table = csv.read_csv(
+                f,
+                read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
+                parse_options=csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True),
+                convert_options=csv.ConvertOptions(include_columns=columns,
+                                                   column_types=column_types,
+                                                   null_values=csv.ConvertOptions().null_values + na))
 
         if not header:
             # Translate pyarrow's f0, f1, ... back to our generated column names.
