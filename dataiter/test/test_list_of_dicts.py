@@ -299,6 +299,12 @@ class TestListOfDicts:
         data = test.list_of_dicts("downloads.json")
         assert data.head(10) == data[:10]
 
+    def test_head_group_wise(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        data = data.group_by("g").head(2)
+        assert data.pluck("g") == [1, 1, 2, 2]
+        assert data.pluck("x") == [2, 4, 1, 3]
+
     def test_inner_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
@@ -637,6 +643,12 @@ class TestListOfDicts:
     def test_tail(self):
         data = test.list_of_dicts("downloads.json")
         assert data.tail(10) == data[-10:]
+
+    def test_tail_group_wise(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        data = data.group_by("g").tail(2)
+        assert data.pluck("g") == [1, 1, 2, 2]
+        assert data.pluck("x") == [2, 4, 3, 5]
 
     def test_to_data_frame(self):
         orig = test.list_of_dicts("vehicles.csv")

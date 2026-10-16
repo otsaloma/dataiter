@@ -5,6 +5,7 @@ New:
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.filter`, `DataFrame.filter_out`: Match any element if value is a sequence
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
+- `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `na` argument for additional missing value markers and `quote` argument to change or disable quoting
 - `DataFrame.replace_na`: New method
@@ -13,6 +14,7 @@ New:
 - `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
+- `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `regex.extract`: New function to extract a group of the first match

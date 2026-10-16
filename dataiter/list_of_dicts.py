@@ -423,21 +423,40 @@ class ListOfDicts(list):
 
     def group_by(self, *keys):
         """
-        Return list with `keys` set for grouped operations, such as :meth:`aggregate`.
+        Return list with `keys` set for grouped operations.
+
+        Supported grouped operations:
+
+        * :meth:`aggregate`
+        * :meth:`head`
+        * :meth:`tail`
         """
         data = self.copy()
         data._group_keys = tuple(keys)
         return data
 
+    def _group_items(self):
+        by = self._group_keys
+        data = self.sort(**dict.fromkeys(by, 1))
+        groups = itertools.groupby(data, key=lambda x: tuple(map(x.get, by)))
+        return [list(group) for _, group in groups]
+
     def head(self, n=None):
         """
         Return the first `n` items.
 
+        If the list is grouped, return the first `n` items of each group,
+        ordered by group.
+
         >>> data = di.read_json("data/listings.json")
         >>> data.head(3)
+        >>> # The most expensive listing in each neighbourhood
+        >>> data.sort(price=-1).group_by("hood").head(1)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
+        if self._group_keys:
+            return self._new([x for group in self._group_items() for x in group[:n]])
         n = min(len(self), n)
         return self._new(self[:n])
 
@@ -882,11 +901,18 @@ class ListOfDicts(list):
         """
         Return the last `n` items.
 
+        If the list is grouped, return the last `n` items of each group,
+        ordered by group.
+
         >>> data = di.read_json("data/listings.json")
         >>> data.tail(3)
+        >>> # The cheapest listing in each neighbourhood
+        >>> data.sort(price=-1).group_by("hood").tail(1)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
+        if self._group_keys:
+            return self._new([x for group in self._group_items() for x in group[max(0, len(group) - n):]])
         n = min(len(self), n)
         return self._new(self[-n:])
 

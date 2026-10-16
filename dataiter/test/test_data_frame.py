@@ -371,6 +371,12 @@ class TestDataFrame:
         data = test.data_frame("vehicles.csv")
         assert data.head(10) == data.slice(list(range(10)))
 
+    def test_head_group_wise(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2], x=[1, 2, 3, 4, 5])
+        data = data.group_by("g").head(2)
+        assert data.g.tolist() == [1, 1, 2, 2]
+        assert data.x.tolist() == [2, 4, 1, 3]
+
     def test_inner_join(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")
@@ -936,6 +942,12 @@ NULL,2.5,"test",TRUE,2025-01-01
     def test_tail(self):
         data = test.data_frame("vehicles.csv")
         assert data.tail(10) == data.slice(list(range(data.nrow - 10, data.nrow)))
+
+    def test_tail_group_wise(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2], x=[1, 2, 3, 4, 5])
+        data = data.group_by("g").tail(2)
+        assert data.g.tolist() == [1, 1, 2, 2]
+        assert data.x.tolist() == [2, 4, 3, 5]
 
     def test_to_json(self):
         orig = test.data_frame("downloads.json")

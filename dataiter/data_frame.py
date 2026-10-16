@@ -615,6 +615,18 @@ class DataFrame(dict):
                 ba[item[0]] = ba.pop(item[1])
         return ab.rbind(ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
 
+    def _get_group_positions(self):
+        # Return row indices in group order, the position
+        # of each row within its group and its group size.
+        group_colnames = self._group_colnames
+        data = self.select(*group_colnames)
+        data._index_ = np.arange(self.nrow)
+        data = data.sort(**dict.fromkeys(group_colnames, 1))
+        starts = data._get_group_starts(*group_colnames)
+        sizes = np.diff(starts, append=data.nrow)
+        positions = np.arange(data.nrow) - np.repeat(starts, sizes)
+        return data._index_, positions, np.repeat(sizes, sizes)
+
     def _get_group_starts(self, *colnames):
         # Assumes data is sorted by colnames, i.e. groups are contiguous.
         change = np.zeros(self.nrow, bool)
@@ -697,7 +709,14 @@ class DataFrame(dict):
 
     def group_by(self, *colnames):
         """
-        Return data frame with `colnames` set for grouped operations, such as :meth:`aggregate`.
+        Return data frame with `colnames` set for grouped operations.
+
+        Supported grouped operations:
+
+        * :meth:`aggregate`
+        * :meth:`head`
+        * :meth:`modify`
+        * :meth:`tail`
         """
         data = self.copy()
         data._group_colnames = tuple(colnames)
@@ -707,11 +726,19 @@ class DataFrame(dict):
         """
         Return the first `n` rows.
 
+        If the data frame is grouped, return the first `n` rows of each group,
+        ordered by group.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.head(5)
+        >>> # The two most expensive listings in each neighbourhood
+        >>> data.sort(price=-1).group_by("hood").head(2)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
+        if self._group_colnames:
+            rows, positions, sizes = self._get_group_positions()
+            return self.slice(rows[positions < n])
         n = min(self.nrow, n)
         return self.slice(np.arange(n))
 
@@ -1362,11 +1389,19 @@ class DataFrame(dict):
         """
         Return the last `n` rows.
 
+        If the data frame is grouped, return the last `n` rows of each group,
+        ordered by group.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.tail(5)
+        >>> # The two cheapest listings in each neighbourhood
+        >>> data.sort(price=-1).group_by("hood").tail(2)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
+        if self._group_colnames:
+            rows, positions, sizes = self._get_group_positions()
+            return self.slice(rows[positions >= sizes - n])
         n = min(self.nrow, n)
         return self.slice(np.arange(self.nrow - n, self.nrow))
 
