@@ -42,12 +42,14 @@ tabular data and the `DataFrame` class.
 - NYC 311 service requests
 - NYC taxi
 - Open-Meteo hourly weather
+- OpenPowerlifting
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
 - US Census ZCTA gazetteer
 - US flights
 - Wikipedia clickstream
+- World Bank country population (datasets/population on GitHub)
 
 When done, add the datasets you used to the above list in this file
 (`.agents/skills/fuzz/SKILL.md`).
