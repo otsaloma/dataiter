@@ -998,6 +998,10 @@ class DataFrame(dict):
         corresponding values. `rename` is an optional function that you can use
         to e.g. lowercase the new column names or add a prefix or suffix.
 
+        Combinations of `ids` and `names` not found in the data will be missing
+        values in the result. Follow up with :meth:`replace_na` to fill them
+        in, e.g. with zero.
+
         >>> long = di.read_csv("data/downloads.csv")
         >>> long = long.sort(date=1)
         >>> long

@@ -1,6 +1,13 @@
 # AGENTS.md
 
-## API Mirroring
+## API Design
+
+We favor elementary operations, composability and method chaining. Do
+not overload individual methods with arguments to cover things that can
+be done in chained steps. Example:
+`data.pivot_wider(...).replace_na(...)` instead of
+`data.pivot_wider(..., fill_value=...)`. Hint in docstrings of
+operations to any common pre- or post-processing steps.
 
 The `DataFrame` and `ListOfDicts` classes have a mostly matching API.
 When adding a method or an argument to one, also add it to the other if
