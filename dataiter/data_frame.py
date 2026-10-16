@@ -337,11 +337,19 @@ class DataFrame(dict):
             raise ValueError(f"self not unique by {by}")
         if other.unique(*by).nrow < other.nrow:
             raise ValueError(f"other not unique by {by}")
-        added = self.anti_join(other, *by)
-        removed = other.anti_join(self, *by)
-        x = self.modify(_i_=range(self.nrow))
-        y = other.modify(_j_=range(other.nrow))
-        z = x.inner_join(y.select("_j_", *by), *by)
+        # Joins never match missing values, but here missing identifiers
+        # should match, so join by codes that treat them as equal.
+        keys = self.select(*by).rbind(other.select(*by))
+        keys._index_ = np.arange(keys.nrow)
+        keys = keys.sort(**dict.fromkeys(by, 1))
+        starts = keys._get_group_starts(*by)
+        codes = np.empty(keys.nrow, int)
+        codes[keys._index_] = np.repeat(np.arange(len(starts)), np.diff(starts, append=keys.nrow))
+        x = self.modify(_i_=range(self.nrow), _k_=codes[:self.nrow])
+        y = other.modify(_j_=range(other.nrow), _k_=codes[self.nrow:])
+        added = x.anti_join(y, "_k_").unselect("_i_", "_k_")
+        removed = y.anti_join(x, "_k_").unselect("_j_", "_k_")
+        z = x.inner_join(y.select("_j_", "_k_"), "_k_")
         colnames = util.unique_keys(self.colnames + other.colnames)
         colnames = [x for x in colnames if x not in ignore_columns]
         changed = []

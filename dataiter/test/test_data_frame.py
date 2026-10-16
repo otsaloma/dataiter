@@ -234,6 +234,17 @@ class TestDataFrame:
             assert value.nrow == 0
             assert not value
 
+    def test_compare_na(self):
+        old = DataFrame(a=[1, 1, 2], b=["x", "", ""], c=[1, 2, 3])
+        new = old.modify(c=[1, 5, 3])
+        added, removed, changed = new.compare(old, "a", "b")
+        assert added.nrow == 0
+        assert removed.nrow == 0
+        assert changed.nrow == 1
+        assert changed.a.tolist() == [1]
+        assert changed.b.tolist() == [None]
+        assert changed.xvalue.tolist() == [5]
+
     def test_copy(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.copy()

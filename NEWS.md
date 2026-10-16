@@ -56,6 +56,7 @@ Fixes:
 - `DataFrame.*`: Handle empty data frames gracefully
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped, or none for empty data
 - `DataFrame.compare`: Return empty data frames instead of `None` when no differences found
+- `DataFrame.compare`: Match rows with missing values in `by`, previously reported as both added and removed
 - `DataFrame.drop_na`: Use all columns if none given instead of dropping nothing
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read columns with no values as float instead of an object column of `None`
