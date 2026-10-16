@@ -39,6 +39,7 @@ Speed-ups:
 - `DataFrame.pivot_wider`: Speed up, especially with many names
 - `DataFrame.sort`: Speed up, especially for strings
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
+- `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_csv`, `DataFrame.write_parquet`: Speed up strings with PyArrow 26 or later
 - `dt.day`, `dt.hour`, `dt.isoweekday`, `dt.microsecond`, `dt.minute`, `dt.month`, `dt.quarter`, `dt.second`, `dt.weekday`, `dt.year`: Speed up
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
