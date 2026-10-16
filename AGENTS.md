@@ -51,3 +51,13 @@ Do not complain about these or spend too much time investigating.
   considered worth doing, as grouped modify is not commonly used.
   Rejected alternative: reordering columns lazily upon first access (too
   much magic in a data frame subclass).
+
+- `DataFrame` methods return new data frames with all columns copied,
+  which makes long method chains on large and wide data frames slow,
+  e.g. 0.34 s per `modify` for 3.4M rows and 101 columns. This is by
+  design: it's consistent (no Pandas-style duality of copy-returning and
+  in-place methods), safe (columns are mutable NumPy arrays, so sharing
+  them would leak in-place edits between data frames) and what enables
+  method chaining. Rejected alternative: sharing unchanged columns as
+  read-only with copy-on-write (would prevent in-place edits of
+  columns).
