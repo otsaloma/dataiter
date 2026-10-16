@@ -641,6 +641,22 @@ class TestVector:
         assert a.str.contains("df").tolist() == [True, False]
         assert a.str.contains("23").tolist() == [False, True]
 
+    def test_str_partition(self):
+        a = Vector(["A B C", "A", ""])
+        before, sep, after = a.str.partition(" ")
+        assert before.tolist() == ["A", "A", None]
+        assert sep.tolist() == [" ", None, None]
+        assert after.tolist() == ["B C", None, None]
+        assert isinstance(before, Vector)
+
+    def test_str_rpartition(self):
+        a = Vector(["A B C", "A", ""])
+        before, sep, after = a.str.rpartition(" ")
+        assert before.tolist() == ["A B", None, None]
+        assert sep.tolist() == [" ", None, None]
+        assert after.tolist() == ["C", "A", None]
+        assert isinstance(after, Vector)
+
     def test_str_slice(self):
         a = Vector(["asdf", "1234", ""])
         assert a.str.slice(2).tolist() == ["as", "12", None]

@@ -46,6 +46,12 @@ def as_vector(function):
 def not_implemented(*args, **kwargs):
     raise NotImplementedError
 
+def str_partition(vector, function, sep):
+    # np.strings.partition has no loop for StringDType
+    # with a str separator, it needs to be StringDType too.
+    sep = np.asarray(sep, vector.dtype)
+    return tuple(x.view(Vector) for x in function(vector, sep))
+
 def str_slice(vector, *args):
     # np.strings.slice raises for missing values, i.e. empty strings
     # with our na_object, so slice only the others.
@@ -130,10 +136,12 @@ class StrProxy:
         self.mod = wrap("mod")
         self.multiply = wrap("multiply")
         self.not_equal = wrap("not_equal")
+        self.partition = functools.partial(str_partition, vector, np.strings.partition)
         self.replace = wrap("replace")
         self.rfind = wrap("rfind")
         self.rindex = wrap("rindex")
         self.rjust = wrap("rjust")
+        self.rpartition = functools.partial(str_partition, vector, np.strings.rpartition)
         self.rstrip = wrap("rstrip")
         self.slice = as_vector(functools.partial(str_slice, vector))
         self.startswith = wrap("startswith")
@@ -144,10 +152,6 @@ class StrProxy:
         self.translate = wrap("translate")
         self.upper = wrap("upper")
         self.zfill = wrap("zfill")
-
-        # Skip functions that have a difficult return value.
-        # self.partition = wrap("partition")
-        # self.rpartition = wrap("rpartition")
 
 class Vector(np.ndarray):
 

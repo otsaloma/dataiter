@@ -30,6 +30,7 @@ New:
 - `Vector.is_in`: New method, fast also for strings unlike `np.isin`, converting strings when comparing to datetimes
 - `Vector.rank`: Add `dir` argument for descending order
 - `Vector.shift`: New method to shift elements
+- `Vector.str.partition`, `Vector.str.rpartition`: New functions, wrapping `np.strings.partition` and `np.strings.rpartition`
 - `Vector.str.slice`: New function, wrapping `np.strings.slice` with support for missing values
 
 Speed-ups:
