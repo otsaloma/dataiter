@@ -46,6 +46,7 @@ Speed-ups:
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`, `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
+- `mode`: Speed up for large groups
 - `regex.*`: Speed up
 - `Vector.unique`: Speed up for strings
 

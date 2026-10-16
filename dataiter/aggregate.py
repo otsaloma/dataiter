@@ -449,14 +449,25 @@ def mode_apply_numba(x, group, drop_na):
     out = []
     for xg in yield_groups_numba(x, group, drop_na):
         if len(xg) > 0:
-            best_found = xg[0]
-            best_count = 1
-            for i in range(len(xg)):
-                count = np.sum(xg == xg[i])
-                if count > best_count:
-                    best_found = xg[i]
-                    best_count = count
-            out.append(best_found)
+            # Count runs of equal values in sorted order, breaking ties
+            # by first appearance in data, as statistics.mode does.
+            order = np.argsort(xg)
+            xs = xg[order]
+            best_count = 0
+            best_first = 0
+            i = 0
+            while i < len(xs):
+                j = i + 1
+                first = order[i]
+                while j < len(xs) and xs[j] == xs[i]:
+                    if order[j] < first:
+                        first = order[j]
+                    j += 1
+                if j - i > best_count or (j - i == best_count and first < best_first):
+                    best_count = j - i
+                    best_first = first
+                i = j
+            out.append(xg[best_first])
         else:
             out.append(None)
     return out
