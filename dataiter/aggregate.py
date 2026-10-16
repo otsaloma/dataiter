@@ -191,14 +191,14 @@ def count_unique_apply_numba(x, group, drop_na):
     return out
 
 def datetime_as_float(x):
-    if not x.is_datetime(): return x
+    if not (x.is_datetime() or x.is_timedelta()): return x
     # NaT would otherwise become the smallest int64 as float.
     out = x.as_float()
     out[x.is_na()] = np.nan
     return out
 
 def datetime_from_float(value, x):
-    if not x.is_datetime(): return value
+    if not (x.is_datetime() or x.is_timedelta()): return value
     # Float conversion loses precision for datetime64[ns],
     # results are exact to only about a microsecond.
     return np.round(np.asarray(value, float)).astype(x.dtype)
@@ -542,7 +542,7 @@ def quantile(x, q, *, drop_na=True):
         aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
-    if x.is_datetime():
+    if x.is_datetime() or x.is_timedelta():
         return datetime_from_float(quantile(datetime_as_float(x), q), x).item()
     return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
 
@@ -636,6 +636,10 @@ def sum(x, *, drop_na=True):
 def use_numba(x):
     # Numba can't handle all dtypes, use conditionally.
     # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#str
+    # NumPy considers timedelta a subtype of integer, but our Numba code
+    # doesn't handle missing timedeltas or mixing them with numbers.
+    if np.issubdtype(x.dtype, np.timedelta64):
+        return False
     return dataiter.USE_NUMBA and (
         np.issubdtype(x.dtype, np.bool_) or
         np.issubdtype(x.dtype, np.datetime64) or

@@ -56,8 +56,19 @@ D5 = D1 + datetime.timedelta(days=4)
 D6 = D1 + datetime.timedelta(days=5)
 D7 = D1 + datetime.timedelta(days=6)
 
+S0 = np.timedelta64(0, "s")
+S1 = np.timedelta64(1, "s")
+S2 = np.timedelta64(2, "s")
+S3 = np.timedelta64(3, "s")
+S4 = np.timedelta64(4, "s")
+S5 = np.timedelta64(5, "s")
+S6 = np.timedelta64(6, "s")
+S7 = np.timedelta64(7, "s")
+S11 = np.timedelta64(11, "s")
+
 NaN = np.nan
 NaT = np.datetime64("NaT", "D")
+NaTd = np.timedelta64("NaT", "s")
 
 EMPTY_VECTOR = Vector([], float)
 GROUPS = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
@@ -83,6 +94,7 @@ TEST_MATRIX = [
     (count, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 2, 2, 2, 2]),
     (count, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [2, 2, 2, 2, 2]),
     (count, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [2, 2, 2, 2, 2]),
+    (count, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [2, 2, 2, 2, 2]),
     (count, ["a", "b", "c", "d", "e", "f", "g", "", "", ""], [2, 2, 2, 2, 2]),
 
     # NaN is not considered equal to itself and thus all are counted here.
@@ -97,50 +109,59 @@ TEST_MATRIX = [
     (first, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 3, 5, 7, 9]),
     (first, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.0, 3.0, 5.0, 7.0, NaN]),
     (first, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [D1, D3, D5, D7, NaT]),
+    (first, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S1, S3, S5, S7, NaTd]),
     (first, ["a", "b", "c", "d", "e", "f", "g", "", "", ""], ["a", "c", "e", "g", ""]),
 
     (last, [T, T, T, T, T, F, F, F, F, F], [T, T, F, F, F]),
     (last, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 4, 6, 8, 10]),
     (last, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [2.0, 4.0, 6.0, NaN, NaN]),
     (last, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [D2, D4, D6, NaT, NaT]),
+    (last, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S2, S4, S6, NaTd, NaTd]),
     (last, ["a", "b", "c", "d", "e", "f", "g", "", "", ""], ["b", "d", "f", "", ""]),
 
     (max, [T, T, T, T, T, F, F, F, F, F], [T, T, T, F, F]),
     (max, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 4, 6, 8, 10]),
     (max, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [2.0, 4.0, 6.0, 7.0, NaN]),
     (max, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
+    (max, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S2, S4, S6, S7, NaTd]),
 
     (mean, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (mean, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
     (mean, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.5, 3.5, 5.5, 7.0, NaN]),
     (mean, [D1, D3, D3, D5, D5, D7, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
+    (mean, [S1, S3, S3, S5, S5, S7, S7, NaTd, NaTd, NaTd], [S2, S4, S6, S7, NaTd]),
 
     (median, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (median, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
     (median, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.5, 3.5, 5.5, 7.0, NaN]),
     (median, [D1, D3, D3, D5, D5, D7, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
+    (median, [S1, S3, S3, S5, S5, S7, S7, NaTd, NaTd, NaTd], [S2, S4, S6, S7, NaTd]),
 
     (min, [T, T, T, T, T, F, F, F, F, F], [T, T, F, F, F]),
     (min, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 3, 5, 7, 9]),
     (min, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.0, 3.0, 5.0, 7.0, NaN]),
     (min, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [D1, D3, D5, D7, NaT]),
+    (min, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S1, S3, S5, S7, NaTd]),
 
     (mode, [T, T, T, T, T, F, F, F, F, F], [T, T, T, F, F]),
     (mode, [1, 1, 3, 3, 5, 6, 7, 8, 9, 10], [1, 3, 5, 7, 9]),
     (mode, [1.0, 1.0, 3.0, 3.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.0, 3.0, 5.0, 7.0, NaN]),
     (mode, [D1, D1, D3, D3, D5, D6, D7, NaT, NaT, NaT], [D1, D3, D5, D7, NaT]),
+    (mode, [S1, S1, S3, S3, S5, S6, S7, NaTd, NaTd, NaTd], [S1, S3, S5, S7, NaTd]),
     (mode, ["a", "a", "c", "c", "e", "f", "g", "", "", ""], ["a", "c", "e", "g", ""]),
 
     (nth0, [T, T, T, T, T, F, F, F, F, F], [T, T, T, F, F]),
     (nth0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 3, 5, 7, 9]),
     (nth0, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.0, 3.0, 5.0, 7.0, NaN]),
     (nth0, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [D1, D3, D5, D7, NaT]),
+    (nth0, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S1, S3, S5, S7, NaTd]),
     (nth0, ["a", "b", "c", "d", "e", "f", "g", "", "", ""], ["a", "c", "e", "g", ""]),
 
     (quantile05, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (quantile05, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
     (quantile05, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [1.5, 3.5, 5.5, 7.0, NaN]),
     (quantile05, [D1, D3, D3, D5, D5, D7, D7, NaT, NaT, NaT], [D2, D4, D6, D7, NaT]),
+    (quantile05, [S1, S3, S3, S5, S5, S7, S7, NaTd, NaTd, NaTd], [S2, S4, S6, S7, NaTd]),
 
     (std, [T, T, T, T, T, F, F, F, F, F], [0.0, 0.0, 0.5, 0.0, 0.0]),
     (std, [1, 1, 2, 3, 5, 7, 8, 12, 13, 21], [0.0, 0.5, 1.0, 2.0, 4.0]),
@@ -149,6 +170,7 @@ TEST_MATRIX = [
     (sum, [T, T, T, T, T, F, F, F, F, F], [2, 2, 1, 0, 0]),
     (sum, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [3, 7, 11, 15, 19]),
     (sum, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [3.0, 7.0, 11.0, 7.0, 0.0]),
+    (sum, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S3, S7, S11, S7, S0]),
 
     (var, [T, T, T, T, T, F, F, F, F, F], [0.0, 0.0, 0.25, 0.0, 0.0]),
     (var, [1, 1, 2, 3, 5, 7, 8, 12, 13, 21], [0.0, 0.25, 1.0, 4.0, 16.0]),

@@ -74,6 +74,7 @@ Fixes:
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
 - `ListOfDicts.tail`: Fix returning all items for `n=0`
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
+- `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector.as_boolean`: Raise `ValueError` for missing values
