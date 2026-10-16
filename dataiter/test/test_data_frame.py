@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import dataiter as di
+import json
 import numpy as np
 import pytest
 
@@ -274,6 +275,25 @@ class TestDataFrame:
         assert data.colnames == ["x", "y"]
         assert data.x.tolist() == [1, 1, 1, 2, 2, 2]
         assert data.y.tolist() == ["a", "b", "c", "a", "b", "c"]
+
+    def test_explode_given_sep(self):
+        data = DataFrame(id=[1, 2, 3], x=["a,b", "", "c"])
+        for sep in [",", ", "]:
+            data.x = data.x.str.replace(",", sep)
+            result = data.explode("x", sep=sep)
+            assert result.id.tolist() == [1, 1, 2, 3]
+            assert result.x.tolist() == ["a", "b", None, "c"]
+            assert result.x.is_string()
+
+    def test_explode_given_sequences(self):
+        data = DataFrame(id=[1, 2, 3, 4], x=["[1, 2]", "null", "[]", "[3, null]"])
+        data.x = data.x.map(json.loads, dtype=object)
+        result = data.explode("x")
+        assert result.id.tolist() == [1, 1, 2, 3, 4, 4]
+        assert result.x.is_float()
+        assert np.array_equal(result.x, [1, 2, np.nan, np.nan, 3, np.nan], equal_nan=True)
+        assert data.explode("x", dtype=int).x.is_float()
+        assert data.filter(id=1).explode("x", dtype=int).x.tolist() == [1, 2]
 
     def test_filter_given_rows(self):
         data = test.data_frame("vehicles.csv")

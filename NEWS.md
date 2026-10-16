@@ -3,6 +3,7 @@
 New:
 - `all`, `any`: Add `drop_na` argument, default true
 - `DataFrame.expand_grid`: New classmethod
+- `DataFrame.explode`: New method to expand sequences or delimited strings to rows
 - `DataFrame.filter`, `DataFrame.filter_out`: Match any element if value is a sequence
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped

@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(".")))
 import dataiter as di
+import json
 import numpy as np
 from dataiter import dt
 from dataiter import regex

@@ -431,6 +431,73 @@ class DataFrame(dict):
         })
 
     @deco.new_from_generator
+    def explode(self, colname, *, sep=None, dtype=None):
+        """
+        Return data frame with elements of `colname` split to rows.
+
+        `colname` should refer to a column of sequences, such as lists, or a
+        column of strings to split by `sep`. Other columns are repeated for
+        each element. Missing values and empty sequences give one row with a
+        missing value. To split multiple columns, chain calls, which gives all
+        combinations.
+
+        `dtype` is the data type of the elements of a sequence column.
+        Providing `dtype` will make exploding faster, otherwise the appropriate
+        data type will be guessed by introspecting the elements. Split strings
+        are always strings, follow up with :meth:`modify` to strip whitespace
+        or convert them as needed.
+
+        For JSON strings, first parse them into lists with :meth:`modify` and
+        ``json.loads``.
+
+        >>> data = di.DataFrame(id=[1, 2], x=["a, b", "c"], y=["[1, 2]", "[3]"])
+        >>> data.explode("x", sep=",").modify(x=lambda x: x.x.str.strip())
+        >>> data.modify(y=lambda x: x.y.map(json.loads, dtype=object)).explode("y", dtype=int)
+        """
+        column = self[colname]
+        if column.is_string():
+            if sep is None:
+                raise ValueError(f"Column {colname!r} is strings, give sep to split")
+            counts, values = self._explode_strings(column, sep)
+        else:
+            counts, values = self._explode_sequences(column, dtype)
+        rows = np.repeat(np.arange(self.nrow), counts)
+        for name, column in self.items():
+            yield name, values if name == colname else column[rows]
+
+    @staticmethod
+    def _explode_strings(column, sep):
+        if len(sep) > 1:
+            # Joining and splitting all at once below would break pieces
+            # apart differently for separators that overlap, e.g. ",,".
+            return DataFrame._explode_sequences([x.split(sep) for x in column], str)
+        # Avoid creating a list per row, which is slow for many rows.
+        counts = np.strings.count(column, sep) + 1
+        # Unlike tolist, iteration gives missing values as "", not None.
+        values = sep.join(list(column)).split(sep) if len(column) else []
+        return counts, Vector.fast(values, str)
+
+    @staticmethod
+    def _explode_sequences(column, dtype):
+        counts = np.fromiter((0 if x is None else len(x) for x in column), np.int64, len(column))
+        if (empty := np.flatnonzero(counts == 0)).size:
+            column = column.copy()
+            for i in empty:
+                column[i] = [None]
+            counts[empty] = 1
+        values = np.fromiter(itertools.chain.from_iterable(column), object, counts.sum())
+        na = np.equal(values, None)
+        valid = values[~na]
+        if dtype is None and len(set(map(type, valid))) == 1:
+            dtype = Vector([valid[0]]).dtype
+        valid = Vector.fast(valid, dtype) if dtype is not None else Vector(valid.tolist())
+        if not na.any():
+            return counts, valid
+        values = np.full(len(values), valid.na_value, valid.na_dtype)
+        values[~na] = valid
+        return counts, Vector.fast(values)
+
+    @deco.new_from_generator
     def filter(self, rows=None, **colname_value_pairs):
         """
         Return rows that match condition.
