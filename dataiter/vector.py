@@ -732,7 +732,7 @@ class Vector(np.ndarray):
             # https://stackoverflow.com/a/14672797/16369038
             inv = codes()
             out[~na] = np.concatenate(([0], np.bincount(inv))).cumsum()[inv] + 1
-            out[na] = out[~na].max() + 1
+            out[na] = (~na).sum() + 1
             return out.view(self.__class__)
         if method == "max":
             # https://stackoverflow.com/a/14672797/16369038

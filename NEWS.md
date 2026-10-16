@@ -107,6 +107,7 @@ Fixes:
 - `Vector.dt`: Add missing `isoformat`
 - `Vector.range`: Fix to ignore missing values of datetimes and strings
 - `Vector.rank`: Fix error when all values are missing
+- `Vector.rank`: Fix missing values getting the same rank as tied values ranked last when `method="min"`
 
 # 2026-10-05: Dataiter 1.4
 
