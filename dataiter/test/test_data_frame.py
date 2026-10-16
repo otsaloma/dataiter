@@ -494,6 +494,20 @@ class TestDataFrame:
         data = data.group_by("g").modify(f=lambda x: 1 / x.nrow)
         assert data.f.tolist() == [1, 1/3, 1/3, 1/3, 1/2, 1/2]
 
+    def test_modify_group_wise_sequential(self):
+        data = DataFrame(g=[1, 3, 3, 3, 2, 2], x=[1, 2, 3, 4, 5, 6])
+        data = data.group_by("g").modify(s=lambda x: x.x.sum(), f=lambda x: x.x / x.s)
+        assert data.s.tolist() == [1, 9, 9, 9, 11, 11]
+        assert data.f.tolist() == [1, 2/9, 3/9, 4/9, 5/11, 6/11]
+
+    def test_modify_sequential(self):
+        data = DataFrame(x=[1, 2, 3])
+        data = data.modify(y=lambda x: x.x * 2, x=lambda x: x.y + 1, z=lambda x: x.x)
+        assert data.colnames == ["x", "y", "z"]
+        assert data.x.tolist() == [3, 5, 7]
+        assert data.y.tolist() == [2, 4, 6]
+        assert data.z.tolist() == [3, 5, 7]
+
     def test_ncol(self):
         data = test.data_frame("vehicles.csv")
         assert data.ncol == 12

@@ -860,7 +860,8 @@ class DataFrame(dict):
 
         In `colname_value_pairs`, `value` can be either a vector or a function
         that receives the data frame as argument and returns a vector. See the
-        example below of equivalent modification with both ways.
+        example below of equivalent modification with both ways. Functions are
+        evaluated in order and can use columns created by earlier ones.
 
         Note that column modification can often be done simpler with a plain
         assignment, such as ``data.price_per_guest = data.price /
@@ -899,11 +900,13 @@ class DataFrame(dict):
                 if not callable(function):
                     raise ValueError(f"{colname} argument not callable")
                 column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
-                yield colname, np.concatenate(column)[restore_indices]
+                data[colname] = np.concatenate(column)
+                yield colname, data[colname][restore_indices]
         else:
+            data = self.copy()
             for colname, value in colname_value_pairs.items():
-                value = value(self) if callable(value) else value
-                yield colname, self._reconcile_column(value).copy()
+                data[colname] = value(data) if callable(value) else value
+                yield colname, data[colname].copy()
 
     @property
     def ncol(self):
