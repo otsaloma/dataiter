@@ -284,6 +284,16 @@ class TestVector:
         assert a.is_string()
         assert np.all(a == ["1", "2"])
 
+    @pytest.mark.parametrize("values,expected", [
+        ([1.5, np.nan, 3.5], ["1.5", None, "3.5"]),
+        (np.array(["a", None, "c"], object), ["a", None, "c"]),
+        (np.array(["2020-01-01", "NaT", "2020-01-03"], "datetime64[D]"), ["2020-01-01", None, "2020-01-03"]),
+    ])
+    def test_as_string_missing(self, values, expected):
+        a = Vector(values).as_string()
+        assert a.is_string()
+        assert a.tolist() == expected
+
     def test_concat(self):
         a = Vector([1, 2, 3])
         b = Vector([4, 5, 6])

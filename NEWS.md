@@ -100,6 +100,7 @@ Fixes:
 - `Vector.as_boolean`: Raise `ValueError` for missing values
 - `Vector.as_float`: Convert missing values to NaN, fixing an error for strings and garbage values for datetimes and timedeltas
 - `Vector.as_integer`: Raise `ValueError` for missing values
+- `Vector.as_string`: Keep missing values instead of converting e.g. NaN and `None` to "nan" and "None"
 - `Vector.dt`: Add missing `isoformat`
 - `Vector.range`: Fix to ignore missing values of datetimes and strings
 - `Vector.rank`: Fix error when all values are missing

@@ -323,6 +323,12 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 2, 3])
         >>> vector.as_string()
         """
+        na = self.is_na()
+        if na.any():
+            # NumPy converts e.g. NaN and None to "nan" and "None".
+            result = self.fast(np.full(self.length, dtypes.string.na_object, dtypes.string), dtypes.string)
+            result[~na] = self[~na].astype(dtypes.string)
+            return result
         return self.astype(dtypes.string)
 
     def _check_dimensions(self):
