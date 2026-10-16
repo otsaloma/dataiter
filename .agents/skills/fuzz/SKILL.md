@@ -3,8 +3,8 @@ name: fuzz
 description: End-to-end fuzzing of dataiter — work independently 30–60
   minutes doing realistic data analysis on a new 1–10M row dataset,
   record API surprises, broken functionality, complicated or slow
-  operations into ISSUES.md and present the findings. Use when asked to
-  fuzz dataiter or repeat the end-to-end exercise.
+  operations into ISSUES.md, then work through them one by one. Use
+  when asked to fuzz dataiter or repeat the end-to-end exercise.
 ---
 
 Work independently for 30–60 minutes doing data manipulation, data
@@ -51,3 +51,15 @@ tabular data and the `DataFrame` class.
 
 When done, add the datasets you used to the above list in this file
 (`.agents/skills/fuzz/SKILL.md`).
+
+## Working Through the Findings
+
+Re-read `ISSUES.md` first, I might have edited it. Then go through the
+items in order, one at a time: (1) Present the issue and your
+suggestion, or options with a recommendation, and wait for my decision.
+(2) Implement it, including tests and a `NEWS.md` entry if user-visible.
+(3) Present the result with a proposed commit message and commit once I
+approve. (4) Remove the item from `ISSUES.md`. Add any new issues found
+along the way as new items instead of expanding the current one.
+Finally, remove `ISSUES.md` once empty and commit this file if not yet
+committed.
