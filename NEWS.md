@@ -59,6 +59,7 @@ Fixes:
 - `DataFrame.pivot_wider`: Fix error with non-string names
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
+- `DataFrame.rbind`: Name the column and its data types in the error for incompatible types
 - `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
 - `DataFrame.read_csv`: Fix reading `.xz` compressed files

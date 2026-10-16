@@ -638,6 +638,12 @@ class TestDataFrame:
         assert np.all(np.isnan(data.test2[:3]))
         assert np.all(data.test2[-3:] == 2)
 
+    def test_rbind_incompatible(self):
+        a = DataFrame(x=[1.5])
+        b = DataFrame(x=["a"])
+        with pytest.raises(TypeError, match="'x'.*float64, string"):
+            a.rbind(b)
+
     def test_rbind_onto_empty(self):
         data = DataFrame().rbind(DataFrame(a=[1, 2]))
         assert data.a.is_integer()

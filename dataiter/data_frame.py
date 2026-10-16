@@ -1131,7 +1131,11 @@ class DataFrame(dict):
                 return Vector.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
             parts = [get_part(x, colname) for x in nonempty if colname in x or x.nrow > 0]
-            total = DataFrameColumn(np.concatenate(parts))
+            try:
+                total = DataFrameColumn(np.concatenate(parts))
+            except TypeError:
+                dtypes = ", ".join(util.unique_keys(x.dtype_label for x in parts))
+                raise TypeError(f"Can't combine column {colname!r} of incompatible types: {dtypes}") from None
             yield colname, total
 
     @classmethod
