@@ -89,6 +89,11 @@ class TestDT:
         with pytest.raises(ValueError):
             dt.from_string(a, "%d.%m.%Y")
 
+    def test_from_string_type_error(self):
+        a = dt.new(["2022-10-15"])
+        with pytest.raises(TypeError, match="Expected string, got datetime64"):
+            dt.from_string(a, "%Y-%m-%d")
+
     def test_hour(self):
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.hour(a).tolist() == [12, None]
@@ -209,3 +214,8 @@ class TestDT:
     def test_year(self):
         a = dt.new(["2022-10-15", NaT])
         assert dt.year(a).tolist() == [2022, None]
+
+    def test_year_type_error(self):
+        a = Vector(["2022-10-15"], str)
+        with pytest.raises(TypeError, match="Expected datetime, got string"):
+            dt.year(a)

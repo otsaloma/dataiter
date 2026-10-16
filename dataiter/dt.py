@@ -29,6 +29,10 @@ from dataiter import util
 from dataiter import Vector
 from numpy.dtypes import StringDType
 
+def _check_datetime(x):
+    if not (isinstance(x, np.ndarray) and np.issubdtype(x.dtype, np.datetime64)):
+        raise TypeError(f"Expected datetime, got {_type_label(x)}")
+
 def day(x):
     """
     Extract day of the month from datetime `x`.
@@ -52,8 +56,7 @@ def floor(x, unit):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return floor(x, unit)[0]
-    assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.datetime64)
+    _check_datetime(x)
     if unit == "quarter":
         out = x.astype("datetime64[M]")
         out -= (out.astype(int) % 3).astype("timedelta64[M]")
@@ -87,8 +90,8 @@ def from_string(x, format, *, errors="strict"):
     if util.is_scalar(x):
         x = Vector([x], str)
         return from_string(x, format, errors=errors)[0]
-    assert isinstance(x, np.ndarray)
-    assert isinstance(x.dtype, StringDType)
+    if not (isinstance(x, np.ndarray) and isinstance(x.dtype, StringDType)):
+        raise TypeError(f"Expected string, got {_type_label(x)}")
     out = np.full_like(x, None, object)
     out = Vector.fast(out, object).as_datetime()
     na = x == dtypes.string.na_object
@@ -204,8 +207,7 @@ def _pull_datetime(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return _pull_datetime(x, function)[0]
-    assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.datetime64)
+    _check_datetime(x)
     out = np.full_like(x, np.nan)
     out = Vector.fast(out, np.datetime64)
     na = np.isnat(x)
@@ -219,8 +221,7 @@ def _pull_int(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return _pull_int(x, function)[0]
-    assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.datetime64)
+    _check_datetime(x)
     out = np.full_like(x, np.nan, float)
     out = Vector.fast(out, float)
     na = np.isnat(x)
@@ -232,8 +233,7 @@ def _pull_str(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
         return _pull_str(x, function)[0]
-    assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.datetime64)
+    _check_datetime(x)
     out = np.full_like(x, dtypes.string.na_object, object)
     out = Vector.fast(out, object)
     na = np.isnat(x)
@@ -268,8 +268,7 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     scalar_keys = [x for x in kwargs if util.is_scalar(kwargs[x])]
     vector_keys = [x for x in kwargs if x not in scalar_keys]
     # Like _pull_datetime, but no vectorized function.
-    assert isinstance(x, np.ndarray)
-    assert np.issubdtype(x.dtype, np.datetime64)
+    _check_datetime(x)
     out = np.full_like(x, np.nan)
     out = Vector.fast(out, np.datetime64)
     na = np.isnat(x)
@@ -316,6 +315,9 @@ def today():
     >>> dt.today()
     """
     return np.datetime64(datetime.date.today())
+
+def _type_label(x):
+    return x.view(Vector).dtype_label if isinstance(x, np.ndarray) else type(x).__name__
 
 def weekday(x):
     """

@@ -31,8 +31,9 @@ from numpy.dtypes import StringDType
 def _apply(function, string, dtype=object, na_value=None):
     if util.is_scalar(string):
         return function(string)
-    assert isinstance(string, np.ndarray)
-    assert isinstance(string.dtype, StringDType)
+    if not (isinstance(string, np.ndarray) and isinstance(string.dtype, StringDType)):
+        label = string.view(Vector).dtype_label if isinstance(string, np.ndarray) else type(string).__name__
+        raise TypeError(f"Expected string, got {label}")
     out = np.full_like(string, na_value, dtype)
     na = string == dtypes.string.na_object
     # np.fromiter keeps e.g. lists from findall as elements,

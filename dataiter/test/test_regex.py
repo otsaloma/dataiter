@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import pytest
 import re
 
 from dataiter import regex
@@ -89,6 +90,10 @@ class TestRegex:
         expected = ["great!", "fantastic!", None]
         assert result.tolist() == expected
         assert regex.sub(pattern, repl, string[0]) == result[0]
+
+    def test_sub_type_error(self):
+        with pytest.raises(TypeError, match="Expected string, got int64"):
+            regex.sub(r"$", "!", Vector([1, 2]))
 
     def test_subn(self):
         pattern = r"$"
