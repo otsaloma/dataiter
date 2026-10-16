@@ -533,6 +533,17 @@ class TestDataFrame:
         assert long.ncol == 3
         assert all(long.name.is_in(wide.colnames))
 
+    def test_pivot_longer_common_type(self):
+        wide = DataFrame(id=[1, 2], a=[True, False], b=[3, 4], c=[5.5, 6.5])
+        long = wide.pivot_longer(ids="id")
+        assert long.value.is_float()
+        assert long.value.tolist() == [1.0, 3.0, 5.5, 0.0, 4.0, 6.5]
+
+    def test_pivot_longer_mixed_kinds(self):
+        wide = DataFrame(id=[1, 2], a=[3, 4], b=np.array([5, 6], "timedelta64[s]"))
+        long = wide.pivot_longer(ids="id")
+        assert long.value.is_object()
+
     def test_pivot_longer_defaults(self):
         wide = DataFrame(id=[1, 2], a=[3, 4], b=[5, 6])
         long = wide.pivot_longer(ids="id")

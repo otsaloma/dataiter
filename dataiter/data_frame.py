@@ -22,6 +22,7 @@
 
 import codecs
 import dataiter
+import functools
 import itertools
 import json
 import numpy as np
@@ -968,8 +969,9 @@ class DataFrame(dict):
         `ids` should be the name or a list of names of identifier columns. All
         other columns are considered variable columns and will be pivoted.
         `names` and `values` are names of columns into which the variable names
-        and values are put in the result. If all variable columns have the
-        same data type, `values` will have that data type, otherwise object.
+        and values are put in the result. If all variable columns are of the
+        same kind, e.g. numbers, `values` will have their common data type,
+        otherwise object.
 
         >>> wide = di.read_csv("data/listings.csv")
         >>> wide
@@ -979,12 +981,19 @@ class DataFrame(dict):
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
         long = self.__class__()
-        value_colnames = [x for x in self if x not in ids]
-        same_dtype = len(set(self[x].dtype for x in value_colnames)) == 1
-        for name in value_colnames:
+        columns = {x: self[x] for x in self if x not in ids}
+        # NumPy would also promote e.g. integer and timedelta to timedelta,
+        # so check that all are of the same kind before promoting.
+        kind = lambda x: "number" if x.dtype.kind in "biuf" else x.dtype.kind
+        if len(set(map(kind, columns.values()))) == 1:
+            dtype = functools.reduce(np.promote_types, [x.dtype for x in columns.values()])
+            columns = {k: v.astype(dtype) for k, v in columns.items()}
+        else:
+            columns = {k: v.as_object() for k, v in columns.items()}
+        for name, column in columns.items():
             part = self.select(*ids)
             part[names] = name
-            part[values] = self[name] if same_dtype else self[name].as_object()
+            part[values] = column
             long = long.rbind(part)
         return long.sort(**dict.fromkeys(ids, 1))
 
