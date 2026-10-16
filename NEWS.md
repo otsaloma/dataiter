@@ -56,6 +56,7 @@ Fixes:
 - `DataFrame.compare`: Return empty data frames instead of `None` when no differences found
 - `DataFrame.drop_na`: Use all columns if none given instead of dropping nothing
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
+- `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read times of day as strings instead of an object column of `datetime.time`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
 - `DataFrame.from_pandas`: Fix dates becoming object, e.g. in a `to_pandas` roundtrip
 - `DataFrame.*_join`: Raise `TypeError` for incompatible types of `by` columns, e.g. string and number, instead of silently matching nothing

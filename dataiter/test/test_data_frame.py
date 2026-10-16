@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import dataiter as di
+import datetime
 import json
 import numpy as np
 import pytest
@@ -352,6 +353,21 @@ class TestDataFrame:
         data = DataFrame.from_arrow(orig.to_arrow())
         assert data.a.is_string()
         assert data.a.tolist() == [None, "x"]
+
+    def test_from_arrow_time(self):
+        import pyarrow as pa
+        table = pa.table({"a": pa.array([datetime.time(16, 6, 30), None], pa.time32("s"))})
+        data = DataFrame.from_arrow(table)
+        assert data.a.is_string()
+        assert data.a.tolist() == ["16:06:30", None]
+
+    def test_from_arrow_time_zeros(self):
+        import pyarrow as pa
+        a = pa.array([datetime.time(16, 6), datetime.time(8, 0, 30)], pa.time64("us"))
+        b = pa.array([datetime.time(16, 6), datetime.time(8, 0)], pa.time64("us"))
+        data = DataFrame.from_arrow(pa.table({"a": a, "b": b}))
+        assert data.a.tolist() == ["16:06:00", "08:00:30"]
+        assert data.b.tolist() == ["16:06", "08:00"]
 
     def test_from_json(self):
         orig = test.data_frame("downloads.json")
@@ -727,6 +743,13 @@ class TestDataFrame:
         data = DataFrame.read_csv(path)
         assert data.time.dtype == np.dtype("datetime64[us]")
         assert data.time.dt.hour().tolist() == [5]
+
+    def test_read_csv_time(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("time\n16:06\n08:00\n", "utf-8")
+        data = DataFrame.read_csv(path)
+        assert data.time.is_string()
+        assert data.time.tolist() == ["16:06", "08:00"]
 
     def test_read_csv_no_header_columns(self, tmp_path):
         path = tmp_path / "test.csv"
