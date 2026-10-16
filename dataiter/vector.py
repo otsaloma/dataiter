@@ -254,9 +254,8 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(["a", "b"])
         >>> vector.as_bytes()
         """
-        if self.is_string():
-            return self.str.encode("utf-8")
-        return self.astype(bytes)
+        # Missing strings encode to b"", the missing value of bytes.
+        return self.as_string().str.encode("utf-8")
 
     def as_date(self):
         """
@@ -525,6 +524,8 @@ class Vector(np.ndarray):
             return np.isnan(self)
         if self.is_string() or self._is_string_fixed():
             return self == dtypes.string.na_object
+        if self.is_bytes():
+            return self == b""
         if self.is_integer() or self.is_boolean():
             return self.fast(np.zeros(len(self), bool))
         # Can't use np.isin here since elements can be arrays.
@@ -611,6 +612,8 @@ class Vector(np.ndarray):
             return float
         if self.is_string() or self._is_string_fixed():
             return self.dtype
+        if self.is_bytes():
+            return self.dtype
         return object
 
     @property
@@ -625,6 +628,7 @@ class Vector(np.ndarray):
         an extent.
 
         ========= ========================
+        bytes     ``b""``
         datetime  ``np.datetime64("NaT")``
         float     ``np.nan``
         integer   ``np.nan``
@@ -655,6 +659,8 @@ class Vector(np.ndarray):
             return np.nan
         if self.is_string() or self._is_string_fixed():
             return dtypes.string.na_object
+        if self.is_bytes():
+            return b""
         # Note that using None, e.g. for a boolean vector,
         # might not work directly as it requires upcasting to object.
         return None
@@ -871,6 +877,8 @@ class Vector(np.ndarray):
             return None
         if str in types:
             return dtypes.string.na_object
+        if bytes in types:
+            return b""
         if all(x in [float, int] or
                np.issubdtype(x, np.floating) or
                np.issubdtype(x, np.integer)

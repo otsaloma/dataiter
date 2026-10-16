@@ -586,6 +586,11 @@ class DataFrame(dict):
                 # Vector.fast assumes object if the first element is missing i.e. None.
                 req_dtype = str
             na = column.is_null(nan_is_null=True).to_numpy()
+            if (req_dtype is None and
+                (pa.types.is_binary(column.type) or
+                 pa.types.is_large_binary(column.type))):
+                # Vector.fast assumes object if any element is missing i.e. None.
+                column = column.fill_null(b"")
             column = column.to_numpy()
             if (req_dtype is None and
                 (np.issubdtype(column.dtype, np.datetime64) or

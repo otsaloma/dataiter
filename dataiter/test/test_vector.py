@@ -230,6 +230,16 @@ class TestVector:
         assert a.is_bytes()
         assert np.all(a == [b"a", b"\xc3\xb6"])
 
+    @pytest.mark.parametrize("values", [
+        [1.5, np.nan],
+        np.array(["1.5", None], object),
+        ["1.5", ""],
+    ])
+    def test_as_bytes_missing(self, values):
+        a = Vector(values).as_bytes()
+        assert a.is_bytes()
+        assert a.tolist() == [b"1.5", None]
+
     def test_as_date(self):
         a = Vector([DATETIME]).as_date()
         assert a.is_datetime()
@@ -451,6 +461,13 @@ class TestVector:
         assert not Vector([DATE]).is_integer()
         assert not Vector([DATETIME]).is_integer()
         assert not Vector([self]).is_integer()
+
+    def test_is_na_bytes(self):
+        a = Vector([b"a", b"b", None])
+        assert a.is_bytes()
+        assert a.is_na().tolist() == [False, False, True]
+        assert a.na_value == b""
+        assert a.na_dtype == a.dtype
 
     def test_is_na_date(self):
         a = Vector([DATE, DATE, NaT])

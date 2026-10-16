@@ -357,6 +357,12 @@ class TestDataFrame:
         data = DataFrame.from_arrow(table, dtypes={"a": object})
         assert data.a.is_object()
 
+    def test_from_arrow_bytes_missing(self):
+        orig = DataFrame(a=[b"x", None])
+        data = DataFrame.from_arrow(orig.to_arrow())
+        assert data.a.is_bytes()
+        assert data.a.tolist() == [b"x", None]
+
     def test_from_arrow_string_first_missing(self):
         orig = DataFrame(a=["", "x"])
         data = DataFrame.from_arrow(orig.to_arrow())

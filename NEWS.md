@@ -27,6 +27,7 @@ New:
 - `regex.extract`: New function to extract a group of the first match
 - `Vector`: Convert strings when comparing to datetimes, e.g. `x >= "2025-01-01"`, previously raising an error or, for equality, silently not matching
 - `Vector`: Create an object vector from lists or tuples, previously raising an error if all were of equal length
+- `Vector`: Use `b""` as missing value for bytes, as `""` for strings, instead of upcasting to object for `None`
 - `Vector.is_in`: New method, fast also for strings unlike `np.isin`, converting strings when comparing to datetimes
 - `Vector.rank`: Add `dir` argument for descending order
 - `Vector.shift`: New method to shift elements
@@ -98,6 +99,7 @@ Fixes:
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector.as_boolean`: Raise `ValueError` for missing values
+- `Vector.as_bytes`: Keep missing values instead of converting e.g. NaN and `None` to "nan" and "None"
 - `Vector.as_float`: Convert missing values to NaN, fixing an error for strings and garbage values for datetimes and timedeltas
 - `Vector.as_integer`: Raise `ValueError` for missing values
 - `Vector.as_string`: Keep missing values instead of converting e.g. NaN and `None` to "nan" and "None"
