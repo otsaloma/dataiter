@@ -1226,16 +1226,20 @@ class DataFrame(dict):
         # Data types of empty data frames are often guesses, e.g. float64
         # from aggregating zero groups, use them only if all are empty.
         nonempty = [x for x in data_frames if any(map(len, x.values()))] or data_frames
-        def get_part(data, colname):
-            if colname in data:
-                return data[colname]
-            for ref in [*nonempty, *data_frames]:
-                if colname not in ref: continue
-                value = ref[colname].na_value
-                dtype = ref[colname].na_dtype
-                return Vector.fast([value], dtype).repeat(data.nrow)
         for colname in colnames:
-            parts = [get_part(x, colname) for x in nonempty if colname in x or x.nrow > 0]
+            columns = [x[colname] for x in [*nonempty, *data_frames] if colname in x]
+            # Likewise, data types of columns without values are often guesses,
+            # e.g. float64 from reading a blank column of a CSV file.
+            valid = [x for x in columns if not x.is_na().all()] or columns
+            valid_ids = set(map(id, valid))
+            na = Vector.fast([valid[0].na_value], valid[0].na_dtype)
+            parts = []
+            for data in nonempty:
+                column = data.get(colname)
+                if id(column) in valid_ids:
+                    parts.append(column)
+                elif column is not None or data.nrow > 0:
+                    parts.append(na.repeat(data.nrow))
             try:
                 total = DataFrameColumn(np.concatenate(parts))
             except TypeError:

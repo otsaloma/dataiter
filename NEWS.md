@@ -74,6 +74,7 @@ Fixes:
 - `DataFrame.print_memory_use`, `DataFrame.print_na_counts`, `ListOfDicts.print_memory_use`: Print all rows regardless of `PRINT_MAX_ROWS`
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
+- `DataFrame.rbind`: Ignore data types of columns without values, fixing errors e.g. combining a blank column read from a CSV file with strings
 - `DataFrame.rbind`: Name the column and its data types in the error for incompatible types
 - `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
