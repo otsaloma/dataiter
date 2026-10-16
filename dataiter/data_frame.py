@@ -731,8 +731,8 @@ class DataFrame(dict):
         """
         Return the first `n` rows.
 
-        If the data frame is grouped, return the first `n` rows of each group,
-        ordered by group.
+        If `n` is negative, return all rows except the last ``-n``. If the
+        data frame is grouped, do the same for each group, ordered by group.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.head(5)
@@ -743,8 +743,8 @@ class DataFrame(dict):
             n = dataiter.DEFAULT_PEEK_ROWS
         if self._group_colnames:
             rows, positions, sizes = self._get_group_positions()
-            return self.slice(rows[positions < n])
-        n = min(self.nrow, n)
+            return self.slice(rows[positions < (n if n >= 0 else sizes + n)])
+        n = min(self.nrow, n) if n >= 0 else max(0, self.nrow + n)
         return self.slice(np.arange(n))
 
     @deco.new_from_generator
@@ -1405,8 +1405,8 @@ class DataFrame(dict):
         """
         Return the last `n` rows.
 
-        If the data frame is grouped, return the last `n` rows of each group,
-        ordered by group.
+        If `n` is negative, return all rows except the first ``-n``. If the
+        data frame is grouped, do the same for each group, ordered by group.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.tail(5)
@@ -1417,8 +1417,8 @@ class DataFrame(dict):
             n = dataiter.DEFAULT_PEEK_ROWS
         if self._group_colnames:
             rows, positions, sizes = self._get_group_positions()
-            return self.slice(rows[positions >= sizes - n])
-        n = min(self.nrow, n)
+            return self.slice(rows[positions >= (sizes - n if n >= 0 else -n)])
+        n = min(self.nrow, n) if n >= 0 else max(0, self.nrow + n)
         return self.slice(np.arange(self.nrow - n, self.nrow))
 
     def to_arrow(self):

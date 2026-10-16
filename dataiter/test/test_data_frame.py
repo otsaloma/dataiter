@@ -384,6 +384,12 @@ class TestDataFrame:
         assert data.g.tolist() == [1, 1, 2, 2]
         assert data.x.tolist() == [2, 4, 1, 3]
 
+    def test_head_negative(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2], x=[1, 2, 3, 4, 5])
+        assert data.head(-2).x.tolist() == [1, 2, 3]
+        assert data.head(-9).x.tolist() == []
+        assert data.group_by("g").head(-1).x.tolist() == [2, 1, 3]
+
     def test_inner_join(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")
@@ -981,6 +987,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = data.group_by("g").tail(2)
         assert data.g.tolist() == [1, 1, 2, 2]
         assert data.x.tolist() == [2, 4, 3, 5]
+
+    def test_tail_negative(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2], x=[1, 2, 3, 4, 5])
+        assert data.tail(-2).x.tolist() == [3, 4, 5]
+        assert data.tail(-9).x.tolist() == []
+        assert data.group_by("g").tail(-1).x.tolist() == [4, 3, 5]
 
     def test_to_json(self):
         orig = test.data_frame("downloads.json")

@@ -445,8 +445,8 @@ class ListOfDicts(list):
         """
         Return the first `n` items.
 
-        If the list is grouped, return the first `n` items of each group,
-        ordered by group.
+        If `n` is negative, return all items except the last ``-n``. If the
+        list is grouped, do the same for each group, ordered by group.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.head(3)
@@ -901,8 +901,8 @@ class ListOfDicts(list):
         """
         Return the last `n` items.
 
-        If the list is grouped, return the last `n` items of each group,
-        ordered by group.
+        If `n` is negative, return all items except the first ``-n``. If the
+        list is grouped, do the same for each group, ordered by group.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.tail(3)
@@ -912,9 +912,8 @@ class ListOfDicts(list):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ITEMS
         if self._group_keys:
-            return self._new([x for group in self._group_items() for x in group[max(0, len(group) - n):]])
-        n = min(len(self), n)
-        return self._new(self[-n:])
+            return self._new([x for group in self._group_items() for x in (group[-n:] if n else [])])
+        return self._new(self[-n:] if n else [])
 
     def _to_columns(self):
         return {k: self.pluck(k) for k in self.keys()}

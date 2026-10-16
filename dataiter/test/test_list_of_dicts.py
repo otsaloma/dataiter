@@ -305,6 +305,12 @@ class TestListOfDicts:
         assert data.pluck("g") == [1, 1, 2, 2]
         assert data.pluck("x") == [2, 4, 1, 3]
 
+    def test_head_negative(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        assert data.head(-2).pluck("x") == [1, 2, 3]
+        assert data.head(-9).pluck("x") == []
+        assert data.group_by("g").head(-1).pluck("x") == [2, 1, 3]
+
     def test_inner_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")
@@ -649,6 +655,13 @@ class TestListOfDicts:
         data = data.group_by("g").tail(2)
         assert data.pluck("g") == [1, 1, 2, 2]
         assert data.pluck("x") == [2, 4, 3, 5]
+
+    def test_tail_negative(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        assert data.tail(0).pluck("x") == []
+        assert data.tail(-2).pluck("x") == [3, 4, 5]
+        assert data.tail(-9).pluck("x") == []
+        assert data.group_by("g").tail(-1).pluck("x") == [4, 3, 5]
 
     def test_to_data_frame(self):
         orig = test.list_of_dicts("vehicles.csv")

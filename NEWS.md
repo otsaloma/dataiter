@@ -49,6 +49,7 @@ Fixes:
 - `DataFrame.*_join`: Raise `TypeError` for incompatible types of `by` columns, e.g. string and number, instead of silently matching nothing
 - `DataFrame.full_join`, `DataFrame.left_join`, `DataFrame.pivot_wider`: Keep data type of integer and boolean columns if no missing values are added
 - `DataFrame.group_by`: Fix to group only returned copy
+- `DataFrame.head`, `DataFrame.tail`: Return all rows except the last or first `-n` for negative `n` instead of none
 - `DataFrame.pivot_longer`: Keep data type of values if same in all pivoted columns
 - `DataFrame.pivot_wider`: Fix error with non-string names
 - `DataFrame.pivot_wider`: Fix to sort new columns before applying `rename`
@@ -69,6 +70,7 @@ Fixes:
 - `ListOfDicts.drop_na`: Use all keys if none given instead of dropping nothing
 - `ListOfDicts.group_by`: Fix to group only returned copy
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
+- `ListOfDicts.tail`: Fix returning all items for `n=0`
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
