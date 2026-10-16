@@ -694,13 +694,13 @@ class TestVector:
     def test_to_strings_timedelta_date(self):
         a = Vector([DATE, DATE])
         a = (a + np.timedelta64(1, "D")) - a
-        b = ["1 days", "1 days"]
+        b = ["1 day", "1 day"]
         assert a.to_strings().tolist() == b
 
     def test_to_strings_timedelta_datetime(self):
         a = Vector([DATETIME, DATETIME])
         a = (a + np.timedelta64(1, "us")) - a
-        b = ["1 microseconds", "1 microseconds"]
+        b = ["00:00:00.000001", "00:00:00.000001"]
         assert a.to_strings().tolist() == b
 
     def test_tolist_boolean(self):

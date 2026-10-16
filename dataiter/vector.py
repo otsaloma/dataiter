@@ -968,6 +968,11 @@ class Vector(np.ndarray):
             else:
                 strings = np.datetime_as_string(self).tolist()
             return self.__class__.fast(pad(strings), str)
+        # Years and months have no fixed length and finer units than
+        # nanoseconds would be truncated, keep NumPy's format for those.
+        if self.is_timedelta() and np.datetime_data(self.dtype)[0] in ["W", "D", "h", "m", "s", "ms", "us", "ns"]:
+            strings = util.format_timedeltas(self)
+            return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]
         return self.__class__.fast(pad(strings), str)
 

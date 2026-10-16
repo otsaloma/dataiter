@@ -87,6 +87,21 @@ class TestUtil:
         b = ["1", "2", "3", "nan"]
         assert util.format_floats(a) == b
 
+    def test_format_timedeltas(self):
+        a = np.array([17079, "NaT", -60, 90061], "timedelta64[s]")
+        b = ["04:44:39", "NaT", "-00:01:00", "1 day 01:01:01"]
+        assert util.format_timedeltas(a) == b
+
+    def test_format_timedeltas_days(self):
+        a = np.array([3, 1, -2], "timedelta64[D]")
+        b = ["3 days", "1 day", "-2 days"]
+        assert util.format_timedeltas(a) == b
+
+    def test_format_timedeltas_fraction(self):
+        a = np.array([1500, 250], "timedelta64[ms]")
+        b = ["00:00:01.500", "00:00:00.250"]
+        assert util.format_timedeltas(a) == b
+
     def test_generate_colnames(self):
         colnames = util.generate_colnames(1000)
         assert len(colnames) == 1000

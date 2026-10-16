@@ -64,6 +64,33 @@ def format_floats(seq, ksep=None):
     precision = min(m, max(0, precision - n))
     return [f"{x:,.{precision}f}".replace(",", ksep) for x in seq]
 
+def format_timedeltas(x):
+    # Format as e.g. "1 day 04:44:39.5", with fractions of seconds
+    # as precise as needed for all values, and only days if whole.
+    na = np.isnat(x)
+    unit = "ns" if np.datetime_data(x.dtype)[0] == "ns" else "us"
+    second = 10**9 if unit == "ns" else 10**6
+    values = x.astype(f"m8[{unit}]").astype(np.int64).tolist()
+    valid = [v for v, n in zip(values, na) if not n]
+    whole_days = all(v % (86400 * second) == 0 for v in valid)
+    digits = 0
+    while any(v % (second // 10**digits) for v in valid):
+        digits += 3
+    def format(value):
+        sign = "-" if value < 0 else ""
+        seconds, fraction = divmod(abs(value), second)
+        days, seconds = divmod(seconds, 86400)
+        day_part = f"{days} day{'' if days == 1 else 's'}"
+        if whole_days:
+            return sign + day_part
+        hours, seconds = divmod(seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        clock = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        if digits > 0:
+            clock += "." + f"{fraction:0{len(str(second)) - 1}d}"[:digits]
+        return sign + (f"{day_part} {clock}" if days else clock)
+    return ["NaT" if n else format(v) for v, n in zip(values, na)]
+
 def generate_colnames(n):
     return list(itertools.islice(yield_colnames(), n))
 

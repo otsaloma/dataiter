@@ -13,6 +13,7 @@ New:
 - `DataFrame.replace_na`: New method
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero
+- `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print timedeltas as e.g. "1 day 04:44:39" instead of a count of the unit
 - `dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `GeoJSON`: Read and write feature identifiers as column "id"
