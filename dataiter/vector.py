@@ -668,8 +668,10 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(range(100))
         >>> vector.range()
         """
-        rng = [np.nanmin(self), np.nanmax(self)]
-        return self.__class__(rng, self.dtype)
+        x = self.drop_na()
+        if x.length == 0:
+            return self.fast([self.na_value, self.na_value], self.na_dtype)
+        return self.fast([x.min(), x.max()], self.dtype)
 
     def rank(self, *, method="min", dir=1):
         """

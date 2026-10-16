@@ -508,6 +508,18 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5, None])
         assert a.range().tolist() == [1, 5]
 
+    def test_range_datetime(self):
+        a = Vector(["2025-02-01", None, "2025-01-01"]).as_datetime()
+        assert a.range().equal(Vector(["2025-01-01", "2025-02-01"]).as_datetime())
+
+    def test_range_string(self):
+        a = Vector(["b", "", "a"])
+        assert a.range().tolist() == ["a", "b"]
+
+    def test_range_na(self):
+        a = Vector([np.nan, np.nan], float)
+        assert a.range().is_na().all()
+
     def test_rank_max(self):
         a = Vector([1, 2, 1, 2, 3])
         b = a.rank(method="max")
