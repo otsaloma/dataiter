@@ -85,6 +85,7 @@ Fixes:
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
 - `DataFrame.sort`: Fix to sort missing values always last
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix negative floats showing fewer significant digits
+- `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix infinite values switching floats to scientific notation
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`

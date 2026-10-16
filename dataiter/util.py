@@ -51,7 +51,7 @@ def format_alias_doc(alias, target):
 
 def format_floats(seq, ksep=None):
     precision = dataiter.PRINT_FLOAT_PRECISION
-    if any(0 < abs(x) < 1/10**precision or abs(x) > 10**16 - 1 for x in seq):
+    if any(0 < abs(x) < 1/10**precision or 10**16 - 1 < abs(x) < math.inf for x in seq):
         # Format tiny and huge numbers in scientific notation.
         f = np.format_float_scientific
         return [f(x, precision=precision, trim="-") for x in seq]

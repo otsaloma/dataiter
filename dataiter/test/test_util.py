@@ -78,8 +78,8 @@ class TestUtil:
         assert util.format_floats(a) == b
 
     def test_format_floats_inf(self):
-        a = [-math.inf, 0, math.inf, np.nan]
-        b = ["-inf", "0e+00", "inf", "nan"]
+        a = [-math.inf, 0.5, math.inf, np.nan]
+        b = ["-inf", "0.5", "inf", "nan"]
         assert util.format_floats(a) == b
 
     def test_format_floats_integer(self):
