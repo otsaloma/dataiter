@@ -38,10 +38,12 @@ tabular data and the `DataFrame` class.
 - Helsinki city bikes
 - IMDb non-commercial datasets
 - MovieLens 25M
+- NYC 311 service requests
 - NYC taxi
 - Open-Meteo hourly weather
 - UK Land Registry price paid
 - US Census ACS PUMS
+- US Census ZCTA gazetteer
 - US flights
 - Wikipedia clickstream
 
