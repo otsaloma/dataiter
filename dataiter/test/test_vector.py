@@ -658,6 +658,12 @@ class TestVector:
         b = [DATETIME.isoformat(), DATETIME.isoformat()]
         assert Vector(a).to_strings().tolist() == b
 
+    def test_to_strings_datetime_coarsest_unit(self):
+        a = Vector(["2025-01-01T12:00:00", None]).as_datetime()
+        assert a.to_strings().tolist() == ["2025-01-01T12:00:00", "NaT"]
+        a = Vector(["2025-01-01T12:00:00", "2025-01-01T12:00:00.5"]).as_datetime()
+        assert a.to_strings().tolist() == ["2025-01-01T12:00:00.000", "2025-01-01T12:00:00.500"]
+
     def test_to_strings_float(self):
         a = [0.1, 1/3]
         b = ["0.100000", "0.333333"]

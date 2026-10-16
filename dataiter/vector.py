@@ -956,6 +956,18 @@ class Vector(np.ndarray):
                     (len(lines) > 1 and truncate_width < inf)):
                     strings[i] = util.utruncate(lines[0], truncate_width-1) + "…"
             return self.__class__.fast(pad(strings), str)
+        if self.is_datetime():
+            # Use the coarsest unit that shows all values exactly,
+            # e.g. omit microseconds if all are zero.
+            units = ["s", "ms", "us", "ns"]
+            unit = np.datetime_data(self.dtype)[0]
+            if unit in units:
+                values = self[~self.is_na()]
+                unit = next(x for x in units if np.all(values.astype(f"M8[{x}]") == values))
+                strings = np.datetime_as_string(self, unit=unit).tolist()
+            else:
+                strings = np.datetime_as_string(self).tolist()
+            return self.__class__.fast(pad(strings), str)
         strings = [str(x) for x in self]
         return self.__class__.fast(pad(strings), str)
 

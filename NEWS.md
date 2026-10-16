@@ -12,6 +12,7 @@ New:
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `na` argument for additional missing value markers and `quote` argument to change or disable quoting
 - `DataFrame.replace_na`: New method
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
+- `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero
 - `dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `GeoJSON`: Read and write feature identifiers as column "id"
