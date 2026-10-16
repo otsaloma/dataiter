@@ -1056,10 +1056,10 @@ class DataFrame(dict):
             columns = {k: v.astype(dtype) for k, v in columns.items()}
         else:
             columns = {k: v.as_object() for k, v in columns.items()}
-        long = self.__class__({x: np.tile(self[x], len(columns)) for x in ids})
-        long[names] = np.repeat(Vector.fast(list(columns), str), self.nrow)
-        long[values] = np.concatenate(list(columns.values()))
-        return long.sort(**dict.fromkeys(ids, 1))
+        long = self.__class__({x: np.repeat(self[x], len(columns)) for x in ids})
+        long[names] = np.tile(Vector.fast(list(columns), str), self.nrow)
+        long[values] = np.stack(list(columns.values()), axis=1).ravel()
+        return long
 
     def pivot_wider(self, *, ids=None, names="name", values="value", rename=None):
         """

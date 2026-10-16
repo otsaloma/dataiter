@@ -559,6 +559,13 @@ class TestDataFrame:
         assert long.value.is_float()
         assert long.value.tolist() == [1.0, 3.0, 5.5, 0.0, 4.0, 6.5]
 
+    def test_pivot_longer_order(self):
+        wide = DataFrame(id=["b", "a", "b"], x=[1, 2, 3], y=[4, 5, 6])
+        long = wide.pivot_longer(ids="id")
+        assert long.id.tolist() == ["b", "b", "a", "a", "b", "b"]
+        assert long.name.tolist() == ["x", "y", "x", "y", "x", "y"]
+        assert long.value.tolist() == [1, 4, 2, 5, 3, 6]
+
     def test_pivot_longer_mixed_kinds(self):
         wide = DataFrame(id=[1, 2], a=[3, 4], b=np.array([5, 6], "timedelta64[s]"))
         long = wide.pivot_longer(ids="id")
