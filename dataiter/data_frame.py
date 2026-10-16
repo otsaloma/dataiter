@@ -980,7 +980,6 @@ class DataFrame(dict):
         ids = util.sequencify(ids)
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
-        long = self.__class__()
         columns = {x: self[x] for x in self if x not in ids}
         # NumPy would also promote e.g. integer and timedelta to timedelta,
         # so check that all are of the same kind before promoting.
@@ -990,11 +989,9 @@ class DataFrame(dict):
             columns = {k: v.astype(dtype) for k, v in columns.items()}
         else:
             columns = {k: v.as_object() for k, v in columns.items()}
-        for name, column in columns.items():
-            part = self.select(*ids)
-            part[names] = name
-            part[values] = column
-            long = long.rbind(part)
+        long = self.__class__({x: np.tile(self[x], len(columns)) for x in ids})
+        long[names] = np.repeat(Vector.fast(list(columns), str), self.nrow)
+        long[values] = np.concatenate(list(columns.values()))
         return long.sort(**dict.fromkeys(ids, 1))
 
     def pivot_wider(self, *, ids=None, names="name", values="value", rename=None):

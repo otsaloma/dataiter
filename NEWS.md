@@ -33,6 +33,7 @@ Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by strings or multiple columns and `other` is larger than `self`
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.modify`: Speed up when grouped
+- `DataFrame.pivot_longer`: Speed up, especially with many columns
 - `DataFrame.pivot_wider`: Speed up, especially with many names
 - `DataFrame.sort`: Speed up, especially for strings
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
