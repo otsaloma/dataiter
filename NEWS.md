@@ -107,6 +107,7 @@ Fixes:
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
+- `Vector`: Create a float vector from all NaN values instead of an object vector of `None`
 - `Vector.as_boolean`: Raise `ValueError` for missing values
 - `Vector.as_bytes`: Keep missing values instead of converting e.g. NaN and `None` to "nan" and "None"
 - `Vector.as_float`: Convert missing values to NaN, fixing an error for strings and garbage values for datetimes and timedeltas

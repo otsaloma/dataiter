@@ -104,6 +104,11 @@ class TestVector:
         assert a.is_float()
         assert a.equal(b)
 
+    def test___new___na_float_all(self):
+        assert Vector([NaN]).is_float()
+        assert Vector([None, NaN]).is_float()
+        assert Vector([None]).is_object()
+
     def test___new___na_float_mixed_nan(self):
         # Missing values should be NaN.
         # Mixing Python and NumPy floats should be fine.

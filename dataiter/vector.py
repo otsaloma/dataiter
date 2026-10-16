@@ -871,6 +871,9 @@ class Vector(np.ndarray):
             # infer type. This should be rare, but can happen.
             dtype = np.dtype(types.copy().pop())
             na = Vector.fast([], dtype).na_value
+        elif not types and any(isinstance(x, float) for x in seq):
+            # All missing, but NaN is a float, unlike None.
+            na = np.nan
         else:
             # Guess the missing value based on types in seq.
             na = cls._std_to_np_na_value(types)
