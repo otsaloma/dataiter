@@ -564,9 +564,14 @@ class TestDataFrame:
     def test_pivot_wider_integer_names(self):
         long = DataFrame(id=[1, 1, 2], m=[2, 10, 1], value=[1, 2, 3])
         wide = long.pivot_wider(ids="id", names="m", values="value")
-        assert wide.colnames == ["id", "1", "2", "10"]
+        assert wide.colnames == ["id", "2", "10", "1"]
         wide = long.pivot_wider(ids="id", names="m", values="value", rename=lambda x: f"m{x}")
-        assert wide.colnames == ["id", "m1", "m2", "m10"]
+        assert wide.colnames == ["id", "m2", "m10", "m1"]
+
+    def test_pivot_wider_order(self):
+        long = DataFrame(id=[1, 1, 1, 2, 2], m=["Mar", "", "Jan", "Feb", "Jan"], value=[1, 2, 3, 4, 5])
+        wide = long.pivot_wider(ids="id", names="m", values="value")
+        assert wide.colnames == ["id", "Mar", "Jan", "Feb", ""]
 
     def test_pop(self):
         data = test.data_frame("vehicles.csv")

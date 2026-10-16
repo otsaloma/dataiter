@@ -8,6 +8,7 @@ New:
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped
 - `DataFrame.modify`: Evaluate arguments in order, allowing use of columns created by earlier ones
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
+- `DataFrame.pivot_wider`: Order new columns by first appearance instead of sorting, as tidyr does
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `na` argument for additional missing value markers and `quote` argument to change or disable quoting
 - `DataFrame.replace_na`: New method
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
@@ -55,7 +56,6 @@ Fixes:
 - `DataFrame.head`, `DataFrame.tail`: Return all rows except the last or first `-n` for negative `n` instead of none
 - `DataFrame.pivot_longer`: Keep data type of values if same in all pivoted columns
 - `DataFrame.pivot_wider`: Fix error with non-string names
-- `DataFrame.pivot_wider`: Fix to sort new columns before applying `rename`
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
 - `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`

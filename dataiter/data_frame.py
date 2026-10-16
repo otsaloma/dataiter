@@ -1000,6 +1000,9 @@ class DataFrame(dict):
         corresponding values. `rename` is an optional function that you can use
         to e.g. lowercase the new column names or add a prefix or suffix.
 
+        New columns are ordered by first appearance of names, missing last.
+        Sort before pivoting if you need e.g. alphabetical order.
+
         Combinations of `ids` and `names` not found in the data will be missing
         values in the result. Follow up with :meth:`replace_na` to fill them
         in, e.g. with zero.
@@ -1020,7 +1023,7 @@ class DataFrame(dict):
             raise ValueError(f"Bad {ids=}")
         wide = self.select(*ids).unique(*ids)
         _, row = self._get_join_indices(wide, ids, ids)
-        unique, code = np.unique(self[names], return_inverse=True)
+        unique, first, code = np.unique(self[names], return_index=True, return_inverse=True)
         # Sort by name and row, keeping the first of duplicates.
         order = np.lexsort((row, code))
         order = order[row[order] > -1]
@@ -1029,8 +1032,8 @@ class DataFrame(dict):
         order = order[keep]
         bounds = np.searchsorted(code[order], np.arange(len(unique) + 1))
         column = self[values]
-        # Loop over names in sorted order, missing values last.
-        for i in np.argsort(Vector.fast(unique).is_na(), kind="stable"):
+        # Loop over names in order of first appearance, missing values last.
+        for i in np.lexsort((first, Vector.fast(unique).is_na())):
             indices = order[bounds[i]:bounds[i+1]]
             colname = rename(unique[i]) if rename else str(unique[i])
             if len(indices) == wide.nrow:
