@@ -39,7 +39,7 @@ from pathlib import Path
 def count_digits(value):
     if np.isnan(value): return 0, 0
     if math.isinf(value): return 0, 0
-    parts = np.format_float_positional(value).split(".")
+    parts = np.format_float_positional(abs(value)).split(".")
     n = len(parts[0].lstrip("0"))
     m = len(parts[1].rstrip("0"))
     return n, m

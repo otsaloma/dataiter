@@ -35,6 +35,8 @@ class TestUtil:
         assert util.count_digits(123.456) == (3, 3)
         assert util.count_digits(1e-1) == (0, 1)
         assert util.count_digits(1e-10) == (0, 10)
+        assert util.count_digits(-0.1) == (0, 1)
+        assert util.count_digits(-123.456) == (3, 3)
 
     def test_count_digits_special(self):
         assert util.count_digits(np.nan) == (0, 0)
