@@ -71,7 +71,9 @@ class ListOfDicts(list):
     attribute access should be more convenient and is the way recommended by
     dataiter. You'll still need to use the bracket notation for any keys that
     are not valid identifiers, such as keys with spaces, or ones that conflict
-    with dict methods, such as "items".
+    with dict methods, such as "items" or "pop". Note that assignment, e.g.
+    ``data[0].pop = ...``, still sets the key, but ``data[0].pop`` gives the
+    method.
 
     Items don't need to have the same keys. Methods that take keys as
     arguments, such as :meth:`sort` or :meth:`group_by`, treat missing keys

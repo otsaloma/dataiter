@@ -90,8 +90,10 @@ class DataFrame(dict):
     to ``data["x"]``. In most cases, attribute access should be more convenient
     and is the way recommended by dataiter. You'll still need to use the
     bracket notation for any column names that are not valid identifiers, such
-    as ones with spaces, or ones that conflict with dict methods, such as
-    "items".
+    as ones with spaces, or ones that conflict with methods or attributes of
+    the data frame, such as "count", "items" or "pop". Note that assignment,
+    e.g. ``data.count = ...``, still creates a column, but ``data.count`` gives
+    the method.
 
     DataFrame does not support indexing directly as the bracket notation is
     used to refer to dict keys, i.e. columns by name. If you want to index the
