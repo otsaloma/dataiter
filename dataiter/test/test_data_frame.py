@@ -853,6 +853,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.ncol == orig.ncol
         assert np.sum(data.downloads) == 18226489
 
+    def test_slice_boolean(self):
+        data = DataFrame(x=[1, 2, 3], y=[4, 5, 6], z=[7, 8, 9])
+        data = data.slice(rows=[True, False, True], cols=np.array([True, False, True]))
+        assert data.colnames == ["x", "z"]
+        assert data.x.tolist() == [1, 3]
+
     def test_slice_given_both(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.slice(rows=[0, 1, 2], cols=[0, 1, 2])
@@ -873,6 +879,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.nrow == 3
         assert data.ncol == orig.ncol
         assert data.colnames == orig.colnames
+
+    def test_slice_off_boolean(self):
+        data = DataFrame(x=[1, 2, 3], y=[4, 5, 6], z=[7, 8, 9])
+        data = data.slice_off(rows=[True, False, True], cols=np.array([True, False, True]))
+        assert data.colnames == ["y"]
+        assert data.y.tolist() == [5]
 
     def test_slice_off_given_both(self):
         orig = test.data_frame("vehicles.csv")

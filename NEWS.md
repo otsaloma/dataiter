@@ -9,6 +9,7 @@ New:
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `na` argument for additional missing value markers and `quote` argument to change or disable quoting
 - `DataFrame.replace_na`: New method
+- `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
 - `dt.floor`: New function
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `GeoJSON`: Read and write feature identifiers as column "id"

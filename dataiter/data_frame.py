@@ -932,23 +932,29 @@ class DataFrame(dict):
         self._check_dimensions()
         return self[next(iter(self))].nrow
 
+    def _parse_cols(self, cols):
+        cols = Vector.fast(cols)
+        if cols.is_boolean():
+            return self._parse_cols_from_boolean(cols)
+        return Vector.fast(cols, int)
+
     def _parse_cols_from_boolean(self, cols):
         cols = Vector.fast(cols, bool)
         if len(cols) != self.ncol:
             raise ValueError("Bad length for boolean cols")
         return Vector.fast(np.nonzero(cols)[0], int)
 
-    def _parse_cols_from_integer(self, cols):
-        return Vector.fast(cols, int)
+    def _parse_rows(self, rows):
+        rows = Vector.fast(rows)
+        if rows.is_boolean():
+            return self._parse_rows_from_boolean(rows)
+        return Vector.fast(rows, int)
 
     def _parse_rows_from_boolean(self, rows):
         rows = Vector.fast(rows, bool)
         if len(rows) != self.nrow:
             raise ValueError("Bad length for boolean rows")
         return Vector.fast(np.nonzero(rows)[0], int)
-
-    def _parse_rows_from_integer(self, rows):
-        return Vector.fast(rows, int)
 
     def pivot_longer(self, *, ids=None, names="name", values="value"):
         """
@@ -1297,8 +1303,9 @@ class DataFrame(dict):
         """
         Return a row-wise and/or column-wise subset of data frame.
 
-        Both `rows` and `cols` should be integer vectors correspoding to the
-        indices of the rows or columns to keep.
+        Both `rows` and `cols` should be either integer vectors of the indices
+        of the rows or columns to keep or boolean vectors with ``True`` for the
+        rows or columns to keep.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.slice(rows=[0, 1, 2])
@@ -1307,8 +1314,8 @@ class DataFrame(dict):
         """
         rows = np.arange(self.nrow) if rows is None else rows
         cols = np.arange(self.ncol) if cols is None else cols
-        rows = self._parse_rows_from_integer(rows)
-        cols = self._parse_cols_from_integer(cols)
+        rows = self._parse_rows(rows)
+        cols = self._parse_cols(cols)
         for colname in (self.colnames[x] for x in cols):
             yield colname, self[colname][rows]
 
@@ -1317,8 +1324,9 @@ class DataFrame(dict):
         """
         Return a row-wise and/or column-wise negative subset of data frame.
 
-        Both `rows` and `cols` should be integer vectors correspoding to the
-        indices of the rows or columns to drop.
+        Both `rows` and `cols` should be either integer vectors of the indices
+        of the rows or columns to drop or boolean vectors with ``True`` for the
+        rows or columns to drop.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.slice_off(rows=[0, 1, 2])
@@ -1327,8 +1335,8 @@ class DataFrame(dict):
         """
         rows = [] if rows is None else rows
         cols = [] if cols is None else cols
-        rows = self._parse_rows_from_integer(rows)
-        cols = self._parse_cols_from_integer(cols)
+        rows = self._parse_rows(rows)
+        cols = self._parse_cols(cols)
         for i, colname in enumerate(self.colnames):
             if i in cols: continue
             yield colname, np.delete(self[colname], rows)
