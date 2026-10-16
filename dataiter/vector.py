@@ -812,8 +812,10 @@ class Vector(np.ndarray):
             result[self.length - k:] = self.na_value
         return result
 
-    def sort(self, *, dir=1):
+    def sort(self, *, dir=1, **kwargs):
         """
+        sort(*, dir=1)
+
         Return elements in sorted order.
 
         `dir` is ``1`` for ascending sort, ``-1`` for descending. Missing
@@ -823,6 +825,10 @@ class Vector(np.ndarray):
         >>> vector.sort(dir=1)
         >>> vector.sort(dir=-1)
         """
+        if kwargs:
+            # np.sort calls ndarray.sort with these arguments.
+            raise TypeError(f"Unexpected arguments {list(kwargs)}, "
+                            "use vector.sort() instead of np.sort(vector)")
         if self.is_object():
             # Let's compare objects via str(x).
             lst = sorted(self, key=str, reverse=dir<0)
