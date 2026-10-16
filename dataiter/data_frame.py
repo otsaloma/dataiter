@@ -563,16 +563,25 @@ class DataFrame(dict):
 
     @classmethod
     @deco.new_from_generator
-    def from_arrow(cls, data, *, dtypes={}):
+    def from_arrow(cls, data, *, dtypes={}, timezone="keep"):
         """
         Return a new data frame from ``pyarrow.Table`` `data`.
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
+        `timezone` determines how to handle timestamps with a timezone, which
+        NumPy datetimes can't hold: ``"keep"`` to keep them in the timezone
+        they're stored in, ``"utc"`` to convert them to UTC.
         """
         import pyarrow as pa
         import pyarrow.compute as pc
+        if timezone not in ["keep", "utc"]:
+            raise ValueError(f"Bad {timezone=}")
         for name, column in zip(data.column_names, data.columns):
             req_dtype = dtypes.get(name, None)
+            if (timezone == "keep" and
+                pa.types.is_timestamp(column.type) and
+                column.type.tz is not None):
+                column = pc.local_timestamp(column)
             if pa.types.is_time(column.type):
                 # NumPy has no time of day type, use strings instead
                 # of an object column of datetime.time.
@@ -1262,7 +1271,8 @@ class DataFrame(dict):
         missing values, in addition to the defaults: blanks in all columns
         and common markers such as "NA" and "NULL" in non-string columns.
         `columns` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes.
+        optional dict mapping column names to NumPy datatypes. Timestamps with
+        UTC offsets, e.g. "2025-01-01T12:00:00+02:00", are converted to UTC.
         """
         import pyarrow as pa
         import pyarrow.compute as pc
@@ -1325,17 +1335,20 @@ class DataFrame(dict):
             return cls(**data)
 
     @classmethod
-    def read_parquet(cls, path, *, columns=[], dtypes={}):
+    def read_parquet(cls, path, *, columns=[], dtypes={}, timezone="keep"):
         """
         Return a new data frame from Parquet file `path`.
 
         `columns` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes.
+        optional dict mapping column names to NumPy datatypes. `timezone`
+        determines how to handle timestamps with a timezone, which NumPy
+        datetimes can't hold: ``"keep"`` to keep them in the timezone they're
+        stored in, ``"utc"`` to convert them to UTC.
         """
         import pyarrow.parquet as pq
         columns = columns or None
         data = pq.read_table(path, columns=columns)
-        return cls.from_arrow(data, dtypes=dtypes)
+        return cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
 
     @classmethod
     def read_pickle(cls, path):

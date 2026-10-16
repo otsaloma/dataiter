@@ -5,6 +5,7 @@ New:
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.explode`: New method to expand sequences or delimited strings to rows
 - `DataFrame.filter`, `DataFrame.filter_out`: Match any element if value is a sequence
+- `DataFrame.from_arrow`, `DataFrame.read_parquet`, `read_parquet`: Add `timezone` argument, by default keeping timestamps in the timezone they're stored in instead of converting to UTC
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped
 - `DataFrame.modify`: Evaluate arguments in order, allowing use of columns created by earlier ones

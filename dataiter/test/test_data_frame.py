@@ -417,6 +417,21 @@ class TestDataFrame:
         assert data.a.tolist() == ["16:06:00", "08:00:30"]
         assert data.b.tolist() == ["16:06", "08:00"]
 
+    def test_from_arrow_timezone(self):
+        import pyarrow as pa
+        values = [datetime.datetime(2025, 1, 1, 10), datetime.datetime(2025, 7, 1, 10), None]
+        a = pa.array(values, pa.timestamp("s", tz="Europe/Helsinki"))
+        b = pa.array(values, pa.timestamp("s", tz="+03:00"))
+        table = pa.table({"a": a, "b": b})
+        data = DataFrame.from_arrow(table)
+        assert data.a.tolist() == [datetime.datetime(2025, 1, 1, 12), datetime.datetime(2025, 7, 1, 13), None]
+        assert data.b.tolist() == [datetime.datetime(2025, 1, 1, 13), datetime.datetime(2025, 7, 1, 13), None]
+        data = DataFrame.from_arrow(table, timezone="utc")
+        assert data.a.tolist() == values
+        assert data.b.tolist() == values
+        with pytest.raises(ValueError):
+            DataFrame.from_arrow(table, timezone="local")
+
     def test_from_json(self):
         orig = test.data_frame("downloads.json")
         text = orig.to_json()
