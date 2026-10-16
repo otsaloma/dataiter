@@ -122,6 +122,10 @@ class TestListOfDicts:
         stat = data.aggregate(n=len, downloads=lambda x: sum(x.pluck("downloads")))
         assert stat == [{"n": len(data), "downloads": sum(data.pluck("downloads"))}]
 
+    def test_aggregate_ungrouped_empty(self):
+        data = ListOfDicts([])
+        assert data.aggregate(n=len, x=lambda x: x[0].x) == []
+
     def test_aggregate_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
         stat = orig.group_by("b").aggregate(n=len)

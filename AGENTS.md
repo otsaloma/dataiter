@@ -61,3 +61,15 @@ Do not complain about these or spend too much time investigating.
   method chaining. Rejected alternative: sharing unchanged columns as
   read-only with copy-on-write (would prevent in-place edits of
   columns).
+
+- Ungrouped `DataFrame.aggregate`, `DataFrame.count` and
+  `ListOfDicts.aggregate` return no rows for empty data, unlike e.g.
+  dplyr's `summarise`, which returns one row. This is by design: no
+  data, no rows, and functions are never called on empty data. Many
+  common functions raise for empty input, e.g. `max`, indexing the first
+  element or a weighted average, and others give NumPy warnings, e.g.
+  `mean`, which would break aggregating subsets of data in a loop.
+  Similarly, grouped aggregation of empty data gives float64 columns, as
+  data types can't be known without calling the functions;
+  `DataFrame.rbind` ignores data types of empty data frames to deal with
+  this.
