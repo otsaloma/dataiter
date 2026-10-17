@@ -603,6 +603,13 @@ class TestDataFrame:
         b = DataFrame(i=[2**62, 0], j=[2**62, -2**62], k=[-2**62, 2**62], y=[1, 2])
         assert a.left_join(b, "i", "j", "k").y.tolist() == [2, None, 1]
 
+    def test_left_join_by_columns_strings(self):
+        # Test both self smaller and larger than other.
+        a = DataFrame(s=["a", "b", "c"], t=["x", "x", "x"], x=[1, 2, 3])
+        b = DataFrame(s=["b", "a", "d", "c", "e"], t=["x", "x", "x", "y", "x"], y=[1, 2, 3, 4, 5])
+        assert a.left_join(b, "s", "t").y.tolist() == [2, 1, None]
+        assert b.left_join(a, "s", "t").x.tolist() == [2, 1, None, None, None]
+
     def test_left_join_by_columns_objects(self):
         a = DataFrame(o=Vector([1, "a", None], object), k=[1, 1, 1])
         b = DataFrame(o=Vector(["a", 1, None], object), k=[1, 1, 1], y=[1, 2, 3])

@@ -785,37 +785,47 @@ class DataFrame(dict):
 
     def _get_join_codes(self, other, by1, by2):
         # Return integer codes of combinations of by1 in self and by2 in
-        # other, -1 for rows of self with missing values. Other is expected
+        # other, negative for rows that can't match. Other is expected
         # to have no missing values in by2.
         def get_codes(a, b):
-            ab = np.concatenate([a, b])
-            dtype = ab.dtype
-            if dtype.kind in "biumM" and dtype != np.uint64 and len(ab) > 0:
-                ab = ab.astype(np.int64)
-                lo, hi = int(ab.min()), int(ab.max())
-                if hi - lo < 2**62:
-                    return ab - lo, hi - lo + 1
-            if dtype.kind in "fc":
+            # Return codes for a and b concatenated, -1 for values that can't
+            # match, and the amount of distinct non-negative codes.
+            if a.dtype.kind in "biufcmM" and b.dtype.kind in "biufcmM":
+                ab = np.concatenate([a, b])
+                if ab.dtype.kind in "biumM" and ab.dtype != np.uint64 and len(ab) > 0:
+                    ab = ab.astype(np.int64)
+                    lo, hi = int(ab.min()), int(ab.max())
+                    if hi - lo < 2**62:
+                        return ab - lo, hi - lo + 1
                 codes = np.unique(ab, return_inverse=True)[1]
-            else:
-                # Not np.unique, which can't sort e.g. None and mixed types.
-                groups = {}
-                codes = (groups.setdefault(x, len(groups)) for x in np.ndarray.tolist(ab))
-                codes = np.fromiter(codes, np.int64, count=len(ab))
-            return codes, int(codes.max(initial=0)) + 1
+                return codes, int(codes.max(initial=0)) + 1
+            # Build groups from the smaller side, since inserting into a dict
+            # is slower than looking up from it. Not np.unique, which can't
+            # sort e.g. None and mixed types.
+            small, large = (a, b) if len(a) < len(b) else (b, a)
+            groups = {}
+            small = np.fromiter((groups.setdefault(x, len(groups)) for x in np.ndarray.tolist(small)),
+                                np.int64, count=len(small))
+            large = np.fromiter(map(groups.get, np.ndarray.tolist(large), itertools.repeat(-1)),
+                                np.int64, count=len(large))
+            codes = np.concatenate([small, large] if len(a) < len(b) else [large, small])
+            return codes, len(groups)
         na = np.zeros(self.nrow, bool)
         for colname in by1:
             na |= self[colname].is_na()
         codes, size = np.zeros(np.count_nonzero(~na) + other.nrow, np.int64), 1
+        miss = np.zeros(len(codes), bool)
         for colname1, colname2 in zip(by1, by2):
             column, n = get_codes(self[colname1][~na], other[colname2])
+            miss |= column < 0
             if size * n >= 2**62:
                 codes = np.unique(codes, return_inverse=True)[1]
                 size = int(codes.max(initial=0)) + 1
-            codes, size = codes * n + column, size * n
+            codes, size = codes * n + np.maximum(column, 0), size * n
         a = np.full(self.nrow, -1, np.int64)
-        a[~na] = codes[:len(codes) - other.nrow]
-        return a, codes[len(codes) - other.nrow:]
+        a[~na] = np.where(miss, -1, codes)[:len(codes) - other.nrow]
+        b = np.where(miss, -2, codes)[len(codes) - other.nrow:]
+        return a, b
 
     def _get_join_indices(self, other, by1, by2, multiple="first"):
         # Return aligned indices of rows in self and their matches in other.
@@ -836,9 +846,12 @@ class DataFrame(dict):
         # in other in stable sorted order, i.e. first and last in order.
         a, b = self[by1[0]], keys[by2[0]]
         index = keys._index_
-        if len(by1) > 1:
-            a, b = self._get_join_codes(keys, by1, by2)
-        if a.dtype.kind in "biufmM" and b.dtype.kind in "biufmM":
+        is_numeric = [self[x].dtype.kind in "biufcmM" and keys[y].dtype.kind in "biufcmM"
+                      for x, y in zip(by1, by2)]
+        if any(is_numeric):
+            # Without any numeric columns, the below dict of tuples is faster.
+            if len(by1) > 1:
+                a, b = self._get_join_codes(keys, by1, by2)
             order = np.argsort(b, kind="stable")
             left = np.searchsorted(b[order], a, "left")
             right = np.searchsorted(b[order], a, "right")
@@ -847,15 +860,15 @@ class DataFrame(dict):
             # into a dict is slower than looking up from it.
             groups = {}
             if self.nrow < keys.nrow:
-                code = (groups.setdefault(x, len(groups)) for x in a)
+                code = (groups.setdefault(x, len(groups)) for x in zip(*[self[x] for x in by1]))
                 code = np.fromiter(code, int, count=self.nrow)
-                group = map(lambda x: groups.get(x, -1), b)
+                group = map(lambda x: groups.get(x, -1), zip(*[keys[x] for x in by2]))
                 group = np.fromiter(group, int, count=keys.nrow)
                 index, group = index[group > -1], group[group > -1]
             else:
-                group = (groups.setdefault(x, len(groups)) for x in b)
+                group = (groups.setdefault(x, len(groups)) for x in zip(*[keys[x] for x in by2]))
                 group = np.fromiter(group, int, count=keys.nrow)
-                code = map(lambda x: groups.get(x, -1), a)
+                code = map(lambda x: groups.get(x, -1), zip(*[self[x] for x in by1]))
                 code = np.fromiter(code, int, count=self.nrow)
             order = np.argsort(group, kind="stable")
             counts = np.bincount(group, minlength=len(groups))
