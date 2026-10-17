@@ -32,9 +32,11 @@ Previously you have used the following datasets. Try something different
 this time. Find preferably something with 1–10M rows. Focus primarily on
 tabular data and the `DataFrame` class.
 
+- Backblaze hard drive stats (daily SMART snapshots)
 - Chicago crimes
 - Citi Bike GBFS station feeds
 - Citi Bike trips
+- Eurostat weekly deaths by NUTS region, regional population and GEO codelist
 - FEC campaign finance bulk data (individual and committee contributions, committees, candidates)
 - Helsinki city bikes
 - IMDb non-commercial datasets
