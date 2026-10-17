@@ -982,9 +982,18 @@ class DataFrame(dict):
         complicated conditional cases that are difficult to express in
         vectorized form.
 
+        .. warning:: Deprecated since 1.5, please use a list comprehension
+                     instead, e.g. ``[function(data, i) for i in
+                     range(data.nrow)]``, or :meth:`to_list_of_dicts` and
+                     :meth:`.ListOfDicts.map`.
+
         >>> data = di.read_csv("data/listings-reviews.csv")
         >>> data.map(lambda x, i: (x.reviews[i], x.rating[i]))[:3]
         """
+        if not getattr(DataFrame.map, "warning_shown", False):
+            print("Warning: DataFrame.map is deprecated, please use a list comprehension instead")
+            print("e.g. [function(data, i) for i in range(data.nrow)]")
+            DataFrame.map.warning_shown = True
         return [function(self, i) for i in range(self.nrow)]
 
     @deco.new_from_generator

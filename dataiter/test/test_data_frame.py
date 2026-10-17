@@ -624,6 +624,13 @@ class TestDataFrame:
         y = [x**2 for x in data.hwy]
         assert x == y
 
+    def test_map_deprecated(self, capsys):
+        data = DataFrame(x=[1, 2])
+        with patch.object(DataFrame.map, "warning_shown", False, create=True):
+            data.map(lambda x, i: x.x[i])
+            data.map(lambda x, i: x.x[i])
+        assert capsys.readouterr().out.count("deprecated") == 1
+
     def test_map_columns(self):
         orig = DataFrame(a=[1, None], b=["", "x"], c=[1, 2])
         data = orig.map_columns(lambda x: x.is_float(), lambda x: x.replace_na(0).as_integer())

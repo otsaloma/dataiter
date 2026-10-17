@@ -10,6 +10,7 @@ New:
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`, `read_parquet`: Add `timezone` argument, by default keeping timestamps in the timezone they're stored in instead of converting to UTC
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped
+- `DataFrame.map`: Deprecated in favor of a list comprehension or `to_list_of_dicts().map`
 - `DataFrame.map_columns`: New method to apply a function to columns matching a predicate, e.g. `of_type`
 - `DataFrame.modify`: Evaluate arguments in order, allowing use of columns created by earlier ones
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
