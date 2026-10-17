@@ -760,6 +760,18 @@ class TestDataFrame:
         wide = long.pivot_wider(ids="id", names="m", values="value", rename=lambda x: f"m{x}")
         assert wide.colnames == ["id", "m2", "m10", "m1"]
 
+    def test_pivot_wider_missing_ids(self):
+        long = DataFrame(id=["x", "", ""], m=["a", "a", "b"], value=[1, 2, 3])
+        wide = long.pivot_wider(ids="id", names="m", values="value")
+        assert wide.id.tolist() == ["x", None]
+        assert wide.a.tolist() == [1, 2]
+        assert wide.b.tolist() == [None, 3]
+        long = DataFrame(id=[2.0, None, 1.0, None], m=["a", "a", "a", "b"], value=[1, 2, 3, 4])
+        wide = long.pivot_wider(ids="id", names="m", values="value")
+        assert wide.id.tolist() == [2.0, None, 1.0]
+        assert wide.a.tolist() == [1, 2, 3]
+        assert wide.b.tolist() == [None, 4, None]
+
     def test_pivot_wider_order(self):
         long = DataFrame(id=[1, 1, 1, 2, 2], m=["Mar", "", "Jan", "Feb", "Jan"], value=[1, 2, 3, 4, 5])
         wide = long.pivot_wider(ids="id", names="m", values="value")

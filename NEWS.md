@@ -51,7 +51,7 @@ Speed-ups:
 - `DataFrame.aggregate`: Speed up helper functions, e.g. `mode`, dropping missing values in columns not handled by Numba, e.g. strings
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.pivot_longer`: Speed up, especially with many columns
-- `DataFrame.pivot_wider`: Speed up, especially with many names
+- `DataFrame.pivot_wider`: Speed up, especially with many ids or names
 - `DataFrame.sort`: Speed up, especially for strings
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_csv`, `DataFrame.write_parquet`: Speed up strings with PyArrow 26 or later
@@ -85,6 +85,7 @@ Fixes:
 - `DataFrame.pivot_longer`: Keep input row order instead of sorting by `ids`, which mixed rows with duplicate `ids`
 - `DataFrame.pivot_longer`: Use common data type of values if all pivoted columns are of the same kind, e.g. numbers, instead of object
 - `DataFrame.pivot_wider`: Fix error with non-string names
+- `DataFrame.pivot_wider`: Fix values of rows with missing `ids` becoming missing
 - `DataFrame.pivot_wider`: Raise `ValueError` for duplicate combinations of `ids` and `names` instead of silently keeping the first
 - `DataFrame.print_memory_use`, `DataFrame.print_na_counts`, `ListOfDicts.print_memory_use`: Print all rows regardless of `PRINT_MAX_ROWS`
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list

@@ -1200,11 +1200,21 @@ class DataFrame(dict):
         ids = util.sequencify(ids)
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
-        wide = self.select(*ids).unique(*ids)
-        _, row = self._get_join_indices(wide, ids, ids)
+        # Map rows to rows of wide via sorted groups, since unlike
+        # joins, this treats missing values in ids as equal.
+        keys = self.select(*ids)
+        keys._index_ = np.arange(self.nrow)
+        keys = keys.sort(**dict.fromkeys(ids, 1))
+        starts = keys._get_group_starts(*ids)
+        # Sort is stable, so the first row of each group is its first occurrence.
+        firsts = keys._index_[starts]
+        rank = np.empty(len(starts), int)
+        rank[np.argsort(firsts)] = np.arange(len(starts))
+        row = np.empty(self.nrow, int)
+        row[keys._index_] = np.repeat(rank, np.diff(starts, append=self.nrow))
+        wide = self.select(*ids).slice(firsts.sort())
         unique, first, code = np.unique(self[names], return_index=True, return_inverse=True)
         order = np.lexsort((row, code))
-        order = order[row[order] > -1]
         unique_rows = np.ones(len(order), bool)
         unique_rows[1:] = (code[order][1:] != code[order][:-1]) | (row[order][1:] != row[order][:-1])
         if not unique_rows.all():
