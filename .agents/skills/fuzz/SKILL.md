@@ -37,8 +37,10 @@ tabular data and the `DataFrame` class.
 - Citi Bike trips
 - Helsinki city bikes
 - IMDb non-commercial datasets
+- Lichess puzzle database
 - MBTA GTFS schedule
 - MovieLens 25M
+- NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
 - NYC taxi
 - Open-Meteo hourly weather
