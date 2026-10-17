@@ -488,6 +488,24 @@ class TestListOfDicts:
         assert list(data[0].keys()) == ["make", "model"]
         assert list(data[100].keys()) == ["make", "model"]
 
+    def test_read_csv_colnames(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("Postal Code,Count\n02134,1\n", "utf-8")
+        data = ListOfDicts.read_csv(path, colnames=["zip", "n"], types={"n": int})
+        assert data == [{"zip": "02134", "n": 1}]
+
+    def test_read_csv_colnames_count(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("1,2,3\n", "utf-8")
+        with pytest.raises(ValueError, match="Expected 2 columns, got 3"):
+            ListOfDicts.read_csv(path, header=False, colnames=["a", "b"])
+
+    def test_read_csv_colnames_no_header(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("02134,1\n", "utf-8")
+        data = ListOfDicts.read_csv(path, header=False, colnames=["zip", "n"])
+        assert data == [{"zip": "02134", "n": "1"}]
+
     def test_read_csv_na(self, tmp_path):
         path = tmp_path / "test.csv"
         path.write_text("a,b\n1,x\n\\N,\\N\n", "utf-8")

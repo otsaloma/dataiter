@@ -900,6 +900,28 @@ class TestDataFrame:
         data = DataFrame.read_csv(path, header=False, dtypes={"b": str})
         assert data.b.tolist() == ["007"]
 
+    def test_read_csv_colnames(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text('"Postal\nCode",Count\n02134,1\n', "utf-8")
+        data = DataFrame.read_csv(path, colnames=["zip", "n"], select=["n", "zip"], dtypes={"zip": str})
+        assert data.colnames == ["n", "zip"]
+        assert data.zip.tolist() == ["02134"]
+        assert data.n.tolist() == [1]
+
+    def test_read_csv_colnames_count(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("1,2,3\n", "utf-8")
+        with pytest.raises(ValueError, match="Expected 2 columns, got 3"):
+            DataFrame.read_csv(path, header=False, colnames=["a", "b"])
+
+    def test_read_csv_colnames_no_header(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("02134,1\n", "utf-8")
+        data = DataFrame.read_csv(path, header=False, colnames=["zip", "n"], dtypes={"zip": str})
+        assert data.colnames == ["zip", "n"]
+        assert data.zip.tolist() == ["02134"]
+        assert data.n.tolist() == [1]
+
     def test_read_csv_missing_blank(self, tmp_path):
         text = """
 int,float,string,bool,date

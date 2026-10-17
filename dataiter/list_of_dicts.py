@@ -727,35 +727,43 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], select=[], types={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, colnames=[], na=[], select=[], types={}):
         """
         Return a new list from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         `quote` is the character used to quote values, ``None`` to disable
-        quoting. `na` is an optional string or list of strings to read as
-        ``None``. `select` is an optional list of keys to limit to. `types`
-        is an optional dict mapping keys to datatypes.
+        quoting. `header` is whether the first row contains keys. `colnames`
+        is an optional list of keys to use instead of those in the header row
+        or, if there's no header row, instead of the default "a", "b", "c",
+        etc. `na` is an optional string or list of strings to read as
+        ``None``. `select` is an optional list of keys to limit to and `types`
+        an optional dict mapping keys to datatypes, both using `colnames` if
+        given.
         """
         na = {na} if isinstance(na, str) else set(na)
         quoting = csv.QUOTE_MINIMAL if quote else csv.QUOTE_NONE
         with util.xopen(path, "rt", encoding=encoding) as f:
             rows = list(csv.reader(f, dialect="unix", delimiter=sep, quotechar=quote or None, quoting=quoting))
             if not rows: return cls([])
-            colnames = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
+            names = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
+            if colnames:
+                if len(colnames) != len(names):
+                    raise ValueError(f"Expected {len(colnames)} columns, got {len(names)}")
+                names = list(colnames)
             if select:
                 # Drop all keys except the requested ones.
-                drop = [i for i in range(len(rows[0])) if colnames[i] not in select]
+                drop = [i for i in range(len(rows[0])) if names[i] not in select]
                 for row in rows:
                     for i in reversed(drop):
                         del row[i]
-                colnames = select
+                names = select
             if na:
                 rows = [[None if x in na else x for x in row] for row in rows]
             for key in types:
-                if key not in colnames:
+                if key not in names:
                     raise KeyError(key)
-            data = cls(dict(zip(colnames, x)) for x in rows)
+            data = cls(dict(zip(names, x)) for x in rows)
             for key, type in types.items():
                 for item in data:
                     if item.get(key) is not None:

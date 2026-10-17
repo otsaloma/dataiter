@@ -14,6 +14,7 @@ New:
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
 - `DataFrame.pivot_wider`: Order new columns by first appearance instead of sorting, as tidyr does
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `na` argument for additional missing value markers and `quote` argument to change or disable quoting
+- `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `colnames` argument to replace column names in the header row or, without one, the default "a", "b", "c", etc.
 - `DataFrame.replace_na`: New method
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero

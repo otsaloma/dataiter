@@ -1292,18 +1292,22 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], select=[], dtypes={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, colnames=[], na=[], select=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         `quote` is the character used to quote values, ``None`` to disable
-        quoting. `na` is an optional string or list of strings to read as
-        missing values, in addition to the defaults: blanks in all columns
-        and common markers such as "NA" and "NULL" in non-string columns.
-        `select` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes. Timestamps with
-        UTC offsets, e.g. "2025-01-01T12:00:00+02:00", are converted to UTC.
+        quoting. `header` is whether the first row contains column names.
+        `colnames` is an optional list of column names to use instead of those
+        in the header row or, if there's no header row, instead of the default
+        "a", "b", "c", etc. `na` is an optional string or list of strings to
+        read as missing values, in addition to the defaults: blanks in all
+        columns and common markers such as "NA" and "NULL" in non-string
+        columns. `select` is an optional list of columns to limit to and
+        `dtypes` an optional dict mapping column names to NumPy datatypes,
+        both using `colnames` if given. Timestamps with UTC offsets, e.g.
+        "2025-01-01T12:00:00+02:00", are converted to UTC.
         """
         import pyarrow as pa
         import pyarrow.compute as pc
@@ -1312,7 +1316,7 @@ class DataFrame(dict):
         # Strings need to be requested already at parse time,
         # otherwise e.g. leading zeros would be lost to type guessing.
         column_types = {k: pa.string() for k, v in dtypes.items() if Vector.fast([], v).is_string()}
-        if not header and (select or column_types):
+        if not header and not colnames and (select or column_types):
             # Translate our generated column names to pyarrow's f0, f1, ...
             names = list(util.yield_colnames())
             to_arrow = {x: f"f{names.index(x)}" for x in [*select, *column_types] if x in names}
@@ -1321,13 +1325,18 @@ class DataFrame(dict):
         with util.xopen(path, "rb") as f:
             table = csv.read_csv(
                 f,
-                read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
+                read_options=csv.ReadOptions(encoding=encoding,
+                                             column_names=colnames,
+                                             autogenerate_column_names=not header and not colnames,
+                                             # Unlike skip_rows, this counts parsed rows,
+                                             # handling line breaks in quoted names.
+                                             skip_rows_after_names=int(header and bool(colnames))),
                 parse_options=csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True),
                 convert_options=csv.ConvertOptions(include_columns=select,
                                                    column_types=column_types,
                                                    null_values=csv.ConvertOptions().null_values + na))
 
-        if not header:
+        if not header and not colnames:
             # Translate pyarrow's f0, f1, ... back to our generated column names.
             indices = [int(x[1:]) for x in table.column_names]
             names = util.generate_colnames(max(indices, default=-1) + 1)
