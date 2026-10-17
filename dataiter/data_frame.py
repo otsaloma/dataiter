@@ -1144,8 +1144,9 @@ class DataFrame(dict):
         Sort before pivoting if you need e.g. alphabetical order.
 
         Combinations of `ids` and `names` not found in the data will be missing
-        values in the result. Follow up with :meth:`replace_na` to fill them
-        in, e.g. with zero.
+        values in the result, which upcasts integers to float. Follow up with
+        :meth:`replace_na` to fill them in, e.g. with zero, and if needed,
+        convert back to integer with :meth:`.Vector.as_integer`.
 
         >>> long = di.read_csv("data/downloads.csv")
         >>> long = long.sort(date=1)
