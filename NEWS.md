@@ -21,6 +21,7 @@ New:
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `dt.total_seconds`, `Vector.dt.total_seconds`: New function to convert timedeltas to seconds
 - `GeoJSON`: Read and write feature identifiers as column "id"
+- `ListOfDicts.count`: New method, replacing `list.count`, to count items grouped by keys, as `DataFrame.count` does
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
 - `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped, ungrouped

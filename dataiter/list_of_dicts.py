@@ -240,6 +240,23 @@ class ListOfDicts(list):
         """
         return self.__copy__()
 
+    def count(self, *keys):
+        """
+        Return item counts grouped by `keys`.
+
+        The count key is always "n". If `keys` include "n", that key is
+        renamed by appending underscores, e.g. "n_".
+
+        >>> data = di.read_json("data/listings.json")
+        >>> data.count("hood")
+        """
+        to_from_pairs = {"n": "_n_"}
+        if "n" in keys:
+            name = "n_"
+            while name in keys: name += "_"
+            to_from_pairs[name] = "n"
+        return self.group_by(*keys).aggregate(_n_=len).rename(**to_from_pairs)
+
     def deepcopy(self):
         """
         Return a deep copy.

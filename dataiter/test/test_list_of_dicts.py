@@ -179,6 +179,26 @@ class TestListOfDicts:
         assert b._predecessor is a
         assert c._predecessor is b
 
+    def test_count(self):
+        data = test.list_of_dicts("listings.json")
+        stat = data.count("hood")
+        assert stat.pluck("hood") == sorted(set(data.pluck("hood")))
+        assert sum(stat.pluck("n")) == len(data)
+
+    def test_count_n_exists(self):
+        data = test.list_of_dicts("listings.json")
+        stat1 = data.count("zipcode")
+        stat2 = data.count("zipcode").count("n")
+        assert list(stat1.keys()) == ["zipcode", "n"]
+        assert list(stat2.keys()) == ["n_", "n"]
+        assert len(stat2) == len(set(stat1.pluck("n")))
+        assert sum(stat2.pluck("n")) == len(stat1)
+
+    def test_count_ungrouped(self):
+        data = test.list_of_dicts("listings.json")
+        assert data.count() == [{"n": len(data)}]
+        assert ListOfDicts([]).count() == []
+
     def test_deepcopy(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.deepcopy()

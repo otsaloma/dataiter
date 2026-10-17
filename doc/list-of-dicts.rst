@@ -10,6 +10,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.append`
 :meth:`~dataiter.ListOfDicts.clear`
 :meth:`~dataiter.ListOfDicts.copy`
+:meth:`~dataiter.ListOfDicts.count`
 :meth:`~dataiter.ListOfDicts.deepcopy`
 :meth:`~dataiter.ListOfDicts.drop_na`
 :meth:`~dataiter.ListOfDicts.expand_grid`
