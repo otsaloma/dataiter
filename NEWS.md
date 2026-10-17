@@ -130,6 +130,7 @@ Fixes:
 - `Vector.range`: Fix to ignore missing values of datetimes and strings
 - `Vector.rank`: Fix error when all values are missing
 - `Vector.rank`: Fix missing values getting the same rank as tied values ranked last when `method="min"`
+- `Vector.replace_na`: Fix error for value of a different type if there are no missing values, e.g. `""` for integers
 - `Vector.sort`: Raise `TypeError` for `np.sort(vector)` with a hint to use `vector.sort()` instead, previously a confusing error about unexpected argument "axis"
 
 # 2026-10-05: Dataiter 1.4

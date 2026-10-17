@@ -648,6 +648,10 @@ class TestVector:
         a = Vector([1, 2, 3, None])
         assert a.replace_na(0).tolist() == [1, 2, 3, 0]
 
+    def test_replace_na_no_missing(self):
+        a = Vector([1, 2, 3])
+        assert a.replace_na("").tolist() == [1, 2, 3]
+
     def test_sample(self):
         a = Vector([1, 2, 3, 4, 5])
         assert np.all(a.sample(3).is_in(a))

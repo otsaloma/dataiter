@@ -814,7 +814,9 @@ class Vector(np.ndarray):
         >>> vector.replace_na(0)
         """
         vector = self.copy()
-        vector[vector.is_na()] = value
+        na = vector.is_na()
+        if na.any():
+            vector[na] = value
         return vector
 
     def sample(self, n=None):
