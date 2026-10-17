@@ -113,6 +113,7 @@ Fixes:
 - `ListOfDicts.aggregate`: Return single item when ungrouped, or none for empty data
 - `ListOfDicts.drop_na`: Use all keys if none given instead of dropping nothing
 - `ListOfDicts.group_by`: Fix to group only returned copy
+- `ListOfDicts.read_csv`: Fix values ending up under wrong keys if `select` isn't in file order and raise `KeyError` for keys not found
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
 - `ListOfDicts.tail`: Fix returning all items for `n=0`
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item

@@ -523,6 +523,15 @@ class TestListOfDicts:
         assert data.pluck("a") == ['"x']
         assert data.pluck("b") == ["1"]
 
+    def test_read_csv_select_order(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("a,b,c\n1,2,3\n", "utf-8")
+        data = ListOfDicts.read_csv(path, select=["c", "a"])
+        assert data == [{"c": "3", "a": "1"}]
+        assert list(data[0].keys()) == ["c", "a"]
+        with pytest.raises(KeyError, match="d"):
+            ListOfDicts.read_csv(path, select=["a", "d"])
+
     def test_read_csv_types(self):
         path = str(test.get_data_path("vehicles.csv"))
         types = {"hwy": int, "cty": int}

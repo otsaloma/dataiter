@@ -752,12 +752,12 @@ class ListOfDicts(list):
                     raise ValueError(f"Expected {len(colnames)} columns, got {len(names)}")
                 names = list(colnames)
             if select:
-                # Drop all keys except the requested ones.
-                drop = [i for i in range(len(rows[0])) if names[i] not in select]
-                for row in rows:
-                    for i in reversed(drop):
-                        del row[i]
-                names = select
+                for key in select:
+                    if key not in names:
+                        raise KeyError(key)
+                indices = [names.index(x) for x in select]
+                rows = [[row[i] for i in indices] for row in rows]
+                names = list(select)
             if na:
                 rows = [[None if x in na else x for x in row] for row in rows]
             for key in types:
