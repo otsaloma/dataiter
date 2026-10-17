@@ -54,14 +54,6 @@ def obsoletes(function):
         return value
     return wrapper
 
-def ungroups(function):
-    @functools.wraps(function)
-    def wrapper(self, *args, **kwargs):
-        value = function(self, *args, **kwargs)
-        value._group_keys = ()
-        return value
-    return wrapper
-
 def tuplefy(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):

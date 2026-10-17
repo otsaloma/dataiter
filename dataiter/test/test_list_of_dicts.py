@@ -324,6 +324,11 @@ class TestListOfDicts:
         data = orig.full_join(other, "b")
         assert data.pluck("c") == [1, None, None, 2]
 
+    def test_group_by_next_operation_only(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        assert data.group_by("g").sort(x=-1).head(1).pluck("x") == [5]
+        assert data.group_by("g").deepcopy().head(1).pluck("x") == [1]
+
     def test_head(self):
         data = test.list_of_dicts("downloads.json")
         assert data.head(10) == data[:10]
