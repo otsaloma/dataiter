@@ -590,9 +590,16 @@ class Vector(np.ndarray):
         """
         Apply `function` element-wise and return a new vector.
 
+        `args` and `kwargs` are passed to `function`. To recode values with
+        a mapping, use its ``get`` method, optionally with a default.
+
         >>> import math
         >>> vector = di.Vector(range(10))
         >>> vector.map(math.pow, 2)
+        >>> # Recode using a lookup dict
+        >>> vector = di.Vector(["a", "b", "c"])
+        >>> vector.map({"a": 1, "b": 2}.get)
+        >>> vector.map({"a": 1, "b": 2}.get, 0)
         """
         dtype = self._map_input_dtype(dtype)
         return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
