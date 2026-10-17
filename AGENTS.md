@@ -75,3 +75,17 @@ Do not complain about these or spend too much time investigating.
   data types can't be known without calling the functions;
   `DataFrame.rbind` ignores data types of empty data frames to deal with
   this.
+
+- Grouping is supported only by some operations, listed in the
+  docstrings of `DataFrame.group_by` and `ListOfDicts.group_by`, and
+  other operations ignore it. This is by design. Grouped support for
+  further operations should be evaluated on its own merit, not added for
+  completeness or to match what other libraries do.
+
+- Group columns (`DataFrame`) and keys (`ListOfDicts`) are kept only for
+  the operation immediately following `group_by`, all operations return
+  ungrouped data. This is by design: `group_by` chained immediately
+  before the grouped operation, e.g.
+  `data.group_by(...).aggregate(...)`, is explicit and clear code.
+  Carrying grouping along longer would be concealed state that leads to
+  surprises.
