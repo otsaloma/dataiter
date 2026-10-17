@@ -585,6 +585,9 @@ class DataFrame(dict):
         import pyarrow.compute as pc
         if timezone not in ["keep", "utc"]:
             raise ValueError(f"Bad {timezone=}")
+        for name in dtypes:
+            if name not in data.column_names:
+                raise KeyError(name)
         for name, column in zip(data.column_names, data.columns):
             req_dtype = dtypes.get(name, None)
             if (timezone == "keep" and
@@ -681,6 +684,9 @@ class DataFrame(dict):
 
         `dtypes` is an optional dict mapping column names to NumPy datatypes.
         """
+        for name in dtypes:
+            if name not in data.columns:
+                raise KeyError(name)
         for name in data.columns:
             req_dtype = dtypes.get(name, None)
             na = data[name].isna().to_numpy(copy=True)

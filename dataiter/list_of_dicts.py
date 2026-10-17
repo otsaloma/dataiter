@@ -751,6 +751,9 @@ class ListOfDicts(list):
                 colnames = keys
             if na:
                 rows = [[None if x in na else x for x in row] for row in rows]
+            for key in types:
+                if key not in colnames:
+                    raise KeyError(key)
             data = cls(dict(zip(colnames, x)) for x in rows)
             for key, type in types.items():
                 for item in data:

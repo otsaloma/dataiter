@@ -22,6 +22,7 @@
 
 import datetime
 import numpy as np
+import pytest
 
 from attd import AttributeDict
 from dataiter import ListOfDicts
@@ -512,6 +513,12 @@ class TestListOfDicts:
         assert isinstance(data[0].cty, int)
         assert isinstance(data[100].hwy, int)
         assert isinstance(data[100].cty, int)
+
+    def test_read_csv_types_missing(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("zip,n\n02134,1\n", "utf-8")
+        with pytest.raises(KeyError, match="zipcode"):
+            ListOfDicts.read_csv(path, types={"zipcode": str})
 
     def test_read_json(self):
         path = str(test.get_data_path("downloads.json"))

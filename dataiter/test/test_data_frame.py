@@ -387,6 +387,11 @@ class TestDataFrame:
         data = DataFrame.from_arrow(data)
         assert data == orig
 
+    def test_from_arrow_dtypes_missing(self):
+        data = DataFrame(a=[1]).to_arrow()
+        with pytest.raises(KeyError, match="b"):
+            DataFrame.from_arrow(data, dtypes={"b": str})
+
     def test_from_arrow_decimal(self):
         import decimal
         import pyarrow as pa
@@ -475,6 +480,11 @@ class TestDataFrame:
         assert data.shape[1] == orig.ncol
         data = DataFrame.from_pandas(data)
         assert data == orig
+
+    def test_from_pandas_dtypes_missing(self):
+        data = DataFrame(a=[1]).to_pandas()
+        with pytest.raises(KeyError, match="b"):
+            DataFrame.from_pandas(data, dtypes={"b": str})
 
     def test_from_pandas_date(self):
         orig = test.data_frame("downloads.csv")
@@ -845,6 +855,16 @@ class TestDataFrame:
         path.write_text("zip\n02134\n", "utf-8")
         data = DataFrame.read_csv(path, dtypes={"zip": str})
         assert data.zip.tolist() == ["02134"]
+
+    def test_read_csv_dtypes_missing(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("zip,n\n02134,1\n", "utf-8")
+        with pytest.raises(KeyError, match="zipcode"):
+            DataFrame.read_csv(path, dtypes={"zipcode": str})
+        with pytest.raises(KeyError, match="zip"):
+            DataFrame.read_csv(path, columns=["n"], dtypes={"zip": str})
+        with pytest.raises(KeyError, match="zip"):
+            DataFrame.read_csv(path, header=False, dtypes={"zip": str})
 
     def test_read_csv_fractional_seconds(self, tmp_path):
         path = tmp_path / "test.csv"
