@@ -346,6 +346,23 @@ class TestDataFrame:
         assert data.filter(make=makes) == expected
         assert data.filter(make=iter(makes)) == expected
 
+    def test_filter_group_wise(self):
+        data = DataFrame(g=[1, 3, 3, 2, 3, 2], x=[1, 5, 9, 2, 3, 7])
+        data = data.group_by("g").filter(lambda x: x.x == x.x.max())
+        assert data.g.tolist() == [1, 3, 2]
+        assert data.x.tolist() == [1, 9, 7]
+
+    def test_filter_group_wise_scalar(self):
+        data = DataFrame(g=[1, 3, 3, 2, 3, 2], x=[1, 5, 9, 2, 3, 7])
+        data = data.group_by("g").filter(lambda x: x.nrow > 1)
+        assert data.g.tolist() == [3, 3, 2, 3, 2]
+
+    def test_filter_out_group_wise(self):
+        data = DataFrame(g=[1, 3, 3, 2, 3, 2], x=[1, 5, 9, 2, 3, 7])
+        data = data.group_by("g").filter_out(lambda x: x.x == x.x.max())
+        assert data.g.tolist() == [3, 2, 3]
+        assert data.x.tolist() == [5, 2, 3]
+
     def test_filter_out_given_rows(self):
         data = test.data_frame("vehicles.csv")
         data = data.filter_out(data.make == "Saab")

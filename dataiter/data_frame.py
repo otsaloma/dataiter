@@ -529,10 +529,17 @@ class DataFrame(dict):
         >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
         >>> data.filter(lambda x: (x.hood == "Manhattan") & (x.guests == 2))
         >>> data.filter(hood="Manhattan", guests=2)
+
+        If the data frame is grouped, a `rows` function is applied to
+        group-wise subsets of the data frame.
+
+        >>> # Listings priced over the mean of their neighbourhood
+        >>> data.group_by("hood").filter(lambda x: x.price > x.price.mean())
         """
         if rows is not None:
             if callable(rows):
-                rows = rows(self)
+                rows = (self._modify_group_wise(_rows_=rows)["_rows_"]
+                        if self._group_colnames else rows(self))
         elif colname_value_pairs:
             rows = self._match_pairs(colname_value_pairs)
         rows = self._parse_rows_from_boolean(rows)
@@ -544,23 +551,16 @@ class DataFrame(dict):
         """
         Return rows that don't match condition.
 
-        Filtering can be done by either `rows` or `colname_value_pairs`. `rows`
-        can be either a boolean vector or a function that receives the data
-        frame as argument and returns a boolean vector. The latter is
-        especially useful in a method chaining context where you don't have
-        direct access to the data frame in question. Alternatively,
-        `colname_value_pairs` provides a shorthand to check against a fixed
-        value, or if `value` is a sequence, such as a list, against any of its
-        elements. See the example below of equivalent filtering all three ways.
+        `filter_out` is the inverse of :meth:`filter`, see it for details on
+        the arguments, which are the same.
 
         >>> data = di.read_csv("data/listings.csv")
-        >>> data.filter_out(data.hood == "Manhattan")
-        >>> data.filter_out(lambda x: x.hood == "Manhattan")
         >>> data.filter_out(hood="Manhattan")
         """
         if rows is not None:
             if callable(rows):
-                rows = rows(self)
+                rows = (self._modify_group_wise(_rows_=rows)["_rows_"]
+                        if self._group_colnames else rows(self))
         elif colname_value_pairs:
             rows = self._match_pairs(colname_value_pairs)
         rows = self._parse_rows_from_boolean(rows)
@@ -846,6 +846,8 @@ class DataFrame(dict):
         Supported grouped operations:
 
         * :meth:`aggregate`
+        * :meth:`filter`
+        * :meth:`filter_out`
         * :meth:`head`
         * :meth:`modify`
         * :meth:`tail`
@@ -1009,31 +1011,36 @@ class DataFrame(dict):
         for colname, column in self.items():
             yield colname, column.copy()
         if self._group_colnames:
-            group_colnames = self._group_colnames
-            data = self.__class__(self)
-            data._index_ = np.arange(data.nrow)
-            data = data.sort(**dict.fromkeys(group_colnames, 1))
-            restore_indices = np.argsort(data.pop("_index_"))
-            starts = data._get_group_starts(*group_colnames)
-            ends = np.append(starts[1:], data.nrow)
-            # Contiguous slices make cheap NumPy views instead of copies.
-            # Create them lazily, as holding hundreds of thousands
-            # of views alive at once makes garbage collection slow.
-            slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
-            # Without rows, call functions once with an empty group
-            # to get a column of the correct data type.
-            slices = slices or [slice(0, 0)]
-            for colname, function in colname_value_pairs.items():
-                if not callable(function):
-                    raise ValueError(f"{colname} argument not callable")
-                column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
-                data[colname] = np.concatenate(column)
-                yield colname, data[colname][restore_indices]
+            yield from self._modify_group_wise(**colname_value_pairs).items()
         else:
             data = self.copy()
             for colname, value in colname_value_pairs.items():
                 data[colname] = value(data) if callable(value) else value
                 yield colname, data[colname].copy()
+
+    def _modify_group_wise(self, **colname_function_pairs):
+        group_colnames = self._group_colnames
+        data = self.__class__(self)
+        data._index_ = np.arange(data.nrow)
+        data = data.sort(**dict.fromkeys(group_colnames, 1))
+        restore_indices = np.argsort(data.pop("_index_"))
+        starts = data._get_group_starts(*group_colnames)
+        ends = np.append(starts[1:], data.nrow)
+        # Contiguous slices make cheap NumPy views instead of copies.
+        # Create them lazily, as holding hundreds of thousands
+        # of views alive at once makes garbage collection slow.
+        slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
+        # Without rows, call functions once with an empty group
+        # to get a column of the correct data type.
+        slices = slices or [slice(0, 0)]
+        columns = {}
+        for colname, function in colname_function_pairs.items():
+            if not callable(function):
+                raise ValueError(f"{colname} argument not callable")
+            column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
+            data[colname] = np.concatenate(column)
+            columns[colname] = data[colname][restore_indices]
+        return columns
 
     @property
     def ncol(self):
