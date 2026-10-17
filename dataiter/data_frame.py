@@ -1138,7 +1138,7 @@ class DataFrame(dict):
             raise ValueError("Bad length for boolean rows")
         return Vector.fast(np.nonzero(rows)[0], int)
 
-    def pivot_longer(self, *, ids=None, names="name", values="value"):
+    def pivot_longer(self, *, ids, names="name", values="value"):
         """
         Pivot data from wide to long format.
 

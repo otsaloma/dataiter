@@ -83,6 +83,7 @@ Fixes:
 - `DataFrame.full_join`, `DataFrame.left_join`, `DataFrame.pivot_wider`: Keep data type of integer and boolean columns if no missing values are added
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.head`, `DataFrame.tail`: Return all rows except the last or first `-n` for negative `n` instead of none
+- `DataFrame.pivot_longer`: Make `ids` a required argument, previously defaulting to `None`, which gave a confusing error
 - `DataFrame.pivot_longer`: Keep input row order instead of sorting by `ids`, which mixed rows with duplicate `ids`
 - `DataFrame.pivot_longer`: Use common data type of values if all pivoted columns are of the same kind, e.g. numbers, instead of object
 - `DataFrame.pivot_wider`: Fix error with non-string names
