@@ -1,6 +1,7 @@
 # PENDING: Dataiter 1.5
 
 New:
+- `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
 - `all`, `any`: Add `drop_na` argument, default true
 - `DataFrame.expand_grid`: New classmethod
 - `DataFrame.explode`: New method to expand sequences or delimited strings to rows
@@ -86,7 +87,7 @@ Fixes:
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
 - `DataFrame.rbind`: Ignore data types of columns without values, fixing errors e.g. combining a blank column read from a CSV file with strings
 - `DataFrame.rbind`: Name the column and its data types in the error for incompatible types
-- `DataFrame.read_csv`: Fix `columns` and string `dtypes` with `header=False`
+- `DataFrame.read_csv`: Fix `select` and string `dtypes` with `header=False`
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
 - `DataFrame.read_csv`: Fix reading `.xz` compressed files
 - `DataFrame.print_memory_use`, `Vector.get_memory_use`: Include contents of long strings, previously left out

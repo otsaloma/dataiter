@@ -378,20 +378,21 @@ class ListOfDicts(list):
                     yield item
 
     @classmethod
-    def from_json(cls, string, *, keys=[], types={}, **kwargs):
+    def from_json(cls, string, *, select=[], types={}, **kwargs):
         """
         Return a new list of dicts from JSON `string`.
 
-        `keys` is an optional list of keys to limit to. `types` is an optional
-        dict mapping keys to datatypes. `kwargs` are passed to ``json.load``.
+        `select` is an optional list of keys to limit to. `types` is an
+        optional dict mapping keys to datatypes. `kwargs` are passed to
+        ``json.load``.
         """
         data = json.loads(string, **kwargs)
         if not isinstance(data, list):
             raise TypeError("Not a list")
-        if keys:
-            keys = set(keys)
+        if select:
+            select = set(select)
             for item in data:
-                for key in set(item) - keys:
+                for key in set(item) - select:
                     del item[key]
         for key, type in types.items():
             for item in data:
@@ -726,15 +727,15 @@ class ListOfDicts(list):
             print(f"... {key}: {n} ({pc:.1f}%)")
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], keys=[], types={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], select=[], types={}):
         """
         Return a new list from CSV file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
         `quote` is the character used to quote values, ``None`` to disable
         quoting. `na` is an optional string or list of strings to read as
-        ``None``. `keys` is an optional list of keys to limit to. `types` is
-        an optional dict mapping keys to datatypes.
+        ``None``. `select` is an optional list of keys to limit to. `types`
+        is an optional dict mapping keys to datatypes.
         """
         na = {na} if isinstance(na, str) else set(na)
         quoting = csv.QUOTE_MINIMAL if quote else csv.QUOTE_NONE
@@ -742,13 +743,13 @@ class ListOfDicts(list):
             rows = list(csv.reader(f, dialect="unix", delimiter=sep, quotechar=quote or None, quoting=quoting))
             if not rows: return cls([])
             colnames = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
-            if keys:
+            if select:
                 # Drop all keys except the requested ones.
-                drop = [i for i in range(len(rows[0])) if colnames[i] not in keys]
+                drop = [i for i in range(len(rows[0])) if colnames[i] not in select]
                 for row in rows:
                     for i in reversed(drop):
                         del row[i]
-                colnames = keys
+                colnames = select
             if na:
                 rows = [[None if x in na else x for x in row] for row in rows]
             for key in types:
@@ -762,16 +763,17 @@ class ListOfDicts(list):
             return data
 
     @classmethod
-    def read_json(cls, path, *, encoding="utf-8", keys=[], types={}, **kwargs):
+    def read_json(cls, path, *, encoding="utf-8", select=[], types={}, **kwargs):
         """
         Return a new list from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-        `keys` is an optional list of keys to limit to. `types` is an optional
-        dict mapping keys to datatypes. `kwargs` are passed to ``json.load``.
+        `select` is an optional list of keys to limit to. `types` is an
+        optional dict mapping keys to datatypes. `kwargs` are passed to
+        ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
-            return cls.from_json(f.read(), keys=keys, types=types, **kwargs)
+            return cls.from_json(f.read(), select=select, types=types, **kwargs)
 
     @classmethod
     def read_pickle(cls, path):

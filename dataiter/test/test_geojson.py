@@ -33,9 +33,9 @@ class TestGeoJSON:
         assert data.nrow == 233
         assert data.ncol == 3
 
-    def test_read_columns(self):
+    def test_read_select(self):
         path = test.get_data_path(self.path)
-        data = GeoJSON.read(path, columns=["neighbourhood"])
+        data = GeoJSON.read(path, select=["neighbourhood"])
         assert data.colnames == ["neighbourhood", "geometry"]
 
     def test_read_dtypes(self):

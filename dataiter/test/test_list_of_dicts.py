@@ -482,9 +482,9 @@ class TestListOfDicts:
         assert len(data) == 33442
         assert all(len(x) == 12 for x in data)
 
-    def test_read_csv_keys(self):
+    def test_read_csv_select(self):
         path = str(test.get_data_path("vehicles.csv"))
-        data = ListOfDicts.read_csv(path, keys=["make", "model"])
+        data = ListOfDicts.read_csv(path, select=["make", "model"])
         assert list(data[0].keys()) == ["make", "model"]
         assert list(data[100].keys()) == ["make", "model"]
 
@@ -526,9 +526,9 @@ class TestListOfDicts:
         assert len(data) == 905
         assert all(len(x) == 3 for x in data)
 
-    def test_read_json_keys(self):
+    def test_read_json_select(self):
         path = str(test.get_data_path("downloads.json"))
-        data = ListOfDicts.read_json(path, keys=["date", "downloads"])
+        data = ListOfDicts.read_json(path, select=["date", "downloads"])
         assert list(data[0].keys()) == ["date", "downloads"]
         assert list(data[100].keys()) == ["date", "downloads"]
 

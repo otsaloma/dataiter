@@ -655,11 +655,11 @@ class DataFrame(dict):
             yield name, column
 
     @classmethod
-    def from_json(cls, string, *, columns=[], dtypes={}, **kwargs):
+    def from_json(cls, string, *, select=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON `string`.
 
-        `columns` is an optional list of columns to limit to. `dtypes` is an
+        `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
         """
@@ -669,8 +669,8 @@ class DataFrame(dict):
         if not isinstance(data, list):
             raise TypeError("Not a list")
         keys = util.unique_keys(itertools.chain(*data))
-        if columns:
-            keys = [x for x in keys if x in columns]
+        if select:
+            keys = [x for x in keys if x in select]
         data = {k: [x.get(k, None) for x in data] for k in keys}
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
@@ -1292,7 +1292,7 @@ class DataFrame(dict):
             yield colname, total
 
     @classmethod
-    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], columns=[], dtypes={}):
+    def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], select=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
 
@@ -1301,7 +1301,7 @@ class DataFrame(dict):
         quoting. `na` is an optional string or list of strings to read as
         missing values, in addition to the defaults: blanks in all columns
         and common markers such as "NA" and "NULL" in non-string columns.
-        `columns` is an optional list of columns to limit to. `dtypes` is an
+        `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. Timestamps with
         UTC offsets, e.g. "2025-01-01T12:00:00+02:00", are converted to UTC.
         """
@@ -1312,18 +1312,18 @@ class DataFrame(dict):
         # Strings need to be requested already at parse time,
         # otherwise e.g. leading zeros would be lost to type guessing.
         column_types = {k: pa.string() for k, v in dtypes.items() if Vector.fast([], v).is_string()}
-        if not header and (columns or column_types):
+        if not header and (select or column_types):
             # Translate our generated column names to pyarrow's f0, f1, ...
             names = list(util.yield_colnames())
-            to_arrow = {x: f"f{names.index(x)}" for x in [*columns, *column_types] if x in names}
-            columns = [to_arrow.get(x, x) for x in columns]
+            to_arrow = {x: f"f{names.index(x)}" for x in [*select, *column_types] if x in names}
+            select = [to_arrow.get(x, x) for x in select]
             column_types = {to_arrow.get(k, k): v for k, v in column_types.items()}
         with util.xopen(path, "rb") as f:
             table = csv.read_csv(
                 f,
                 read_options=csv.ReadOptions(encoding=encoding, autogenerate_column_names=not header),
                 parse_options=csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True),
-                convert_options=csv.ConvertOptions(include_columns=columns,
+                convert_options=csv.ConvertOptions(include_columns=select,
                                                    column_types=column_types,
                                                    null_values=csv.ConvertOptions().null_values + na))
 
@@ -1342,17 +1342,17 @@ class DataFrame(dict):
         return cls.from_arrow(table, dtypes=dtypes)
 
     @classmethod
-    def read_json(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
+    def read_json(cls, path, *, encoding="utf-8", select=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-        `columns` is an optional list of columns to limit to. `dtypes` is an
+        `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
-            return cls.from_json(f.read(), columns=columns, dtypes=dtypes, **kwargs)
+            return cls.from_json(f.read(), select=select, dtypes=dtypes, **kwargs)
 
     @classmethod
     def read_npz(cls, path, *, allow_pickle=True):
@@ -1366,19 +1366,18 @@ class DataFrame(dict):
             return cls(**data)
 
     @classmethod
-    def read_parquet(cls, path, *, columns=[], dtypes={}, timezone="keep"):
+    def read_parquet(cls, path, *, select=[], dtypes={}, timezone="keep"):
         """
         Return a new data frame from Parquet file `path`.
 
-        `columns` is an optional list of columns to limit to. `dtypes` is an
+        `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `timezone`
         determines how to handle timestamps with a timezone, which NumPy
         datetimes can't hold: ``"keep"`` to keep them in the timezone they're
         stored in, ``"utc"`` to convert them to UTC.
         """
         import pyarrow.parquet as pq
-        columns = columns or None
-        data = pq.read_table(path, columns=columns)
+        data = pq.read_table(path, columns=select or None)
         return cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
 
     @classmethod

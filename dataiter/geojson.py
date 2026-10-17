@@ -82,12 +82,12 @@ class GeoJSON(DataFrame):
             raise TypeError(f"Property type {type(value)} of {key!r} not supported")
 
     @classmethod
-    def read(cls, path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
+    def read(cls, path, *, encoding="utf-8", select=[], dtypes={}, **kwargs):
         """
         Return data from GeoJSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
-        `columns` is an optional list of columns to limit to. `dtypes` is an
+        `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
         """
@@ -102,13 +102,13 @@ class GeoJSON(DataFrame):
         if has_ids and "id" in data:
             print("Warning: Ignoring feature key 'id' in favor of property 'id'")
             has_ids = False
-        if columns:
-            data = {k: v for k, v in data.items() if k in columns}
+        if select:
+            data = {k: v for k, v in data.items() if k in select}
         for feature in raw.features:
             for key in data:
                 value = feature.properties.get(key, None)
                 data[key].append(value)
-        if has_ids and (not columns or "id" in columns):
+        if has_ids and (not select or "id" in select):
             data = {"id": [x.get("id") for x in raw.features], **data}
         data["geometry"] = [x.geometry for x in raw.features]
         for name, dtype in dtypes.items():

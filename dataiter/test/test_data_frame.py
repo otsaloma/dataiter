@@ -838,9 +838,9 @@ class TestDataFrame:
         assert data.nrow == 33442
         assert data.ncol == 12
 
-    def test_read_csv_columns(self):
+    def test_read_csv_select(self):
         path = test.get_data_path("vehicles.csv")
-        data = DataFrame.read_csv(path, columns=["make", "model"])
+        data = DataFrame.read_csv(path, select=["make", "model"])
         assert data.colnames == ["make", "model"]
 
     def test_read_csv_dtypes(self):
@@ -862,7 +862,7 @@ class TestDataFrame:
         with pytest.raises(KeyError, match="zipcode"):
             DataFrame.read_csv(path, dtypes={"zipcode": str})
         with pytest.raises(KeyError, match="zip"):
-            DataFrame.read_csv(path, columns=["n"], dtypes={"zip": str})
+            DataFrame.read_csv(path, select=["n"], dtypes={"zip": str})
         with pytest.raises(KeyError, match="zip"):
             DataFrame.read_csv(path, header=False, dtypes={"zip": str})
 
@@ -887,10 +887,10 @@ class TestDataFrame:
         assert data.time.is_string()
         assert data.time.tolist() == ["16:06", "08:00"]
 
-    def test_read_csv_no_header_columns(self, tmp_path):
+    def test_read_csv_no_header_select(self, tmp_path):
         path = tmp_path / "test.csv"
         path.write_text("1,2,3\n", "utf-8")
-        data = DataFrame.read_csv(path, header=False, columns=["c", "a"])
+        data = DataFrame.read_csv(path, header=False, select=["c", "a"])
         assert data.colnames == ["c", "a"]
         assert data.c.tolist() == [3]
 
@@ -996,9 +996,9 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.nrow == 905
         assert data.ncol == 3
 
-    def test_read_json_columns(self):
+    def test_read_json_select(self):
         path = str(test.get_data_path("vehicles.json"))
-        data = DataFrame.read_json(path, columns=["make", "model"])
+        data = DataFrame.read_json(path, select=["make", "model"])
         assert data.colnames == ["make", "model"]
 
     def test_read_json_dtypes(self):

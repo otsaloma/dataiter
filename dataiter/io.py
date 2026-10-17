@@ -25,35 +25,35 @@ from dataiter import GeoJSON
 from dataiter import ListOfDicts
 from dataiter import util
 
-def read_csv(path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], columns=[], dtypes={}):
+def read_csv(path, *, encoding="utf-8", sep=",", quote='"', header=True, na=[], select=[], dtypes={}):
     return DataFrame.read_csv(path,
                               encoding=encoding,
                               sep=sep,
                               quote=quote,
                               header=header,
                               na=na,
-                              columns=columns,
+                              select=select,
                               dtypes=dtypes)
 
-def read_geojson(path, *, encoding="utf-8", columns=[], dtypes={}, **kwargs):
+def read_geojson(path, *, encoding="utf-8", select=[], dtypes={}, **kwargs):
     return GeoJSON.read(path,
                         encoding=encoding,
-                        columns=columns,
+                        select=select,
                         dtypes=dtypes,
                         **kwargs)
 
-def read_json(path, *, encoding="utf-8", keys=[], types={}, **kwargs):
+def read_json(path, *, encoding="utf-8", select=[], types={}, **kwargs):
     return ListOfDicts.read_json(path,
                                  encoding=encoding,
-                                 keys=keys,
+                                 select=select,
                                  types=types,
                                  **kwargs)
 
 def read_npz(path, *, allow_pickle=True):
     return DataFrame.read_npz(path, allow_pickle=allow_pickle)
 
-def read_parquet(path, *, columns=[], dtypes={}, timezone="keep"):
-    return DataFrame.read_parquet(path, columns=columns, dtypes=dtypes, timezone=timezone)
+def read_parquet(path, *, select=[], dtypes={}, timezone="keep"):
+    return DataFrame.read_parquet(path, select=select, dtypes=dtypes, timezone=timezone)
 
 read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)
 read_geojson.__doc__ = util.format_alias_doc(read_geojson, GeoJSON.read)
