@@ -701,11 +701,13 @@ def yield_groups(x, group, drop_na):
     # Groups must be contiguous for this to work!
     i = 0
     n = len(x)
+    if drop_na:
+        valid = ~x.is_na()
     for j in range(1, n + 1):
         if j < n and group[j] == group[i]: continue
         xij = x[i:j]
         if drop_na:
-            xij = xij[~xij.is_na()]
+            xij = xij[valid[i:j]]
         yield xij
         i = j
 
