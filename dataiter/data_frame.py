@@ -1227,8 +1227,10 @@ class DataFrame(dict):
         corresponding values. `rename` is an optional function that you can use
         to e.g. lowercase the new column names or add a prefix or suffix.
 
-        New columns are ordered by first appearance of names, missing last.
-        Sort before pivoting if you need e.g. alphabetical order.
+        New columns are ordered by first appearance of names. Sort before
+        pivoting if you need e.g. alphabetical order. Missing values in names
+        raise ``ValueError``, replace them with :meth:`replace_na` or drop them
+        with :meth:`drop_na` before pivoting.
 
         Each combination of `ids` and `names` should occur only once, otherwise
         ``ValueError`` is raised. If you have multiple values per combination,
@@ -1254,6 +1256,9 @@ class DataFrame(dict):
         ids = util.sequencify(ids)
         if not all(x in self for x in ids):
             raise ValueError(f"Bad {ids=}")
+        if self[names].is_na().any():
+            raise ValueError(f"Missing values in {names!r}, either replace them "
+                             "with data.replace_na(...) or drop them with data.drop_na(...)")
         # Map rows to rows of wide via sorted groups, since unlike
         # joins, this treats missing values in ids as equal.
         keys = self.select(*ids)
@@ -1279,8 +1284,7 @@ class DataFrame(dict):
                              "or drop duplicates with data.unique(...)")
         bounds = np.searchsorted(code[order], np.arange(len(unique) + 1))
         column = self[values]
-        # Loop over names in order of first appearance, missing values last.
-        for i in np.lexsort((first, Vector.fast(unique).is_na())):
+        for i in np.argsort(first):
             indices = order[bounds[i]:bounds[i+1]]
             colname = rename(unique[i]) if rename else str(unique[i])
             if len(indices) == wide.nrow:

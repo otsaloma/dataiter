@@ -791,6 +791,14 @@ class TestDataFrame:
         wide = long.pivot_wider(ids="id", names="m", values="value", rename=lambda x: f"m{x}")
         assert wide.colnames == ["id", "m2", "m10", "m1"]
 
+    def test_pivot_wider_missing_names(self):
+        long = DataFrame(id=[1, 1], m=["a", ""], value=[1, 2])
+        with pytest.raises(ValueError):
+            long.pivot_wider(ids="id", names="m", values="value")
+        long = DataFrame(id=[1, 1], m=[1.0, np.nan], value=[1, 2])
+        with pytest.raises(ValueError):
+            long.pivot_wider(ids="id", names="m", values="value")
+
     def test_pivot_wider_missing_ids(self):
         long = DataFrame(id=["x", "", ""], m=["a", "a", "b"], value=[1, 2, 3])
         wide = long.pivot_wider(ids="id", names="m", values="value")
@@ -804,9 +812,9 @@ class TestDataFrame:
         assert wide.b.tolist() == [None, 4, None]
 
     def test_pivot_wider_order(self):
-        long = DataFrame(id=[1, 1, 1, 2, 2], m=["Mar", "", "Jan", "Feb", "Jan"], value=[1, 2, 3, 4, 5])
+        long = DataFrame(id=[1, 1, 2, 2], m=["Mar", "Jan", "Feb", "Jan"], value=[1, 2, 3, 4])
         wide = long.pivot_wider(ids="id", names="m", values="value")
-        assert wide.colnames == ["id", "Mar", "Jan", "Feb", ""]
+        assert wide.colnames == ["id", "Mar", "Jan", "Feb"]
 
     def test_pop(self):
         data = test.data_frame("vehicles.csv")
