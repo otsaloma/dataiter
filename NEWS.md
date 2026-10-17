@@ -117,7 +117,9 @@ Fixes:
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified
 - `ListOfDicts.tail`: Fix returning all items for `n=0`
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
+- `first`, `last`, `max`, `min`, `nth`: Fix error for string vectors
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
+- `mode`: Return Python builtin types for vectors, as other aggregation functions do, instead of NumPy scalars
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector`: Create a float vector from all NaN values instead of an object vector of `None`

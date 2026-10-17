@@ -267,6 +267,10 @@ def is_na_numba(x):
         na[i] = is_na_item_numba(x[i])
     return na
 
+def item(x):
+    # NumPy returns strings as str, other scalars as NumPy generics.
+    return x.item() if isinstance(x, np.generic) else x
+
 def last(x, *, drop_na=False):
     """
     Return the last element of `x`.
@@ -307,7 +311,7 @@ def max(x, *, drop_na=True):
         aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
-    return np.amax(x).item() if len(x) >= 1 else x.na_value
+    return item(np.amax(x)) if len(x) >= 1 else x.na_value
 
 @composite
 def mean(x, *, drop_na=True):
@@ -409,7 +413,7 @@ def min(x, *, drop_na=True):
         aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
-    return np.amin(x).item() if len(x) >= 1 else x.na_value
+    return item(np.amin(x)) if len(x) >= 1 else x.na_value
 
 @composite
 def mode(x, *, drop_na=True):
@@ -437,7 +441,7 @@ def mode(x, *, drop_na=True):
         aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
-    return statistics.mode(x) if len(x) >= 1 else x.na_value
+    return item(statistics.mode(x)) if len(x) >= 1 else x.na_value
 
 @deco.listify
 def mode_apply(x, group, drop_na):
@@ -500,7 +504,7 @@ def nth(x, index, *, drop_na=False):
         return aggregate
     x = handle_na(x, drop_na)
     try:
-        return x[index].item()
+        return item(x[index])
     except IndexError:
         return x.na_value
 

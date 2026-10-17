@@ -269,6 +269,7 @@ class TestAggregate:
     def test_first(self):
         assert first(Vector([1, 2, 3])) == 1
         assert first(Vector([NaN, 1, 2]), drop_na=True) == 1
+        assert first(Vector(["a", "b"])) == "a"
 
     def test_first_nan(self):
         assert np.isnan(first(EMPTY_VECTOR))
@@ -277,6 +278,7 @@ class TestAggregate:
     def test_last(self):
         assert last(Vector([1, 2, 3])) == 3
         assert last(Vector([1, 2, NaN]), drop_na=True) == 2
+        assert last(Vector(["a", "b"])) == "b"
 
     def test_last_nan(self):
         assert np.isnan(last(EMPTY_VECTOR))
@@ -285,6 +287,7 @@ class TestAggregate:
     def test_max(self):
         assert max(Vector([3, 2, 1])) == 3
         assert max(Vector([3, 2, NaN])) == 3
+        assert max(Vector(["b", "c", "a"])) == "c"
 
     def test_max_nan(self):
         assert np.isnan(max(EMPTY_VECTOR))
@@ -315,6 +318,7 @@ class TestAggregate:
     def test_min(self):
         assert min(Vector([3, 2, 1])) == 1
         assert min(Vector([3, 2, NaN])) == 2
+        assert min(Vector(["b", "c", "a"])) == "a"
 
     def test_min_nan(self):
         assert np.isnan(min(EMPTY_VECTOR))
@@ -326,6 +330,7 @@ class TestAggregate:
         assert mode(Vector([1, 2, 2])) == 2
         assert mode(Vector([1, 2, 2, NaN])) == 2
         assert mode(Vector([1, 2, 2, NaN]), drop_na=False) == 2
+        assert type(mode(Vector([1.5]))) is float
 
     def test_mode_nan(self):
         assert np.isnan(mode(EMPTY_VECTOR))
@@ -334,6 +339,7 @@ class TestAggregate:
     def test_nth(self):
         assert nth(Vector([1, 2, 3]), 0) == 1
         assert nth(Vector([NaN, 1, 2]), 0, drop_na=True) == 1
+        assert nth(Vector(["a", "b"]), 1) == "b"
 
     def test_nth_nan(self):
         assert np.isnan(nth(EMPTY_VECTOR, 0))
