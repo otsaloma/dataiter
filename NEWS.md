@@ -22,7 +22,7 @@ New:
 - `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.expand_grid`: New classmethod
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
-- `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped
+- `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped, ungrouped
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
@@ -99,6 +99,7 @@ Fixes:
 - `ListOfDicts.*_join`: Fix matching on missing values in `by` keys
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both
 - `ListOfDicts.aggregate`: Return single item when ungrouped, or none for empty data
+- `ListOfDicts.aggregate`: Return ungrouped list, previously staying grouped and making e.g. a following `head` operate group-wise
 - `ListOfDicts.drop_na`: Use all keys if none given instead of dropping nothing
 - `ListOfDicts.group_by`: Fix to group only returned copy
 - `ListOfDicts.rename`, `ListOfDicts.select`: Fix false warning about shared dicts being modified

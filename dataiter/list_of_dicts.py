@@ -150,6 +150,7 @@ class ListOfDicts(list):
     def __str__(self):
         return self.to_string()
 
+    @deco.ungroups
     @deco.new_independent_from_generator
     def aggregate(self, **key_function_pairs):
         """
@@ -433,6 +434,8 @@ class ListOfDicts(list):
         * :meth:`aggregate`
         * :meth:`head`
         * :meth:`tail`
+
+        These return an ungrouped list. Other operations keep the grouping.
         """
         data = self.copy()
         data._group_keys = tuple(keys)
@@ -444,6 +447,7 @@ class ListOfDicts(list):
         groups = itertools.groupby(data, key=lambda x: tuple(map(x.get, by)))
         return [list(group) for _, group in groups]
 
+    @deco.ungroups
     def head(self, n=None):
         """
         Return the first `n` items.
@@ -900,6 +904,7 @@ class ListOfDicts(list):
         by2 = [x if isinstance(x, str) else x[1] for x in by]
         return by1, by2
 
+    @deco.ungroups
     def tail(self, n=None):
         """
         Return the last `n` items.

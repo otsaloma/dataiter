@@ -126,6 +126,11 @@ class TestListOfDicts:
         data = ListOfDicts([])
         assert data.aggregate(n=len, x=lambda x: x[0].x) == []
 
+    def test_aggregate_ungroups(self):
+        data = ListOfDicts(dict(g=g) for g in [2, 1, 2, 3, 2])
+        stat = data.group_by("g").aggregate(n=len).sort(n=-1).head(1)
+        assert stat == [{"g": 2, "n": 3}]
+
     def test_aggregate_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
         stat = orig.group_by("b").aggregate(n=len)
@@ -308,6 +313,10 @@ class TestListOfDicts:
         data = data.group_by("g").head(2)
         assert data.pluck("g") == [1, 1, 2, 2]
         assert data.pluck("x") == [2, 4, 1, 3]
+
+    def test_head_group_wise_ungroups(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        assert data.group_by("g").head(2).head(1).pluck("x") == [2]
 
     def test_head_negative(self):
         data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
@@ -659,6 +668,10 @@ class TestListOfDicts:
         data = data.group_by("g").tail(2)
         assert data.pluck("g") == [1, 1, 2, 2]
         assert data.pluck("x") == [2, 4, 3, 5]
+
+    def test_tail_group_wise_ungroups(self):
+        data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
+        assert data.group_by("g").tail(2).tail(1).pluck("x") == [5]
 
     def test_tail_negative(self):
         data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
