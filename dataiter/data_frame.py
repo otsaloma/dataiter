@@ -1143,6 +1143,10 @@ class DataFrame(dict):
         New columns are ordered by first appearance of names, missing last.
         Sort before pivoting if you need e.g. alphabetical order.
 
+        Each combination of `ids` and `names` should occur only once, otherwise
+        ``ValueError`` is raised. If you have multiple values per combination,
+        first either :meth:`aggregate` or drop duplicates with :meth:`unique`.
+
         Combinations of `ids` and `names` not found in the data will be missing
         values in the result, which upcasts integers to float. Follow up with
         :meth:`replace_na` to fill them in, e.g. with zero, and if needed,
@@ -1165,12 +1169,16 @@ class DataFrame(dict):
         wide = self.select(*ids).unique(*ids)
         _, row = self._get_join_indices(wide, ids, ids)
         unique, first, code = np.unique(self[names], return_index=True, return_inverse=True)
-        # Sort by name and row, keeping the first of duplicates.
         order = np.lexsort((row, code))
         order = order[row[order] > -1]
-        keep = np.ones(len(order), bool)
-        keep[1:] = (code[order][1:] != code[order][:-1]) | (row[order][1:] != row[order][:-1])
-        order = order[keep]
+        unique_rows = np.ones(len(order), bool)
+        unique_rows[1:] = (code[order][1:] != code[order][:-1]) | (row[order][1:] != row[order][:-1])
+        if not unique_rows.all():
+            i = order[~unique_rows][0]
+            example = {x: self[x][[i]].tolist()[0] for x in [*ids, names]}
+            raise ValueError(f"Values not unique by ids and names, e.g. {example}, "
+                             "either aggregate with group_by(...).aggregate(...) "
+                             "or drop duplicates with data.unique(...)")
         bounds = np.searchsorted(code[order], np.arange(len(unique) + 1))
         column = self[values]
         # Loop over names in order of first appearance, missing values last.

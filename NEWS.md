@@ -79,6 +79,7 @@ Fixes:
 - `DataFrame.pivot_longer`: Keep input row order instead of sorting by `ids`, which mixed rows with duplicate `ids`
 - `DataFrame.pivot_longer`: Use common data type of values if all pivoted columns are of the same kind, e.g. numbers, instead of object
 - `DataFrame.pivot_wider`: Fix error with non-string names
+- `DataFrame.pivot_wider`: Raise `ValueError` for duplicate combinations of `ids` and `names` instead of silently keeping the first
 - `DataFrame.print_memory_use`, `DataFrame.print_na_counts`, `ListOfDicts.print_memory_use`: Print all rows regardless of `PRINT_MAX_ROWS`
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
