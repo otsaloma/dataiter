@@ -932,6 +932,12 @@ class Vector(np.ndarray):
         Additionally, ``contains`` is available to check whether strings
         contain a substring.
 
+        Note that, unlike :attr:`re`, NumPy functions and operators treat
+        missing values, i.e. blank strings, as regular strings, e.g. ``x +
+        "-"`` gives ``"-"`` and ``x.str.str_len()`` gives ``0`` for missing
+        values. If you need to keep missing values missing, use e.g.
+        ``np.where(x.is_na(), "", x + "-")``.
+
         >>> x = di.Vector(["asdf", "1234"])
         >>> x.str.contains("sd")
         >>> x.str.isalpha()
