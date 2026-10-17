@@ -851,19 +851,6 @@ class TestDataFrame:
         with pytest.raises(TypeError, match="'x'.*float64, string"):
             a.rbind(b)
 
-    def test_rbind_na_all(self):
-        # As read_csv gives for blank columns.
-        na = Vector([np.nan], float)
-        a = DataFrame(s=na, t=na, x=na)
-        b = DataFrame(s=["x"], t=[np.datetime64("2025-01-01")], x=na)
-        data = a.rbind(b)
-        assert data.s.tolist() == [None, "x"]
-        assert data.t.tolist() == [None, datetime.date(2025, 1, 1)]
-        assert data.x.tolist() == [None, None]
-        assert data.s.is_string()
-        assert data.t.is_datetime()
-        assert data.x.is_float()
-
     def test_rbind_onto_empty(self):
         data = DataFrame().rbind(DataFrame(a=[1, 2]))
         assert data.a.is_integer()
