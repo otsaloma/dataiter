@@ -213,7 +213,7 @@ class DataFrame(dict):
                         data[colname] = self[colname][data._index_]
             n = np.diff(starts, append=data.nrow)
             data._group_ = np.repeat(np.arange(len(starts)), n)
-        slices = None
+        ordered = None
         for colname, function in colname_function_pairs.items():
             if getattr(function, "group_aware", False):
                 # function might leave Nones in its output,
@@ -231,10 +231,15 @@ class DataFrame(dict):
                 # When using an arbitrary function, we cannot know
                 # what special values to expect and thus we end up
                 # needing to use the slow Vector.__init__.
-                if slices is None:
-                    indices = np.split(data._index_, starts[1:]) if len(starts) > 0 else []
-                    slices = [self._view_rows(x) for x in indices]
-                stat[colname] = [function(x) for x in slices]
+                if ordered is None:
+                    # Reorder all columns once to make groups contiguous,
+                    # so that slices make cheap NumPy views instead of copies.
+                    # Create views lazily, as holding hundreds of thousands
+                    # of views alive at once makes garbage collection slow.
+                    ordered = self._view_rows(data._index_)
+                    ends = np.append(starts[1:], self.nrow)
+                    slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
+                stat[colname] = [function(ordered._view_rows(x)) for x in slices]
         return stat.unselect("_index_")
 
     @deco.new_from_generator

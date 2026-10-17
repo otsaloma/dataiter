@@ -160,6 +160,17 @@ class TestDataFrame:
         assert np.isclose(np.sum(stat.cyl), 19964.5, atol=0.1)
         assert np.isclose(np.sum(stat.displ), 11430.1, atol=0.1)
 
+    def test_aggregate_function(self):
+        def function(x):
+            values = x.x.tolist()
+            x.x[:] = 0
+            return str(values)
+        orig = DataFrame(g=["b", "a", "b", "a", "b"], x=[1, 2, 3, 4, 5])
+        stat = orig.group_by("g").aggregate(x=function)
+        assert stat.g.tolist() == ["a", "b"]
+        assert stat.x.tolist() == ["[2, 4]", "[1, 3, 5]"]
+        assert orig.x.tolist() == [1, 2, 3, 4, 5]
+
     def test_aggregate_ungrouped(self):
         data = test.data_frame("downloads.csv")
         stat = data.aggregate(n=di.count(), downloads=lambda x: x.downloads.sum())
