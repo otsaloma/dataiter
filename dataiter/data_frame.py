@@ -393,6 +393,9 @@ class DataFrame(dict):
         """
         Return row counts grouped by `colnames`.
 
+        The count column is always named "n". If `colnames` include "n",
+        that column is renamed by appending underscores, e.g. "n_".
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.count("hood")
         """
