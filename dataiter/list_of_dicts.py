@@ -858,11 +858,21 @@ class ListOfDicts(list):
         """
         Return items, keeping only `keys`.
 
+        `keys` can include glob patterns, e.g. ``"price_*"``, which give
+        matching keys in item order. Keys are included only once, which
+        allows reordering, e.g. ``select("id", "*")`` moves "id" first.
+
         >>> data = di.read_json("data/listings.json")
         >>> data.select("id", "hood", "zipcode")
+        >>> data.select("id", "*")
         """
+        if not any(map(util.is_glob, keys)):
+            for item in self:
+                yield AttributeDict({x: item[x] for x in keys if x in item})
+            return
         for item in self:
-            yield AttributeDict({x: item[x] for x in keys if x in item})
+            found = dict.fromkeys(y for x in keys for y in util.glob(x, item))
+            yield AttributeDict({x: item[x] for x in found})
 
     @deco.new_from_generator
     def semi_join(self, other, *by):
@@ -1031,13 +1041,16 @@ class ListOfDicts(list):
         """
         Return items, dropping `keys`.
 
+        `keys` can include glob patterns, e.g. ``"price_*"``.
+
         >>> data = di.read_json("data/listings.json")
         >>> data.unselect("guests", "sqft", "price")
         """
+        globs = any(map(util.is_glob, keys))
         for item in self:
-            for key in keys:
-                if key in item:
-                    del item[key]
+            found = [y for x in keys for y in util.glob(x, item)] if globs else keys
+            for key in found:
+                item.pop(key, None)
             yield item
 
     def write_csv(self, path, *, encoding="utf-8", header=True, sep=","):

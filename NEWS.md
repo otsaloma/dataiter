@@ -19,6 +19,7 @@ New:
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `colnames` argument to replace column names in the header row or, without one, the default "a", "b", "c", etc.
 - `DataFrame.rename`, `ListOfDicts.rename`: Accept a function to apply to all column names or keys, e.g. `rename(str.lower)`
 - `DataFrame.replace_na`: New method
+- `DataFrame.select`, `DataFrame.unselect`, `ListOfDicts.select`, `ListOfDicts.unselect`: Accept glob patterns, e.g. `select("id", "price_*")`
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print timedeltas as e.g. "1 day 04:44:39" instead of a count of the unit

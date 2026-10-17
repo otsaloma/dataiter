@@ -625,6 +625,12 @@ class TestListOfDicts:
         assert all("downloads" in x for x in data)
         assert not orig._obsolete
 
+    def test_select_glob(self):
+        data = ListOfDicts([{"id": 1, "x_1": 2, "y": 3}, {"x_2": 4, "id": 5}])
+        assert [list(x) for x in data.select("x_*")] == [["x_1"], ["x_2"]]
+        assert [list(x) for x in data.select("y", "*")] == [["y", "id", "x_1"], ["x_2", "id"]]
+        assert [list(x) for x in data.select("z_*")] == [[], []]
+
     def test_select_order(self):
         data1 = test.list_of_dicts("downloads.json").select("date", "downloads")
         data2 = test.list_of_dicts("downloads.json").select("downloads", "date")
@@ -804,6 +810,10 @@ class TestListOfDicts:
         assert all("date" not in x for x in data)
         assert all("downloads" not in x for x in data)
         assert orig._obsolete
+
+    def test_unselect_glob(self):
+        data = ListOfDicts([{"id": 1, "x_1": 2, "y": 3}, {"x_2": 4, "id": 5}])
+        assert [list(x) for x in data.unselect("x_1", "x_*")] == [["id", "y"], ["id"]]
 
     def test_write_csv(self, tmp_path):
         orig = test.list_of_dicts("vehicles.csv")

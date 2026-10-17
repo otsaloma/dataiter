@@ -889,6 +889,15 @@ class DataFrame(dict):
         src[found] = index[order[pos[found]]]
         return rows, src
 
+    def _glob(self, colnames):
+        matches = {}
+        for colname in colnames:
+            found = util.glob(colname, self)
+            if not found:
+                raise KeyError(colname)
+            matches.update(dict.fromkeys(found))
+        return list(matches)
+
     def group_by(self, *colnames):
         """
         Return data frame with `colnames` set for grouped operations.
@@ -1543,10 +1552,16 @@ class DataFrame(dict):
         """
         Return data frame, keeping only `colnames`.
 
+        `colnames` can include glob patterns, e.g. ``"price_*"``, which
+        give matching columns in data frame order. Columns are included
+        only once, which allows reordering, e.g. ``select("id", "*")``
+        moves "id" first.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.select("id", "hood", "zipcode")
+        >>> data.select("id", "*")
         """
-        for colname in colnames:
+        for colname in self._glob(colnames):
             yield colname, self[colname].copy()
 
     @deco.new_from_generator
@@ -1844,12 +1859,12 @@ class DataFrame(dict):
         """
         Return data frame, dropping `colnames`.
 
+        `colnames` can include glob patterns, e.g. ``"price_*"``.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unselect("guests", "sqft", "price")
         """
-        for colname in colnames:
-            if colname not in self:
-                raise KeyError(colname)
+        colnames = set(self._glob(colnames))
         for colname in self.colnames:
             if colname not in colnames:
                 yield colname, self[colname].copy()

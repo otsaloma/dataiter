@@ -1178,6 +1178,15 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.colnames == ["make", "model"]
         assert orig.colnames == orig_colnames
 
+    def test_select_glob(self):
+        data = DataFrame(**{"id": [1], "x_1": [2], "y": [3], "x_2": [4], "x*": [5]})
+        assert data.select("x_*").colnames == ["x_1", "x_2"]
+        assert data.select("x_[2-3]", "id").colnames == ["x_2", "id"]
+        assert data.select("y", "*").colnames == ["y", "id", "x_1", "x_2", "x*"]
+        assert data.select("x*").colnames == ["x*"]
+        with pytest.raises(KeyError):
+            data.select("z_*")
+
     def test_semi_join(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")
@@ -1380,6 +1389,13 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = orig.unselect("make", "model")
         assert data.colnames == [x for x in orig_colnames if not x in ["make", "model"]]
         assert orig.colnames == orig_colnames
+
+    def test_unselect_glob(self):
+        data = DataFrame(id=[1], x_1=[2], y=[3], x_2=[4])
+        assert data.unselect("x_*").colnames == ["id", "y"]
+        assert data.unselect("x_1", "x_*").colnames == ["id", "y"]
+        with pytest.raises(KeyError):
+            data.unselect("z_*")
 
     def test_unselect_missing(self):
         data = test.data_frame("vehicles.csv")

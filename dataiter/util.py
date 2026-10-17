@@ -23,6 +23,7 @@
 import bz2
 import dataiter
 import datetime
+import fnmatch
 import gzip
 import itertools
 import lzma
@@ -96,6 +97,18 @@ def generate_colnames(n):
 
 def get_print_width():
     return shutil.get_terminal_size((dataiter.PRINT_MAX_WIDTH, 24))[0] - 1
+
+def glob(pattern, names):
+    # Exact names take precedence, so that names containing
+    # glob special characters can still be used as such.
+    if pattern in names:
+        return [pattern]
+    if is_glob(pattern):
+        return [x for x in names if fnmatch.fnmatchcase(x, pattern)]
+    return []
+
+def is_glob(pattern):
+    return isinstance(pattern, str) and any(x in pattern for x in "*?[")
 
 def is_scalar(value):
     # np.isscalar doesn't cover all needed cases.
