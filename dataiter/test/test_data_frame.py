@@ -613,6 +613,27 @@ class TestDataFrame:
         y = [x**2 for x in data.hwy]
         assert x == y
 
+    def test_map_columns(self):
+        orig = DataFrame(a=[1, None], b=["", "x"], c=[1, 2])
+        data = orig.map_columns(lambda x: x.is_float(), lambda x: x.replace_na(0).as_integer())
+        assert data.colnames == ["a", "b", "c"]
+        assert data.a.tolist() == [1, 0]
+        assert data.a.is_integer()
+        assert data.b.tolist() == [None, "x"]
+        assert orig.a.tolist() == [1, None]
+
+    def test_map_columns_all(self):
+        data = DataFrame(a=[1.5, 2.5], b=["x", "y"])
+        data = data.map_columns(None, lambda x: x[::-1])
+        assert data.a.tolist() == [2.5, 1.5]
+        assert data.b.tolist() == ["y", "x"]
+
+    def test_map_columns_args(self):
+        data = DataFrame(a=[1, None], b=["", "x"])
+        data = data.map_columns(lambda x: x.is_string(), Vector.replace_na, "-")
+        assert data.a.tolist() == [1, None]
+        assert data.b.tolist() == ["-", "x"]
+
     def test_modify(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.modify(test=1)

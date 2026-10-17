@@ -46,6 +46,25 @@ def as_vector(function):
 def not_implemented(*args, **kwargs):
     raise NotImplementedError
 
+def of_type(*types):
+    """
+    Return a function that checks if a vector's data type is one of `types`.
+
+    `types` are matched by kind as in the ``Vector.is_*`` methods, e.g.
+    ``float`` matches all floats and ``np.datetime64`` both dates and
+    datetimes. Use ``np.number`` to match all numbers. This is mostly
+    useful with :meth:`.DataFrame.map_columns`.
+
+    >>> is_float = di.of_type(float)
+    >>> is_float(di.Vector([1.5, 2.5]))
+    >>> is_float(di.Vector(["a", "b"]))
+    """
+    kinds = {bool: np.bool_, bytes: np.bytes_, float: np.floating, int: np.integer, object: np.object_}
+    types = [kinds.get(x, x) for x in types]
+    def predicate(x):
+        return any(isinstance(x.dtype, StringDType) if t is str else np.issubdtype(x.dtype, t) for t in types)
+    return predicate
+
 def str_partition(vector, function, sep):
     # np.strings.partition has no loop for StringDType
     # with a str separator, it needs to be StringDType too.

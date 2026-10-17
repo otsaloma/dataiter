@@ -10,6 +10,7 @@ New:
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`, `read_parquet`: Add `timezone` argument, by default keeping timestamps in the timezone they're stored in instead of converting to UTC
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped
+- `DataFrame.map_columns`: New method to apply a function to columns matching a predicate, e.g. `of_type`
 - `DataFrame.modify`: Evaluate arguments in order, allowing use of columns created by earlier ones
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
 - `DataFrame.pivot_wider`: Order new columns by first appearance instead of sorting, as tidyr does
@@ -29,6 +30,7 @@ New:
 - `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped
 - `ListOfDicts.replace_na`: New method
 - `mean`, `median`, `quantile`: Support dates and datetimes
+- `of_type`: New function to check if data type is one of given, for use with `DataFrame.map_columns`
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
 - `regex.extract`: New function to extract a group of the first match
 - `Vector`: Convert strings when comparing to datetimes, e.g. `x >= "2025-01-01"`, previously raising an error or, for equality, silently not matching

@@ -26,6 +26,7 @@ import numpy as np
 import operator
 import pytest
 
+from dataiter import of_type
 from dataiter import Vector
 from numpy.dtypes import StringDType
 
@@ -558,6 +559,17 @@ class TestVector:
         b = a.map(str.replace, "a", "x", dtype=object)
         assert b.tolist() == ["x", "xb", "xbc"]
         assert b.is_object()
+
+    def test_of_type(self):
+        assert of_type(float)(Vector(np.array([1.5], np.float32)))
+        assert of_type(int, float)(Vector([1]))
+        assert of_type(np.number)(Vector([1.5]))
+        assert of_type(str)(Vector(["a"]))
+        assert of_type(object)(Vector([[1]]))
+        assert of_type(np.datetime64)(Vector([datetime.date(2025, 1, 1)]))
+        assert not of_type(float)(Vector([1]))
+        assert not of_type(str)(Vector([1.5]))
+        assert not of_type(int)(Vector([True]))
 
     def test_range(self):
         a = Vector([1, 2, 3, 4, 5, None])

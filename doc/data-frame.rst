@@ -28,6 +28,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.inner_join`
 :meth:`~dataiter.DataFrame.left_join`
 :meth:`~dataiter.DataFrame.map`
+:meth:`~dataiter.DataFrame.map_columns`
 :meth:`~dataiter.DataFrame.modify`
 :attr:`~dataiter.DataFrame.ncol`
 :attr:`~dataiter.DataFrame.nrow`

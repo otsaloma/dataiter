@@ -106,6 +106,7 @@ globals().pop("util", None)
 
 from dataiter import dtypes
 from dataiter.vector import Vector
+from dataiter.vector import of_type
 from dataiter.data_frame import DataFrame
 from dataiter.data_frame import DataFrameColumn
 from dataiter.geojson import GeoJSON

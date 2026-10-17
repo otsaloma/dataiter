@@ -982,6 +982,28 @@ class DataFrame(dict):
         """
         return [function(self, i) for i in range(self.nrow)]
 
+    @deco.new_from_generator
+    def map_columns(self, predicate, function, *args, **kwargs):
+        """
+        Return data frame with `function` applied to columns matching `predicate`.
+
+        `predicate` is either a function that receives a column as argument and returns ``True``
+        or ``False`` or ``None`` to match all columns. :func:`dataiter.of_type`
+        is a shorthand for a `predicate` that checks the data type. `function`
+        receives a column and `args` and `kwargs` as arguments and should
+        return the new column.
+
+        >>> data = di.read_csv("data/listings.csv")
+        >>> data.map_columns(di.of_type(float), lambda x: x.replace_na(0))
+        >>> data.map_columns(di.of_type(float), lambda x: x.round(2))
+        >>> data.map_columns(di.of_type(float), np.pow, 2)
+        """
+        for colname, column in self.items():
+            if predicate is None or predicate(column):
+                yield colname, function(column, *args, **kwargs)
+            else:
+                yield colname, column.copy()
+
     def _match_pairs(self, colname_value_pairs):
         rows = Vector.fast([True], bool).repeat(self.nrow)
         for colname, value in colname_value_pairs.items():
@@ -1154,9 +1176,10 @@ class DataFrame(dict):
         first either :meth:`aggregate` or drop duplicates with :meth:`unique`.
 
         Combinations of `ids` and `names` not found in the data will be missing
-        values in the result, which upcasts integers to float. Follow up with
-        :meth:`replace_na` to fill them in, e.g. with zero, and if needed,
-        convert back to integer with :meth:`.Vector.as_integer`.
+        values in the result, which upcasts integers to float. To fill them in,
+        e.g. with zero, and if needed, convert back to integer, follow up with
+        e.g. ``map_columns(di.of_type(float), lambda x:
+        x.replace_na(0).as_integer())``.
 
         >>> long = di.read_csv("data/downloads.csv")
         >>> long = long.sort(date=1)

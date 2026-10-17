@@ -36,6 +36,11 @@ type, i.e. :class:`.DataFrame` for CSV, NPZ and Parquet,
 :func:`~dataiter.read_npz`
 :func:`~dataiter.read_parquet`
 
+The following function returns a predicate for use with
+:meth:`.DataFrame.map_columns`.
+
+:func:`~dataiter.of_type`
+
 The following constants can be used to customize certain defaults, such as
 formatting and limits for printing.
 
@@ -65,6 +70,7 @@ formatting and limits for printing.
              min,
              mode,
              nth,
+             of_type,
              quantile,
              read_csv,
              read_geojson,
