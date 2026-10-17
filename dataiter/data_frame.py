@@ -1486,19 +1486,27 @@ class DataFrame(dict):
         return DataFrameColumn(column, nrow=nrow)
 
     @deco.new_from_generator
-    def rename(self, **to_from_pairs):
+    def rename(self, function=None, /, **to_from_pairs):
         """
         Return data frame with columns renamed.
 
+        `function` is an optional function to apply to all column names,
+        e.g. ``str.lower``. `to_from_pairs` are applied after `function`,
+        referring to columns by their new names.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.rename(listing_id="id")
+        >>> data.rename(str.upper)
         """
+        names = {x: function(x) if function else x for x in self}
         for fm in to_from_pairs.values():
-            if fm not in self:
+            if fm not in names.values():
                 raise KeyError(fm)
         from_to_pairs = {v: k for k, v in to_from_pairs.items()}
-        for fm in self.colnames:
-            to = from_to_pairs.get(fm, fm)
+        names = {k: from_to_pairs.get(v, v) for k, v in names.items()}
+        if len(set(names.values())) < len(names):
+            raise ValueError(f"Duplicate column names after renaming: {list(names.values())}")
+        for fm, to in names.items():
             yield to, self[fm].copy()
 
     @deco.new_from_generator

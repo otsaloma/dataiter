@@ -594,6 +594,11 @@ class TestListOfDicts:
         assert all("date" not in x for x in data)
         assert not orig._obsolete
 
+    def test_rename_function(self):
+        orig = ListOfDicts([{" a ": 1, "b": 2}])
+        assert list(orig.rename(str.strip)[0]) == ["a", "b"]
+        assert list(orig.rename(str.strip, c="a")[0]) == ["c", "b"]
+
     def test_replace_na(self):
         orig = ListOfDicts([{"a": 1, "b": None}, {"b": 2}])
         data = orig.replace_na(a=0, b=-1)

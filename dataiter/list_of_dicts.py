@@ -794,16 +794,22 @@ class ListOfDicts(list):
             return cls(pickle.load(f))
 
     @deco.new_independent_from_generator
-    def rename(self, **to_from_pairs):
+    def rename(self, function=None, /, **to_from_pairs):
         """
         Return items with keys renamed.
 
+        `function` is an optional function to apply to all keys, e.g.
+        ``str.lower``. `to_from_pairs` are applied after `function`,
+        referring to keys by their new names.
+
         >>> data = di.read_json("data/listings.json")
         >>> data.rename(listing_id="id")
+        >>> data.rename(str.upper)
         """
         renames = {v: k for k, v in to_from_pairs.items()}
         for item in self:
-            keys = [renames.get(x, x) for x in item.keys()]
+            keys = map(function, item.keys()) if function else item.keys()
+            keys = [renames.get(x, x) for x in keys]
             yield AttributeDict(zip(keys, item.values()))
 
     @deco.obsoletes

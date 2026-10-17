@@ -1139,6 +1139,20 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.ymd.equal(orig.date)
         assert data.downloads.equal(orig.downloads)
 
+    def test_rename_duplicate(self):
+        data = DataFrame(a=[1], A=[2], b=[3])
+        with pytest.raises(ValueError):
+            data.rename(str.lower)
+        with pytest.raises(ValueError):
+            data.rename(a="b")
+
+    def test_rename_function(self):
+        data = DataFrame(**{" a ": [1], "b": [2]})
+        assert data.rename(str.strip).colnames == ["a", "b"]
+        assert data.rename(str.strip, c="a").colnames == ["c", "b"]
+        with pytest.raises(KeyError):
+            data.rename(str.strip, c=" a ")
+
     def test_rename_missing(self):
         data = test.data_frame("downloads.csv")
         with pytest.raises(KeyError):

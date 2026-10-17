@@ -17,6 +17,7 @@ New:
 - `DataFrame.pivot_wider`: Order new columns by first appearance instead of sorting, as tidyr does
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `na` argument for additional missing value markers and `quote` argument to change or disable quoting
 - `DataFrame.read_csv`, `ListOfDicts.read_csv`, `read_csv`: Add `colnames` argument to replace column names in the header row or, without one, the default "a", "b", "c", etc.
+- `DataFrame.rename`, `ListOfDicts.rename`: Accept a function to apply to all column names or keys, e.g. `rename(str.lower)`
 - `DataFrame.replace_na`: New method
 - `DataFrame.slice`, `DataFrame.slice_off`: Accept boolean vectors, previously misread as indices 0 and 1
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero
@@ -98,6 +99,7 @@ Fixes:
 - `DataFrame.read_csv`: Fix string `dtypes` losing e.g. leading zeros to type guessing
 - `DataFrame.read_csv`: Fix reading `.xz` compressed files
 - `DataFrame.print_memory_use`, `Vector.get_memory_use`: Include contents of long strings, previously left out
+- `DataFrame.rename`: Raise `ValueError` for duplicate column names after renaming instead of silently dropping columns
 - `DataFrame.rename`, `DataFrame.unselect`: Raise `KeyError` for missing columns instead of silently ignoring them, as `DataFrame.select` already did
 - `DataFrame.sort`: Fix descending sort of unsigned integers
 - `DataFrame.sort`: Fix mutating fixed-width string columns with missing values
