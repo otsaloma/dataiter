@@ -35,6 +35,7 @@ tabular data and the `DataFrame` class.
 - Chicago crimes
 - Citi Bike GBFS station feeds
 - Citi Bike trips
+- FEC campaign finance bulk data (individual and committee contributions, committees, candidates)
 - Helsinki city bikes
 - IMDb non-commercial datasets
 - Lichess puzzle database
