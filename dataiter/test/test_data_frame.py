@@ -584,6 +584,30 @@ class TestDataFrame:
         assert np.sum(~data.holiday.is_na()) == 35
         assert np.sum(data.downloads) == 541335745
 
+    def test_left_join_by_columns(self):
+        a = DataFrame(i=[1, 1, 2, 2, np.nan], s=["a", "b", "a", "", "a"], x=[1, 2, 3, 4, 5])
+        b = DataFrame(i=[2, 1, 1, 2, np.nan], s=["a", "b", "b", "", "a"], y=[1, 2, 3, 4, 5])
+        assert a.left_join(b, "i", "s", multiple="first").y.tolist() == [None, 2, 1, None, None]
+        assert a.left_join(b, "i", "s", multiple="last").y.tolist() == [None, 3, 1, None, None]
+        data = a.left_join(b, "i", "s", multiple="all")
+        assert data.x.tolist() == [1, 2, 2, 3, 4, 5]
+        assert data.y.tolist() == [None, 2, 3, 1, None, None]
+
+    def test_left_join_by_columns_dates(self):
+        a = DataFrame(d=di.dt.new(["2024-01-01", "2024-01-02"]), k=[1, 1])
+        b = DataFrame(d=di.dt.new(["2024-01-02T00:00:00", "2024-01-01T12:00:00"]), k=[1, 1], y=[1, 2])
+        assert a.left_join(b, "d", "k").y.tolist() == [None, 1]
+
+    def test_left_join_by_columns_large_integers(self):
+        a = DataFrame(i=[0, 2**62, 2**62], j=[-2**62, 5, 2**62], k=[2**62, 1, -2**62])
+        b = DataFrame(i=[2**62, 0], j=[2**62, -2**62], k=[-2**62, 2**62], y=[1, 2])
+        assert a.left_join(b, "i", "j", "k").y.tolist() == [2, None, 1]
+
+    def test_left_join_by_columns_objects(self):
+        a = DataFrame(o=Vector([1, "a", None], object), k=[1, 1, 1])
+        b = DataFrame(o=Vector(["a", 1, None], object), k=[1, 1, 1], y=[1, 2, 3])
+        assert a.left_join(b, "o", "k").y.tolist() == [2, 1, None]
+
     def test_left_join_incompatible_types(self):
         a = DataFrame(k=[1, 2])
         b = DataFrame(k=["1", "2"], v=[3, 4])

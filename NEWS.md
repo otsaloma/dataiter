@@ -46,7 +46,8 @@ New:
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
-- `DataFrame.*_join`: Speed up when joining by strings or multiple columns and `other` is larger than `self`
+- `DataFrame.*_join`: Speed up when joining by a single string column and `other` is larger than `self`
+- `DataFrame.*_join`: Speed up when joining by multiple columns, especially numeric and datetime
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
 - `DataFrame.aggregate`: Speed up helper functions, e.g. `mode`, dropping missing values in columns not handled by Numba, e.g. strings
