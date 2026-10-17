@@ -165,7 +165,7 @@ TEST_MATRIX = [
 
     (std, [T, T, T, T, T, F, F, F, F, F], [0.0, 0.0, 0.5, 0.0, 0.0]),
     (std, [1, 1, 2, 3, 5, 7, 8, 12, 13, 21], [0.0, 0.5, 1.0, 2.0, 4.0]),
-    (std, [1.0, 1.0, 2.0, 3.0, 5.0, 7.0, 8.0, NaN, NaN, NaN], [0.0, 0.5, 1.0, NaN, NaN]),
+    (std, [1.0, 1.0, 2.0, 3.0, 5.0, 7.0, 8.0, NaN, NaN, NaN], [0.0, 0.5, 1.0, 0.0, NaN]),
 
     (sum, [T, T, T, T, T, F, F, F, F, F], [2, 2, 1, 0, 0]),
     (sum, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [3, 7, 11, 15, 19]),
@@ -174,7 +174,7 @@ TEST_MATRIX = [
 
     (var, [T, T, T, T, T, F, F, F, F, F], [0.0, 0.0, 0.25, 0.0, 0.0]),
     (var, [1, 1, 2, 3, 5, 7, 8, 12, 13, 21], [0.0, 0.25, 1.0, 4.0, 16.0]),
-    (var, [1.0, 1.0, 2.0, 3.0, 5.0, 7.0, 8.0, NaN, NaN, NaN], [0.0, 0.25, 1.0, NaN, NaN]),
+    (var, [1.0, 1.0, 2.0, 3.0, 5.0, 7.0, 8.0, NaN, NaN, NaN], [0.0, 0.25, 1.0, 0.0, NaN]),
 
 ]
 
@@ -359,6 +359,7 @@ class TestAggregate:
     def test_std(self):
         assert np.isclose(std(Vector([3, 6, 7])), 1.699673)
         assert np.isclose(std(Vector([3, 6, NaN])), 1.5)
+        assert std(Vector([3])) == 0
 
     def test_std_date(self):
         with pytest.raises(TypeError):
@@ -368,7 +369,7 @@ class TestAggregate:
 
     def test_std_nan(self):
         assert np.isnan(std(EMPTY_VECTOR))
-        assert np.isnan(std(Vector([1])))
+        assert np.isnan(std(Vector([1]), ddof=1))
         assert np.isnan(std(Vector([3, 6, NaN]), drop_na=False))
 
     def test_sum(self):
@@ -389,6 +390,7 @@ class TestAggregate:
     def test_var(self):
         assert np.isclose(var(Vector([3, 6, 7])), 2.888889)
         assert np.isclose(var(Vector([3, 6, NaN])), 2.25)
+        assert var(Vector([3])) == 0
 
     def test_var_date(self):
         with pytest.raises(TypeError):
@@ -398,5 +400,5 @@ class TestAggregate:
 
     def test_var_nan(self):
         assert np.isnan(var(EMPTY_VECTOR))
-        assert np.isnan(var(Vector([1])))
+        assert np.isnan(var(Vector([1]), ddof=1))
         assert np.isnan(var(Vector([3, 6, NaN]), drop_na=False))

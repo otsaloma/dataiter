@@ -607,14 +607,14 @@ def std(x, *, ddof=0, drop_na=True):
                          drop_na and
                          data[x].is_na().any()),
                      default=np.nan,
-                     nrequired=2)
+                     nrequired=ddof+1)
 
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "std")
     x = handle_na(x, drop_na)
-    return np.std(x, ddof=ddof).item() if len(x) >= 2 else np.nan
+    return np.std(x, ddof=ddof).item() if len(x) >= ddof + 1 else np.nan
 
 @composite
 def sum(x, *, drop_na=True):
@@ -692,14 +692,14 @@ def var(x, *, ddof=0, drop_na=True):
                          drop_na and
                          data[x].is_na().any()),
                      default=np.nan,
-                     nrequired=2)
+                     nrequired=ddof+1)
 
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "var")
     x = handle_na(x, drop_na)
-    return np.var(x, ddof=ddof).item() if len(x) >= 2 else np.nan
+    return np.var(x, ddof=ddof).item() if len(x) >= ddof + 1 else np.nan
 
 def yield_groups(x, group, drop_na):
     # Groups must be contiguous for this to work!

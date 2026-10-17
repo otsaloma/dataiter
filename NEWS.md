@@ -122,6 +122,7 @@ Fixes:
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
 - `mode`: Return Python builtin types for vectors, as other aggregation functions do, instead of NumPy scalars
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
+- `std`, `var`: Return zero instead of NaN for a single value with the default `ddof=0`, as NumPy does
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector`: Create a float vector from all NaN values instead of an object vector of `None`
 - `Vector.as_boolean`: Raise `ValueError` for missing values
