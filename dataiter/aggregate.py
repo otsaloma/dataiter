@@ -176,12 +176,12 @@ def count_unique(x, *, drop_na=False):
         aggregate.colnames = [x]
         return aggregate
     x = handle_na(x, drop_na)
-    return len(set(x))
+    return len(x.unique())
 
 @deco.listify
 def count_unique_apply(x, group, drop_na):
     for xg in yield_groups(x, group, drop_na):
-        yield len(set(xg))
+        yield len(xg.unique())
 
 @njit(cache=dataiter.USE_NUMBA_CACHE)
 def count_unique_apply_numba(x, group, drop_na):

@@ -110,6 +110,7 @@ Fixes:
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix infinite values switching floats to scientific notation
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
+- `count_unique`: Count all missing values as one, as with Numba, instead of each NaN and NaT separately
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Return ungrouped lists, as `DataFrame` does, previously staying grouped and making e.g. `head` after `aggregate` operate group-wise
