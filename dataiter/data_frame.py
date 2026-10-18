@@ -784,48 +784,69 @@ class DataFrame(dict):
         return np.flatnonzero(change)
 
     def _get_join_codes(self, other, by1, by2):
-        # Return integer codes of combinations of by1 in self and by2 in
-        # other, negative for rows that can't match. Other is expected
-        # to have no missing values in by2.
-        def get_codes(a, b):
-            # Return codes for a and b concatenated, -1 for values that can't
-            # match, and the amount of distinct non-negative codes.
-            if a.dtype.kind in "biufcmM" and b.dtype.kind in "biufcmM":
-                ab = np.concatenate([a, b])
-                if ab.dtype.kind in "biumM" and ab.dtype != np.uint64 and len(ab) > 0:
-                    ab = ab.astype(np.int64)
-                    lo, hi = int(ab.min()), int(ab.max())
-                    if hi - lo < 2**62:
-                        return ab - lo, hi - lo + 1
-                codes = np.unique(ab, return_inverse=True)[1]
-                return codes, int(codes.max(initial=0)) + 1
-            # Build groups from the smaller side, since inserting into a dict
-            # is slower than looking up from it. Not np.unique, which can't
-            # sort e.g. None and mixed types.
-            small, large = (a, b) if len(a) < len(b) else (b, a)
-            groups = {}
-            small = np.fromiter((groups.setdefault(x, len(groups)) for x in np.ndarray.tolist(small)),
-                                np.int64, count=len(small))
-            large = np.fromiter(map(groups.get, np.ndarray.tolist(large), itertools.repeat(-1)),
-                                np.int64, count=len(large))
-            codes = np.concatenate([small, large] if len(a) < len(b) else [large, small])
-            return codes, len(groups)
-        na = np.zeros(self.nrow, bool)
-        for colname in by1:
-            na |= self[colname].is_na()
-        codes, size = np.zeros(np.count_nonzero(~na) + other.nrow, np.int64), 1
-        miss = np.zeros(len(codes), bool)
+        # Return int64 codes for rows of self and other, equal for equal
+        # keys and -1 for rows that can't match, i.e. missing values in by.
+        # Non-numeric columns are encoded together via a dict of tuples,
+        # the result of which is combined arithmetically with numeric
+        # and datetime columns.
+        a_na = np.zeros(self.nrow, bool)
+        b_na = np.zeros(other.nrow, bool)
         for colname1, colname2 in zip(by1, by2):
-            column, n = get_codes(self[colname1][~na], other[colname2])
-            miss |= column < 0
+            a_na |= self[colname1].is_na()
+            b_na |= other[colname2].is_na()
+        numeric, hashable = [], []
+        for colname1, colname2 in zip(by1, by2):
+            pair = self[colname1][~a_na], other[colname2][~b_na]
+            is_numeric = all(x.dtype.kind in "biufcmM" for x in pair)
+            (numeric if is_numeric else hashable).append(pair)
+        if hashable:
+            numeric.append(self._get_join_codes_hashable(hashable))
+        a, b = self._get_join_codes_numeric(numeric)
+        a_codes = np.full(self.nrow, -1)
+        b_codes = np.full(other.nrow, -1)
+        a_codes[~a_na] = a
+        b_codes[~b_na] = b
+        return a_codes, b_codes
+
+    @staticmethod
+    def _get_join_codes_hashable(pairs):
+        # Return one code per row for a list of pairs of columns, using
+        # a dict of tuples, since np.unique can't sort e.g. mixed types.
+        # The dict is built from the smaller side, since inserting is slower
+        # than looking up. Rows of the larger side not found get a shared
+        # extra code, which can't match as the smaller side doesn't have it.
+        a = zip(*[np.ndarray.tolist(x) for x, y in pairs])
+        b = zip(*[np.ndarray.tolist(y) for x, y in pairs])
+        swap = len(pairs[0][0]) > len(pairs[0][1])
+        small, large = (b, a) if swap else (a, b)
+        groups = {}
+        small = np.fromiter((groups.setdefault(x, len(groups)) for x in small), np.int64)
+        large = np.fromiter((groups.get(x, len(groups)) for x in large), np.int64)
+        return (large, small) if swap else (small, large)
+
+    @staticmethod
+    def _get_join_codes_numeric(pairs):
+        # Return one combined code per row for a list of pairs of numeric or
+        # datetime columns, offsetting integers by their minimum and falling
+        # back to np.unique for floats or if the range would overflow.
+        def encode(x, dense=False):
+            # Return integer codes for x and an upper bound for them.
+            if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
+                x = x.astype(np.int64)
+                lo, hi = int(x.min()), int(x.max())
+                if hi - lo < 2**62:
+                    return x - lo, hi - lo + 1
+            codes = np.unique(x, return_inverse=True)[1]
+            return codes, int(codes.max(initial=0)) + 1
+        codes, size = 0, 1
+        for a, b in pairs:
+            column, n = encode(np.concatenate([a, b]))
             if size * n >= 2**62:
-                codes = np.unique(codes, return_inverse=True)[1]
-                size = int(codes.max(initial=0)) + 1
-            codes, size = codes * n + np.maximum(column, 0), size * n
-        a = np.full(self.nrow, -1, np.int64)
-        a[~na] = np.where(miss, -1, codes)[:len(codes) - other.nrow]
-        b = np.where(miss, -2, codes)[len(codes) - other.nrow:]
-        return a, b
+                codes, size = encode(codes, dense=True)
+                column, n = encode(column, dense=True)
+            codes, size = codes * n + column, size * n
+        n = len(pairs[0][0])
+        return codes[:n], codes[n:]
 
     def _get_join_indices(self, other, by1, by2, multiple="first"):
         # Return aligned indices of rows in self and their matches in other.
@@ -839,68 +860,38 @@ class DataFrame(dict):
             if kind(a) != kind(b):
                 raise TypeError(f"Can't join {colname1!r} with {colname2!r} due to incompatible "
                                 f"types: {a.dtype_label} vs. {b.dtype_label}")
-        keys = other.select(*by2)
-        keys._index_ = np.arange(other.nrow)
-        keys = keys.drop_na(*by2)
-        # Find for each row of self the range left:right of matching rows
-        # in other in stable sorted order, i.e. first and last in order.
-        a, b = self[by1[0]], keys[by2[0]]
-        index = keys._index_
-        is_numeric = [self[x].dtype.kind in "biufcmM" and keys[y].dtype.kind in "biufcmM"
-                      for x, y in zip(by1, by2)]
-        if any(is_numeric):
-            # Without any numeric columns, the below dict of tuples is faster.
-            if len(by1) > 1:
-                a, b = self._get_join_codes(keys, by1, by2)
-            order = np.argsort(b, kind="stable")
-            left = np.searchsorted(b[order], a, "left")
-            right = np.searchsorted(b[order], a, "right")
-        else:
-            # Build groups from the smaller side, since inserting
-            # into a dict is slower than looking up from it.
-            groups = {}
-            if self.nrow < keys.nrow:
-                code = (groups.setdefault(x, len(groups)) for x in zip(*[self[x] for x in by1]))
-                code = np.fromiter(code, int, count=self.nrow)
-                group = map(lambda x: groups.get(x, -1), zip(*[keys[x] for x in by2]))
-                group = np.fromiter(group, int, count=keys.nrow)
-                index, group = index[group > -1], group[group > -1]
-            else:
-                group = (groups.setdefault(x, len(groups)) for x in zip(*[keys[x] for x in by2]))
-                group = np.fromiter(group, int, count=keys.nrow)
-                code = map(lambda x: groups.get(x, -1), zip(*[self[x] for x in by1]))
-                code = np.fromiter(code, int, count=self.nrow)
-            order = np.argsort(group, kind="stable")
-            counts = np.bincount(group, minlength=len(groups))
-            starts = np.cumsum(counts) - counts
-            if multiple != "all":
-                # Faster to look up matches by group than row.
-                pos = starts if multiple == "first" else starts + counts - 1
-                found = counts > 0
-                match = np.full(len(groups), -1)
-                match[found] = index[order[pos[found]]]
-                src = np.append(match, -1)[code]
-                return np.arange(self.nrow), src
-            # Append a zero count for code -1, i.e. rows without a match.
-            counts = np.append(counts, 0)
-            starts = np.append(starts, 0)
-            left = starts[code]
-            right = left + counts[code]
+        a, b = self._get_join_codes(other, by1, by2)
+        left, right, order = self._get_join_ranges(a, b)
+        return self._get_join_matches(left, right, order, multiple)
+
+    @staticmethod
+    def _get_join_matches(left, right, order, multiple):
+        # Return aligned indices of a and b for the first, last or all matches
+        # in the ranges, with rows of a without a match once with -1 in b.
+        if multiple == "first":
+            right = np.minimum(right, left + 1)
+        if multiple == "last":
+            left = np.maximum(left, right - 1)
         found = right > left
-        if multiple != "all":
-            src = np.full(self.nrow, -1)
-            pos = left if multiple == "first" else right - 1
-            src[found] = index[order[pos[found]]]
-            return np.arange(self.nrow), src
-        # Expand each row of self to all of its matches,
-        # keeping rows without a match once.
         n = np.maximum(right - left, 1)
-        rows = np.repeat(np.arange(self.nrow), n)
-        pos = np.repeat(left, n) + np.arange(len(rows)) - np.repeat(np.cumsum(n) - n, n)
+        rows = np.repeat(np.arange(len(left)), n)
+        offsets = np.arange(len(rows)) - np.repeat(np.cumsum(n) - n, n)
+        pos = np.repeat(left, n) + offsets
         found = np.repeat(found, n)
         src = np.full(len(rows), -1)
-        src[found] = index[order[pos[found]]]
+        src[found] = order[pos[found]]
         return rows, src
+
+    @staticmethod
+    def _get_join_ranges(a, b):
+        # Return for each code in a the range left:right of equal codes in b,
+        # as positions in order, the stable sort order of b. Codes -1 never
+        # match: they are left out of order and get an empty range.
+        order = np.flatnonzero(b > -1)
+        order = order[np.argsort(b[order], kind="stable")]
+        left = np.searchsorted(b[order], a, "left")
+        right = np.searchsorted(b[order], a, "right")
+        return left, right, order
 
     def _glob(self, colnames):
         matches = {}
