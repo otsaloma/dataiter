@@ -174,14 +174,27 @@ def isoformat(x):
     """
     Return datetime `x` as a string in ISO 8601 format.
 
-    For dates, return `YYYY-MM-DD`, for datetimes `YYYY-MM-DDTHH:MM:SS.ffffff`.
+    For dates, return `YYYY-MM-DD`, for datetimes `YYYY-MM-DDTHH:MM:SS`.
+    If any element has fractional seconds, all elements get them with as
+    many digits as needed to show all exactly, e.g. `.500` for milliseconds.
 
     >>> x = dt.new([dt.today()])
     >>> dt.isoformat(x)
     >>> y = dt.new([dt.now()])
     >>> dt.isoformat(y)
     """
-    return _pull_str(x, lambda x: x.isoformat())
+    if util.is_scalar(x):
+        x = Vector([x], np.datetime64)
+        return isoformat(x)[0]
+    _check_datetime(x)
+    na = np.isnat(x)
+    unit = "D"
+    if np.datetime_data(x.dtype)[0] not in ["Y", "M", "W", "D"]:
+        values = x[~na]
+        unit = next(u for u in ["s", "ms", "us", "ns"] if np.all(values.astype(f"M8[{u}]") == values))
+    out = Vector.fast(np.datetime_as_string(x, unit=unit), dtypes.string)
+    out[na] = dtypes.string.na_object
+    return out
 
 def isoweek(x):
     """

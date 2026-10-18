@@ -140,11 +140,17 @@ class TestDT:
 
     def test_isoformat_datetime(self):
         a = np.array(["2022-10-15T12:34:56.789", NaT], np.datetime64)
-        assert dt.isoformat(a).tolist() == ["2022-10-15T12:34:56.789000", None]
+        assert dt.isoformat(a).tolist() == ["2022-10-15T12:34:56.789", None]
+
+    def test_isoformat_datetime_coarsest_unit(self):
+        a = np.array(["2022-10-15T12:34", NaT], "datetime64[ns]")
+        assert dt.isoformat(a).tolist() == ["2022-10-15T12:34:00", None]
+        a = np.array(["2022-10-15T12:34:56", "2022-10-15T12:34:56.5"], "datetime64[us]")
+        assert dt.isoformat(a).tolist() == ["2022-10-15T12:34:56.000", "2022-10-15T12:34:56.500"]
 
     def test_isoformat_datetime_scalar(self):
         x = np.datetime64("2022-10-15T12:34:56.789")
-        assert dt.isoformat(x) == "2022-10-15T12:34:56.789000"
+        assert dt.isoformat(x) == "2022-10-15T12:34:56.789"
 
     def test_isoweek(self):
         a = dt.new(["2022-10-15", NaT])
