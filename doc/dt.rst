@@ -11,6 +11,7 @@ any efficient reimplementation.
 
 :func:`~dataiter.dt.day`
 :func:`~dataiter.dt.floor`
+:func:`~dataiter.dt.from_components`
 :func:`~dataiter.dt.from_string`
 :func:`~dataiter.dt.hour`
 :func:`~dataiter.dt.isoformat`

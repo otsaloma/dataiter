@@ -63,6 +63,32 @@ class TestDT:
     def test_floor_scalar(self):
         assert dt.floor(dt.new("2022-10-15"), "week") == dt.new("2022-10-10")
 
+    def test_from_components_date(self):
+        a = dt.from_components(Vector([2022, 2023, np.nan]), 6, 30)
+        assert a.dtype == np.dtype("datetime64[D]")
+        assert a.equal(dt.new(["2022-06-30", "2023-06-30", NaT]))
+
+    def test_from_components_datetime(self):
+        a = dt.from_components([1969, 2000], 12, 31, 23, 59, 59, [999999, 1])
+        assert a.dtype == np.dtype("datetime64[us]")
+        assert a.equal(dt.new(["1969-12-31T23:59:59.999999", "2000-12-31T23:59:59.000001"]))
+        assert dt.from_components([2000], 1, 1, minute=30).equal(dt.new(["2000-01-01T00:30:00"]))
+
+    def test_from_components_errors_replace(self):
+        a = dt.from_components([2024, 2023, 2023, 2023], [2, 2, 13, 1], [29, 29, 1, 1.5], errors="replace")
+        assert a.equal(dt.new(["2024-02-29", NaT, NaT, NaT]))
+        a = dt.from_components([2023, 2023], 1, 1, [23, 24], errors="replace")
+        assert a.equal(dt.new(["2023-01-01T23:00:00", NaT]))
+
+    def test_from_components_errors_strict(self):
+        with pytest.raises(ValueError, match="day=29"):
+            dt.from_components([2024, 2023], 2, 29)
+
+    def test_from_components_scalar(self):
+        assert dt.from_components(2022, 10, 15) == np.datetime64("2022-10-15")
+        assert dt.from_components(2022, 10, 15, 12) == np.datetime64("2022-10-15T12:00:00")
+        assert np.isnat(dt.from_components(2023, 2, 29, errors="replace"))
+
     def test_from_string_date(self):
         a = Vector(["14.11.2022", ""], str)
         b = dt.from_string(a, "%d.%m.%Y")

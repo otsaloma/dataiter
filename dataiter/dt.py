@@ -71,6 +71,54 @@ def floor(x, unit):
         out = x.astype(f"datetime64[{codes[unit]}]")
     return Vector.fast(out.astype(x.dtype), x.dtype)
 
+def from_components(year, month=1, day=1, hour=None, minute=None, second=None, microsecond=None, *, errors="strict"):
+    """
+    Initialize a date or datetime scalar or vector from components.
+
+    Components can be scalars or vectors, e.g. columns of a data frame. If
+    any of `hour`, `minute`, `second` or `microsecond` is given, return
+    datetimes, otherwise dates. Missing values in components give missing
+    values.
+
+    `errors` determines how to handle invalid components, e.g. February 30:
+    ``"strict"`` to raise ``ValueError``, ``"replace"`` to replace them
+    with missing values.
+
+    >>> dt.from_components(2022, 10, 15)
+    >>> dt.from_components(2022, 10, 15, 12, 30)
+    >>> dt.from_components(di.Vector([2022, 2023]), 6, 30)
+    """
+    if errors not in ["strict", "replace"]:
+        raise ValueError(f"Bad {errors=}")
+    components = dict(year=year, month=month, day=day, hour=hour, minute=minute, second=second, microsecond=microsecond)
+    components = {k: v for k, v in components.items() if v is not None}
+    if all(map(util.is_scalar, components.values())):
+        components = {k: [v] for k, v in components.items()}
+        return from_components(**components, errors=errors)[0]
+    is_datetime = len(components) > 3
+    components = dict(zip(components, np.broadcast_arrays(*[np.asarray(x, float) for x in components.values()])))
+    na = np.zeros(len(components["year"]), bool)
+    valid = np.ones_like(na)
+    for x in components.values():
+        na |= np.isnan(x)
+        valid &= x == np.floor(x)
+    get = lambda k: np.where(na | ~valid, 0, components.get(k, 0)).astype(np.int64)
+    y, mo, d, h, mi, s, us = map(get, ["year", "month", "day", "hour", "minute", "second", "microsecond"])
+    months = ((y - 1970) * 12 + mo - 1).astype("M8[M]")
+    out = months.astype("M8[D]") + (d - 1).astype("m8[D]")
+    # Day past the end of the month overflows to the next month.
+    valid &= (mo >= 1) & (mo <= 12) & (d >= 1) & (out.astype("M8[M]") == months)
+    if is_datetime:
+        valid &= (h >= 0) & (h <= 23) & (mi >= 0) & (mi <= 59) & (s >= 0) & (s <= 59) & (us >= 0) & (us <= 999999)
+        out = out.astype("M8[us]") + (((h * 60 + mi) * 60 + s) * 1_000_000 + us).astype("m8[us]")
+    invalid = ~na & ~valid
+    if errors == "strict" and invalid.any():
+        i = np.flatnonzero(invalid)[0]
+        example = ", ".join(f"{k}={v[i]:g}" for k, v in components.items())
+        raise ValueError(f"Invalid components, e.g. {example}")
+    out[na | invalid] = np.datetime64("NaT", "us" if is_datetime else "D")
+    return Vector.fast(out, out.dtype)
+
 def from_string(x, format, *, errors="strict"):
     """
     Initialize a datetime scalar or vector from `x`.

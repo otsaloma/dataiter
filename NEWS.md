@@ -25,6 +25,7 @@ New:
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print datetimes without fractional seconds when all are zero
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Print timedeltas as e.g. "1 day 04:44:39" instead of a count of the unit
 - `dt.floor`, `Vector.dt.floor`: New function
+- `dt.from_components`: New function to create dates or datetimes from components, e.g. year, month and day columns
 - `dt.from_string`: Add `errors` argument for unparseable values
 - `dt.total_seconds`, `Vector.dt.total_seconds`: New function to convert timedeltas to seconds
 - `GeoJSON`: Read and write feature identifiers as column "id"
