@@ -214,17 +214,9 @@ class DataFrame(dict):
         ordered = None
         for colname, function in colname_function_pairs.items():
             if getattr(function, "group_aware", False):
-                # function might leave Nones in its output,
-                # once those are replaced with the proper default
-                # we can do a fast conversion to DataFrameColumn.
                 column = function(data)
-                default = function.default
-                for i in range(len(column)):
-                    if column[i] is None:
-                        column[i] = default
                 assert len(column) == stat.nrow
-                column = DataFrameColumn.fast(column)
-                stat[colname] = column
+                stat[colname] = DataFrameColumn.fast(column)
             else:
                 # When using an arbitrary function, we cannot know
                 # what special values to expect and thus we end up
