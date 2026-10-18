@@ -703,17 +703,15 @@ def var(x, *, ddof=0, drop_na=True):
 
 def yield_groups(x, group, drop_na):
     # Groups must be contiguous for this to work!
-    i = 0
-    n = len(x)
+    if len(x) == 0: return
     if drop_na:
         valid = ~x.is_na()
-    for j in range(1, n + 1):
-        if j < n and group[j] == group[i]: continue
+    bounds = (np.flatnonzero(group[1:] != group[:-1]) + 1).tolist()
+    for i, j in zip([0] + bounds, bounds + [len(x)]):
         xij = x[i:j]
         if drop_na:
             xij = xij[valid[i:j]]
         yield xij
-        i = j
 
 @njit(cache=dataiter.USE_NUMBA_CACHE)
 def yield_groups_numba(x, group, drop_na):

@@ -58,6 +58,7 @@ Speed-ups:
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
 - `DataFrame.aggregate`: Speed up helper functions, e.g. `mode`, dropping missing values in columns not handled by Numba, e.g. strings
+- `DataFrame.aggregate`: Speed up helper functions, e.g. `first`, for columns not handled by Numba, e.g. strings, or without Numba
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.pivot_longer`: Speed up, especially with many columns
 - `DataFrame.pivot_wider`: Speed up, especially with many ids or names
