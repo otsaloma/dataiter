@@ -42,6 +42,7 @@ tabular data and the `DataFrame` class.
 
 - Backblaze hard drive stats (daily SMART snapshots)
 - Chicago crimes
+- EPA AQS air quality (hourly ozone, daily PM2.5, daily AQI by county, sites, monitors)
 - Citi Bike GBFS station feeds
 - Citi Bike trips
 - Eurostat weekly deaths by NUTS region, regional population and GEO codelist
