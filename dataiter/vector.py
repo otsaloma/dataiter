@@ -1093,7 +1093,7 @@ class Vector(np.ndarray):
         >>> vector.unique()
         """
         if self.is_string():
-            # Python dict is faster than NumPy's sorting of strings.
-            return self.fast(list(dict.fromkeys(np.ndarray.tolist(self))), self.dtype)
+            # Hashing is faster than NumPy's sorting of strings.
+            return util.unique_codes(self)[0]
         u, indices = np.unique(self, return_index=True)
         return self[indices.sort()]

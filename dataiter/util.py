@@ -157,12 +157,17 @@ def sequencify(value):
     raise ValueError(f"Unexpected type: {type(value)}")
 
 def unique_codes(x):
-    # Return unique elements of string x, indices of their first occurrences
-    # and codes of elements as indices to unique, all in order of appearance.
-    # Unlike np.unique, use Arrow's hashing, as NumPy's string sort is slow.
+    # Return unique elements of string or integer x, indices of their first
+    # occurrences and codes of elements as indices to unique, all in order of
+    # appearance. Unlike np.unique, use Arrow's hashing, which avoids slow
+    # sorting, especially for strings. Arrow doesn't treat NaN, NaT and -0.0
+    # as NumPy does, so encode floats and datetimes otherwise first.
     # large_string avoids a chunked array for large data.
     import pyarrow as pa
-    codes = pa.array(np.asarray(x), type=pa.large_string()).dictionary_encode().indices
+    if x.dtype.kind not in "iuT":
+        raise TypeError(f"Expected string or integer, got {x.dtype}")
+    type = pa.large_string() if x.dtype.kind == "T" else None
+    codes = pa.array(np.asarray(x), type=type).dictionary_encode().indices
     codes = codes.to_numpy().astype(np.int64)
     first = np.ones(len(codes), bool)
     first[1:] = codes[1:] > np.maximum.accumulate(codes)[:-1]

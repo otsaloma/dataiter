@@ -1836,19 +1836,19 @@ class DataFrame(dict):
         """
         colnames = colnames or self.colnames
         columns = [self[x] for x in colnames]
-        if all(x.is_number() or
+        if all(x.is_string() or
+               x.is_number() or
                x.is_boolean() or
                x.is_datetime() or
                x.is_timedelta() for x in columns):
-            # np.lexsort is stable, so the first row of each group
-            # in sorted order is the first occurrence in self.
-            order = np.lexsort(columns[::-1])
-            starts = self.select(*colnames).slice(order)._get_group_starts(*colnames)
-            keep = np.sort(order[starts])
+            # Hashing one combined code per row gives first occurrences
+            # without slow sorting, especially of strings.
+            columns = [util.unique_codes(x)[2] if x.is_string() else x for x in columns]
+            keep = util.unique_codes(self._get_codes(columns))[1]
             for colname, column in self.items():
                 yield colname, column[keep]
             return
-        # For strings and objects, a Python set is faster than sorting.
+        # For objects, a Python set is faster than sorting.
         # We just need to avoid NaN and NaT for the 'in' checks to work.
         for i, column in enumerate(columns):
             if not column.is_na().any(): continue
