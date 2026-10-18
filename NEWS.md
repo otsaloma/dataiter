@@ -124,6 +124,7 @@ Fixes:
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`
 - `ListOfDicts.*_join`: Fix matching on missing values in `by` keys
 - `ListOfDicts.*_join`: Keep values of `self` for keys found in both
+- `ListOfDicts.full_join`: Rename keys of items found only in `other` to their names in `self` when `by` has tuples, as `DataFrame.full_join` does
 - `ListOfDicts.aggregate`: Return single item when ungrouped, or none for empty data
 - `ListOfDicts.drop_na`: Use all keys if none given instead of dropping nothing
 - `ListOfDicts.group_by`: Fix to group only returned copy

@@ -319,6 +319,14 @@ class TestListOfDicts:
         assert sum("downloads" not in x for x in data) == 25
         assert sum(data.pluck("downloads", 0)) == 541335745
 
+    def test_full_join_by_tuple(self):
+        a = ListOfDicts([{"ka": 1, "x": 1}, {"ka": 2, "x": 2}])
+        b = ListOfDicts([{"kb": 1, "y": 1}, {"kb": 3, "y": 3}, {"y": 4}])
+        data = a.full_join(b, ("ka", "kb"))
+        assert data.pluck("ka") == [1, 2, 3, None]
+        assert list(data[2].keys()) == ["ka", "y"]
+        assert all("kb" not in x for x in data)
+
     def test_full_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
         other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])

@@ -428,6 +428,10 @@ class ListOfDicts(list):
         b = other.deepcopy().modify(_bid_=lambda x: next(bcounter))
         ab = self.deepcopy().left_join(b, *by)
         b = b.anti_join(ab, "_bid_")
+        # For identifiers in by whose name differs in self and b,
+        # rename and keep the variant found in self.
+        by1, by2 = self._split_join_by(*by)
+        b = b.rename(**{k1: k2 for k1, k2 in zip(by1, by2) if k1 != k2})
         return (ab + b).unselect("_bid_")
 
     def group_by(self, *keys):
