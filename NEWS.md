@@ -82,7 +82,7 @@ Fixes:
 - `DataFrame.compare`: Match rows with missing values in `by`, previously reported as both added and removed
 - `DataFrame.compare`: Rename `by` columns named "column", "xvalue" or "yvalue" in changed values by appending underscores, previously an error
 - `DataFrame.drop_na`: Use all columns if none given instead of dropping nothing
-- `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
+- `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read columns with no values as float instead of an object column of `None`
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read times of day as strings instead of an object column of `datetime.time`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix error reading list columns, now read as object columns of lists

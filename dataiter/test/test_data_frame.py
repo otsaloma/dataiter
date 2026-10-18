@@ -500,6 +500,15 @@ class TestDataFrame:
         data = DataFrame.from_pandas(data)
         assert data == orig
 
+    def test_from_pandas_nanoseconds(self):
+        import pandas as pd
+        time = np.array(["2026-01-02T05:36:24.539", "NaT"], "datetime64[ns]")
+        data = pd.DataFrame({"time": time, "duration": time - time[0]})
+        data = DataFrame.from_pandas(data)
+        assert data.time.dtype == np.dtype("datetime64[us]")
+        assert data.duration.dtype == np.dtype("timedelta64[us]")
+        assert data.time.dt.to_string("%H:%M:%S").tolist() == ["05:36:24", None]
+
     def test_from_pandas_dtypes_missing(self):
         data = DataFrame(a=[1]).to_pandas()
         with pytest.raises(KeyError, match="b"):
