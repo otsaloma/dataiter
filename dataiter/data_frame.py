@@ -334,10 +334,9 @@ class DataFrame(dict):
         changes will terminate once `max_changed` is reached. If no differences
         are found, the data frames are empty.
 
-        .. warning:: `compare` is experimental, do not rely on it reporting all
-                     of the differences correctly. Do not try to give it two
-                     huge data frames with very little in common, unless also
-                     giving some sensible value for `max_changed`.
+        Changed values are listed one at a time, which is slow if there are
+        many of them. When comparing huge data frames with very little in
+        common, consider giving some sensible value for `max_changed`.
 
         >>> old = di.read_csv("data/vehicles.csv")
         >>> new = old.modify(hwy=lambda x: np.minimum(100, x.hwy))
@@ -376,16 +375,23 @@ class DataFrame(dict):
                 yvalue = y[colname][j] if colname in y else None
                 if (xvalue != yvalue and
                     not Vector([xvalue, yvalue]).is_na().all()):
-                    # XXX: We could have a name clash here.
                     byrow = {k: x[k][i] for k in by}
                     changed.append(dict(**byrow,
-                                        column=colname,
-                                        xvalue=xvalue,
-                                        yvalue=yvalue))
+                                        _column_=colname,
+                                        _xvalue_=xvalue,
+                                        _yvalue_=yvalue))
 
         added = added if added.nrow > 0 else self.__class__()
         removed = removed if removed.nrow > 0 else self.__class__()
-        changed = self.from_json(changed) if changed else self.__class__()
+        if not changed:
+            return added, removed, self.__class__()
+        changed = self.from_json(changed)
+        for name in ["column", "xvalue", "yvalue"]:
+            if name in changed:
+                new = name
+                while new in changed: new += "_"
+                changed = changed.rename(**{new: name})
+            changed = changed.rename(**{name: f"_{name}_"})
         return added, removed, changed
 
     def copy(self):

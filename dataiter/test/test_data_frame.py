@@ -267,6 +267,14 @@ class TestDataFrame:
         assert changed.b.tolist() == [None]
         assert changed.xvalue.tolist() == [5]
 
+    def test_compare_name_clash(self):
+        old = DataFrame(column=[1, 2], xvalue=[1, 2], a=[1, 2])
+        new = old.modify(a=[1, 3])
+        added, removed, changed = new.compare(old, "column", "xvalue")
+        assert changed.colnames == ["column_", "xvalue_", "column", "xvalue", "yvalue"]
+        assert changed.column_.tolist() == [2]
+        assert changed.column.tolist() == ["a"]
+
     def test_copy(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.copy()
