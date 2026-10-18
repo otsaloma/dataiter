@@ -51,6 +51,7 @@ Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
 - `DataFrame.*_join`: Speed up when joining by a single string column and `other` is larger than `self`
 - `DataFrame.*_join`: Speed up when joining by multiple columns, especially numeric and datetime
+- `DataFrame.full_join`: Speed up by matching rows only once
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
 - `DataFrame.aggregate`: Speed up helper functions, e.g. `mode`, dropping missing values in columns not handled by Numba, e.g. strings
@@ -85,6 +86,7 @@ Fixes:
 - `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `ListOfDicts.read_csv`, `read_csv`, `read_parquet`: Raise `KeyError` for `dtypes` or `types` referring to missing columns instead of silently ignoring them
 - `DataFrame.from_pandas`: Fix dates becoming object, e.g. in a `to_pandas` roundtrip
 - `DataFrame.*_join`: Raise `TypeError` for incompatible types of `by` columns, e.g. string and number, instead of silently matching nothing
+- `DataFrame.full_join`, `ListOfDicts.full_join`: Add rows of `other` not used due to multiple matches as such, after rows of `self`, as dplyr does, instead of joining them to the matching rows of `self`, which effectively gave all matches
 - `DataFrame.full_join`, `DataFrame.left_join`, `DataFrame.pivot_wider`: Keep data type of integer and boolean columns if no missing values are added
 - `DataFrame.group_by`: Fix to group only returned copy
 - `DataFrame.head`, `DataFrame.tail`: Return all rows except the last or first `-n` for negative `n` instead of none

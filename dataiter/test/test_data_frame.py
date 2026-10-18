@@ -529,6 +529,14 @@ class TestDataFrame:
         assert data.k.tolist() == [1, 2, 2, 3, 4]
         assert data.x.tolist() == [1, 2, 2, 3, None]
         assert data.y.tolist() == [2, 1, 3, None, 4]
+        data = a.full_join(b, "k", multiple="first")
+        assert data.k.tolist() == [1, 2, 3, 2, 4]
+        assert data.x.tolist() == [1, 2, 3, None, None]
+        assert data.y.tolist() == [2, 1, None, 3, 4]
+        data = a.full_join(b, "k", multiple="last")
+        assert data.k.tolist() == [1, 2, 3, 2, 4]
+        assert data.x.tolist() == [1, 2, 3, None, None]
+        assert data.y.tolist() == [2, 3, None, 1, 4]
 
     def test_head(self):
         data = test.data_frame("vehicles.csv")

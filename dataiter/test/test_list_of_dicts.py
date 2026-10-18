@@ -325,6 +325,14 @@ class TestListOfDicts:
         data = orig.full_join(other, "b")
         assert data.pluck("c") == [1, None, None, 2]
 
+    def test_full_join_multiple(self):
+        a = ListOfDicts([{"k": 1, "x": 1}, {"k": 2, "x": 2}, {"k": 3, "x": 3}])
+        b = ListOfDicts([{"k": 2, "y": 1}, {"k": 1, "y": 2}, {"k": 2, "y": 3}, {"k": 4, "y": 4}])
+        data = a.full_join(b, "k")
+        assert data.pluck("k") == [1, 2, 3, 2, 4]
+        assert data.pluck("x") == [1, 2, 3, None, None]
+        assert data.pluck("y") == [2, 1, None, 3, 4]
+
     def test_group_by_next_operation_only(self):
         data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
         assert data.group_by("g").sort(x=-1).head(1).pluck("x") == [5]

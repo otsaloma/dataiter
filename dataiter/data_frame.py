@@ -726,8 +726,9 @@ class DataFrame(dict):
 
         `full_join` keeps all rows from both data frames, merging matching
         ones. If there are multiple matches, `multiple` determines which to
-        use: ``"first"``, ``"last"`` or ``"all"``. For rows, for which matches
-        are not found, missing values are added.
+        use: ``"first"``, ``"last"`` or ``"all"``. Rows of `other` not used
+        are added after rows of `self`. For rows, for which matches are not
+        found or not used, missing values are added.
 
         `by` are column names, by which to look for matching rows, or tuples of
         column names if the correspoding column name differs between `self` and
@@ -745,27 +746,18 @@ class DataFrame(dict):
         >>> reviews = di.read_csv("data/listings-reviews.csv")
         >>> listings.full_join(reviews, "id")
         """
-        a = self.modify(_aid_=np.arange(self.nrow))
         b = other.modify(_bid_=np.arange(other.nrow))
-        ab = a.left_join(b, *by, multiple=multiple)
-        # Check which rows of b were not joined into a.
-        # If no rows remain, full join is the same as left join ab.
-        b = b.anti_join(ab, "_bid_")
+        ab = self.left_join(b, *by, multiple=multiple)
+        b = b.anti_join(ab, "_bid_").unselect("_bid_")
+        ab = ab.unselect("_bid_")
         if b.nrow == 0:
-            return ab.unselect("_aid_", "_bid_")
-        # Reverse the by-tuples for the reverse join ba,
-        # so that the data frame and by orders match.
-        by_reverse = [
-            tuple(reversed(x)) if isinstance(x, (list, tuple))
-            else x
-            for x in by]
-        ba = b.left_join(a, *by_reverse, multiple=multiple)
+            return ab
         for item in by:
-            # For identifiers in by whose name differs in a and b,
-            # rename and keep the variant found in a.
+            # For identifiers in by whose name differs in self and b,
+            # rename and keep the variant found in self.
             if isinstance(item, (list, tuple)):
-                ba[item[0]] = ba.pop(item[1])
-        return ab.rbind(ba).sort(_aid_=1, _bid_=1).unselect("_aid_", "_bid_")
+                b[item[0]] = b.pop(item[1])
+        return ab.rbind(b)
 
     def _get_group_positions(self):
         # Return row indices in group order, the position

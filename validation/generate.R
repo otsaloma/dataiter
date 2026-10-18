@@ -79,7 +79,7 @@ read_csv("../data/vehicles.csv") |>
 reviews = read_csv("../data/listings-reviews.csv")
 reviews = bind_rows(reviews, reviews)
 read_csv("../data/listings.csv") |>
-    full_join(reviews, by="id") |>
+    full_join(reviews, by="id", multiple="first") |>
     write_csv("full_join.R.csv")
 
 # INNER JOIN
