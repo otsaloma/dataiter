@@ -13,6 +13,14 @@ The `DataFrame` and `ListOfDicts` classes have a mostly matching API.
 When adding a method or an argument to one, also add it to the other if
 it makes sense there as well.
 
+## PyArrow
+
+Besides reading and writing files, PyArrow can be used under the hood in
+implementations of operations and in reusable helper functions, e.g. for
+fast hashing or sorting. It must never show in any API, public or
+undocumented, such as `util`: function arguments and return values are
+always Dataiter or NumPy data structures, never PyArrow ones.
+
 ## Validation, Testing
 
 After making changes, run `uv run make check` and `uv run make test` (or
@@ -37,10 +45,9 @@ Do not complain about these or spend too much time investigating.
   NumPy's string sort is simply slow. `DataFrame.sort` already uses
   chained stable argsorts, which are faster than `np.lexsort` for
   strings. Rejected alternatives: integer codes via a Python dict (fast
-  for categorical strings, slower for unique ones), Arrow's
-  `dictionary_encode` (Arrow is to be used only for reading and writing
-  files), Numba (doesn't support `StringDType`) and a categorical type
-  or string interning (would need a second string type).
+  for categorical strings, slower for unique ones), Numba (doesn't
+  support `StringDType`) and a categorical type or string interning
+  (would need a second string type).
 
 - Grouped `DataFrame.modify` is slow for large and wide data frames,
   e.g. 2.7 s for 3M rows, 24 columns and 8k groups. Most of the time
