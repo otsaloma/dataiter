@@ -1406,6 +1406,17 @@ NULL,2.5,"test",TRUE,2025-01-01
         by = list(zip(data.make, data.model))
         assert len(set(by)) == len(by)
 
+    def test_unique_by_string_and_datetime(self):
+        orig = DataFrame(a=["x", "x", "x", "y", "x", "x"],
+                         b=np.array(["2023-01-01T12", "2023-01-01T12", "NaT", "2023-01-01T12", "NaT", "2023-01-02T00"], "datetime64[h]"),
+                         c=np.array([60, 60, "NaT", 60, "NaT", 30], "timedelta64[m]"))
+        data = orig.unique("a", "b", "c")
+        assert data.a.tolist() == ["x", "x", "y", "x"]
+        assert data.b.dtype == np.dtype("datetime64[h]")
+        assert data.b.is_na().tolist() == [False, True, False, False]
+        assert data.c.dtype == np.dtype("timedelta64[m]")
+        assert data.c.is_na().tolist() == [False, True, False, False]
+
     def test_unique_preserve_order(self):
         orig = test.data_frame("vehicles.csv")
         orig.order = np.arange(orig.nrow)

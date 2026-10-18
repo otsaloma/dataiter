@@ -1858,6 +1858,8 @@ class DataFrame(dict):
                 if np.isnan(flag):
                     flag = -1
                 columns[i] = column.replace_na(flag)
+        # NumPy datetime and timedelta scalars are slow to hash, integers not.
+        columns = [x.view(np.int64) if x.is_datetime() or x.is_timedelta() else x for x in columns]
         seen = set()
         keep = []
         for i, row in enumerate(zip(*columns)):
