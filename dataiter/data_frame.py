@@ -766,6 +766,29 @@ class DataFrame(dict):
                 b[item[0]] = b.pop(item[1])
         return ab.rbind(b)
 
+    @staticmethod
+    def _get_codes(columns):
+        # Return one combined code per row for a list of numeric or datetime
+        # columns, offsetting integers by their minimum and falling back to
+        # np.unique for floats or if the range would overflow.
+        def encode(x, dense=False):
+            # Return integer codes for x and an upper bound for them.
+            if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
+                x = x.astype(np.int64)
+                lo, hi = int(x.min()), int(x.max())
+                if hi - lo < 2**62:
+                    return x - lo, hi - lo + 1
+            codes = np.unique(x, return_inverse=True)[1]
+            return codes, int(codes.max(initial=0)) + 1
+        codes, size = 0, 1
+        for column in columns:
+            column, n = encode(column)
+            if size * n >= 2**62:
+                codes, size = encode(codes, dense=True)
+                column, n = encode(column, dense=True)
+            codes, size = codes * n + column, size * n
+        return codes
+
     def _get_group_positions(self):
         # Return row indices in group order, the position
         # of each row within its group and its group size.
@@ -803,19 +826,19 @@ class DataFrame(dict):
         for colname1, colname2 in zip(by1, by2):
             a, b = self[colname1][~a_na], other[colname2][~b_na]
             if a.is_string() and b.is_string():
-                codes = util.unique_codes(np.concatenate([a, b]))[2]
-                numeric.append((codes[:len(a)], codes[len(a):]))
+                numeric.append(util.unique_codes(np.concatenate([a, b]))[2])
             elif all(x.dtype.kind in "biufcmM" for x in (a, b)):
-                numeric.append((a, b))
+                numeric.append(np.concatenate([a, b]))
             else:
                 hashable.append((a, b))
         if hashable:
-            numeric.append(self._get_join_codes_hashable(hashable))
-        a, b = self._get_join_codes_numeric(numeric)
+            numeric.append(np.concatenate(self._get_join_codes_hashable(hashable)))
+        codes = self._get_codes(numeric)
+        n = self.nrow - a_na.sum()
         a_codes = np.full(self.nrow, -1)
         b_codes = np.full(other.nrow, -1)
-        a_codes[~a_na] = a
-        b_codes[~b_na] = b
+        a_codes[~a_na] = codes[:n]
+        b_codes[~b_na] = codes[n:]
         return a_codes, b_codes
 
     @staticmethod
@@ -840,30 +863,6 @@ class DataFrame(dict):
         small = np.fromiter(map(groups.setdefault, small, itertools.count()), np.int64, n_small)
         large = np.fromiter(map(groups.get, large, itertools.repeat(n_small)), np.int64, n_large)
         return (large, small) if swap else (small, large)
-
-    @staticmethod
-    def _get_join_codes_numeric(pairs):
-        # Return one combined code per row for a list of pairs of numeric or
-        # datetime columns, offsetting integers by their minimum and falling
-        # back to np.unique for floats or if the range would overflow.
-        def encode(x, dense=False):
-            # Return integer codes for x and an upper bound for them.
-            if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
-                x = x.astype(np.int64)
-                lo, hi = int(x.min()), int(x.max())
-                if hi - lo < 2**62:
-                    return x - lo, hi - lo + 1
-            codes = np.unique(x, return_inverse=True)[1]
-            return codes, int(codes.max(initial=0)) + 1
-        codes, size = 0, 1
-        for a, b in pairs:
-            column, n = encode(np.concatenate([a, b]))
-            if size * n >= 2**62:
-                codes, size = encode(codes, dense=True)
-                column, n = encode(column, dense=True)
-            codes, size = codes * n + column, size * n
-        n = len(pairs[0][0])
-        return codes[:n], codes[n:]
 
     def _get_join_indices(self, other, by1, by2, multiple="first"):
         # Return aligned indices of rows in self and their matches in other.
