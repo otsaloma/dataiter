@@ -53,7 +53,9 @@ tabular data and the `DataFrame` class.
 - MovieLens 25M
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
+- NYC Citywide Payroll
 - NYC taxi
+- Ookla open data fixed broadband performance tiles
 - Open-Meteo hourly weather
 - OpenPowerlifting
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
