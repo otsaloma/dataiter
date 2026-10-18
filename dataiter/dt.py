@@ -152,6 +152,7 @@ def from_string(x, format, *, errors="strict"):
             return None
     # return_index=True makes np.unique use a stable sort, the default
     # quicksort can segfault for StringDType (NumPy 2.5.4).
+    # https://github.com/numpy/numpy/issues/33089
     unique, _, inverse = np.unique(x[~na], return_index=True, return_inverse=True)
     f = np.vectorize(parse, otypes=[object])
     out[~na] = f(unique.astype(object)).astype(out.dtype)[inverse]

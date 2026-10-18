@@ -635,7 +635,7 @@ class TestVector:
         assert b.rank(dir=-1).tolist() == [2, 3, 1, 4]
 
     def test_rank_string_sorted_runs(self):
-        # Used to segfault due to NumPy StringDType quicksort.
+        # https://github.com/numpy/numpy/issues/33089
         a = Vector([f"{i:04d}" for i in range(128)] * 2)
         assert a.rank(method="min").tolist() == [2 * i + 1 for i in range(128)] * 2
         assert a.rank(method="max").tolist() == [2 * i + 2 for i in range(128)] * 2

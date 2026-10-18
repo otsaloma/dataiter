@@ -778,6 +778,7 @@ class Vector(np.ndarray):
         def codes():
             # return_index=True makes np.unique use a stable sort, the default
             # quicksort can segfault for StringDType (NumPy 2.5.4).
+            # https://github.com/numpy/numpy/issues/33089
             unique, _, inv = np.unique(self[~na], return_index=True, return_inverse=True)
             return inv if dir > 0 else len(unique) - 1 - inv
         if method == "min":

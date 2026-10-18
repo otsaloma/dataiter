@@ -111,7 +111,7 @@ class TestDT:
         assert np.isnat(b[1])
 
     def test_from_string_sorted_runs(self):
-        # Used to segfault due to NumPy StringDType quicksort.
+        # https://github.com/numpy/numpy/issues/33089
         a = dt.new(["2022-01-01"]).repeat(128) + np.arange(128)
         b = dt.from_string(dt.isoformat(a.concat(a)), "%Y-%m-%d")
         assert b.equal(a.concat(a))
