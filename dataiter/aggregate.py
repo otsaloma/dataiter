@@ -345,33 +345,39 @@ def median(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.median``, see the NumPy documentation for details:
+    Equivalent to ``numpy.median``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.median.html
 
     >>> di.median(di.Vector([5, 1, 2]))
     >>> di.median("x")
     """
+    def median_groups(x, starts):
+        y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
+        y = np.asarray(y)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if len(starts) < 40_000:
+            # Looping is faster than sorting for few groups.
+            for i, (a, k) in enumerate(zip(starts.tolist(), n.tolist())):
+                if k > 0: out[i] = np.median(y[a:a+k])
+            return datetime_from_float(out, x)
+        ys = sort_groups(y, starts)
+        ok = n > 0
+        s, k = starts[ok], n[ok]
+        # Average the middle values as np.median does.
+        values = (ys[s + (k - 1) // 2] + ys[s + k // 2]) / 2
+        # Missing values are sorted last, making the result missing.
+        values[np.isnan(ys[s + k - 1])] = np.nan
+        out[ok] = values
+        return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.median)
-            aggregate.default = np.nan
-            out = f(datetime_as_float(data[x]),
-                    data._group_,
-                    drop_na=(
-                        drop_na and
-                        data[x].is_na().any()),
-                    default=np.nan,
-                    nrequired=1)
-            return datetime_from_float(out, data[x])
-
+            return median_groups(data[x], group_starts(data._group_))
+        aggregate.default = np.nan
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    if x.is_datetime():
-        return datetime_from_float(median(datetime_as_float(x)), x).item()
-    return np.median(x).item() if len(x) >= 1 else np.nan
+    return median_groups(x, np.array([0])).item(0)
 
 @composite
 def min(x, *, drop_na=True):
@@ -517,47 +523,65 @@ def quantile(x, q, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.quantile``, see the NumPy documentation for details:
+    Equivalent to ``numpy.quantile``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
 
     >>> di.quantile(di.Vector([1, 5, 6]), 0.5)
     >>> di.quantile("x", 0.5)
     """
+    def quantile_groups(x, starts):
+        y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
+        y = np.asarray(y)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if len(starts) < 20_000:
+            # Looping is faster than sorting for few groups.
+            for i, (a, k) in enumerate(zip(starts.tolist(), n.tolist())):
+                if k > 0: out[i] = np.quantile(y[a:a+k], q)
+            return datetime_from_float(out, x)
+        ys = sort_groups(y, starts)
+        ok = n > 0
+        s, k = starts[ok], n[ok]
+        virtual = (k - 1) * q
+        if isinstance(q, (int, np.integer)):
+            # np.quantile takes elements without interpolating for integer q,
+            # which differs from interpolating with infinities.
+            values = ys[s + virtual]
+        else:
+            # Interpolate linearly as np.quantile does, including its
+            # previous index of -1 and thus gamma at and above the top.
+            top = virtual >= k - 1
+            previous = np.where(top, -1, np.floor(virtual))
+            gamma = virtual - previous
+            lo = np.where(top, k - 1, previous).astype(int)
+            hi = np.where(top, k - 1, previous + 1).astype(int)
+            a, b = ys[s + lo], ys[s + hi]
+            diff = b - a
+            values = np.where(gamma >= 0.5, b - diff * (1 - gamma), a + diff * gamma)
+        # Missing values are sorted last, making the result missing.
+        values[np.isnan(ys[s + k - 1])] = np.nan
+        out[ok] = values
+        return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            f = (quantile_apply, quantile_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = np.nan
-            out = f(datetime_as_float(data[x]).as_float(),
-                    data._group_,
-                    q,
-                    drop_na=(
-                        drop_na and
-                        data[x].is_na().any()))
-            return datetime_from_float(out, data[x])
-
+            return quantile_groups(data[x], group_starts(data._group_))
+        aggregate.default = np.nan
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    if x.is_datetime() or x.is_timedelta():
-        return datetime_from_float(quantile(datetime_as_float(x), q), x).item()
-    return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
-
-@deco.listify
-def quantile_apply(x, group, q, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        yield np.quantile(xg, q) if len(xg) >= 1 else np.nan
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def quantile_apply_numba(x, group, q, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        out.append(np.quantile(xg, q) if len(xg) >= 1 else np.nan)
-    return out
+    return quantile_groups(x, np.array([0])).item(0)
 
 def select(functions, data, name):
     return functions[use_numba(data[name])]
+
+def sort_groups(x, starts):
+    # Return float x sorted within groups, NaN last.
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    group = np.repeat(np.arange(len(starts)), np.diff(starts, append=len(x)))
+    table = pa.table([group, pa.array(x, mask=np.isnan(x))], names=["group", "x"])
+    keys = [("group", "ascending", "at_end"), ("x", "ascending", "at_end")]
+    return x[pc.sort_indices(table, sort_keys=keys).to_numpy()]
 
 @composite
 def std(x, *, ddof=0, drop_na=True):

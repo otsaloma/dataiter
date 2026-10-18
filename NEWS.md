@@ -75,6 +75,7 @@ Speed-ups:
 - `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
 - `count`, `first`, `last`, `max`, `min`, `nth`: Speed up when grouped, especially with many groups
+- `median`, `quantile`: Speed up when grouped with very many groups
 - `mode`: Speed up for large groups
 - `regex.*`: Speed up
 - `std`, `var`: Speed up when grouped with `ddof` other than zero
@@ -145,8 +146,9 @@ Fixes:
 - `first`, `last`, `max`, `min`, `nth`: Fix error for string vectors
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
 - `first`, `last`, `max`, `min`, `nth`: Keep data type when grouped, e.g. float32 or object, instead of converting to float64 or int64
-- `first`, `last`, `max`, `min`, `nth`: Return `None` instead of NaT for datetime and timedelta vectors with no values, as `mean` does
-- `mean`: Fix ignoring `drop_na=False` for datetime vectors
+- `first`, `last`, `max`, `median`, `min`, `nth`, `quantile`: Return `None` instead of NaT or NaN for datetime and timedelta vectors with no values, as `mean` does
+- `mean`, `median`, `quantile`: Fix ignoring `drop_na=False` for datetime vectors
+- `median`, `quantile`: Return missing values for groups with missing values if `drop_na=False`, as NumPy does, previously ignored for some data types
 - `mean`: Round timedelta vectors to the nearest unit instead of truncating toward zero, as when grouped, and return `None` instead of NaN for no values
 - `mean`, `std`, `sum`, `var`: Calculate in float64 also for float32 for better accuracy
 - `mode`: Return Python builtin types for vectors, as other aggregation functions do, instead of NumPy scalars
