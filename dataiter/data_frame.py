@@ -812,18 +812,21 @@ class DataFrame(dict):
         # a dict of values or tuples of values for multiple columns,
         # since np.unique can't sort e.g. mixed types.
         # The dict is built from the smaller side, since inserting is slower
-        # than looking up. Rows of the larger side not found get a shared
-        # extra code, which can't match as the smaller side doesn't have it.
+        # than looking up. Codes are row indices of first occurrences in the
+        # smaller side. Rows of the larger side not found get a shared code
+        # past those indices, which can't match. Calling dict methods via map
+        # avoids a slow Python-level function call per row.
         if len(pairs) == 1:
             a, b = map(np.ndarray.tolist, pairs[0])
         else:
             a = zip(*[np.ndarray.tolist(x) for x, y in pairs])
             b = zip(*[np.ndarray.tolist(y) for x, y in pairs])
-        swap = len(pairs[0][0]) > len(pairs[0][1])
-        small, large = (b, a) if swap else (a, b)
+        na, nb = len(pairs[0][0]), len(pairs[0][1])
+        swap = na > nb
+        (small, n_small), (large, n_large) = ((b, nb), (a, na)) if swap else ((a, na), (b, nb))
         groups = {}
-        small = np.fromiter((groups.setdefault(x, len(groups)) for x in small), np.int64)
-        large = np.fromiter((groups.get(x, len(groups)) for x in large), np.int64)
+        small = np.fromiter(map(groups.setdefault, small, itertools.count()), np.int64, n_small)
+        large = np.fromiter(map(groups.get, large, itertools.repeat(n_small)), np.int64, n_large)
         return (large, small) if swap else (small, large)
 
     @staticmethod

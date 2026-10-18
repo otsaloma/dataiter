@@ -50,8 +50,7 @@ New:
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
-- `DataFrame.*_join`: Speed up when joining by a single string column and `other` is larger than `self`
-- `DataFrame.*_join`: Speed up when joining by a single string column with repeated values
+- `DataFrame.*_join`: Speed up when joining by string columns
 - `DataFrame.*_join`: Speed up when joining by multiple columns, especially numeric and datetime
 - `DataFrame.full_join`: Speed up by matching rows only once
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
