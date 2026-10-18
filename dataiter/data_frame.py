@@ -809,12 +809,16 @@ class DataFrame(dict):
     @staticmethod
     def _get_join_codes_hashable(pairs):
         # Return one code per row for a list of pairs of columns, using
-        # a dict of tuples, since np.unique can't sort e.g. mixed types.
+        # a dict of values or tuples of values for multiple columns,
+        # since np.unique can't sort e.g. mixed types.
         # The dict is built from the smaller side, since inserting is slower
         # than looking up. Rows of the larger side not found get a shared
         # extra code, which can't match as the smaller side doesn't have it.
-        a = zip(*[np.ndarray.tolist(x) for x, y in pairs])
-        b = zip(*[np.ndarray.tolist(y) for x, y in pairs])
+        if len(pairs) == 1:
+            a, b = map(np.ndarray.tolist, pairs[0])
+        else:
+            a = zip(*[np.ndarray.tolist(x) for x, y in pairs])
+            b = zip(*[np.ndarray.tolist(y) for x, y in pairs])
         swap = len(pairs[0][0]) > len(pairs[0][1])
         small, large = (b, a) if swap else (a, b)
         groups = {}
