@@ -1678,7 +1678,16 @@ class DataFrame(dict):
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
             na = column.is_na()
-            yield column.rank(method="min") if column.is_object() else column, dir
+            if column.is_string():
+                # Sorting only unique values and then their codes
+                # is faster than sorting strings, unless all are unique.
+                unique, _, codes = util.unique_codes(column)
+                rank = np.empty(len(unique), np.int64)
+                rank[np.argsort(unique, kind="stable")] = np.arange(len(unique))
+                column = rank[codes]
+            elif column.is_object():
+                column = column.rank(method="min")
+            yield column, dir
             # Keys are sorted by least significant first,
             # so yielding na after the values takes precedence.
             if na.any(): yield na, 1
