@@ -116,6 +116,7 @@ Fixes:
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
 - `count_unique`: Count all missing values as one, as with Numba, instead of each NaN and NaT separately
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
+- `dt.from_string`, `Vector.rank`: Fix segmentation fault for strings in some orders, e.g. two sorted runs, due to a NumPy bug
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Return ungrouped lists, as `DataFrame` does, previously staying grouped and making e.g. `head` after `aggregate` operate group-wise
 - `ListOfDicts.*`: Treat missing keys as `None` instead of raising `KeyError`

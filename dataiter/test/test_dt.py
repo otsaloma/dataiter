@@ -84,6 +84,12 @@ class TestDT:
         assert b[0] == np.datetime64("2022-11-14")
         assert np.isnat(b[1])
 
+    def test_from_string_sorted_runs(self):
+        # Used to segfault due to NumPy StringDType quicksort.
+        a = dt.new(["2022-01-01"]).repeat(128) + np.arange(128)
+        b = dt.from_string(dt.isoformat(a.concat(a)), "%Y-%m-%d")
+        assert b.equal(a.concat(a))
+
     def test_from_string_errors_strict(self):
         a = Vector(["14.11.2022", "32.11.2022"], str)
         with pytest.raises(ValueError):

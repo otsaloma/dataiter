@@ -776,7 +776,9 @@ class Vector(np.ndarray):
             return self.fast(np.repeat(1, self.length)).rank(method=method, dir=dir)
         out = np.zeros_like(self, int)
         def codes():
-            unique, inv = np.unique(self[~na], return_inverse=True)
+            # return_index=True makes np.unique use a stable sort, the default
+            # quicksort can segfault for StringDType (NumPy 2.5.4).
+            unique, _, inv = np.unique(self[~na], return_index=True, return_inverse=True)
             return inv if dir > 0 else len(unique) - 1 - inv
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038

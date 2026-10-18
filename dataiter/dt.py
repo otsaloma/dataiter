@@ -102,7 +102,9 @@ def from_string(x, format, *, errors="strict"):
         except ValueError:
             if errors == "strict": raise
             return None
-    unique, inverse = np.unique(x[~na], return_inverse=True)
+    # return_index=True makes np.unique use a stable sort, the default
+    # quicksort can segfault for StringDType (NumPy 2.5.4).
+    unique, _, inverse = np.unique(x[~na], return_index=True, return_inverse=True)
     f = np.vectorize(parse, otypes=[object])
     out[~na] = f(unique.astype(object)).astype(out.dtype)[inverse]
     valid = ~out.is_na()
