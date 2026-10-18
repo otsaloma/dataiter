@@ -156,6 +156,15 @@ def sequencify(value):
         return list(value)
     raise ValueError(f"Unexpected type: {type(value)}")
 
+def sorted_codes(x):
+    # Return codes of elements of string or integer x as ranks of unique
+    # elements in sorted order. Sorting only unique elements is faster
+    # than sorting all strings, unless all are unique.
+    unique, _, codes = unique_codes(x)
+    rank = np.empty(len(unique), np.int64)
+    rank[np.argsort(unique, kind="stable")] = np.arange(len(unique))
+    return rank[codes]
+
 def unique_codes(x):
     # Return unique elements of string or integer x, indices of their first
     # occurrences and codes of elements as indices to unique, all in order of
