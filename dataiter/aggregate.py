@@ -133,24 +133,17 @@ def count(x="", *, drop_na=False):
     >>> di.count(di.Vector([1, 2, 3]))
     >>> di.count()
     """
+    def count_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        return np.diff(starts, append=len(y))
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x or "_group_")(len)
-            aggregate.default = 0
-            return f(data[x or "_group_"],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         x and data[x].is_na().any()),
-                     default=0,
-                     nrequired=0)
-
+            return count_groups(data[x or "_group_"], group_starts(data._group_))
+        aggregate.default = 0
         aggregate.group_aware = True
         aggregate.colnames = [x] if x else []
         return aggregate
-    x = handle_na(x, drop_na)
-    return len(x)
+    return count_groups(x, np.array([0])).item(0)
 
 @composite
 def count_unique(x, *, drop_na=False):
@@ -496,44 +489,25 @@ def nth(x, index, *, drop_na=False):
     >>> di.nth(di.Vector([1, 2, 3]), 1)
     >>> di.nth("x", 1)
     """
+    def nth_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        i = n + index if index < 0 else np.full(len(n), index)
+        found = (i >= 0) & (i < n)
+        values = y[(starts + i)[found]]
+        if found.all(): return values
+        # Upcast to have missing values for groups without index, e.g. int to float.
+        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out[found] = values
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            f = (nth_apply, nth_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     index,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
-
+            return nth_groups(data[x], group_starts(data._group_))
+        aggregate.default = None
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    try:
-        return item(x[index])
-    except IndexError:
-        return x.na_value
-
-@deco.listify
-def nth_apply(x, group, index, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        try:
-            yield xg[index]
-        except IndexError:
-            yield None
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def nth_apply_numba(x, group, index, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        if 0 <= index < len(xg) or -len(xg) <= index < 0:
-            out.append(xg[index])
-        else:
-            out.append(None)
-    return out
+    return item(nth_groups(x, np.array([0]))[0])
 
 @composite
 def quantile(x, q, *, drop_na=True):
