@@ -76,6 +76,7 @@ Speed-ups:
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
 - `count`, `first`, `last`, `max`, `min`, `nth`: Speed up when grouped, especially with many groups
 - `median`, `quantile`: Speed up when grouped with very many groups
+- `count_unique`, `mode`: Speed up when grouped with very many groups
 - `mode`: Speed up for large groups
 - `regex.*`: Speed up
 - `std`, `var`: Speed up when grouped with `ddof` other than zero
@@ -126,7 +127,7 @@ Fixes:
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix infinite values switching floats to scientific notation
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
-- `count_unique`: Count all missing values as one, as with Numba, instead of each NaN and NaT separately
+- `count_unique`: Count all missing values as one instead of each NaN and NaT separately in some cases, also fixing an error for objects with missing values
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `dt.from_string`, `Vector.rank`: Fix segmentation fault for strings in some orders, e.g. two sorted runs, due to a NumPy bug
 - `dt.isoformat`: Use the same format for all elements, with fractional seconds as precise as needed, instead of omitting them for elements with zero microseconds
@@ -145,13 +146,14 @@ Fixes:
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
 - `first`, `last`, `max`, `min`, `nth`: Fix error for string vectors
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
-- `first`, `last`, `max`, `min`, `nth`: Keep data type when grouped, e.g. float32 or object, instead of converting to float64 or int64
-- `first`, `last`, `max`, `median`, `min`, `nth`, `quantile`: Return `None` instead of NaT or NaN for datetime and timedelta vectors with no values, as `mean` does
+- `first`, `last`, `max`, `min`, `mode`, `nth`: Keep data type when grouped, e.g. float32 or object, instead of converting to float64 or int64
+- `first`, `last`, `max`, `median`, `min`, `mode`, `nth`, `quantile`: Return `None` instead of NaT or NaN for datetime and timedelta vectors with no values, as `mean` does
 - `mean`, `median`, `quantile`: Fix ignoring `drop_na=False` for datetime vectors
 - `median`, `quantile`: Return missing values for groups with missing values if `drop_na=False`, as NumPy does, previously ignored for some data types
 - `mean`: Round timedelta vectors to the nearest unit instead of truncating toward zero, as when grouped, and return `None` instead of NaN for no values
 - `mean`, `std`, `sum`, `var`: Calculate in float64 also for float32 for better accuracy
 - `mode`: Return Python builtin types for vectors, as other aggregation functions do, instead of NumPy scalars
+- `mode`: Count all missing values as one if `drop_na=False`, as `count_unique` does, instead of each NaN and NaT separately
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `std`, `var`: Return zero instead of NaN for a single value with the default `ddof=0`, as NumPy does
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType

@@ -22,8 +22,8 @@
 
 import dataiter
 import functools
+import itertools
 import numpy as np
-import statistics
 
 from dataiter import deco
 from dataiter import util
@@ -156,34 +156,23 @@ def count_unique(x, *, drop_na=False):
     >>> di.count_unique(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.count_unique("x")
     """
+    def count_unique_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        group = np.repeat(np.arange(len(starts)), n)
+        codes = value_codes(y)
+        m = codes.max(initial=0) + 1
+        # Count unique pairs of group and value.
+        keys = util.unique_codes(group * m + codes)[0]
+        return np.bincount(keys // m, minlength=len(starts))
     if isinstance(x, str):
         def aggregate(data):
-            f = (count_unique_apply, count_unique_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = 0
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
-
+            return count_unique_groups(data[x], group_starts(data._group_))
+        aggregate.default = 0
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    return len(x.unique())
-
-@deco.listify
-def count_unique_apply(x, group, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        yield len(xg.unique())
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def count_unique_apply_numba(x, group, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        out.append(len(np.unique(xg)))
-    return out
+    return count_unique_groups(x, np.array([0])).item(0)
 
 def datetime_as_float(x):
     if not (x.is_datetime() or x.is_timedelta()): return x
@@ -434,55 +423,41 @@ def mode(x, *, drop_na=True):
     >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.mode("x")
     """
+    def mode_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        found = n > 0
+        if found.any():
+            group = np.repeat(np.arange(len(starts)), n)
+            codes = value_codes(y)
+            m = codes.max() + 1
+            keys, first, pairs = util.unique_codes(group * m + codes)
+            # Unique pairs of group and value are in order of first appearance
+            # and thus by group. Pick the most common pair of each group,
+            # breaking ties by first appearance, as statistics.mode does.
+            count = np.bincount(pairs)
+            pair_group = keys // m
+            pair_starts = group_starts(pair_group)
+            most = np.maximum.reduceat(count, pair_starts)
+            most = np.repeat(most, np.diff(pair_starts, append=len(keys)))
+            candidates = np.flatnonzero(count == most)
+            chosen = candidates[group_starts(pair_group[candidates])]
+            values = y[first[chosen]]
+        else:
+            values = y[:0]
+        if found.all(): return values
+        # Upcast to have missing values for empty groups, e.g. int to float.
+        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out[found] = values
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            f = (mode_apply, mode_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
-
+            return mode_groups(data[x], group_starts(data._group_))
+        aggregate.default = None
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    return item(statistics.mode(x)) if len(x) >= 1 else x.na_value
-
-@deco.listify
-def mode_apply(x, group, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        yield statistics.mode(xg) if len(xg) >= 1 else None
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def mode_apply_numba(x, group, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        if len(xg) > 0:
-            # Count runs of equal values in sorted order, breaking ties
-            # by first appearance in data, as statistics.mode does.
-            order = np.argsort(xg)
-            xs = xg[order]
-            best_count = 0
-            best_first = 0
-            i = 0
-            while i < len(xs):
-                j = i + 1
-                first = order[i]
-                while j < len(xs) and xs[j] == xs[i]:
-                    if order[j] < first:
-                        first = order[j]
-                    j += 1
-                if j - i > best_count or (j - i == best_count and first < best_first):
-                    best_count = j - i
-                    best_first = first
-                i = j
-            out.append(xg[best_first])
-        else:
-            out.append(None)
-    return out
+    return item(mode_groups(x, np.array([0]))[0])
 
 @composite
 def nth(x, index, *, drop_na=False):
@@ -653,6 +628,21 @@ def use_numba(x):
         np.issubdtype(x.dtype, np.datetime64) or
         np.issubdtype(x.dtype, np.floating) or
         np.issubdtype(x.dtype, np.integer))
+
+def value_codes(x):
+    # Return integer codes of x, equal for equal values and for all missing
+    # values. Floats are normalized first, -0.0 to 0.0 and all NaNs to one,
+    # as hashing their bits would otherwise treat those as different.
+    if x.is_object():
+        found = {}
+        return np.fromiter(map(found.setdefault, x.tolist(), itertools.count()), np.int64, len(x))
+    if x.is_float():
+        x = np.where(np.isnan(x), np.nan, x.astype(float) + 0.0).view(np.int64)
+    elif x.is_datetime() or x.is_timedelta():
+        x = x.view(np.int64)
+    elif x.is_boolean():
+        x = x.astype(np.int64)
+    return util.unique_codes(x)[2]
 
 @composite
 def var(x, *, ddof=0, drop_na=True):
