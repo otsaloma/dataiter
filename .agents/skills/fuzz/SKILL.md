@@ -23,10 +23,18 @@ implementations in Python and R: Pandas, Polars, Arrow, dplyr. Is there
 a consensus on how certain operations are done? Missing a consensus,
 favor dplyr most as reference, it's the best designed API among those.
 
-Start by reading `doc/_build/html/llms-full.txt` and work based on that,
-since that's what we recommend users point their coding agents at. If it
-doesn't exist, build the documentation first with `uv run make doc`.
-Then read the source code too as you see fit.
+Regarding slow operations, note that we don't want to optimize
+performance for just the single use-case of your current data. Look for
+a change that speeds up an operation for your current data, but then
+test other kind of data as well to make sure your suggestion would not
+introduce regressions elsewhere. For example, if you find a join slow
+for wide data with multiple integer join keys, test your suggestion also
+for long data, string keys, datetime keys, single keys etc.
+
+Start by reading `doc/_build/html/llms-full.txt` in full and work based
+on that, since that's what we recommend users point their coding agents
+at. If it doesn't exist, build the documentation first with `uv run make
+doc`. Then read the source code too as you see fit.
 
 Previously you have used the following datasets. Try something different
 this time. Find preferably something with 1–10M rows. Focus primarily on
