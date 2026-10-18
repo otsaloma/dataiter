@@ -26,6 +26,7 @@ import numpy as np
 import statistics
 
 from dataiter import deco
+from dataiter import util
 from dataiter import Vector
 
 try:
@@ -68,33 +69,34 @@ def all(x, *, drop_na=True):
     >>> di.all(di.Vector([True, True]))
     >>> di.all("x")
     """
-    return all_any(x, np.all, True, drop_na)
+    return all_any(x, np.logical_and, True, drop_na)
 
 def all_any(x, function, empty, drop_na):
-    # Replacing missing values with the result for empty input
-    # gives the same result as dropping missing values.
+    # function is np.logical_and or np.logical_or. Replacing missing values
+    # with the result for empty input gives the same result as dropping them.
+    def all_any_groups(x, starts):
+        na = x.is_na()
+        y = np.full(len(x), empty)
+        y[~na] = x[~na].as_boolean()
+        n = np.diff(starts, append=len(x))
+        out = np.full(len(starts), empty)
+        if n.any():
+            out[n > 0] = function.reduceat(y, starts[n > 0])
+        if drop_na or not na.any(): return out
+        # Without a decisive value, missing values make the result unknown.
+        has_na = np.zeros(len(starts), bool)
+        has_na[n > 0] = np.logical_or.reduceat(na, starts[n > 0])
+        out = out.astype(object)
+        out[(out == empty) & has_na] = None
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            column = data[x]
-            na = column.is_na()
-            xb = Vector.fast(np.full(len(column), empty), bool)
-            xb[~na] = column[~na].as_boolean()
-            f = (generic, generic_numba)[use_numba(xb)]
-            aggregate.default = empty
-            out = f(function)(xb, data._group_, drop_na=False, default=empty, nrequired=0)
-            if drop_na or not na.any(): return out
-            has_na = f(np.any)(na, data._group_, drop_na=False, default=False, nrequired=0)
-            # Prevent replacing the below missing values with the default.
-            aggregate.default = None
-            return [None if y == empty and z else bool(y)
-                    for y, z in zip(out, has_na)]
-
+            return all_any_groups(data[x], group_starts(data._group_))
+        aggregate.default = None
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    na = x.is_na()
-    out = function(x[~na].as_boolean()).item()
-    return None if not drop_na and out == empty and na.any() else out
+    return item(all_any_groups(x, np.array([0]))[0])
 
 @composite
 def any(x, *, drop_na=True):
@@ -111,7 +113,7 @@ def any(x, *, drop_na=True):
     >>> di.any(di.Vector([True, False]))
     >>> di.any("x")
     """
-    return all_any(x, np.any, False, drop_na)
+    return all_any(x, np.logical_or, False, drop_na)
 
 def check_not_datetime(x, name):
     if x.is_datetime():
@@ -309,24 +311,7 @@ def max(x, *, drop_na=True):
     >>> di.max(di.Vector([4, 5, 6]))
     >>> di.max("x")
     """
-    if isinstance(x, str):
-        def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.amax)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=None,
-                     nrequired=1)
-
-        aggregate.group_aware = True
-        aggregate.colnames = [x]
-        return aggregate
-    x = handle_na(x, drop_na)
-    return item(np.amax(x)) if len(x) >= 1 else x.na_value
+    return min_max(x, np.maximum, drop_na)
 
 @composite
 def mean(x, *, drop_na=True):
@@ -406,24 +391,38 @@ def min(x, *, drop_na=True):
     >>> di.min(di.Vector([4, 5, 6]))
     >>> di.min("x")
     """
+    return min_max(x, np.minimum, drop_na)
+
+def min_max(x, function, drop_na):
+    # function is np.minimum or np.maximum.
+    def min_max_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        nonempty = n > 0
+        if not nonempty.any():
+            values = y[:0]
+        elif y.is_string():
+            # reduceat doesn't support strings, reduce their sorted codes
+            # and map back to strings via a row index for each code.
+            codes = util.sorted_codes(y)
+            rows = np.empty(codes.max() + 1, int)
+            rows[codes] = np.arange(len(y))
+            values = y[rows[function.reduceat(codes, starts[nonempty])]]
+        else:
+            values = function.reduceat(y, starts[nonempty])
+        if nonempty.all(): return values
+        # Upcast to have missing values for empty groups, e.g. int to float.
+        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out[nonempty] = values
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.amin)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=None,
-                     nrequired=1)
-
+            return min_max_groups(data[x], group_starts(data._group_))
+        aggregate.default = None
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    return item(np.amin(x)) if len(x) >= 1 else x.na_value
+    return item(min_max_groups(x, np.array([0]))[0])
 
 @composite
 def mode(x, *, drop_na=True):
