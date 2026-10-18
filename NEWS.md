@@ -1,7 +1,6 @@
 # PENDING: Dataiter 1.5
 
 New:
-- `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
 - `all`, `any`: Add `drop_na` argument, default true
 - `DataFrame.compare`: No longer experimental
 - `DataFrame.expand_grid`: New classmethod
@@ -47,6 +46,9 @@ New:
 - `Vector.shift`: New method to shift elements
 - `Vector.str.partition`, `Vector.str.rpartition`: New functions, wrapping `np.strings.partition` and `np.strings.rpartition`
 - `Vector.str.slice`: New function, wrapping `np.strings.slice` with support for missing values
+
+Breaking changes:
+- `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
