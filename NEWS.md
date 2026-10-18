@@ -76,6 +76,7 @@ Speed-ups:
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
 - `mode`: Speed up for large groups
 - `regex.*`: Speed up
+- `std`, `var`: Speed up when grouped with `ddof` other than zero
 - `Vector.unique`: Speed up for strings
 
 Fixes:
@@ -144,7 +145,7 @@ Fixes:
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
 - `mean`: Fix ignoring `drop_na=False` for datetime vectors
 - `mean`: Round timedelta vectors to the nearest unit instead of truncating toward zero, as when grouped, and return `None` instead of NaN for no values
-- `mean`: Calculate in float64 also for float32 for better accuracy
+- `mean`, `std`, `sum`, `var`: Calculate in float64 also for float32 for better accuracy
 - `mode`: Return Python builtin types for vectors, as other aggregation functions do, instead of NumPy scalars
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `std`, `var`: Return zero instead of NaN for a single value with the default `ddof=0`, as NumPy does

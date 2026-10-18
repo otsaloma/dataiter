@@ -594,37 +594,23 @@ def std(x, *, ddof=0, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.std``, see the NumPy documentation for details:
+    Equivalent to ``numpy.std``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.std.html
 
     >>> di.std(di.Vector([3, 6, 7]))
     >>> di.std("x")
     """
     if isinstance(x, str):
+        f = var(x, ddof=ddof, drop_na=drop_na)
         def aggregate(data):
             check_not_datetime(data[x], "std")
-            if ddof == 0:
-                # Numba doesn't support the ddof argument,
-                # so can only handle the default ddof=0.
-                f = (generic, generic_numba)
-                f = select(f, data, x)(np.std)
-            else:
-                f = generic(np.std, ddof=ddof)
-            aggregate.default = np.nan
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=np.nan,
-                     nrequired=ddof+1)
-
+            return np.sqrt(f(data))
+        aggregate.default = np.nan
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "std")
-    x = handle_na(x, drop_na)
-    return np.std(x, ddof=ddof).item() if len(x) >= ddof + 1 else np.nan
+    return np.sqrt(var(x, ddof=ddof, drop_na=drop_na)).item()
 
 @composite
 def sum(x, *, drop_na=True):
@@ -637,26 +623,26 @@ def sum(x, *, drop_na=True):
     >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
     """
+    def sum_groups(x, starts):
+        check_not_datetime(x, "sum")
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        # Like np.sum, promote small integers and booleans to int64,
+        # but unlike it, sum also float32 in float64 for accuracy.
+        dtype = float if y.dtype.kind == "f" else np.sum(y[:0]).dtype
+        out = np.zeros(len(starts), dtype)
+        if n.any():
+            # reduceat gives the next element for empty groups, skip them.
+            out[n > 0] = np.add.reduceat(y.astype(dtype, copy=False), starts[n > 0])
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            check_not_datetime(data[x], "sum")
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.sum)
-            aggregate.default = 0
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=0,
-                     nrequired=0)
-
+            return sum_groups(data[x], group_starts(data._group_))
+        aggregate.default = 0
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    check_not_datetime(x, "sum")
-    x = handle_na(x, drop_na)
-    return np.sum(x).item()
+    return sum_groups(x, np.array([0])).item(0)
 
 def use_numba(x):
     # Numba can't handle all dtypes, use conditionally.
@@ -679,37 +665,33 @@ def var(x, *, ddof=0, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.var``, see the NumPy documentation for details:
+    Equivalent to ``numpy.var``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.var.html
 
     >>> di.var(di.Vector([3, 6, 7]))
     >>> di.var("x")
     """
+    def var_groups(x, starts):
+        check_not_datetime(x, "var")
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if n.any():
+            # reduceat gives the next element for empty groups, skip them.
+            s, k = starts[n > 0], n[n > 0]
+            mean = np.add.reduceat(y, s, dtype=float) / k
+            with np.errstate(divide="ignore", invalid="ignore"):
+                out[n > 0] = np.add.reduceat((y - np.repeat(mean, k))**2, s) / (k - ddof)
+            out[n <= ddof] = np.nan
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            check_not_datetime(data[x], "var")
-            if ddof == 0:
-                # Numba doesn't support the ddof argument,
-                # so can only handle the default ddof=0.
-                f = (generic, generic_numba)
-                f = select(f, data, x)(np.var)
-            else:
-                f = generic(np.var, ddof=ddof)
-            aggregate.default = np.nan
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=np.nan,
-                     nrequired=ddof+1)
-
+            return var_groups(data[x], group_starts(data._group_))
+        aggregate.default = np.nan
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    check_not_datetime(x, "var")
-    x = handle_na(x, drop_na)
-    return np.var(x, ddof=ddof).item() if len(x) >= ddof + 1 else np.nan
+    return var_groups(x, np.array([0])).item(0)
 
 def yield_groups(x, group, drop_na):
     # Groups must be contiguous for this to work!
