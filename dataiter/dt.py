@@ -150,12 +150,9 @@ def from_string(x, format, *, errors="strict"):
         except ValueError:
             if errors == "strict": raise
             return None
-    # return_index=True makes np.unique use a stable sort, the default
-    # quicksort can segfault for StringDType (NumPy 2.5.4).
-    # https://github.com/numpy/numpy/issues/33089
-    unique, _, inverse = np.unique(x[~na], return_index=True, return_inverse=True)
+    unique, _, codes = util.unique_codes(x[~na])
     f = np.vectorize(parse, otypes=[object])
-    out[~na] = f(unique.astype(object)).astype(out.dtype)[inverse]
+    out[~na] = f(unique.astype(object)).astype(out.dtype)[codes]
     valid = ~out.is_na()
     if valid.any() and (out[valid] == out[valid].as_date()).all():
         out = out.as_date()

@@ -1288,7 +1288,13 @@ class DataFrame(dict):
         row = np.empty(self.nrow, int)
         row[keys._index_] = np.repeat(rank, np.diff(starts, append=self.nrow))
         wide = self.select(*ids).slice(firsts.sort())
-        unique, first, code = np.unique(self[names], return_index=True, return_inverse=True)
+        if self[names].is_string():
+            # np.unique sorts, which is slow for strings. unique_codes gives
+            # unique values in order of appearance instead of sorted, which
+            # doesn't matter, as columns are ordered by first below.
+            unique, first, code = util.unique_codes(self[names])
+        else:
+            unique, first, code = np.unique(self[names], return_index=True, return_inverse=True)
         order = np.lexsort((row, code))
         unique_rows = np.ones(len(order), bool)
         unique_rows[1:] = (code[order][1:] != code[order][:-1]) | (row[order][1:] != row[order][:-1])
