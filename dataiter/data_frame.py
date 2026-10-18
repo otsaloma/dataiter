@@ -1864,6 +1864,7 @@ class DataFrame(dict):
             if row not in seen:
                 seen.add(row)
                 keep.append(i)
+        keep = np.array(keep, np.int64)
         for colname, column in self.items():
             yield colname, column[keep]
 
