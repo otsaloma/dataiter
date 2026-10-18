@@ -54,8 +54,6 @@ formatting and limits for printing.
 :attr:`dataiter.PRINT_MAX_WIDTH`
 :attr:`dataiter.PRINT_THOUSAND_SEPARATOR`
 :attr:`dataiter.PRINT_TRUNCATE_WIDTH`
-:attr:`dataiter.USE_NUMBA`
-:attr:`dataiter.USE_NUMBA_CACHE`
 
 .. automodule:: dataiter
    :members: all,
@@ -89,6 +87,4 @@ formatting and limits for printing.
              PRINT_MAX_ROWS,
              PRINT_MAX_WIDTH,
              PRINT_THOUSAND_SEPARATOR,
-             PRINT_TRUNCATE_WIDTH,
-             USE_NUMBA,
-             USE_NUMBA_CACHE
+             PRINT_TRUNCATE_WIDTH

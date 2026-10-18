@@ -29,7 +29,6 @@ import itertools
 import lzma
 import math
 import numpy as np
-import os
 import shutil
 import string
 import wcwidth
@@ -128,20 +127,6 @@ def length(value):
 
 def makedirs_for_file(path):
     return Path(path).parent.mkdir(parents=True, exist_ok=True)
-
-def parse_env_boolean(name):
-    return {
-        "1":     True,
-        "t":     True,
-        "true":  True,
-        "y":     True,
-        "yes":   True,
-        "0":     False,
-        "f":     False,
-        "false": False,
-        "n":     False,
-        "no":    False,
-    }[os.environ[name].strip().lower()]
 
 def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))

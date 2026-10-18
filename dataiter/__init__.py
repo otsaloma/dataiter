@@ -20,10 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import contextlib
 import numpy as np
-
-from dataiter import util
 
 __version__ = "1.4"
 
@@ -66,43 +63,10 @@ PRINT_THOUSAND_SEPARATOR = ""
 #: rendered at the cut point.
 PRINT_TRUNCATE_WIDTH = 36
 
-#: ``True`` to use Numba, if available, to speed up :doc:`aggregations
-#: </aggregation>`, ``False`` to only use pure Python code.
-USE_NUMBA = False
-
-#: ``True`` to use Numba cache for JIT-compiled :doc:`aggregations
-#: </aggregation>`, ``False`` to only keep compiled code in memory for the
-#: duration of the session.
-USE_NUMBA_CACHE = True
-
 if not np.__version__.startswith("2."):
     raise Exception("NumPy 2.x required")
 
-with contextlib.suppress(LookupError):
-    USE_NUMBA_CACHE = util.parse_env_boolean("DATAITER_USE_NUMBA_CACHE")
-
-try:
-    # Force Numba on or off if environment variable defined.
-    USE_NUMBA = util.parse_env_boolean("DATAITER_USE_NUMBA")
-except LookupError:
-    with contextlib.suppress(Exception):
-        # Use Numba automatically if found
-        # and calling a trivial function works.
-        import numba
-        try:
-            @numba.njit(cache=USE_NUMBA_CACHE)
-            def check(x):
-                return x**2
-            assert check(10) == 100
-            USE_NUMBA = True
-        except Exception as error:
-            print(f"Numba found, but disabled due to error: {error!s}")
-
-globals().pop("check", None)
-globals().pop("contextlib", None)
 globals().pop("np", None)
-globals().pop("numba", None)
-globals().pop("util", None)
 
 from dataiter import dtypes
 from dataiter.vector import Vector

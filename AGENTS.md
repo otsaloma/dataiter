@@ -54,9 +54,8 @@ Do not complain about these or spend too much time investigating.
   goes to reordering all columns by group, since the functions given
   receive full rows and can access any column, and the rest to calling a
   Python function per group. Significantly speeding it up would require
-  Numba-accelerated helper functions like those for
-  `DataFrame.aggregate`, which declare the columns they use and avoid
-  per-group Python calls. That would be a big change, currently not
+  vectorized helper functions like those for `DataFrame.aggregate`,
+  which declare the columns they use and avoid per-group Python calls. That would be a big change, currently not
   considered worth doing, as grouped modify is not commonly used.
   Rejected alternative: reordering columns lazily upon first access (too
   much magic in a data frame subclass).

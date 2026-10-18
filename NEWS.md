@@ -50,6 +50,7 @@ New:
 Breaking changes:
 - `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
 - Require PyArrow >= 26
+- Drop optional use of Numba in favor of vectorized aggregation helper functions in plain NumPy, remove `USE_NUMBA` and `USE_NUMBA_CACHE`
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
@@ -58,8 +59,7 @@ Speed-ups:
 - `DataFrame.full_join`: Speed up by matching rows only once
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
-- `DataFrame.aggregate`: Speed up helper functions, e.g. `mode`, dropping missing values in columns not handled by Numba, e.g. strings
-- `DataFrame.aggregate`: Speed up helper functions, e.g. `first`, for columns not handled by Numba, e.g. strings, or without Numba
+- `DataFrame.aggregate`: Speed up helper functions for columns previously not handled by Numba, e.g. strings and timedeltas
 - `DataFrame.aggregate`, `DataFrame.count`, `DataFrame.filter`, `DataFrame.head`, `DataFrame.modify`, `DataFrame.split`, `DataFrame.tail`: Speed up grouping, especially by strings
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.pivot_longer`: Speed up, especially with many columns

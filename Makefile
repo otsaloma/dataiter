@@ -73,8 +73,7 @@ test-installed:
 	cd && python -c "import dataiter; dataiter.ListOfDicts()"
 
 validate:
-	cd validation && DATAITER_USE_NUMBA=false ./validate-df.sh
-	cd validation && DATAITER_USE_NUMBA=true ./validate-df.sh
+	cd validation && ./validate-df.sh
 	cd validation && ./validate-ld.sh
 
 .PHONY: check clean doc doc-check doc-open doc-watch install install-cli publish release test test-installed validate

@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import dataiter
 import datetime
 import numpy as np
 import pytest
@@ -43,7 +42,6 @@ from dataiter.aggregate import quantile
 from dataiter.aggregate import std
 from dataiter.aggregate import sum
 from dataiter.aggregate import var
-from unittest.mock import patch
 
 T = True
 F = False
@@ -178,36 +176,27 @@ TEST_MATRIX = [
 
 class TestAggregate:
 
-    @pytest.mark.parametrize("use_numba", [False, True])
     @pytest.mark.parametrize("function,input,output", TEST_MATRIX)
-    def test_aggregate(self, function, input, output, use_numba):
-        if use_numba and not dataiter.USE_NUMBA:
-            pytest.skip("No Numba")
-        with patch("dataiter.USE_NUMBA", use_numba):
-            data = DataFrame(g=GROUPS, a=input)
-            stat = data.group_by("g").aggregate(a=function("a"))
-            expected = Vector(output)
-            try:
-                assert stat.a.equal(expected)
-            except AssertionError:
-                print("")
-                print("Function:", function.__name__)
-                print("Numba:", use_numba)
-                print(data)
-                print("Expected:")
-                print(expected)
-                print("Got:")
-                print(stat.a)
-                raise
+    def test_aggregate(self, function, input, output):
+        data = DataFrame(g=GROUPS, a=input)
+        stat = data.group_by("g").aggregate(a=function("a"))
+        expected = Vector(output)
+        try:
+            assert stat.a.equal(expected)
+        except AssertionError:
+            print("")
+            print("Function:", function.__name__)
+            print(data)
+            print("Expected:")
+            print(expected)
+            print("Got:")
+            print(stat.a)
+            raise
 
-    @pytest.mark.parametrize("use_numba", [False, True])
-    def test_aggregate_count(self, use_numba):
-        if use_numba and not dataiter.USE_NUMBA:
-            pytest.skip("No Numba")
-        with patch("dataiter.USE_NUMBA", use_numba):
-            data = DataFrame(g=GROUPS)
-            stat = data.group_by("g").aggregate(n=count())
-            assert (stat.n == 2).all()
+    def test_aggregate_count(self):
+        data = DataFrame(g=GROUPS)
+        stat = data.group_by("g").aggregate(n=count())
+        assert (stat.n == 2).all()
 
     def test_all(self):
         assert all(EMPTY_VECTOR)
@@ -220,14 +209,10 @@ class TestAggregate:
         assert all(Vector([1.0, NaN]), drop_na=False) is None
         assert all(Vector([0.0, NaN]), drop_na=False) is False
 
-    @pytest.mark.parametrize("use_numba", [False, True])
-    def test_all_na_grouped(self, use_numba):
-        if use_numba and not dataiter.USE_NUMBA:
-            pytest.skip("No Numba")
-        with patch("dataiter.USE_NUMBA", use_numba):
-            data = DataFrame(g=[1, 1, 2, 2, 3, 3], a=[1.0, NaN, 0.0, NaN, 1.0, 1.0])
-            stat = data.group_by("g").aggregate(a=all("a", drop_na=False))
-            assert stat.a.tolist() == [None, False, True]
+    def test_all_na_grouped(self):
+        data = DataFrame(g=[1, 1, 2, 2, 3, 3], a=[1.0, NaN, 0.0, NaN, 1.0, 1.0])
+        stat = data.group_by("g").aggregate(a=all("a", drop_na=False))
+        assert stat.a.tolist() == [None, False, True]
 
     def test_any(self):
         assert not any(EMPTY_VECTOR)
@@ -240,14 +225,10 @@ class TestAggregate:
         assert any(Vector([0.0, NaN]), drop_na=False) is None
         assert any(Vector([1.0, NaN]), drop_na=False) is True
 
-    @pytest.mark.parametrize("use_numba", [False, True])
-    def test_any_na_grouped(self, use_numba):
-        if use_numba and not dataiter.USE_NUMBA:
-            pytest.skip("No Numba")
-        with patch("dataiter.USE_NUMBA", use_numba):
-            data = DataFrame(g=[1, 1, 2, 2, 3, 3], a=[0.0, NaN, 1.0, NaN, 0.0, 0.0])
-            stat = data.group_by("g").aggregate(a=any("a", drop_na=False))
-            assert stat.a.tolist() == [None, True, False]
+    def test_any_na_grouped(self):
+        data = DataFrame(g=[1, 1, 2, 2, 3, 3], a=[0.0, NaN, 1.0, NaN, 0.0, 0.0])
+        stat = data.group_by("g").aggregate(a=any("a", drop_na=False))
+        assert stat.a.tolist() == [None, True, False]
 
     def test_count(self):
         assert count(EMPTY_VECTOR) == 0

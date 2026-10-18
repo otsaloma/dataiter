@@ -20,31 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import dataiter
 import functools
 import itertools
 import numpy as np
 
-from dataiter import deco
 from dataiter import util
 from dataiter import Vector
-
-try:
-    assert dataiter.USE_NUMBA
-    from numba import njit
-    from numba import types
-    from numba.extending import overload
-except Exception:
-    # We need the decorators used to exist to avoid import time errors,
-    # but actual calls to the below shouldn't be made (see 'select').
-    def dummy_jit(*args, **kwargs):
-        def outer_wrapper(function):
-            def inner_wrapper(*args, **kwargs):
-                print("Using dummy jit, this shouldn't happen")
-                return function(*args, **kwargs)
-            return inner_wrapper
-        return outer_wrapper
-    njit = overload = dummy_jit
 
 def composite(function):
     @functools.wraps(function)
@@ -199,40 +180,11 @@ def first(x, *, drop_na=False):
     """
     return nth(x, 0, drop_na=drop_na)
 
-@functools.lru_cache(256)
-def generic(function, **kwargs):
-    @deco.listify
-    def aggregate(x, group, drop_na, default, nrequired):
-        for xg in yield_groups(x, group, drop_na):
-            yield function(xg, **kwargs) if len(xg) >= nrequired else default
-    return aggregate
-
-@functools.lru_cache(256)
-def generic_numba(function):
-    @njit(cache=dataiter.USE_NUMBA_CACHE)
-    def aggregate(x, group, drop_na, default, nrequired):
-        out = []
-        for xg in yield_groups_numba(x, group, drop_na):
-            # A conditional expression here (x if y else z) would be
-            # miscompiled for datetimes, returning wrong values and breaking
-            # also other functions compiled later that return lists of
-            # datetimes. This is likely a bug in Numba (observed on version
-            # 0.67 with Python 3.14), but easy to work around.
-            if len(xg) >= nrequired:
-                out.append(function(xg))
-            else:
-                out.append(default)
-        return out
-    return aggregate
-
 def group_starts(group):
     # Return starts of groups, group being contiguous group indices per row.
     change = np.ones(len(group), bool)
     change[1:] = group[1:] != group[:-1]
     return np.flatnonzero(change)
-
-def handle_na(x, drop_na):
-    return x[~x.is_na()] if drop_na else x
 
 def handle_na_groups(x, starts, drop_na):
     # Return x and starts of its groups, dropping missing values if drop_na.
@@ -242,29 +194,6 @@ def handle_na_groups(x, starts, drop_na):
     if valid.all(): return x, starts
     nvalid_before = np.cumsum(valid) - valid
     return x[valid], nvalid_before[starts]
-
-def is_na_item_numba(x):
-    raise NotImplementedError
-
-@overload(is_na_item_numba)
-def is_na_item_numba_overload(x):
-    # "Called at compile-time with the types of the function's runtime arguments."
-    # https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-generated-jit
-    # https://numba.readthedocs.io/en/stable/extending/high-level.html#implementing-functions
-    if isinstance(x, types.Float):
-        return lambda x: np.isnan(x)
-    if isinstance(x, types.NPDatetime):
-        return lambda x: np.isnat(x)
-    if isinstance(x, types.UnicodeType):
-        return lambda x: x == ""
-    return lambda x: False
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def is_na_numba(x):
-    na = np.full(len(x), False)
-    for i in range(len(x)):
-        na[i] = is_na_item_numba(x[i])
-    return na
 
 def item(x):
     # NumPy returns strings as str, other scalars as NumPy generics.
@@ -546,9 +475,6 @@ def quantile(x, q, *, drop_na=True):
         return aggregate
     return quantile_groups(x, np.array([0])).item(0)
 
-def select(functions, data, name):
-    return functions[use_numba(data[name])]
-
 def sort_groups(x, starts):
     # Return float x sorted within groups, NaN last.
     import pyarrow as pa
@@ -616,19 +542,6 @@ def sum(x, *, drop_na=True):
         return aggregate
     return sum_groups(x, np.array([0])).item(0)
 
-def use_numba(x):
-    # Numba can't handle all dtypes, use conditionally.
-    # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#str
-    # NumPy considers timedelta a subtype of integer, but our Numba code
-    # doesn't handle missing timedeltas or mixing them with numbers.
-    if np.issubdtype(x.dtype, np.timedelta64):
-        return False
-    return dataiter.USE_NUMBA and (
-        np.issubdtype(x.dtype, np.bool_) or
-        np.issubdtype(x.dtype, np.datetime64) or
-        np.issubdtype(x.dtype, np.floating) or
-        np.issubdtype(x.dtype, np.integer))
-
 def value_codes(x):
     # Return integer codes of x, equal for equal values and for all missing
     # values. Floats are normalized first, -0.0 to 0.0 and all NaNs to one,
@@ -679,30 +592,3 @@ def var(x, *, ddof=0, drop_na=True):
         aggregate.colnames = [x]
         return aggregate
     return var_groups(x, np.array([0])).item(0)
-
-def yield_groups(x, group, drop_na):
-    # Groups must be contiguous for this to work!
-    if len(x) == 0: return
-    if drop_na:
-        valid = ~x.is_na()
-    bounds = (np.flatnonzero(group[1:] != group[:-1]) + 1).tolist()
-    for i, j in zip([0] + bounds, bounds + [len(x)]):
-        xij = x[i:j]
-        if drop_na:
-            xij = xij[valid[i:j]]
-        yield xij
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def yield_groups_numba(x, group, drop_na):
-    # Groups must be contiguous for this to work!
-    i = 0
-    n = len(x)
-    out = []
-    for j in range(1, n + 1):
-        if j < n and group[j] == group[i]: continue
-        xij = x[i:j]
-        if drop_na:
-            xij = xij[~is_na_numba(xij)]
-        out.append(xij)
-        i = j
-    return out

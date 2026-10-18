@@ -11,7 +11,6 @@ import uuid
 
 from dataiter import test
 from statistics import mean
-from unittest.mock import patch
 
 @functools.cache
 def _data_frame(path, nrow):
@@ -79,26 +78,14 @@ def data_frame_aggregate_100000_lambda():
     return time.time() - start
 
 def data_frame_aggregate_100000_short():
-    with patch("dataiter.USE_NUMBA", False):
-        data = data_frame_random(1_000_000, 100_000)
-        start = time.time()
-        (data
-         .group_by("g")
-         .aggregate(
-             a_mean=di.mean("a"),
-             a_std=di.std("a")))
-        return time.time() - start
-
-def data_frame_aggregate_100000_short_numba():
-    with patch("dataiter.USE_NUMBA", True):
-        data = data_frame_random(1_000_000, 100_000)
-        start = time.time()
-        (data
-         .group_by("g")
-         .aggregate(
-             a_mean=di.mean("a"),
-             a_std=di.std("a")))
-        return time.time() - start
+    data = data_frame_random(1_000_000, 100_000)
+    start = time.time()
+    (data
+     .group_by("g")
+     .aggregate(
+         a_mean=di.mean("a"),
+         a_std=di.std("a")))
+    return time.time() - start
 
 def data_frame_filter_is_in_1000():
     data = data_frame("vehicles.csv")
