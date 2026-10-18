@@ -791,9 +791,9 @@ class DataFrame(dict):
     def _get_join_codes(self, other, by1, by2):
         # Return int64 codes for rows of self and other, equal for equal
         # keys and -1 for rows that can't match, i.e. missing values in by.
-        # Non-numeric columns are encoded together via a dict of tuples,
-        # the result of which is combined arithmetically with numeric
-        # and datetime columns.
+        # String columns are encoded as codes and other non-numeric columns
+        # together via a dict of tuples, the results of which are combined
+        # arithmetically with numeric and datetime columns.
         a_na = np.zeros(self.nrow, bool)
         b_na = np.zeros(other.nrow, bool)
         for colname1, colname2 in zip(by1, by2):
@@ -801,9 +801,14 @@ class DataFrame(dict):
             b_na |= other[colname2].is_na()
         numeric, hashable = [], []
         for colname1, colname2 in zip(by1, by2):
-            pair = self[colname1][~a_na], other[colname2][~b_na]
-            is_numeric = all(x.dtype.kind in "biufcmM" for x in pair)
-            (numeric if is_numeric else hashable).append(pair)
+            a, b = self[colname1][~a_na], other[colname2][~b_na]
+            if a.is_string() and b.is_string():
+                codes = util.unique_codes(np.concatenate([a, b]))[2]
+                numeric.append((codes[:len(a)], codes[len(a):]))
+            elif all(x.dtype.kind in "biufcmM" for x in (a, b)):
+                numeric.append((a, b))
+            else:
+                hashable.append((a, b))
         if hashable:
             numeric.append(self._get_join_codes_hashable(hashable))
         a, b = self._get_join_codes_numeric(numeric)
