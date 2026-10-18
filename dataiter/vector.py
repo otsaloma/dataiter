@@ -1093,7 +1093,10 @@ class Vector(np.ndarray):
         >>> vector.unique()
         """
         if self.is_string():
-            # Hashing is faster than NumPy's sorting of strings.
+            # Hashing is faster than NumPy's sorting of strings. A dict beats
+            # Arrow's per-call overhead for small inputs, e.g. many groups.
+            if self.length < 1000:
+                return self.fast(list(dict.fromkeys(np.ndarray.tolist(self))), self.dtype)
             return util.unique_codes(self)[0]
         u, indices = np.unique(self, return_index=True)
         return self[indices.sort()]
