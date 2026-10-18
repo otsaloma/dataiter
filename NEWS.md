@@ -49,6 +49,7 @@ New:
 
 Breaking changes:
 - `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
+- Require PyArrow >= 26
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
@@ -66,7 +67,7 @@ Speed-ups:
 - `DataFrame.unique`: Speed up with string columns when keeping many rows of wide data
 - `DataFrame.unique`: Speed up with string and datetime or timedelta columns
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
-- `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_csv`, `DataFrame.write_parquet`: Speed up strings with PyArrow 26 or later
+- `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_csv`, `DataFrame.write_parquet`: Speed up strings
 - `dt.day`, `dt.hour`, `dt.isoweekday`, `dt.microsecond`, `dt.minute`, `dt.month`, `dt.quarter`, `dt.second`, `dt.weekday`, `dt.year`: Speed up
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`: Speed up

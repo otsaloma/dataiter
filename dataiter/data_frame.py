@@ -1742,14 +1742,7 @@ class DataFrame(dict):
         >>> data.to_arrow()
         """
         import pyarrow as pa
-        data = []
-        for column in self.columns:
-            na = np.asarray(column.is_na())
-            try:
-                data.append(pa.array(np.asarray(column), mask=na))
-            except pa.ArrowNotImplementedError:
-                # PyArrow < 26 doesn't support StringDType.
-                data.append(pa.array(column.astype(object), mask=na))
+        data = [pa.array(np.asarray(x), mask=np.asarray(x.is_na())) for x in self.columns]
         return pa.table(data, names=self.colnames)
 
     def to_json(self, **kwargs):

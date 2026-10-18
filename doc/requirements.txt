@@ -2,7 +2,7 @@ attd==1.0
 jinja2==3.1.6
 numpy==2.5.3
 pandas==3.0.5
-pyarrow==25.0.1
+pyarrow==26.0.0
 sphinx==8.1.3
 sphinx-llm==1.1.0
 sphinx-rtd-theme==3.1.0
