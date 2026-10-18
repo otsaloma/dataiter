@@ -41,6 +41,7 @@ this time. Find preferably something with 1–10M rows. Focus primarily on
 tabular data and the `DataFrame` class.
 
 - Backblaze hard drive stats (daily SMART snapshots)
+- BLS QCEW employment and wages (annual and quarterly single files, area, industry, ownership and aggregation level titles)
 - Chicago crimes
 - EPA AQS air quality (hourly ozone, daily PM2.5, daily AQI by county, sites, monitors)
 - Citi Bike GBFS station feeds
