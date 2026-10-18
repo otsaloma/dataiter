@@ -241,8 +241,23 @@ def generic_numba(function):
         return out
     return aggregate
 
+def group_starts(group):
+    # Return starts of groups, group being contiguous group indices per row.
+    change = np.ones(len(group), bool)
+    change[1:] = group[1:] != group[:-1]
+    return np.flatnonzero(change)
+
 def handle_na(x, drop_na):
     return x[~x.is_na()] if drop_na else x
+
+def handle_na_groups(x, starts, drop_na):
+    # Return x and starts of its groups, dropping missing values if drop_na.
+    # Groups can be left empty, i.e. their start is the next group's start.
+    if not drop_na: return x, starts
+    valid = ~x.is_na()
+    if valid.all(): return x, starts
+    nvalid_before = np.cumsum(valid) - valid
+    return x[valid], nvalid_before[starts]
 
 def is_na_item_numba(x):
     raise NotImplementedError
@@ -321,33 +336,28 @@ def mean(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.mean``, see the NumPy documentation for details:
+    Equivalent to ``numpy.mean``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.mean.html
 
     >>> di.mean(di.Vector([1, 2, 10]))
     >>> di.mean("x")
     """
+    def mean_groups(x, starts):
+        y, starts = handle_na_groups(datetime_as_float(x), starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if n.any():
+            # reduceat gives the next element for empty groups, skip them.
+            out[n > 0] = np.add.reduceat(y, starts[n > 0], dtype=float) / n[n > 0]
+        return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.mean)
-            aggregate.default = np.nan
-            out = f(datetime_as_float(data[x]),
-                    data._group_,
-                    drop_na=(
-                        drop_na and
-                        data[x].is_na().any()),
-                    default=np.nan,
-                    nrequired=1)
-            return datetime_from_float(out, data[x])
-
+            return mean_groups(data[x], group_starts(data._group_))
+        aggregate.default = np.nan
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    if x.is_datetime():
-        return datetime_from_float(mean(datetime_as_float(x)), x).item()
-    return np.mean(x).item() if len(x) >= 1 else np.nan
+    return mean_groups(x, np.array([0])).item(0)
 
 @composite
 def median(x, *, drop_na=True):
