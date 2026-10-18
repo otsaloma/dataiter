@@ -100,6 +100,13 @@ def data_frame_aggregate_100000_short_numba():
              a_std=di.std("a")))
         return time.time() - start
 
+def data_frame_filter_is_in_1000():
+    data = data_frame("vehicles.csv")
+    models = data.model.unique()[:1000].tolist()
+    start = time.time()
+    data.filter(model=models)
+    return time.time() - start
+
 def data_frame_full_join():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "model").unique()
@@ -118,12 +125,50 @@ def data_frame_left_join():
     data.left_join(meta, "make", "model")
     return time.time() - start
 
+def data_frame_left_join_int():
+    data = data_frame("vehicles.csv")
+    meta = data.select("id").unique()
+    meta.random = np.random.random(meta.nrow)
+    start = time.time()
+    data.left_join(meta, "id")
+    return time.time() - start
+
+def data_frame_left_join_mixed():
+    data = data_frame("vehicles.csv")
+    meta = data.select("make", "year").unique()
+    meta.random = np.random.random(meta.nrow)
+    start = time.time()
+    data.left_join(meta, "make", "year")
+    return time.time() - start
+
+def data_frame_left_join_to_larger():
+    meta = data_frame("vehicles.csv")
+    meta.uuid = [str(uuid.uuid4()) for i in range(meta.nrow)]
+    data = meta.select("uuid").head(300)
+    start = time.time()
+    data.left_join(meta, "uuid")
+    return time.time() - start
+
 def data_frame_modify_grouped():
     data = data_frame("vehicles.csv")
     start = time.time()
     (data
      .group_by("make", "model")
      .modify(hwy_share=lambda x: x.hwy / x.hwy.sum()))
+    return time.time() - start
+
+def data_frame_pivot_longer():
+    data = (data_frame("vehicles.csv")
+            .unique("make", "model", "year")
+            .pivot_wider(ids=["model", "year"], names="make", values="hwy"))
+    start = time.time()
+    data.pivot_longer(ids=["model", "year"], names="make", values="hwy")
+    return time.time() - start
+
+def data_frame_pivot_wider():
+    data = data_frame("vehicles.csv").unique("make", "model", "year")
+    start = time.time()
+    data.pivot_wider(ids=["model", "year"], names="make", values="hwy")
     return time.time() - start
 
 def data_frame_read_csv():
