@@ -200,7 +200,12 @@ def isoweek(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.isoweek(x)
     """
-    return _pull_int(x, lambda y: [z.isocalendar()[1] for z in y.astype(object)])
+    def f(y):
+        # ISO week is the week of the Thursday of the same Monday-start week.
+        y = y.astype("M8[D]")
+        thursday = y - ((y.astype(int) + 3) % 7).astype("m8[D]") + np.timedelta64(3, "D")
+        return (thursday - thursday.astype("M8[Y]").astype("M8[D]")).astype(int) // 7 + 1
+    return _pull_int(x, f)
 
 def isoweekday(x):
     """
