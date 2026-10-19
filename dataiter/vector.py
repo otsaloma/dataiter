@@ -541,8 +541,17 @@ class Vector(np.ndarray):
         if self.is_string() and len(values) >= 10:
             # StringDType has hasobject set, so np.isin never sorts,
             # but compares one value at a time, slow for many values.
-            values = set(values)
-            return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
+            # Hash values instead, with a set for small inputs, as it beats
+            # Arrow's per-call overhead, e.g. many groups. Non-strings can't
+            # match, so drop them for Arrow.
+            if self.length < 1000:
+                values = set(values)
+                return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
+            import pyarrow as pa
+            import pyarrow.compute as pc
+            values = pa.array([x for x in values if isinstance(x, str)], pa.large_string())
+            found = pc.is_in(pa.array(np.asarray(self), pa.large_string()), value_set=values)
+            return self.fast(found.to_numpy(zero_copy_only=False), bool)
         return self.fast(np.isin(self, values), bool)
 
     def is_integer(self):
