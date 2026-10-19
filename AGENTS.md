@@ -52,7 +52,7 @@ Do not complain about these or spend too much time investigating.
   interning (would need a second string type).
 
 - Grouped `DataFrame.modify` is slow for large and wide data frames,
-  e.g. 2.7 s for 3M rows, 24 columns and 8k groups. Most of the time
+  e.g. 1.2 s for 3M rows, 24 columns and 8k groups. Most of the time
   goes to reordering all columns by group, since the functions given
   receive full rows and can access any column, and the rest to calling a
   Python function per group. Significantly speeding it up would require
@@ -65,7 +65,7 @@ Do not complain about these or spend too much time investigating.
 
 - `DataFrame` methods return new data frames with all columns copied,
   which makes long method chains on large and wide data frames slow,
-  e.g. 0.34 s per `modify` for 3.4M rows and 101 columns. This is by
+  e.g. 0.2 s per `modify` for 3.4M rows and 101 columns. This is by
   design: it's consistent (no Pandas-style duality of copy-returning and
   in-place methods), safe (columns are mutable NumPy arrays, so sharing
   them would leak in-place edits between data frames) and what enables
