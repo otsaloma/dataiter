@@ -1370,7 +1370,7 @@ class DataFrame(dict):
         mem = DataFrame()
         for name, column in self.items():
             new = DataFrame(column=name)
-            new.dtype = str(column.dtype)
+            new.dtype = column.dtype_label
             new.item_size = column.itemsize
             new.total_size = column.get_memory_use()
             mem = mem.rbind(new)

@@ -117,6 +117,7 @@ Fixes:
 - `DataFrame.pivot_wider`: Raise `ValueError` for duplicate combinations of `ids` and `names` instead of silently keeping the first
 - `DataFrame.pivot_wider`: Raise `ValueError` for missing values in `names` instead of creating a column named e.g. "" or "nan"
 - `DataFrame.print_memory_use`, `DataFrame.print_na_counts`, `ListOfDicts.print_memory_use`: Print all rows regardless of `PRINT_MAX_ROWS`
+- `DataFrame.print_memory_use`: Print data type of strings as "string" instead of "StringDType(na_object='')", as `print` does
 - `DataFrame.print_na_counts`, `ListOfDicts.print_na_counts`: Print "No missing values" instead of nothing or a blank list
 - `DataFrame.rbind`: Ignore data types of empty data frames, fixing e.g. upcasting integers to float
 - `DataFrame.rbind`: Name the column and its data types in the error for incompatible types
