@@ -31,9 +31,9 @@ import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
+from concurrent.futures import Future
 from dataiter import deco
 from dataiter import util
-from concurrent.futures import Future
 from dataiter import Vector
 from math import inf
 from pyarrow import csv
