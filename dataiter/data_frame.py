@@ -229,9 +229,9 @@ class DataFrame(dict):
                 # what special values to expect and thus we end up
                 # needing to use the slow Vector.__init__.
                 if ordered is None:
-                    # Reorder all columns once to make groups contiguous,
+                    # Reorder columns once to make groups contiguous,
                     # so that slices make cheap NumPy views instead of copies.
-                    # Create views lazily, as holding hundreds of thousands
+                    # Create slices lazily, as holding hundreds of thousands
                     # of views alive at once makes garbage collection slow.
                     ordered = self._view_rows(order)
                     ends = np.append(starts[1:], self.nrow)
@@ -1936,16 +1936,7 @@ class DataFrame(dict):
             yield colname, column.copy() if new is column else new
 
     def _view_rows(self, rows):
-        # Initialize a blank instance and use base class update
-        # to bypass __init__ and __setitem__ checks for speed.
-        data = self.__class__()
-        if isinstance(rows, slice):
-            dict.update(data, {x: self[x][rows] for x in self})
-            return data
-        # Taking rows copies, which is worth running in parallel.
-        columns = {x: util.submit(util.take, self[x], rows) for x in self}
-        dict.update(data, {k: v.result() if isinstance(v, Future) else v for k, v in columns.items()})
-        return data
+        return LazyDataFrame.from_rows(self, rows)
 
     def write_csv(self, path, *, encoding="utf-8", header=True, sep=","):
         """
@@ -2011,3 +2002,85 @@ class DataFrame(dict):
         with util.xopen(path, "wb") as f:
             out = {k: np.array(v, v.dtype) for k, v in self.items()}
             pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
+
+class LazyDataFrame(DataFrame):
+
+    # Data frame of rows of a source data frame, with columns taken from
+    # the source only upon first access, so that functions given to grouped
+    # operations pay only for the columns they use. Columns not yet taken
+    # are None in the underlying dict, which keeps keys complete.
+    # Instantiate via LazyDataFrame.from_rows.
+
+    ATTRIBUTES = DataFrame.ATTRIBUTES + ["_nrow", "_rows", "_source"]
+
+    def __getitem__(self, key):
+        column = super().__getitem__(key)
+        if column is None:
+            # Materialize column from source.
+            column = self._source[key]
+            column = (column[self._rows]
+                      if isinstance(self._rows, slice)
+                      else util.take(column, self._rows))
+            dict.__setitem__(self, key, column)
+        return column
+
+    def __iter__(self):
+        # Overriding makes CPython's dict(self), {**self}, dict.update(x, self),
+        # dict.copy(self) etc. go via keys and __getitem__ instead of reading
+        # the underlying values directly.
+        return super().__iter__()
+
+    @classmethod
+    def from_rows(cls, source, rows):
+        data = cls()
+        dict.update(data, dict.fromkeys(source))
+        data._source = source
+        data._rows = rows
+        data._nrow = (len(range(source.nrow)[rows])
+                      if isinstance(rows, slice)
+                      else len(rows))
+        return data
+
+    def get(self, key, default=None):
+        return self[key] if key in self else default
+
+    def items(self):
+        self._take_all()
+        return super().items()
+
+    @classmethod
+    def _new(cls, *args, **kwargs):
+        return DataFrame(*args, **kwargs)
+
+    @property
+    def nrow(self):
+        if any(x is None for x in dict.values(self)):
+            return self._nrow
+        return super().nrow
+
+    def pop(self, key, *default):
+        if key in self:
+            self[key]
+        return super().pop(key, *default)
+
+    def popitem(self):
+        self._take_all()
+        return super().popitem()
+
+    def setdefault(self, key, default=None):
+        return self[key] if key in self else super().setdefault(key, default)
+
+    def _take_all(self):
+        keys = [k for k, v in dict.items(self) if v is None]
+        if not keys: return
+        # Via items, a lazy source takes all its columns in parallel.
+        source = dict(self._source.items())
+        if isinstance(self._rows, slice):
+            dict.update(self, {k: source[k][self._rows] for k in keys})
+            return
+        columns = {k: util.submit(util.take, source[k], self._rows) for k in keys}
+        dict.update(self, {k: v.result() if isinstance(v, Future) else v for k, v in columns.items()})
+
+    def values(self):
+        self._take_all()
+        return super().values()

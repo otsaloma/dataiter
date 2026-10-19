@@ -82,9 +82,7 @@ Repeating the example up top, below is how you'd do the same with lambda
 functions. Notice that the code needed is a bit more verbose and if you try this
 with a data frame that has a large amount of groups (around 100,000 or more),
 you'll notice that it gets a bit slow, but for more common sizes of input, it
-should be well usable. Lambda functions receive all columns, so with large data,
-it also helps to first select only the columns needed, e.g.
-``data.select("hood", "price").group_by("hood").aggregate(...)``.
+should be well usable.
 
 >>> import dataiter as di
 >>> data = di.read_csv("data/listings.csv")
