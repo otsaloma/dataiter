@@ -328,6 +328,10 @@ class TestDataFrame:
             assert result.x.tolist() == ["a", "b", None, "c"]
             assert result.x.is_string()
 
+    def test_explode_given_sep_overlapping(self):
+        data = DataFrame(x=["a,,,b"])
+        assert data.explode("x", sep=",,").x.tolist() == ["a", ",b"]
+
     def test_explode_given_sequences(self):
         data = DataFrame(id=[1, 2, 3, 4], x=["[1, 2]", "null", "[]", "[3, null]"])
         data.x = data.x.map(json.loads)

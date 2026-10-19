@@ -490,15 +490,9 @@ class DataFrame(dict):
 
     @staticmethod
     def _explode_strings(column, sep):
-        if len(sep) > 1:
-            # Joining and splitting all at once below would break pieces
-            # apart differently for separators that overlap, e.g. ",,".
-            return DataFrame._explode_sequences([x.split(sep) for x in column], str)
-        # Avoid creating a list per row, which is slow for many rows.
-        counts = np.strings.count(column, sep) + 1
-        # Unlike tolist, iteration gives missing values as "", not None.
-        values = sep.join(list(column)).split(sep) if len(column) else []
-        return counts, Vector.fast(values, str)
+        pieces = pc.split_pattern(pa.array(np.asarray(column), pa.large_string()), sep)
+        counts = pc.list_value_length(pieces).to_numpy()
+        return counts, Vector.fast(pieces.flatten().to_numpy(zero_copy_only=False), str)
 
     @staticmethod
     def _explode_sequences(column, dtype):
