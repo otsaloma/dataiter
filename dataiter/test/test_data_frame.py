@@ -1398,6 +1398,11 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = orig.unique()
         assert data.nrow == orig.nrow - 100
 
+    def test_unique_by_large_integers(self):
+        orig = DataFrame(i=[0, 2**62, 0, 2**62], j=[-2**62, 5, -2**62, 5], k=[2**62, 1, 2**62, -2**62])
+        data = orig.unique("i", "j", "k")
+        assert data.k.tolist() == [2**62, 1, -2**62]
+
     def test_unique_by_one(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.unique("make")

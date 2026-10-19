@@ -754,10 +754,11 @@ class DataFrame(dict):
         return ab.rbind(b)
 
     @staticmethod
-    def _get_codes(columns):
+    def _get_codes(columns, ordered=True):
         # Return one combined code per row for a list of numeric or datetime
         # columns, offsetting integers by their minimum and falling back to
-        # np.unique for floats or if the range would overflow.
+        # dense codes for floats or if the range would overflow. If ordered,
+        # codes follow the sort order of rows, as needed for grouping.
         def encode(x, dense=False):
             # Return integer codes for x and an upper bound for them.
             if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
@@ -765,7 +766,11 @@ class DataFrame(dict):
                 lo, hi = int(x.min()), int(x.max())
                 if hi - lo < 2**62:
                     return x - lo, hi - lo + 1
-            codes = np.unique(x, return_inverse=True)[1]
+            if not ordered and x.dtype.kind in "iu":
+                # Hashing is faster than np.unique, which sorts.
+                codes = util.unique_codes(x)[2]
+            else:
+                codes = np.unique(x, return_inverse=True)[1]
             return codes, int(codes.max(initial=0)) + 1
         codes, size = 0, 1
         for column in columns:
@@ -836,7 +841,7 @@ class DataFrame(dict):
                 hashable.append((a, b))
         if hashable:
             numeric.append(np.concatenate(self._get_join_codes_hashable(hashable)))
-        codes = self._get_codes(numeric)
+        codes = self._get_codes(numeric, ordered=False)
         n = self.nrow - a_na.sum()
         a_codes = np.full(self.nrow, -1)
         b_codes = np.full(other.nrow, -1)
@@ -1864,7 +1869,7 @@ class DataFrame(dict):
             # Hashing one combined code per row gives first occurrences
             # without slow sorting, especially of strings.
             columns = [util.unique_codes(x)[2] if x.is_string() else x for x in columns]
-            keep = util.unique_codes(self._get_codes(columns))[1]
+            keep = util.unique_codes(self._get_codes(columns, ordered=False))[1]
             for colname, column in self.items():
                 yield colname, util.submit(np.take, column, keep)
             return
