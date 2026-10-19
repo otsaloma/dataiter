@@ -785,11 +785,16 @@ class Vector(np.ndarray):
             return self.fast(np.repeat(1, self.length)).rank(method=method, dir=dir)
         out = np.zeros_like(self, int)
         def codes():
-            # return_index=True makes np.unique use a stable sort, the default
-            # quicksort can segfault for StringDType (NumPy 2.5.4).
-            # https://github.com/numpy/numpy/issues/33089
-            unique, _, inv = np.unique(self[~na], return_index=True, return_inverse=True)
-            return inv if dir > 0 else len(unique) - 1 - inv
+            if self.is_string():
+                # Hashing and sorting only unique values is faster
+                # than np.unique, which sorts all strings.
+                inv = util.sorted_codes(self[~na])
+            else:
+                # return_index=True makes np.unique use a stable sort, the default
+                # quicksort can segfault for StringDType (NumPy 2.5.4).
+                # https://github.com/numpy/numpy/issues/33089
+                inv = np.unique(self[~na], return_index=True, return_inverse=True)[2]
+            return inv if dir > 0 else inv.max() - inv
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
             inv = codes()
@@ -804,8 +809,10 @@ class Vector(np.ndarray):
             return out.view(self.__class__)
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
-            # Sorting values directly is faster than via codes.
-            keys = self[~na] if dir > 0 else codes()
+            # Sorting values directly is faster than via codes,
+            # except for strings with values that repeat.
+            direct = dir > 0 and not (self.is_string() and util.is_repetitive(self))
+            keys = self[~na] if direct else codes()
             indices = keys.argsort(kind="stable")
             rank = np.zeros_like(indices)
             rank[indices] = np.arange(len(indices)) + 1
