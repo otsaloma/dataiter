@@ -42,17 +42,13 @@ def _apply(function, string, dtype=object, na_value=None, dedup=True):
     out = np.full_like(string, na_value, dtype)
     na = string == dtypes.string.na_object
     string = string[~na]
-    if dedup and len(string) >= 1000:
-        # Calling function only once per unique value pays off only if values
-        # repeat a lot, as hashing is slow with many unique values, so check
-        # a sample first. Not for mutable results, e.g. lists, which equal
-        # rows would then share. For small inputs, Arrow's overhead in
-        # unique_codes outweighs the gain.
-        sample = string[::max(1, len(string) // 100_000)]
-        if len(util.unique_codes(sample)[0]) < 0.9 * len(sample):
-            unique, _, codes = util.unique_codes(string)
-            out[~na] = apply(unique)[codes]
-            return Vector.fast(out, dtype)
+    if dedup and len(string) >= 1000 and util.is_repetitive(string):
+        # Call function only once per unique value. Not for mutable results,
+        # e.g. lists, which equal rows would then share. For small inputs,
+        # Arrow's overhead in unique_codes outweighs the gain.
+        unique, _, codes = util.unique_codes(string)
+        out[~na] = apply(unique)[codes]
+        return Vector.fast(out, dtype)
     out[~na] = apply(string)
     return Vector.fast(out, dtype)
 

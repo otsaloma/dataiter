@@ -80,6 +80,7 @@ Speed-ups:
 - `mode`: Speed up for large groups
 - `regex.*`: Speed up, especially when values repeat
 - `std`, `var`: Speed up when grouped with `ddof` other than zero
+- `Vector.sort`: Speed up for strings when values repeat
 - `Vector.unique`: Speed up for strings
 
 Fixes:

@@ -899,8 +899,16 @@ class Vector(np.ndarray):
             new = self.fast(lst, object)
             na = new.is_na()
             return new[~na].concat(new[na])
-        new = self.copy()
-        np.ndarray.sort(new, kind="stable")
+        if self.is_string() and self.length >= 1000 and util.is_repetitive(self):
+            # Sorting only unique values and repeating each by its count
+            # is faster than sorting all strings if values repeat.
+            unique, _, codes = util.unique_codes(self)
+            order = np.argsort(unique, kind="stable")
+            counts = np.bincount(codes, minlength=len(unique))
+            new = self.fast(np.repeat(unique[order], counts[order]), self.dtype)
+        else:
+            new = self.copy()
+            np.ndarray.sort(new, kind="stable")
         if dir < 0:
             new = new[::-1]
         na = new.is_na()
