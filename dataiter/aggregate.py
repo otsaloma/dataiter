@@ -76,7 +76,6 @@ def all_any(x, function, empty, drop_na):
         def aggregate(data):
             return all_any_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return item(all_any_groups(x, np.array([0]))[0])
 
@@ -122,7 +121,6 @@ def count(x="", *, drop_na=False):
         def aggregate(data):
             return count_groups(data[x or "_group_"], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x] if x else []
         return aggregate
     return count_groups(x, np.array([0])).item(0)
 
@@ -150,7 +148,6 @@ def count_unique(x, *, drop_na=False):
         def aggregate(data):
             return count_unique_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return count_unique_groups(x, np.array([0])).item(0)
 
@@ -278,7 +275,6 @@ def mean(x, *, weights=None, drop_na=True):
             w = None if weights is None else data[weights]
             return mean_groups(data[x], w, group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x] if weights is None else [x, weights]
         return aggregate
     return mean_groups(x, weights, np.array([0])).item(0)
 
@@ -319,7 +315,6 @@ def median(x, *, drop_na=True):
         def aggregate(data):
             return median_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return median_groups(x, np.array([0])).item(0)
 
@@ -362,7 +357,6 @@ def min_max(x, function, drop_na):
         def aggregate(data):
             return min_max_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return item(min_max_groups(x, np.array([0]))[0])
 
@@ -408,7 +402,6 @@ def mode(x, *, drop_na=True):
         def aggregate(data):
             return mode_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return item(mode_groups(x, np.array([0]))[0])
 
@@ -438,7 +431,6 @@ def nth(x, index, *, drop_na=False):
         def aggregate(data):
             return nth_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return item(nth_groups(x, np.array([0]))[0])
 
@@ -506,7 +498,6 @@ def quantile(x, q, *, drop_na=True):
         def aggregate(data):
             return quantile_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return quantile_groups(x, np.array([0])).item(0)
 
@@ -537,7 +528,6 @@ def std(x, *, ddof=0, drop_na=True):
             check_not_datetime(data[x], "std")
             return np.sqrt(f(data))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "std")
     return np.sqrt(var(x, ddof=ddof, drop_na=drop_na)).item()
@@ -573,7 +563,6 @@ def sum_prod(x, function, name, drop_na):
         def aggregate(data):
             return sum_prod_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return sum_prod_groups(x, np.array([0])).item(0)
 
@@ -623,6 +612,5 @@ def var(x, *, ddof=0, drop_na=True):
         def aggregate(data):
             return var_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
         return aggregate
     return var_groups(x, np.array([0])).item(0)

@@ -207,35 +207,30 @@ class DataFrame(dict):
         order, starts = self._get_groups(*group_colnames)
         rows = order[starts]
         stat = self.__class__({x: self[x][rows] for x in group_colnames}, _index_=rows)
+        # Reorder columns upon first use to make groups contiguous,
+        # so that slices make cheap NumPy views instead of copies.
+        ordered = self._view_rows(order)
         group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
         if any(group_aware):
-            # Group-aware functions declare the columns they use,
-            # sort only those instead of the whole data frame.
-            data = self.__class__()
-            for function in colname_function_pairs.values():
-                for colname in getattr(function, "colnames", []):
-                    if colname not in data:
-                        data[colname] = self[colname][order]
+            # Give group ids as a column on top of ordered,
+            # to keep it out of data seen by other functions.
+            grouped = ordered._view_rows(slice(None))
             n = np.diff(starts, append=self.nrow)
-            data._group_ = np.repeat(np.arange(len(starts)), n)
-        ordered = None
+            grouped._group_ = np.repeat(np.arange(len(starts)), n)
+        if not all(group_aware):
+            ends = np.append(starts[1:], self.nrow)
+            slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
         for colname, function in colname_function_pairs.items():
             if getattr(function, "group_aware", False):
-                column = function(data)
+                column = function(grouped)
                 assert len(column) == stat.nrow
                 stat[colname] = DataFrameColumn.fast(column)
             else:
                 # When using an arbitrary function, we cannot know
                 # what special values to expect and thus we end up
                 # needing to use the slow Vector.__init__.
-                if ordered is None:
-                    # Reorder columns once to make groups contiguous,
-                    # so that slices make cheap NumPy views instead of copies.
-                    # Create slices lazily, as holding hundreds of thousands
-                    # of views alive at once makes garbage collection slow.
-                    ordered = self._view_rows(order)
-                    ends = np.append(starts[1:], self.nrow)
-                    slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
+                # Create views lazily, as holding hundreds of thousands
+                # of views alive at once makes garbage collection slow.
                 stat[colname] = [function(ordered._view_rows(x)) for x in slices]
         return stat.unselect("_index_")
 
