@@ -830,7 +830,7 @@ class DataFrame(dict):
         for colname1, colname2 in zip(by1, by2):
             a, b = self[colname1][~a_na], other[colname2][~b_na]
             if a.is_string() and b.is_string():
-                numeric.append(util.unique_codes(np.concatenate([a, b]))[2])
+                numeric.append(np.concatenate(self._get_join_codes_strings(a, b)))
             elif all(x.dtype.kind in "biufcmM" for x in (a, b)):
                 numeric.append(np.concatenate([a, b]))
             else:
@@ -866,6 +866,26 @@ class DataFrame(dict):
         groups = {}
         small = np.fromiter(map(groups.setdefault, small, itertools.count()), np.int64, n_small)
         large = np.fromiter(map(groups.get, large, itertools.repeat(n_small)), np.int64, n_large)
+        return (large, small) if swap else (small, large)
+
+    @staticmethod
+    def _get_join_codes_strings(a, b):
+        # Return codes for string columns a and b. If one side is much smaller,
+        # hash only it and look up the larger side, rows not found getting a
+        # shared code past the smaller side's, which can't match. Otherwise
+        # hashing both sides together is faster.
+        if 2 * min(len(a), len(b)) > max(len(a), len(b)):
+            codes = util.unique_codes(np.concatenate([a, b]))[2]
+            return codes[:len(a)], codes[len(a):]
+        import pyarrow as pa
+        import pyarrow.compute as pc
+        swap = len(a) > len(b)
+        small, large = (b, a) if swap else (a, b)
+        unique, _, small = util.unique_codes(small)
+        type = pa.large_string()
+        large = pc.index_in(pa.array(np.asarray(large), type=type),
+                            value_set=pa.array(np.asarray(unique), type=type))
+        large = large.fill_null(len(unique)).to_numpy().astype(np.int64)
         return (large, small) if swap else (small, large)
 
     def _get_join_indices(self, other, by1, by2, multiple="first"):
