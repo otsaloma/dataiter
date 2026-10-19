@@ -60,6 +60,7 @@ tabular data and the `DataFrame` class.
 - Ookla open data fixed broadband performance tiles
 - Open-Meteo hourly weather
 - OpenPowerlifting
+- Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
@@ -78,7 +79,7 @@ items in order, one at a time: (1) Present the issue and your
 suggestion, or options with a recommendation, and wait for my decision.
 (2) Implement it, including tests and a `NEWS.md` entry if user-visible.
 (3) Present the result with a proposed commit message and commit once I
-approve. (4) Remove the item from `ISSUES.md`. Add any new issues found
-along the way as new items instead of expanding the current one.
-Finally, remove `ISSUES.md` once empty and commit this file if not yet
-committed.
+approve. (4) Remove the item from `ISSUES.md`, but keep the numbering.
+Add any new issues found along the way as new items instead of expanding
+the current one. Finally, remove `ISSUES.md` once empty and commit this
+file if not yet committed.
