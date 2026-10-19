@@ -2016,11 +2016,9 @@ class LazyDataFrame(DataFrame):
     def __getitem__(self, key):
         column = super().__getitem__(key)
         if column is None:
-            # Materialize column from source.
-            column = self._source[key]
-            column = (column[self._rows]
-                      if isinstance(self._rows, slice)
-                      else util.take(column, self._rows))
+            # Materialize column from source. util.take would be
+            # faster only when taking many columns in parallel.
+            column = self._source[key][self._rows]
             dict.__setitem__(self, key, column)
         return column
 
