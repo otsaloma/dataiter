@@ -33,6 +33,7 @@ import pyarrow.parquet as pq
 
 from dataiter import deco
 from dataiter import util
+from concurrent.futures import Future
 from dataiter import Vector
 from math import inf
 from pyarrow import csv
@@ -134,8 +135,10 @@ class DataFrame(dict):
     def __copy__(self):
         return self.__class__(self)
 
+    @deco.new_from_parallel_generator
     def __deepcopy__(self, memo=None):
-        return self.__class__({k: v.copy() for k, v in self.items()})
+        for colname, column in self.items():
+            yield colname, util.submit(np.ndarray.copy, column)
 
     def __delattr__(self, name):
         if name in self:
@@ -236,7 +239,7 @@ class DataFrame(dict):
                 stat[colname] = [function(ordered._view_rows(x)) for x in slices]
         return stat.unselect("_index_")
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def anti_join(self, other, *by):
         """
         Return rows with no matches in `other`.
@@ -258,7 +261,7 @@ class DataFrame(dict):
         rows, src = self._get_join_indices(other, by1, by2)
         rows = rows[src == -1]
         for colname, column in self.items():
-            yield colname, column[rows]
+            yield colname, util.submit(np.take, column, rows)
 
     @deco.new_from_generator
     def cbind(self, *others):
@@ -517,7 +520,7 @@ class DataFrame(dict):
         values[~na] = valid
         return counts, Vector.fast(values)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def filter(self, rows=None, **colname_value_pairs):
         """
         Return rows that match condition.
@@ -550,9 +553,9 @@ class DataFrame(dict):
             rows = self._match_pairs(colname_value_pairs)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
-            yield colname, np.take(column, rows)
+            yield colname, util.submit(np.take, column, rows)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def filter_out(self, rows=None, **colname_value_pairs):
         """
         Return rows that don't match condition.
@@ -571,7 +574,7 @@ class DataFrame(dict):
             rows = self._match_pairs(colname_value_pairs)
         rows = self._parse_rows_from_boolean(rows)
         for colname, column in self.items():
-            yield colname, np.delete(column, rows)
+            yield colname, util.submit(np.delete, column, rows)
 
     @classmethod
     @deco.new_from_generator
@@ -979,7 +982,7 @@ class DataFrame(dict):
         n = min(self.nrow, n) if n >= 0 else max(0, self.nrow + n)
         return self.slice(np.arange(n))
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def inner_join(self, other, *by, multiple="first"):
         """
         Return data frame with matching rows merged from `self` and `other`.
@@ -1008,13 +1011,13 @@ class DataFrame(dict):
         found = src > -1
         rows, src = rows[found], src[found]
         for colname, column in self.items():
-            yield colname, column[rows]
+            yield colname, util.submit(np.take, column, rows)
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
-            yield colname, column[src]
+            yield colname, util.submit(util.take, column, src)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def left_join(self, other, *by, multiple="first"):
         """
         Return data frame with matching rows merged from `self` and `other`.
@@ -1045,19 +1048,21 @@ class DataFrame(dict):
         for colname, column in self.items():
             # Copying is faster than indexing, rows is a plain
             # range if no row of self matched multiple in other.
-            yield colname, column[rows] if len(rows) > self.nrow else column.copy()
+            yield colname, (util.submit(np.take, column, rows)
+                            if len(rows) > self.nrow else
+                            util.submit(np.ndarray.copy, column))
+        def take_with_na(column, src, found):
+            new = DataFrameColumn(column.na_value, column.na_dtype, len(src))
+            new[found] = util.take(column, src[found])
+            return new
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
             if len(found) == len(src):
                 # No missing values needed, keep data type.
-                yield colname, column[src]
+                yield colname, util.submit(util.take, column, src)
                 continue
-            value = column.na_value
-            dtype = column.na_dtype
-            new = DataFrameColumn(value, dtype, len(src))
-            new[found] = column[src[found]]
-            yield colname, new
+            yield colname, util.submit(take_with_na, column, src, found)
 
     def map(self, function):
         """
@@ -1116,7 +1121,7 @@ class DataFrame(dict):
                 rows = rows & self[colname].is_in(value)
         return rows
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def modify(self, **colname_value_pairs):
         """
         Return data frame with columns modified.
@@ -1143,7 +1148,7 @@ class DataFrame(dict):
         >>> data.group_by("g").modify(f=lambda x: 1 / x.nrow)
         """
         for colname, column in self.items():
-            yield colname, column.copy()
+            yield colname, util.submit(np.ndarray.copy, column)
         if self._group_colnames:
             yield from self._modify_group_wise(**colname_value_pairs).items()
         else:
@@ -1538,7 +1543,7 @@ class DataFrame(dict):
         nrow = self.nrow if self else None
         return DataFrameColumn(column, nrow=nrow)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def rename(self, function=None, /, **to_from_pairs):
         """
         Return data frame with columns renamed.
@@ -1560,9 +1565,9 @@ class DataFrame(dict):
         if len(set(names.values())) < len(names):
             raise ValueError(f"Duplicate column names after renaming: {list(names.values())}")
         for fm, to in names.items():
-            yield to, self[fm].copy()
+            yield to, util.submit(np.ndarray.copy, self[fm])
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def replace_na(self, **colname_value_pairs):
         """
         Return data frame with missing values replaced.
@@ -1574,7 +1579,7 @@ class DataFrame(dict):
         >>> data.replace_na(sqft=0)
         """
         for colname, column in self.items():
-            yield colname, column.copy()
+            yield colname, util.submit(np.ndarray.copy, column)
         for colname, value in colname_value_pairs.items():
             yield colname, self[colname].replace_na(value)
 
@@ -1591,7 +1596,7 @@ class DataFrame(dict):
         rows = np.random.choice(self.nrow, n, replace=False)
         return self.slice(np.sort(rows))
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def select(self, *colnames):
         """
         Return data frame, keeping only `colnames`.
@@ -1606,9 +1611,9 @@ class DataFrame(dict):
         >>> data.select("id", "*")
         """
         for colname in self._glob(colnames):
-            yield colname, self[colname].copy()
+            yield colname, util.submit(np.ndarray.copy, self[colname])
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def semi_join(self, other, *by):
         """
         Return rows with matches in `other`.
@@ -1630,9 +1635,9 @@ class DataFrame(dict):
         rows, src = self._get_join_indices(other, by1, by2)
         rows = rows[src > -1]
         for colname, column in self.items():
-            yield colname, column[rows]
+            yield colname, util.submit(np.take, column, rows)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def slice(self, rows=None, cols=None):
         """
         Return a row-wise and/or column-wise subset of data frame.
@@ -1651,9 +1656,9 @@ class DataFrame(dict):
         rows = self._parse_rows(rows)
         cols = self._parse_cols(cols)
         for colname in (self.colnames[x] for x in cols):
-            yield colname, self[colname][rows]
+            yield colname, util.submit(np.take, self[colname], rows)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def slice_off(self, rows=None, cols=None):
         """
         Return a row-wise and/or column-wise negative subset of data frame.
@@ -1673,9 +1678,9 @@ class DataFrame(dict):
         cols = self._parse_cols(cols)
         for i, colname in enumerate(self.colnames):
             if i in cols: continue
-            yield colname, np.delete(self[colname], rows)
+            yield colname, util.submit(np.delete, self[colname], rows)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def sort(self, **colname_dir_pairs):
         """
         Return rows in sorted order.
@@ -1716,7 +1721,7 @@ class DataFrame(dict):
         if indices is None:
             indices = np.arange(self.nrow)
         for colname, column in self.items():
-            yield colname, column[indices]
+            yield colname, util.submit(util.take, column, indices)
 
     def split(self, *by):
         """
@@ -1840,7 +1845,7 @@ class DataFrame(dict):
             rows_to_print.append(f"... {self.nrow} rows total")
         return "\n".join(rows_to_print)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def unique(self, *colnames):
         """
         Return unique rows by `colnames`.
@@ -1860,7 +1865,7 @@ class DataFrame(dict):
             columns = [util.unique_codes(x)[2] if x.is_string() else x for x in columns]
             keep = util.unique_codes(self._get_codes(columns))[1]
             for colname, column in self.items():
-                yield colname, column[keep]
+                yield colname, util.submit(np.take, column, keep)
             return
         # For objects, a Python set is faster than sorting.
         # We just need to avoid NaN and NaT for the 'in' checks to work.
@@ -1892,9 +1897,9 @@ class DataFrame(dict):
                 keep.append(i)
         keep = np.array(keep, np.int64)
         for colname, column in self.items():
-            yield colname, column[keep]
+            yield colname, util.submit(np.take, column, keep)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def unselect(self, *colnames):
         """
         Return data frame, dropping `colnames`.
@@ -1907,9 +1912,9 @@ class DataFrame(dict):
         colnames = set(self._glob(colnames))
         for colname in self.colnames:
             if colname not in colnames:
-                yield colname, self[colname].copy()
+                yield colname, util.submit(np.ndarray.copy, self[colname])
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def update(self, other):
         """
         Return data frame with columns from `other` added.
@@ -1919,7 +1924,7 @@ class DataFrame(dict):
         """
         for colname, column in self.items():
             if colname in other: continue
-            yield colname, column.copy()
+            yield colname, util.submit(np.ndarray.copy, column)
         for colname, column in other.items():
             column = self._reconcile_column(column)
             yield colname, column.copy()
@@ -1928,7 +1933,12 @@ class DataFrame(dict):
         # Initialize a blank instance and use base class update
         # to bypass __init__ and __setitem__ checks for speed.
         data = self.__class__()
-        dict.update(data, {x: self[x][rows] for x in self})
+        if isinstance(rows, slice):
+            dict.update(data, {x: self[x][rows] for x in self})
+            return data
+        # Taking rows copies, which is worth running in parallel.
+        columns = {x: util.submit(util.take, self[x], rows) for x in self}
+        dict.update(data, {k: v.result() if isinstance(v, Future) else v for k, v in columns.items()})
         return data
 
     def write_csv(self, path, *, encoding="utf-8", header=True, sep=","):

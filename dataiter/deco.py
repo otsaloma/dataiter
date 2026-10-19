@@ -22,6 +22,8 @@
 
 import functools
 
+from concurrent.futures import Future
+
 def listify(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
@@ -34,6 +36,15 @@ def new_from_generator(function):
     def wrapper(self, *args, **kwargs):
         value = function(self, *args, **kwargs)
         return self._new(value)
+    return wrapper
+
+def new_from_parallel_generator(function):
+    # Like new_from_generator, but values can be futures from util.submit.
+    # Collect all items before waiting for any, so that futures run in parallel.
+    @functools.wraps(function)
+    def wrapper(self, *args, **kwargs):
+        items = list(function(self, *args, **kwargs))
+        return self._new((k, v.result() if isinstance(v, Future) else v) for k, v in items)
     return wrapper
 
 def new_independent_from_generator(function):

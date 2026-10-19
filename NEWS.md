@@ -54,6 +54,7 @@ Breaking changes:
 - Drop optional use of Numba in favor of vectorized aggregation helper functions in plain NumPy, remove `USE_NUMBA` and `USE_NUMBA_CACHE`
 
 Speed-ups:
+- `DataFrame.*`: Speed up copying and reordering columns for large data by processing columns in parallel threads, e.g. `filter`, `modify`, `sort` and joins, using as many threads as PyArrow, limited by e.g. `OMP_THREAD_LIMIT`
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
 - `DataFrame.*_join`: Speed up when joining by string columns
 - `DataFrame.*_join`: Speed up when joining by multiple columns, especially numeric and datetime
