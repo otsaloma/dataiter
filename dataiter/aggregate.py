@@ -43,7 +43,7 @@ def all(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.all``, see the NumPy documentation for details:
+    Equivalent to ``numpy.all``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.all.html
 
     >>> di.all(di.Vector([True, False]))
@@ -86,7 +86,7 @@ def any(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.any``, see the NumPy documentation for details:
+    Equivalent to ``numpy.any``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.any.html
 
     >>> di.any(di.Vector([False, False]))
