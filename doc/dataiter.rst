@@ -4,9 +4,9 @@ dataiter
 .. meta::
    :description: Helper functions for use with DataFrame.aggregate
 
-The following functions are shorthand helpers for use in conjunction
-with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
-</aggregation>` for details.
+The following functions are shorthand helpers for use in conjunction with
+:meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation </aggregation>`
+for details.
 
 :func:`~dataiter.all`
 :func:`~dataiter.any`
@@ -25,10 +25,10 @@ with :meth:`.DataFrame.aggregate`, see the guide on :doc:`aggregation
 :func:`~dataiter.sum`
 :func:`~dataiter.var`
 
-The following read functions are convenience aliases to the correspoding
-methods of the classes generally most suitable for the particular file
-type, i.e. :class:`.DataFrame` for CSV, NPZ and Parquet,
-:class:`.GeoJSON` for GeoJSON and :class:`.ListOfDicts` for JSON.
+The following read functions are convenience aliases to the correspoding methods
+of the classes generally most suitable for the particular file type, i.e.
+:class:`.DataFrame` for CSV, NPZ and Parquet, :class:`.GeoJSON` for GeoJSON and
+:class:`.ListOfDicts` for JSON.
 
 :func:`~dataiter.read_csv`
 :func:`~dataiter.read_geojson`
