@@ -147,15 +147,22 @@ def data_frame_modify_grouped():
 def data_frame_pivot_longer():
     data = (data_frame("vehicles.csv")
             .unique("make", "model", "year")
-            .pivot_wider(ids=["model", "year"], names="make", values="hwy"))
+            .pivot_wider(ids=["model", "year"],
+                         names="make",
+                         values="hwy"))
     start = time.time()
-    data.pivot_longer(ids=["model", "year"], names="make", values="hwy")
+    data.pivot_longer(ids=["model", "year"],
+                      names="make",
+                      values="hwy")
     return time.time() - start
 
 def data_frame_pivot_wider():
-    data = data_frame("vehicles.csv").unique("make", "model", "year")
+    data = (data_frame("vehicles.csv")
+            .unique("make", "model", "year"))
     start = time.time()
-    data.pivot_wider(ids=["model", "year"], names="make", values="hwy")
+    data.pivot_wider(ids=["model", "year"],
+                     names="make",
+                     values="hwy")
     return time.time() - start
 
 def data_frame_read_csv():
