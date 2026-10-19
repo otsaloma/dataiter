@@ -90,6 +90,7 @@ from dataiter.aggregate import median
 from dataiter.aggregate import min
 from dataiter.aggregate import mode
 from dataiter.aggregate import nth
+from dataiter.aggregate import prod
 from dataiter.aggregate import quantile
 from dataiter.aggregate import std
 from dataiter.aggregate import sum

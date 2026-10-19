@@ -37,6 +37,7 @@ New:
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `of_type`: New function to check if data type is one of given, for use with `DataFrame.map_columns`
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
+- `prod`: New aggregation function
 - `regex.extract`: New function to extract a group of the first match
 - `Vector`: Convert strings when comparing to datetimes, e.g. `x >= "2025-01-01"`, previously raising an error or, for equality, silently not matching
 - `Vector`: Create an object vector from lists or tuples, previously raising an error if all were of equal length

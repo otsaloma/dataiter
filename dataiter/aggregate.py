@@ -443,6 +443,19 @@ def nth(x, index, *, drop_na=False):
     return item(nth_groups(x, np.array([0]))[0])
 
 @composite
+def prod(x, *, drop_na=True):
+    """
+    Return the product of `x`.
+
+    If `x` is a string, return a function usable with
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+
+    >>> di.prod(di.Vector([1, 2, 3]))
+    >>> di.prod("x")
+    """
+    return sum_prod(x, np.multiply, "product", drop_na)
+
+@composite
 def quantile(x, q, *, drop_na=True):
     """
     Return the `qth` quantile of `x`.
@@ -540,25 +553,29 @@ def sum(x, *, drop_na=True):
     >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
     """
-    def sum_groups(x, starts):
-        check_not_datetime(x, "sum")
+    return sum_prod(x, np.add, "sum", drop_na)
+
+def sum_prod(x, function, name, drop_na):
+    # function is np.add or np.multiply.
+    def sum_prod_groups(x, starts):
+        check_not_datetime(x, name)
         y, starts = handle_na_groups(x, starts, drop_na)
         n = np.diff(starts, append=len(y))
-        # Like np.sum, promote small integers and booleans to int64,
-        # but unlike it, sum also float32 in float64 for accuracy.
+        # Like np.sum and np.prod, promote small integers and booleans to
+        # int64, but unlike them, calculate also float32 in float64 for accuracy.
         dtype = float if y.dtype.kind == "f" else np.sum(y[:0]).dtype
-        out = np.zeros(len(starts), dtype)
+        out = np.full(len(starts), function.identity, dtype)
         if n.any():
             # reduceat gives the next element for empty groups, skip them.
-            out[n > 0] = np.add.reduceat(y.astype(dtype, copy=False), starts[n > 0])
+            out[n > 0] = function.reduceat(y.astype(dtype, copy=False), starts[n > 0])
         return out
     if isinstance(x, str):
         def aggregate(data):
-            return sum_groups(data[x], group_starts(data._group_))
+            return sum_prod_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    return sum_groups(x, np.array([0])).item(0)
+    return sum_prod_groups(x, np.array([0])).item(0)
 
 def value_codes(x):
     # Return integer codes of x, equal for equal values and for all missing

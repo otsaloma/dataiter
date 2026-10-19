@@ -57,6 +57,7 @@ supported functions are listed below.
 * :func:`~dataiter.min`
 * :func:`~dataiter.mode`
 * :func:`~dataiter.nth`
+* :func:`~dataiter.prod`
 * :func:`~dataiter.quantile`
 * :func:`~dataiter.std`
 * :func:`~dataiter.sum`

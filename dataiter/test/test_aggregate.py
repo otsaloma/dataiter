@@ -38,6 +38,7 @@ from dataiter.aggregate import median
 from dataiter.aggregate import min
 from dataiter.aggregate import mode
 from dataiter.aggregate import nth
+from dataiter.aggregate import prod
 from dataiter.aggregate import quantile
 from dataiter.aggregate import std
 from dataiter.aggregate import sum
@@ -152,6 +153,10 @@ TEST_MATRIX = [
     (nth0, [D1, D2, D3, D4, D5, D6, D7, NaT, NaT, NaT], [D1, D3, D5, D7, NaT]),
     (nth0, [S1, S2, S3, S4, S5, S6, S7, NaTd, NaTd, NaTd], [S1, S3, S5, S7, NaTd]),
     (nth0, ["a", "b", "c", "d", "e", "f", "g", "", "", ""], ["a", "c", "e", "g", ""]),
+
+    (prod, [T, T, T, T, T, F, F, F, F, F], [1, 1, 0, 0, 0]),
+    (prod, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 12, 30, 56, 90]),
+    (prod, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, NaN, NaN, NaN], [2.0, 12.0, 30.0, 7.0, 1.0]),
 
     (quantile05, [T, T, T, T, T, F, F, F, F, F], [1.0, 1.0, 0.5, 0.0, 0.0]),
     (quantile05, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1.5, 3.5, 5.5, 7.5, 9.5]),
@@ -338,6 +343,21 @@ class TestAggregate:
     def test_nth_nan(self):
         assert np.isnan(nth(EMPTY_VECTOR, 0))
         assert np.isnan(nth(Vector([NaN, 1, 2]), 0))
+
+    def test_prod(self):
+        assert prod(EMPTY_VECTOR) == 1
+        assert prod(Vector([2])) == 2
+        assert prod(Vector([2, 3])) == 6
+        assert prod(Vector([2, 3, NaN])) == 6
+
+    def test_prod_date(self):
+        with pytest.raises(TypeError):
+            prod(Vector([D1, D2]))
+        with pytest.raises(TypeError):
+            DataFrame(g=[1, 1], a=[D1, D2]).group_by("g").aggregate(a=prod("a"))
+
+    def test_prod_nan(self):
+        assert np.isnan(prod(Vector([2, 3, NaN]), drop_na=False))
 
     def test_quantile(self):
         assert quantile(Vector([1, 4, 6, 8, 5]), 0.5) == 5

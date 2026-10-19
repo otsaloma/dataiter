@@ -20,6 +20,7 @@ for details.
 :func:`~dataiter.min`
 :func:`~dataiter.mode`
 :func:`~dataiter.nth`
+:func:`~dataiter.prod`
 :func:`~dataiter.quantile`
 :func:`~dataiter.std`
 :func:`~dataiter.sum`
@@ -69,6 +70,7 @@ formatting and limits for printing.
              mode,
              nth,
              of_type,
+             prod,
              quantile,
              read_csv,
              read_geojson,
