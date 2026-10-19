@@ -57,10 +57,11 @@ Do not complain about these or spend too much time investigating.
   receive full rows and can access any column, and the rest to calling a
   Python function per group. Significantly speeding it up would require
   vectorized helper functions like those for `DataFrame.aggregate`,
-  which declare the columns they use and avoid per-group Python calls. That would be a big change, currently not
-  considered worth doing, as grouped modify is not commonly used.
-  Rejected alternative: reordering columns lazily upon first access (too
-  much magic in a data frame subclass).
+  which declare the columns they use and avoid per-group Python calls.
+  That would be a big change, currently not considered worth doing, as
+  grouped modify is not commonly used. Rejected alternative: reordering
+  columns lazily upon first access (too much magic in a data frame
+  subclass).
 
 - `DataFrame` methods return new data frames with all columns copied,
   which makes long method chains on large and wide data frames slow,
