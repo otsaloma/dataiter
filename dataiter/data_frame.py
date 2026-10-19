@@ -27,11 +27,15 @@ import itertools
 import json
 import numpy as np
 import pickle
+import pyarrow as pa
+import pyarrow.compute as pc
+import pyarrow.parquet as pq
 
 from dataiter import deco
 from dataiter import util
 from dataiter import Vector
 from math import inf
+from pyarrow import csv
 
 class DataFrameColumn(Vector):
 
@@ -580,8 +584,6 @@ class DataFrame(dict):
         NumPy datetimes can't hold: ``"keep"`` to keep them in the timezone
         they're stored in, ``"utc"`` to convert them to UTC.
         """
-        import pyarrow as pa
-        import pyarrow.compute as pc
         if timezone not in ["keep", "utc"]:
             raise ValueError(f"Bad {timezone=}")
         for name in dtypes:
@@ -877,8 +879,6 @@ class DataFrame(dict):
         if 2 * min(len(a), len(b)) > max(len(a), len(b)):
             codes = util.unique_codes(np.concatenate([a, b]))[2]
             return codes[:len(a)], codes[len(a):]
-        import pyarrow as pa
-        import pyarrow.compute as pc
         swap = len(a) > len(b)
         small, large = (b, a) if swap else (a, b)
         unique, _, small = util.unique_codes(small)
@@ -1445,9 +1445,6 @@ class DataFrame(dict):
         both using `colnames` if given. Timestamps with UTC offsets, e.g.
         "2025-01-01T12:00:00+02:00", are converted to UTC.
         """
-        import pyarrow as pa
-        import pyarrow.compute as pc
-        from pyarrow import csv
         na = [na] if isinstance(na, str) else list(na)
         # Strings need to be requested already at parse time,
         # otherwise e.g. leading zeros would be lost to type guessing.
@@ -1521,7 +1518,6 @@ class DataFrame(dict):
         datetimes can't hold: ``"keep"`` to keep them in the timezone they're
         stored in, ``"utc"`` to convert them to UTC.
         """
-        import pyarrow.parquet as pq
         data = pq.read_table(path, columns=select or None)
         return cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
 
@@ -1764,7 +1760,6 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.to_arrow()
         """
-        import pyarrow as pa
         data = [pa.array(np.asarray(x), mask=np.asarray(x.is_na())) for x in self.columns]
         return pa.table(data, names=self.colnames)
 
@@ -1942,7 +1937,6 @@ class DataFrame(dict):
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
         """
-        from pyarrow import csv
         data = self.copy()
         for colname, column in data.items():
             if column.is_timedelta():
@@ -1987,7 +1981,6 @@ class DataFrame(dict):
 
         `kwargs` are passed to ``pyarrow.parquet.write_table``.
         """
-        import pyarrow.parquet as pq
         data = self.to_arrow()
         util.makedirs_for_file(path)
         pq.write_table(data, path, **kwargs)

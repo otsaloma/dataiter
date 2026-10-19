@@ -24,6 +24,8 @@ import dataiter
 import datetime
 import functools
 import numpy as np
+import pyarrow as pa
+import pyarrow.compute as pc
 import sys
 
 from dataiter import dtypes
@@ -547,8 +549,6 @@ class Vector(np.ndarray):
             if self.length < 1000:
                 values = set(values)
                 return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
-            import pyarrow as pa
-            import pyarrow.compute as pc
             values = pa.array([x for x in values if isinstance(x, str)], pa.large_string())
             found = pc.is_in(pa.array(np.asarray(self), pa.large_string()), value_set=values)
             return self.fast(found.to_numpy(zero_copy_only=False), bool)

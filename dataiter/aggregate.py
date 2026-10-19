@@ -23,6 +23,8 @@
 import functools
 import itertools
 import numpy as np
+import pyarrow as pa
+import pyarrow.compute as pc
 
 from dataiter import util
 from dataiter import Vector
@@ -497,8 +499,6 @@ def quantile(x, q, *, drop_na=True):
 
 def sort_groups(x, starts):
     # Return float x sorted within groups, NaN last.
-    import pyarrow as pa
-    import pyarrow.compute as pc
     group = np.repeat(np.arange(len(starts)), np.diff(starts, append=len(x)))
     table = pa.table([group, pa.array(x, mask=np.isnan(x))], names=["group", "x"])
     keys = [("group", "ascending", "at_end"), ("x", "ascending", "at_end")]

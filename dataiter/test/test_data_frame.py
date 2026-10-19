@@ -24,6 +24,7 @@ import dataiter as di
 import datetime
 import json
 import numpy as np
+import pyarrow as pa
 import pytest
 
 from dataiter import DataFrame
@@ -397,7 +398,6 @@ class TestDataFrame:
         assert np.sum(data.hwy) == 776930
 
     def test_from_arrow(self):
-        import pyarrow as pa
         orig = test.data_frame("vehicles.csv")
         data = orig.to_arrow()
         assert isinstance(data, pa.Table)
@@ -413,7 +413,6 @@ class TestDataFrame:
 
     def test_from_arrow_decimal(self):
         import decimal
-        import pyarrow as pa
         values = [decimal.Decimal("1.10"), None, decimal.Decimal("123456789.25")]
         table = pa.table({"a": pa.array(values, pa.decimal128(12, 2))})
         data = DataFrame.from_arrow(table)
@@ -423,7 +422,6 @@ class TestDataFrame:
         assert data.a.tolist() == values
 
     def test_from_arrow_list(self):
-        import pyarrow as pa
         orig = DataFrame(a=[[1, 2], None, []], b=[[1, 2], [3, 4], [5, 6]])
         data = DataFrame.from_arrow(orig.to_arrow())
         assert data.a.is_object()
@@ -434,7 +432,6 @@ class TestDataFrame:
         assert data.a.tolist() == [[1, 2], [3, 4]]
 
     def test_from_arrow_null(self):
-        import pyarrow as pa
         table = pa.table({"a": pa.nulls(2)})
         data = DataFrame.from_arrow(table)
         assert data.a.is_float()
@@ -455,14 +452,12 @@ class TestDataFrame:
         assert data.a.tolist() == [None, "x"]
 
     def test_from_arrow_time(self):
-        import pyarrow as pa
         table = pa.table({"a": pa.array([datetime.time(16, 6, 30), None], pa.time32("s"))})
         data = DataFrame.from_arrow(table)
         assert data.a.is_string()
         assert data.a.tolist() == ["16:06:30", None]
 
     def test_from_arrow_time_zeros(self):
-        import pyarrow as pa
         a = pa.array([datetime.time(16, 6), datetime.time(8, 0, 30)], pa.time64("us"))
         b = pa.array([datetime.time(16, 6), datetime.time(8, 0)], pa.time64("us"))
         data = DataFrame.from_arrow(pa.table({"a": a, "b": b}))
@@ -470,7 +465,6 @@ class TestDataFrame:
         assert data.b.tolist() == ["16:06", "08:00"]
 
     def test_from_arrow_timezone(self):
-        import pyarrow as pa
         values = [datetime.datetime(2025, 1, 1, 10), datetime.datetime(2025, 7, 1, 10), None]
         a = pa.array(values, pa.timestamp("s", tz="Europe/Helsinki"))
         b = pa.array(values, pa.timestamp("s", tz="+03:00"))
@@ -1368,7 +1362,6 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert len(data) == orig.nrow
 
     def test_to_arrow(self):
-        import pyarrow as pa
         orig = test.data_frame("vehicles.csv")
         data = orig.to_arrow()
         assert isinstance(data, pa.Table)

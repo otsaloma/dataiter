@@ -29,6 +29,7 @@ import itertools
 import lzma
 import math
 import numpy as np
+import pyarrow as pa
 import shutil
 import string
 import wcwidth
@@ -163,7 +164,6 @@ def unique_codes(x):
     # sorting, especially for strings. Arrow doesn't treat NaN, NaT and -0.0
     # as NumPy does, so encode floats and datetimes otherwise first.
     # large_string avoids a chunked array for large data.
-    import pyarrow as pa
     if x.dtype.kind not in "iuT":
         raise TypeError(f"Expected string or integer, got {x.dtype}")
     type = pa.large_string() if x.dtype.kind == "T" else None
