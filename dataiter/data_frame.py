@@ -1148,14 +1148,21 @@ class DataFrame(dict):
         >>> data.group_by("g").modify(f=lambda x: 1 / x.nrow)
         """
         for colname, column in self.items():
-            yield colname, util.submit(np.ndarray.copy, column)
+            # Overwritten columns are yielded uncopied
+            # only to keep their position, values come later.
+            if colname in colname_value_pairs:
+                yield colname, column
+            else:
+                yield colname, util.submit(np.ndarray.copy, column)
         if self._group_colnames:
             yield from self._modify_group_wise(**colname_value_pairs).items()
         else:
             data = self.copy()
             for colname, value in colname_value_pairs.items():
-                data[colname] = value(data) if callable(value) else value
-                yield colname, data[colname].copy()
+                column = value(data) if callable(value) else value
+                data[colname] = column
+                # Unless the column was stored as is, __setitem__ made a copy.
+                yield colname, column.copy() if data[colname] is column else data[colname]
 
     def _modify_group_wise(self, **colname_function_pairs):
         order, starts = self._get_groups(*self._group_colnames)
