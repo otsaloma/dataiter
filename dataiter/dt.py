@@ -273,9 +273,11 @@ def _pull_datetime(x, function):
     out = Vector.fast(out, np.datetime64)
     na = np.isnat(x)
     if na.all(): return out
-    unique, inverse = np.unique(x[~na], return_inverse=True)
+    # Hashing is faster than np.unique, which sorts.
+    y = x[~na]
+    _, first, codes = util.unique_codes(y.view(np.int64))
     f = np.vectorize(function)
-    out[~na] = f(unique.astype(object)).astype(x.dtype)[inverse]
+    out[~na] = f(y[first].astype(object)).astype(x.dtype)[codes]
     return out
 
 def _pull_int(x, function):
@@ -299,9 +301,11 @@ def _pull_str(x, function):
     out = Vector.fast(out, object)
     na = np.isnat(x)
     if na.all(): return out
-    unique, inverse = np.unique(x[~na], return_inverse=True)
+    # Hashing is faster than np.unique, which sorts.
+    y = x[~na]
+    _, first, codes = util.unique_codes(y.view(np.int64))
     f = np.vectorize(function)
-    out[~na] = f(unique.astype(object))[inverse]
+    out[~na] = f(y[first].astype(object))[codes]
     return out.as_string()
 
 def quarter(x):
