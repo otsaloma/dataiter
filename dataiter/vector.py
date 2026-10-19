@@ -1111,9 +1111,9 @@ class Vector(np.ndarray):
 
     def unique(self):
         """
-        Return unique elements.
+        Return unique elements in order of first appearance.
 
-        >>> vector = di.Vector([1, 1, 1, 2, 2, 3])
+        >>> vector = di.Vector([3, 1, 1, 2, 3])
         >>> vector.unique()
         """
         if self.is_string():

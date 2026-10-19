@@ -1854,7 +1854,7 @@ class DataFrame(dict):
     @deco.new_from_parallel_generator
     def unique(self, *colnames):
         """
-        Return unique rows by `colnames`.
+        Return unique rows by `colnames`, keeping the first of each.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unique("hood")

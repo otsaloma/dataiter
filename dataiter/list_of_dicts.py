@@ -1010,7 +1010,7 @@ class ListOfDicts(list):
     @deco.new_from_generator
     def unique(self, *keys):
         """
-        Return unique items by `keys`.
+        Return unique items by `keys`, keeping the first of each.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.unique("hood")

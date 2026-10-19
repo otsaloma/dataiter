@@ -369,7 +369,7 @@ def min_max(x, function, drop_na):
 @composite
 def mode(x, *, drop_na=True):
     """
-    Return the most common value in `x`.
+    Return the most common value in `x`, the first one if tied.
 
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
