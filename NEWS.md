@@ -78,7 +78,7 @@ Speed-ups:
 - `median`, `quantile`: Speed up when grouped with very many groups
 - `count_unique`, `mode`: Speed up when grouped with very many groups
 - `mode`: Speed up for large groups
-- `regex.*`: Speed up
+- `regex.*`: Speed up, especially when values repeat
 - `std`, `var`: Speed up when grouped with `ddof` other than zero
 - `Vector.unique`: Speed up for strings
 
