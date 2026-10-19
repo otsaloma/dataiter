@@ -48,9 +48,9 @@ def _apply(function, string, dtype=object, na_value=None, dedup=True):
         # Arrow's overhead in unique_codes outweighs the gain.
         unique, _, codes = util.unique_codes(string)
         out[~na] = apply(unique)[codes]
-        return Vector.fast(out, dtype)
+        return out.view(Vector)
     out[~na] = apply(string)
-    return Vector.fast(out, dtype)
+    return out.view(Vector)
 
 def extract(pattern, string, group=0, flags=0):
     r"""

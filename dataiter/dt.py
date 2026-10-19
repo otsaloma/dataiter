@@ -69,7 +69,7 @@ def floor(x, unit):
         if unit not in codes:
             raise ValueError(f"Bad {unit=}")
         out = x.astype(f"datetime64[{codes[unit]}]")
-    return Vector.fast(out.astype(x.dtype), x.dtype)
+    return out.astype(x.dtype).view(Vector)
 
 def from_components(year, month=1, day=1, hour=None, minute=None, second=None, microsecond=None, *, errors="strict"):
     """
@@ -117,7 +117,7 @@ def from_components(year, month=1, day=1, hour=None, minute=None, second=None, m
         example = ", ".join(f"{k}={v[i]:g}" for k, v in components.items())
         raise ValueError(f"Invalid components, e.g. {example}")
     out[na | invalid] = np.datetime64("NaT", "us" if is_datetime else "D")
-    return Vector.fast(out, out.dtype)
+    return out.view(Vector)
 
 def from_string(x, format, *, errors="strict"):
     """
@@ -141,7 +141,7 @@ def from_string(x, format, *, errors="strict"):
     if not (isinstance(x, np.ndarray) and isinstance(x.dtype, StringDType)):
         raise TypeError(f"Expected string, got {_type_label(x)}")
     out = np.full_like(x, None, object)
-    out = Vector.fast(out, object).as_datetime()
+    out = out.view(Vector).as_datetime()
     na = x == dtypes.string.na_object
     if na.all(): return out
     def parse(x):
@@ -275,7 +275,7 @@ def _pull_datetime(x, function):
         return _pull_datetime(x, function)[0]
     _check_datetime(x)
     out = np.full_like(x, np.nan)
-    out = Vector.fast(out, np.datetime64)
+    out = out.view(Vector)
     na = np.isnat(x)
     if na.all(): return out
     # Hashing is faster than np.unique, which sorts.
@@ -291,7 +291,7 @@ def _pull_int(x, function):
         return _pull_int(x, function)[0]
     _check_datetime(x)
     out = np.full_like(x, np.nan, float)
-    out = Vector.fast(out, float)
+    out = out.view(Vector)
     na = np.isnat(x)
     if na.all(): return out
     out[~na] = function(np.asarray(x[~na]))
@@ -303,7 +303,7 @@ def _pull_str(x, function):
         return _pull_str(x, function)[0]
     _check_datetime(x)
     out = np.full_like(x, dtypes.string.na_object, object)
-    out = Vector.fast(out, object)
+    out = out.view(Vector)
     na = np.isnat(x)
     if na.all(): return out
     # Hashing is faster than np.unique, which sorts.
@@ -340,7 +340,7 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     # Like _pull_datetime, but no vectorized function.
     _check_datetime(x)
     out = np.full_like(x, np.nan)
-    out = Vector.fast(out, np.datetime64)
+    out = out.view(Vector)
     na = np.isnat(x)
     xobj = x.astype(object)
     kwargs_scalar = {x: kwargs[x] for x in scalar_keys}
@@ -402,7 +402,7 @@ def total_seconds(x):
         return total_seconds(x)[0]
     if not (isinstance(x, np.ndarray) and np.issubdtype(x.dtype, np.timedelta64)):
         raise TypeError(f"Expected timedelta, got {_type_label(x)}")
-    return Vector.fast(x / np.timedelta64(1, "s"), float)
+    return (x / np.timedelta64(1, "s")).view(Vector)
 
 def _type_label(x):
     return x.view(Vector).dtype_label if isinstance(x, np.ndarray) else type(x).__name__

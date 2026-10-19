@@ -1174,7 +1174,7 @@ class DataFrame(dict):
             if not callable(function):
                 raise ValueError(f"{colname} argument not callable")
             column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
-            data[colname] = np.concatenate(column)
+            data[colname] = np.concatenate(column).view(DataFrameColumn)
             columns[colname] = data[colname][restore_indices]
         return columns
 

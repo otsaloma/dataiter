@@ -321,7 +321,7 @@ class Vector(np.ndarray):
         if errors not in ["strict", "replace"]:
             raise ValueError(f"Bad {errors=}")
         na = self.is_na()
-        result = self.fast(np.full(self.length, np.nan), float)
+        result = np.full(self.length, np.nan).view(self.__class__)
         try:
             # NumPy can't convert missing strings to float
             # and converts NaT to its integer sentinel value.
@@ -370,7 +370,7 @@ class Vector(np.ndarray):
         na = self.is_na()
         if na.any():
             # NumPy converts e.g. NaN and None to "nan" and "None".
-            result = self.fast(np.full(self.length, dtypes.string.na_object, dtypes.string), dtypes.string)
+            result = np.full(self.length, dtypes.string.na_object, dtypes.string).view(self.__class__)
             result[~na] = self[~na].astype(dtypes.string)
             return result
         return self.astype(dtypes.string)
@@ -548,11 +548,11 @@ class Vector(np.ndarray):
             # match, so drop them for Arrow.
             if self.length < 1000:
                 values = set(values)
-                return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
+                return np.fromiter((x in values for x in self), bool, self.length).view(self.__class__)
             values = pa.array([x for x in values if isinstance(x, str)], pa.large_string())
             found = pc.is_in(pa.array(np.asarray(self), pa.large_string()), value_set=values)
-            return self.fast(found.to_numpy(zero_copy_only=False), bool)
-        return self.fast(np.isin(self, values), bool)
+            return found.to_numpy(zero_copy_only=False).view(self.__class__)
+        return np.isin(self, values).view(self.__class__)
 
     def is_integer(self):
         """
@@ -579,7 +579,7 @@ class Vector(np.ndarray):
         if self.is_bytes():
             return self == b""
         if self.is_integer() or self.is_boolean():
-            return self.fast(np.zeros(len(self), bool))
+            return np.zeros(len(self), bool).view(self.__class__)
         # Can't use np.isin here since elements can be arrays.
         return self.fast([x is None for x in self], bool)
 
@@ -782,7 +782,7 @@ class Vector(np.ndarray):
         na = self.is_na()
         if na.all():
             # Avoid trying to evaluate min/max/mean of all NA.
-            return self.fast(np.repeat(1, self.length)).rank(method=method, dir=dir)
+            return np.repeat(1, self.length).view(self.__class__).rank(method=method, dir=dir)
         out = np.zeros_like(self, int)
         def codes():
             if self.is_string():
@@ -912,7 +912,7 @@ class Vector(np.ndarray):
             unique, _, codes = util.unique_codes(self)
             order = np.argsort(unique, kind="stable")
             counts = np.bincount(codes, minlength=len(unique))
-            new = self.fast(np.repeat(unique[order], counts[order]), self.dtype)
+            new = np.repeat(unique[order], counts[order]).view(self.__class__)
         else:
             new = self.copy()
             np.ndarray.sort(new, kind="stable")
