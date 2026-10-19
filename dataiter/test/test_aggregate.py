@@ -284,6 +284,20 @@ class TestAggregate:
         assert np.isnan(mean(EMPTY_VECTOR))
         assert np.isnan(mean(Vector([1, 2, NaN]), drop_na=False))
 
+    def test_mean_weights(self):
+        assert np.isclose(mean(Vector([1, 2, 10]), weights=Vector([3, 2, 1])), 17 / 6)
+        assert mean(Vector([D1, D3]), weights=Vector([1, 1])) == D2
+
+    def test_mean_weights_grouped(self):
+        data = DataFrame(g=[1, 1, 2, 2], x=[1.0, 3.0, 5.0, 7.0], w=[1, 3, 0, 0])
+        stat = data.group_by("g").aggregate(x=mean("x", weights="w"))
+        assert stat.x.equal(Vector([2.5, NaN]))
+
+    def test_mean_weights_nan(self):
+        assert mean(Vector([1, 2, NaN]), weights=Vector([1, NaN, 1])) == 1
+        assert np.isnan(mean(Vector([1, 2]), weights=Vector([1, NaN]), drop_na=False))
+        assert np.isnan(mean(Vector([1, 2]), weights=Vector([0, 0])))
+
     def test_median(self):
         assert median(Vector([1, 4, 6, 8, 5])) == 5
         assert median(Vector([1, 4, 6, NaN, NaN])) == 4

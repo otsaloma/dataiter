@@ -192,6 +192,15 @@ def handle_na_groups(x, starts, drop_na):
     nvalid_before = np.cumsum(valid) - valid
     return x[valid], nvalid_before[starts]
 
+def handle_na_weighted_groups(x, w, starts, drop_na):
+    # Return x, weights w and starts of their groups, dropping rows where
+    # either is missing if drop_na. Groups can be left empty.
+    if not drop_na: return x, w, starts
+    valid = ~(x.is_na() | w.is_na())
+    if valid.all(): return x, w, starts
+    nvalid_before = np.cumsum(valid) - valid
+    return x[valid], w[valid], nvalid_before[starts]
+
 def item(x):
     # NumPy returns strings as str, other scalars as NumPy generics.
     return x.item() if isinstance(x, np.generic) else x
@@ -222,34 +231,54 @@ def max(x, *, drop_na=True):
     return min_max(x, np.maximum, drop_na)
 
 @composite
-def mean(x, *, drop_na=True):
+def mean(x, *, weights=None, drop_na=True):
     """
-    Return the arithmetic mean of `x`.
+    Return the arithmetic mean of `x`, optionally weighted by `weights`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`,
+    weighted by column `weights`, if given. If `x` is a vector, `weights`
+    should be a vector of the same length.
 
-    Equivalent to ``numpy.mean``, see the NumPy documentation for details:
+    With `drop_na`, rows where either `x` or `weights` is missing are
+    dropped. If weights sum to zero, the result is NaN.
+
+    Equivalent to ``numpy.mean``, or ``numpy.average`` with `weights`, see
+    the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.mean.html
+    https://numpy.org/doc/stable/reference/generated/numpy.average.html
 
     >>> di.mean(di.Vector([1, 2, 10]))
+    >>> di.mean(di.Vector([1, 2, 10]), weights=di.Vector([3, 2, 1]))
     >>> di.mean("x")
+    >>> di.mean("x", weights="w")
     """
-    def mean_groups(x, starts):
-        y, starts = handle_na_groups(datetime_as_float(x), starts, drop_na)
+    def mean_groups(x, w, starts):
+        y = datetime_as_float(x)
+        if w is None:
+            y, starts = handle_na_groups(y, starts, drop_na)
+        else:
+            y, w, starts = handle_na_weighted_groups(y, w, starts, drop_na)
         n = np.diff(starts, append=len(y))
         out = np.full(len(starts), np.nan)
         if n.any():
             # reduceat gives the next element for empty groups, skip them.
-            out[n > 0] = np.add.reduceat(y, starts[n > 0], dtype=float) / n[n > 0]
+            s = starts[n > 0]
+            if w is None:
+                out[n > 0] = np.add.reduceat(y, s, dtype=float) / n[n > 0]
+            else:
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    out[n > 0] = (np.add.reduceat(y * w, s, dtype=float) /
+                                  np.add.reduceat(w, s, dtype=float))
         return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            return mean_groups(data[x], group_starts(data._group_))
+            w = None if weights is None else data[weights]
+            return mean_groups(data[x], w, group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
+        aggregate.colnames = [x] if weights is None else [x, weights]
         return aggregate
-    return mean_groups(x, np.array([0])).item(0)
+    return mean_groups(x, weights, np.array([0])).item(0)
 
 @composite
 def median(x, *, drop_na=True):

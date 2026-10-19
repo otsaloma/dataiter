@@ -66,17 +66,16 @@ functions are listed below.
 These common aggregation functions are provided for two reasons: (1)
 they provide shorter, more convenient syntax than typing out lambda
 functions and (2) they are much faster, as they operate on all groups at
-once instead of being called separately for each group. The relevant
-caveat here is that they work only for single column calculations. If
-you need to use multiple columns, such as for calculating a weighted
-mean, see the next section on using arbitrary lambda functions.
+once instead of being called separately for each group. For less common
+or more complicated calculations, see the next section on using
+arbitrary lambda functions.
 
 Arbitrary Aggregation
 ---------------------
 
-If you need to access multiple columns in aggregation or you need to
-calculate some more esoteric summaries than what you can accomplish with
-the above, then you'll need to use custom lambda functions. These
+If you need to calculate summaries not covered by the above, such as
+less common statistics or more complicated calculations combining
+multiple columns, then you'll need to use custom lambda functions. These
 functions should take a data frame as an argument and return a scalar
 value. The ``aggregate`` method will then apply your lambda functions
 group-wise.

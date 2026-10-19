@@ -33,6 +33,7 @@ New:
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
 - `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped
 - `ListOfDicts.replace_na`: New method
+- `mean`: Add `weights` argument for a weighted mean
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `of_type`: New function to check if data type is one of given, for use with `DataFrame.map_columns`
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
