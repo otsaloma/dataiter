@@ -277,8 +277,8 @@ class DataFrame(dict):
             for colname, column in data.items():
                 if colname in found_colnames: continue
                 found_colnames.add(colname)
-                column = self._reconcile_column(column)
-                yield colname, column.copy()
+                new = self._reconcile_column(column)
+                yield colname, column.copy() if new is column else new
 
     def _check_dimensions(self):
         if not self: return
@@ -1933,8 +1933,8 @@ class DataFrame(dict):
             if colname in other: continue
             yield colname, util.submit(np.ndarray.copy, column)
         for colname, column in other.items():
-            column = self._reconcile_column(column)
-            yield colname, column.copy()
+            new = self._reconcile_column(column)
+            yield colname, column.copy() if new is column else new
 
     def _view_rows(self, rows):
         # Initialize a blank instance and use base class update
