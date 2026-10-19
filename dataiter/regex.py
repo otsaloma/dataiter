@@ -28,18 +28,28 @@ from dataiter import util
 from dataiter import Vector
 from numpy.dtypes import StringDType
 
-def _apply(function, string, dtype=object, na_value=None):
+def _apply(function, string, dtype=object, na_value=None, dedup=True):
     if util.is_scalar(string):
         return function(string)
     if not (isinstance(string, np.ndarray) and isinstance(string.dtype, StringDType)):
         label = string.view(Vector).dtype_label if isinstance(string, np.ndarray) else type(string).__name__
         raise TypeError(f"Expected string, got {label}")
+    def apply(x):
+        # np.fromiter keeps e.g. lists from findall as elements,
+        # where assigning a list could make a multidimensional array.
+        values = x.tolist()
+        return np.fromiter(map(function, values), dtype, count=len(values))
     out = np.full_like(string, na_value, dtype)
     na = string == dtypes.string.na_object
-    # np.fromiter keeps e.g. lists from findall as elements,
-    # where assigning a list could make a multidimensional array.
-    values = string[~na].tolist()
-    out[~na] = np.fromiter(map(function, values), dtype, count=len(values))
+    string = string[~na]
+    if dedup and len(string) >= 1000 and util.is_repetitive(string):
+        # Call function only once per unique value. Not for mutable results,
+        # e.g. lists, which equal rows would then share. For small inputs,
+        # Arrow's overhead in unique_codes outweighs the gain.
+        unique, _, codes = util.unique_codes(string)
+        out[~na] = apply(unique)[codes]
+        return Vector.fast(out, dtype)
+    out[~na] = apply(string)
     return Vector.fast(out, dtype)
 
 def extract(pattern, string, group=0, flags=0):
@@ -68,7 +78,7 @@ def findall(pattern, string, flags=0):
     >>> regex.findall(r"[a-z]", x)
     """
     f = re.compile(pattern, flags).findall
-    return _apply(f, string)
+    return _apply(f, string, dedup=False)
 
 def fullmatch(pattern, string, flags=0):
     """
@@ -117,7 +127,7 @@ def split(pattern, string, maxsplit=0, flags=0):
     """
     p = re.compile(pattern, flags)
     f = lambda x: p.split(x, maxsplit=maxsplit)
-    return _apply(f, string)
+    return _apply(f, string, dedup=False)
 
 def sub(pattern, repl, string, count=0, flags=0):
     """

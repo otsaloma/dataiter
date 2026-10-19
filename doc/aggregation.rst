@@ -65,19 +65,17 @@ functions are listed below.
 
 These common aggregation functions are provided for two reasons: (1)
 they provide shorter, more convenient syntax than typing out lambda
-functions and (2) they allow a huge conditional speed up under the hood.
-The relevant caveat here is that they work only for single column
-calculations. If you need to use multiple columns, such as for
-calculating a weighted mean, see the next section on using arbitrary
-lambda functions. And see the last section on when and how you can
-benefit from the huge speed ups that these functions provide.
+functions and (2) they are much faster, as they operate on all groups at
+once instead of being called separately for each group. For less common
+or more complicated calculations, see the next section on using
+arbitrary lambda functions.
 
 Arbitrary Aggregation
 ---------------------
 
-If you need to access multiple columns in aggregation or you need to
-calculate some more esoteric summaries than what you can accomplish with
-the above, then you'll need to use custom lambda functions. These
+If you need to calculate summaries not covered by the above, such as
+less common statistics or more complicated calculations combining
+multiple columns, then you'll need to use custom lambda functions. These
 functions should take a data frame as an argument and return a scalar
 value. The ``aggregate`` method will then apply your lambda functions
 group-wise.
@@ -144,44 +142,3 @@ a large amount of groups, this can be over ten times faster.
 2     Manhattan 21963        5494    0.250148
 3        Queens  6068         326    0.053724
 4 Staten Island   370          20    0.054054
-
-Going Fast with Numba
----------------------
-
-The common aggregation functions listed above are implemented in
-Dataiter as both pure Python code (slow) and JIT-compiled `Numba
-<https://numba.pydata.org/>`_ code (fast). If you have Numba installed,
-then Dataiter will **automatically** use it for aggregation involving
-**boolean**, **integer**, **float**, **date**, and **datetime** columns.
-If Numba is not available, Dataiter will automatically fall back on the
-slower pure Python implementations. The result should be the same,
-whether Numba is used or not, excluding some minor rounding or float
-precision differences.
-
-Numba is currently not a hard dependency of Dataiter, so you'll need to
-install it separately::
-
-   pip install -U numba
-
-When, for a particular version of Dataiter, you first use a
-Numba-accelerated aggregation function, the code will be compiled, which
-might take a couple seconds. The compiled code is saved in `cache
-<https://numba.readthedocs.io/en/stable/developer/caching.html>`_.
-After that, using the function from cache will be really fast. In case
-you're benchmarking something, note also that on the first use of such a
-function in a Python session, the compiled code is loaded from cache on
-disk, which takes something like 10–100 ms and further calls will be
-faster as there's no more need to load anything.
-
-.. note:: If you have trouble with Numba, please check the value of
-          ``di.USE_NUMBA`` to see if Numba has been found. You can also
-          set ``di.USE_NUMBA = False`` if you have Numba installed, but
-          it's not working right, or via the environment variable
-          ``DATAITER_USE_NUMBA=false``. Sometimes it's just the
-          `caching
-          <https://numba.readthedocs.io/en/stable/developer/caching.html>`_
-          part of Numba that's causing issues. When upgrading you might
-          sometimes need to delete old caches. If that doesn't help, you
-          can also turn caching off with ``di.USE_NUMBA_CACHE = False``
-          or the environment variable
-          ``DATAITER_USE_NUMBA_CACHE=false``.

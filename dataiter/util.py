@@ -29,7 +29,6 @@ import itertools
 import lzma
 import math
 import numpy as np
-import os
 import shutil
 import string
 import wcwidth
@@ -110,6 +109,12 @@ def glob(pattern, names):
 def is_glob(pattern):
     return isinstance(pattern, str) and any(x in pattern for x in "*?[")
 
+def is_repetitive(x):
+    # Return whether values of string x repeat enough for hashing to pay off,
+    # judging by a sample, as hashing is slow with many unique values.
+    sample = x[::max(1, len(x) // 100_000)]
+    return len(unique_codes(sample)[0]) < 0.9 * len(sample)
+
 def is_scalar(value):
     # np.isscalar doesn't cover all needed cases.
     return (np.isscalar(value) or
@@ -129,20 +134,6 @@ def length(value):
 def makedirs_for_file(path):
     return Path(path).parent.mkdir(parents=True, exist_ok=True)
 
-def parse_env_boolean(name):
-    return {
-        "1":     True,
-        "t":     True,
-        "true":  True,
-        "y":     True,
-        "yes":   True,
-        "0":     False,
-        "f":     False,
-        "false": False,
-        "n":     False,
-        "no":    False,
-    }[os.environ[name].strip().lower()]
-
 def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))
 
@@ -156,18 +147,32 @@ def sequencify(value):
         return list(value)
     raise ValueError(f"Unexpected type: {type(value)}")
 
+def sorted_codes(x):
+    # Return codes of elements of string or integer x as ranks of unique
+    # elements in sorted order. Sorting only unique elements is faster
+    # than sorting all strings, unless all are unique.
+    unique, _, codes = unique_codes(x)
+    rank = np.empty(len(unique), np.int64)
+    rank[np.argsort(unique, kind="stable")] = np.arange(len(unique))
+    return rank[codes]
+
 def unique_codes(x):
-    # Return unique elements of x, indices of their first occurrences and
-    # codes of elements as indices to unique, all in order of appearance.
-    # Unlike np.unique, use a dict, which is faster for strings, as NumPy's
-    # string sort is slow. Calling dict methods via map avoids a slow
-    # Python-level function call per element.
-    found = {}
-    first = np.fromiter(map(found.setdefault, np.ndarray.tolist(x), itertools.count()), np.int64, len(x))
-    indices = np.fromiter(found.values(), np.int64, len(found))
-    codes = np.empty(len(x), np.int64)
-    codes[indices] = np.arange(len(indices))
-    return x[indices], indices, codes[first]
+    # Return unique elements of string or integer x, indices of their first
+    # occurrences and codes of elements as indices to unique, all in order of
+    # appearance. Unlike np.unique, use Arrow's hashing, which avoids slow
+    # sorting, especially for strings. Arrow doesn't treat NaN, NaT and -0.0
+    # as NumPy does, so encode floats and datetimes otherwise first.
+    # large_string avoids a chunked array for large data.
+    import pyarrow as pa
+    if x.dtype.kind not in "iuT":
+        raise TypeError(f"Expected string or integer, got {x.dtype}")
+    type = pa.large_string() if x.dtype.kind == "T" else None
+    codes = pa.array(np.asarray(x), type=type).dictionary_encode().indices
+    codes = codes.to_numpy().astype(np.int64)
+    first = np.ones(len(codes), bool)
+    first[1:] = codes[1:] > np.maximum.accumulate(codes)[:-1]
+    first = np.flatnonzero(first)
+    return x[first], first, codes
 
 def unique_keys(keys):
     return list(dict.fromkeys(keys))

@@ -20,30 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import dataiter
 import functools
+import itertools
 import numpy as np
-import statistics
 
-from dataiter import deco
+from dataiter import util
 from dataiter import Vector
-
-try:
-    assert dataiter.USE_NUMBA
-    from numba import njit
-    from numba import types
-    from numba.extending import overload
-except Exception:
-    # We need the decorators used to exist to avoid import time errors,
-    # but actual calls to the below shouldn't be made (see 'select').
-    def dummy_jit(*args, **kwargs):
-        def outer_wrapper(function):
-            def inner_wrapper(*args, **kwargs):
-                print("Using dummy jit, this shouldn't happen")
-                return function(*args, **kwargs)
-            return inner_wrapper
-        return outer_wrapper
-    njit = overload = dummy_jit
 
 def composite(function):
     @functools.wraps(function)
@@ -61,40 +43,40 @@ def all(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.all``, see the NumPy documentation for details:
+    Equivalent to ``numpy.all``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.all.html
 
     >>> di.all(di.Vector([True, False]))
     >>> di.all(di.Vector([True, True]))
     >>> di.all("x")
     """
-    return all_any(x, np.all, True, drop_na)
+    return all_any(x, np.logical_and, True, drop_na)
 
 def all_any(x, function, empty, drop_na):
-    # Replacing missing values with the result for empty input
-    # gives the same result as dropping missing values.
+    # function is np.logical_and or np.logical_or. Replacing missing values
+    # with the result for empty input gives the same result as dropping them.
+    def all_any_groups(x, starts):
+        na = x.is_na()
+        y = np.full(len(x), empty)
+        y[~na] = x[~na].as_boolean()
+        n = np.diff(starts, append=len(x))
+        out = np.full(len(starts), empty)
+        if n.any():
+            out[n > 0] = function.reduceat(y, starts[n > 0])
+        if drop_na or not na.any(): return out
+        # Without a decisive value, missing values make the result unknown.
+        has_na = np.zeros(len(starts), bool)
+        has_na[n > 0] = np.logical_or.reduceat(na, starts[n > 0])
+        out = out.astype(object)
+        out[(out == empty) & has_na] = None
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            column = data[x]
-            na = column.is_na()
-            xb = Vector.fast(np.full(len(column), empty), bool)
-            xb[~na] = column[~na].as_boolean()
-            f = (generic, generic_numba)[use_numba(xb)]
-            aggregate.default = empty
-            out = f(function)(xb, data._group_, drop_na=False, default=empty, nrequired=0)
-            if drop_na or not na.any(): return out
-            has_na = f(np.any)(na, data._group_, drop_na=False, default=False, nrequired=0)
-            # Prevent replacing the below missing values with the default.
-            aggregate.default = None
-            return [None if y == empty and z else bool(y)
-                    for y, z in zip(out, has_na)]
-
+            return all_any_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    na = x.is_na()
-    out = function(x[~na].as_boolean()).item()
-    return None if not drop_na and out == empty and na.any() else out
+    return item(all_any_groups(x, np.array([0]))[0])
 
 @composite
 def any(x, *, drop_na=True):
@@ -104,14 +86,14 @@ def any(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.any``, see the NumPy documentation for details:
+    Equivalent to ``numpy.any``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.any.html
 
     >>> di.any(di.Vector([False, False]))
     >>> di.any(di.Vector([True, False]))
     >>> di.any("x")
     """
-    return all_any(x, np.any, False, drop_na)
+    return all_any(x, np.logical_or, False, drop_na)
 
 def check_not_datetime(x, name):
     if x.is_datetime():
@@ -131,24 +113,16 @@ def count(x="", *, drop_na=False):
     >>> di.count(di.Vector([1, 2, 3]))
     >>> di.count()
     """
+    def count_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        return np.diff(starts, append=len(y))
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x or "_group_")(len)
-            aggregate.default = 0
-            return f(data[x or "_group_"],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         x and data[x].is_na().any()),
-                     default=0,
-                     nrequired=0)
-
+            return count_groups(data[x or "_group_"], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x] if x else []
         return aggregate
-    x = handle_na(x, drop_na)
-    return len(x)
+    return count_groups(x, np.array([0])).item(0)
 
 @composite
 def count_unique(x, *, drop_na=False):
@@ -161,34 +135,22 @@ def count_unique(x, *, drop_na=False):
     >>> di.count_unique(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.count_unique("x")
     """
+    def count_unique_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        group = np.repeat(np.arange(len(starts)), n)
+        codes = value_codes(y)
+        m = codes.max(initial=0) + 1
+        # Count unique pairs of group and value.
+        keys = util.unique_codes(group * m + codes)[0]
+        return np.bincount(keys // m, minlength=len(starts))
     if isinstance(x, str):
         def aggregate(data):
-            f = (count_unique_apply, count_unique_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = 0
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
-
+            return count_unique_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    return len(x.unique())
-
-@deco.listify
-def count_unique_apply(x, group, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        yield len(xg.unique())
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def count_unique_apply_numba(x, group, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        out.append(len(np.unique(xg)))
-    return out
+    return count_unique_groups(x, np.array([0])).item(0)
 
 def datetime_as_float(x):
     if not (x.is_datetime() or x.is_timedelta()): return x
@@ -215,57 +177,29 @@ def first(x, *, drop_na=False):
     """
     return nth(x, 0, drop_na=drop_na)
 
-@functools.lru_cache(256)
-def generic(function, **kwargs):
-    @deco.listify
-    def aggregate(x, group, drop_na, default, nrequired):
-        for xg in yield_groups(x, group, drop_na):
-            yield function(xg, **kwargs) if len(xg) >= nrequired else default
-    return aggregate
+def group_starts(group):
+    # Return starts of groups, group being contiguous group indices per row.
+    change = np.ones(len(group), bool)
+    change[1:] = group[1:] != group[:-1]
+    return np.flatnonzero(change)
 
-@functools.lru_cache(256)
-def generic_numba(function):
-    @njit(cache=dataiter.USE_NUMBA_CACHE)
-    def aggregate(x, group, drop_na, default, nrequired):
-        out = []
-        for xg in yield_groups_numba(x, group, drop_na):
-            # A conditional expression here (x if y else z) would be
-            # miscompiled for datetimes, returning wrong values and breaking
-            # also other functions compiled later that return lists of
-            # datetimes. This is likely a bug in Numba (observed on version
-            # 0.67 with Python 3.14), but easy to work around.
-            if len(xg) >= nrequired:
-                out.append(function(xg))
-            else:
-                out.append(default)
-        return out
-    return aggregate
+def handle_na_groups(x, starts, drop_na):
+    # Return x and starts of its groups, dropping missing values if drop_na.
+    # Groups can be left empty, i.e. their start is the next group's start.
+    if not drop_na: return x, starts
+    valid = ~x.is_na()
+    if valid.all(): return x, starts
+    nvalid_before = np.cumsum(valid) - valid
+    return x[valid], nvalid_before[starts]
 
-def handle_na(x, drop_na):
-    return x[~x.is_na()] if drop_na else x
-
-def is_na_item_numba(x):
-    raise NotImplementedError
-
-@overload(is_na_item_numba)
-def is_na_item_numba_overload(x):
-    # "Called at compile-time with the types of the function's runtime arguments."
-    # https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-generated-jit
-    # https://numba.readthedocs.io/en/stable/extending/high-level.html#implementing-functions
-    if isinstance(x, types.Float):
-        return lambda x: np.isnan(x)
-    if isinstance(x, types.NPDatetime):
-        return lambda x: np.isnat(x)
-    if isinstance(x, types.UnicodeType):
-        return lambda x: x == ""
-    return lambda x: False
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def is_na_numba(x):
-    na = np.full(len(x), False)
-    for i in range(len(x)):
-        na[i] = is_na_item_numba(x[i])
-    return na
+def handle_na_weighted_groups(x, w, starts, drop_na):
+    # Return x, weights w and starts of their groups, dropping rows where
+    # either is missing if drop_na. Groups can be left empty.
+    if not drop_na: return x, w, starts
+    valid = ~(x.is_na() | w.is_na())
+    if valid.all(): return x, w, starts
+    nvalid_before = np.cumsum(valid) - valid
+    return x[valid], w[valid], nvalid_before[starts]
 
 def item(x):
     # NumPy returns strings as str, other scalars as NumPy generics.
@@ -294,60 +228,57 @@ def max(x, *, drop_na=True):
     >>> di.max(di.Vector([4, 5, 6]))
     >>> di.max("x")
     """
-    if isinstance(x, str):
-        def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.amax)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=None,
-                     nrequired=1)
-
-        aggregate.group_aware = True
-        aggregate.colnames = [x]
-        return aggregate
-    x = handle_na(x, drop_na)
-    return item(np.amax(x)) if len(x) >= 1 else x.na_value
+    return min_max(x, np.maximum, drop_na)
 
 @composite
-def mean(x, *, drop_na=True):
+def mean(x, *, weights=None, drop_na=True):
     """
-    Return the arithmetic mean of `x`.
+    Return the arithmetic mean of `x`, optionally weighted by `weights`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`,
+    weighted by column `weights`, if given. If `x` is a vector, `weights`
+    should be a vector of the same length.
 
-    Uses ``numpy.mean``, see the NumPy documentation for details:
+    With `drop_na`, rows where either `x` or `weights` is missing are
+    dropped. If weights sum to zero, the result is NaN.
+
+    Equivalent to ``numpy.mean``, or ``numpy.average`` with `weights`, see
+    the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.mean.html
+    https://numpy.org/doc/stable/reference/generated/numpy.average.html
 
     >>> di.mean(di.Vector([1, 2, 10]))
+    >>> di.mean(di.Vector([1, 2, 10]), weights=di.Vector([3, 2, 1]))
     >>> di.mean("x")
+    >>> di.mean("x", weights="w")
     """
+    def mean_groups(x, w, starts):
+        y = datetime_as_float(x)
+        if w is None:
+            y, starts = handle_na_groups(y, starts, drop_na)
+        else:
+            y, w, starts = handle_na_weighted_groups(y, w, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if n.any():
+            # reduceat gives the next element for empty groups, skip them.
+            s = starts[n > 0]
+            if w is None:
+                out[n > 0] = np.add.reduceat(y, s, dtype=float) / n[n > 0]
+            else:
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    out[n > 0] = (np.add.reduceat(y * w, s, dtype=float) /
+                                  np.add.reduceat(w, s, dtype=float))
+        return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.mean)
-            aggregate.default = np.nan
-            out = f(datetime_as_float(data[x]),
-                    data._group_,
-                    drop_na=(
-                        drop_na and
-                        data[x].is_na().any()),
-                    default=np.nan,
-                    nrequired=1)
-            return datetime_from_float(out, data[x])
-
+            w = None if weights is None else data[weights]
+            return mean_groups(data[x], w, group_starts(data._group_))
         aggregate.group_aware = True
-        aggregate.colnames = [x]
+        aggregate.colnames = [x] if weights is None else [x, weights]
         return aggregate
-    x = handle_na(x, drop_na)
-    if x.is_datetime():
-        return datetime_from_float(mean(datetime_as_float(x)), x).item()
-    return np.mean(x).item() if len(x) >= 1 else np.nan
+    return mean_groups(x, weights, np.array([0])).item(0)
 
 @composite
 def median(x, *, drop_na=True):
@@ -357,33 +288,38 @@ def median(x, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.median``, see the NumPy documentation for details:
+    Equivalent to ``numpy.median``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.median.html
 
     >>> di.median(di.Vector([5, 1, 2]))
     >>> di.median("x")
     """
+    def median_groups(x, starts):
+        y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
+        y = np.asarray(y)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if len(starts) < 40_000:
+            # Looping is faster than sorting for few groups.
+            for i, (a, k) in enumerate(zip(starts.tolist(), n.tolist())):
+                if k > 0: out[i] = np.median(y[a:a+k])
+            return datetime_from_float(out, x)
+        ys = sort_groups(y, starts)
+        ok = n > 0
+        s, k = starts[ok], n[ok]
+        # Average the middle values as np.median does.
+        values = (ys[s + (k - 1) // 2] + ys[s + k // 2]) / 2
+        # Missing values are sorted last, making the result missing.
+        values[np.isnan(ys[s + k - 1])] = np.nan
+        out[ok] = values
+        return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.median)
-            aggregate.default = np.nan
-            out = f(datetime_as_float(data[x]),
-                    data._group_,
-                    drop_na=(
-                        drop_na and
-                        data[x].is_na().any()),
-                    default=np.nan,
-                    nrequired=1)
-            return datetime_from_float(out, data[x])
-
+            return median_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    if x.is_datetime():
-        return datetime_from_float(median(datetime_as_float(x)), x).item()
-    return np.median(x).item() if len(x) >= 1 else np.nan
+    return median_groups(x, np.array([0])).item(0)
 
 @composite
 def min(x, *, drop_na=True):
@@ -396,24 +332,37 @@ def min(x, *, drop_na=True):
     >>> di.min(di.Vector([4, 5, 6]))
     >>> di.min("x")
     """
+    return min_max(x, np.minimum, drop_na)
+
+def min_max(x, function, drop_na):
+    # function is np.minimum or np.maximum.
+    def min_max_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        nonempty = n > 0
+        if not nonempty.any():
+            values = y[:0]
+        elif y.is_string():
+            # reduceat doesn't support strings, reduce their sorted codes
+            # and map back to strings via a row index for each code.
+            codes = util.sorted_codes(y)
+            rows = np.empty(codes.max() + 1, int)
+            rows[codes] = np.arange(len(y))
+            values = y[rows[function.reduceat(codes, starts[nonempty])]]
+        else:
+            values = function.reduceat(y, starts[nonempty])
+        if nonempty.all(): return values
+        # Upcast to have missing values for empty groups, e.g. int to float.
+        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out[nonempty] = values
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.amin)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=None,
-                     nrequired=1)
-
+            return min_max_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    return item(np.amin(x)) if len(x) >= 1 else x.na_value
+    return item(min_max_groups(x, np.array([0]))[0])
 
 @composite
 def mode(x, *, drop_na=True):
@@ -426,55 +375,40 @@ def mode(x, *, drop_na=True):
     >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.mode("x")
     """
+    def mode_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        found = n > 0
+        if found.any():
+            group = np.repeat(np.arange(len(starts)), n)
+            codes = value_codes(y)
+            m = codes.max() + 1
+            keys, first, pairs = util.unique_codes(group * m + codes)
+            # Unique pairs of group and value are in order of first appearance
+            # and thus by group. Pick the most common pair of each group,
+            # breaking ties by first appearance, as statistics.mode does.
+            count = np.bincount(pairs)
+            pair_group = keys // m
+            pair_starts = group_starts(pair_group)
+            most = np.maximum.reduceat(count, pair_starts)
+            most = np.repeat(most, np.diff(pair_starts, append=len(keys)))
+            candidates = np.flatnonzero(count == most)
+            chosen = candidates[group_starts(pair_group[candidates])]
+            values = y[first[chosen]]
+        else:
+            values = y[:0]
+        if found.all(): return values
+        # Upcast to have missing values for empty groups, e.g. int to float.
+        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out[found] = values
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            f = (mode_apply, mode_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
-
+            return mode_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    return item(statistics.mode(x)) if len(x) >= 1 else x.na_value
-
-@deco.listify
-def mode_apply(x, group, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        yield statistics.mode(xg) if len(xg) >= 1 else None
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def mode_apply_numba(x, group, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        if len(xg) > 0:
-            # Count runs of equal values in sorted order, breaking ties
-            # by first appearance in data, as statistics.mode does.
-            order = np.argsort(xg)
-            xs = xg[order]
-            best_count = 0
-            best_first = 0
-            i = 0
-            while i < len(xs):
-                j = i + 1
-                first = order[i]
-                while j < len(xs) and xs[j] == xs[i]:
-                    if order[j] < first:
-                        first = order[j]
-                    j += 1
-                if j - i > best_count or (j - i == best_count and first < best_first):
-                    best_count = j - i
-                    best_first = first
-                i = j
-            out.append(xg[best_first])
-        else:
-            out.append(None)
-    return out
+    return item(mode_groups(x, np.array([0]))[0])
 
 @composite
 def nth(x, index, *, drop_na=False):
@@ -487,44 +421,24 @@ def nth(x, index, *, drop_na=False):
     >>> di.nth(di.Vector([1, 2, 3]), 1)
     >>> di.nth("x", 1)
     """
+    def nth_groups(x, starts):
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        i = n + index if index < 0 else np.full(len(n), index)
+        found = (i >= 0) & (i < n)
+        values = y[(starts + i)[found]]
+        if found.all(): return values
+        # Upcast to have missing values for groups without index, e.g. int to float.
+        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out[found] = values
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            f = (nth_apply, nth_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = data[x].na_value
-            return f(data[x],
-                     data._group_,
-                     index,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()))
-
+            return nth_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    try:
-        return item(x[index])
-    except IndexError:
-        return x.na_value
-
-@deco.listify
-def nth_apply(x, group, index, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        try:
-            yield xg[index]
-        except IndexError:
-            yield None
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def nth_apply_numba(x, group, index, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        if 0 <= index < len(xg) or -len(xg) <= index < 0:
-            out.append(xg[index])
-        else:
-            out.append(None)
-    return out
+    return item(nth_groups(x, np.array([0]))[0])
 
 @composite
 def quantile(x, q, *, drop_na=True):
@@ -534,47 +448,61 @@ def quantile(x, q, *, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.quantile``, see the NumPy documentation for details:
+    Equivalent to ``numpy.quantile``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
 
     >>> di.quantile(di.Vector([1, 5, 6]), 0.5)
     >>> di.quantile("x", 0.5)
     """
+    def quantile_groups(x, starts):
+        y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
+        y = np.asarray(y)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if len(starts) < 20_000:
+            # Looping is faster than sorting for few groups.
+            for i, (a, k) in enumerate(zip(starts.tolist(), n.tolist())):
+                if k > 0: out[i] = np.quantile(y[a:a+k], q)
+            return datetime_from_float(out, x)
+        ys = sort_groups(y, starts)
+        ok = n > 0
+        s, k = starts[ok], n[ok]
+        virtual = (k - 1) * q
+        if isinstance(q, (int, np.integer)):
+            # np.quantile takes elements without interpolating for integer q,
+            # which differs from interpolating with infinities.
+            values = ys[s + virtual]
+        else:
+            # Interpolate linearly as np.quantile does, including its
+            # previous index of -1 and thus gamma at and above the top.
+            top = virtual >= k - 1
+            previous = np.where(top, -1, np.floor(virtual))
+            gamma = virtual - previous
+            lo = np.where(top, k - 1, previous).astype(int)
+            hi = np.where(top, k - 1, previous + 1).astype(int)
+            a, b = ys[s + lo], ys[s + hi]
+            diff = b - a
+            values = np.where(gamma >= 0.5, b - diff * (1 - gamma), a + diff * gamma)
+        # Missing values are sorted last, making the result missing.
+        values[np.isnan(ys[s + k - 1])] = np.nan
+        out[ok] = values
+        return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
-            f = (quantile_apply, quantile_apply_numba)
-            f = select(f, data, x)
-            aggregate.default = np.nan
-            out = f(datetime_as_float(data[x]).as_float(),
-                    data._group_,
-                    q,
-                    drop_na=(
-                        drop_na and
-                        data[x].is_na().any()))
-            return datetime_from_float(out, data[x])
-
+            return quantile_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    x = handle_na(x, drop_na)
-    if x.is_datetime() or x.is_timedelta():
-        return datetime_from_float(quantile(datetime_as_float(x), q), x).item()
-    return np.quantile(x.as_float(), q).item() if len(x) >= 1 else np.nan
+    return quantile_groups(x, np.array([0])).item(0)
 
-@deco.listify
-def quantile_apply(x, group, q, drop_na):
-    for xg in yield_groups(x, group, drop_na):
-        yield np.quantile(xg, q) if len(xg) >= 1 else np.nan
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def quantile_apply_numba(x, group, q, drop_na):
-    out = []
-    for xg in yield_groups_numba(x, group, drop_na):
-        out.append(np.quantile(xg, q) if len(xg) >= 1 else np.nan)
-    return out
-
-def select(functions, data, name):
-    return functions[use_numba(data[name])]
+def sort_groups(x, starts):
+    # Return float x sorted within groups, NaN last.
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    group = np.repeat(np.arange(len(starts)), np.diff(starts, append=len(x)))
+    table = pa.table([group, pa.array(x, mask=np.isnan(x))], names=["group", "x"])
+    keys = [("group", "ascending", "at_end"), ("x", "ascending", "at_end")]
+    return x[pc.sort_indices(table, sort_keys=keys).to_numpy()]
 
 @composite
 def std(x, *, ddof=0, drop_na=True):
@@ -584,37 +512,22 @@ def std(x, *, ddof=0, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.std``, see the NumPy documentation for details:
+    Equivalent to ``numpy.std``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.std.html
 
     >>> di.std(di.Vector([3, 6, 7]))
     >>> di.std("x")
     """
     if isinstance(x, str):
+        f = var(x, ddof=ddof, drop_na=drop_na)
         def aggregate(data):
             check_not_datetime(data[x], "std")
-            if ddof == 0:
-                # Numba doesn't support the ddof argument,
-                # so can only handle the default ddof=0.
-                f = (generic, generic_numba)
-                f = select(f, data, x)(np.std)
-            else:
-                f = generic(np.std, ddof=ddof)
-            aggregate.default = np.nan
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=np.nan,
-                     nrequired=ddof+1)
-
+            return np.sqrt(f(data))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
     check_not_datetime(x, "std")
-    x = handle_na(x, drop_na)
-    return np.std(x, ddof=ddof).item() if len(x) >= ddof + 1 else np.nan
+    return np.sqrt(var(x, ddof=ddof, drop_na=drop_na)).item()
 
 @composite
 def sum(x, *, drop_na=True):
@@ -627,39 +540,40 @@ def sum(x, *, drop_na=True):
     >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
     """
+    def sum_groups(x, starts):
+        check_not_datetime(x, "sum")
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        # Like np.sum, promote small integers and booleans to int64,
+        # but unlike it, sum also float32 in float64 for accuracy.
+        dtype = float if y.dtype.kind == "f" else np.sum(y[:0]).dtype
+        out = np.zeros(len(starts), dtype)
+        if n.any():
+            # reduceat gives the next element for empty groups, skip them.
+            out[n > 0] = np.add.reduceat(y.astype(dtype, copy=False), starts[n > 0])
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            check_not_datetime(data[x], "sum")
-            f = (generic, generic_numba)
-            f = select(f, data, x)(np.sum)
-            aggregate.default = 0
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=0,
-                     nrequired=0)
-
+            return sum_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    check_not_datetime(x, "sum")
-    x = handle_na(x, drop_na)
-    return np.sum(x).item()
+    return sum_groups(x, np.array([0])).item(0)
 
-def use_numba(x):
-    # Numba can't handle all dtypes, use conditionally.
-    # https://numba.pydata.org/numba-doc/dev/reference/pysupported.html#str
-    # NumPy considers timedelta a subtype of integer, but our Numba code
-    # doesn't handle missing timedeltas or mixing them with numbers.
-    if np.issubdtype(x.dtype, np.timedelta64):
-        return False
-    return dataiter.USE_NUMBA and (
-        np.issubdtype(x.dtype, np.bool_) or
-        np.issubdtype(x.dtype, np.datetime64) or
-        np.issubdtype(x.dtype, np.floating) or
-        np.issubdtype(x.dtype, np.integer))
+def value_codes(x):
+    # Return integer codes of x, equal for equal values and for all missing
+    # values. Floats are normalized first, -0.0 to 0.0 and all NaNs to one,
+    # as hashing their bits would otherwise treat those as different.
+    if x.is_object():
+        found = {}
+        return np.fromiter(map(found.setdefault, x.tolist(), itertools.count()), np.int64, len(x))
+    if x.is_float():
+        x = np.where(np.isnan(x), np.nan, x.astype(float) + 0.0).view(np.int64)
+    elif x.is_datetime() or x.is_timedelta():
+        x = x.view(np.int64)
+    elif x.is_boolean():
+        x = x.astype(np.int64)
+    return util.unique_codes(x)[2]
 
 @composite
 def var(x, *, ddof=0, drop_na=True):
@@ -669,61 +583,29 @@ def var(x, *, ddof=0, drop_na=True):
     If `x` is a string, return a function usable with
     :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
 
-    Uses ``numpy.var``, see the NumPy documentation for details:
+    Equivalent to ``numpy.var``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.var.html
 
     >>> di.var(di.Vector([3, 6, 7]))
     >>> di.var("x")
     """
+    def var_groups(x, starts):
+        check_not_datetime(x, "var")
+        y, starts = handle_na_groups(x, starts, drop_na)
+        n = np.diff(starts, append=len(y))
+        out = np.full(len(starts), np.nan)
+        if n.any():
+            # reduceat gives the next element for empty groups, skip them.
+            s, k = starts[n > 0], n[n > 0]
+            mean = np.add.reduceat(y, s, dtype=float) / k
+            with np.errstate(divide="ignore", invalid="ignore"):
+                out[n > 0] = np.add.reduceat((y - np.repeat(mean, k))**2, s) / (k - ddof)
+            out[n <= ddof] = np.nan
+        return out
     if isinstance(x, str):
         def aggregate(data):
-            check_not_datetime(data[x], "var")
-            if ddof == 0:
-                # Numba doesn't support the ddof argument,
-                # so can only handle the default ddof=0.
-                f = (generic, generic_numba)
-                f = select(f, data, x)(np.var)
-            else:
-                f = generic(np.var, ddof=ddof)
-            aggregate.default = np.nan
-            return f(data[x],
-                     data._group_,
-                     drop_na=(
-                         drop_na and
-                         data[x].is_na().any()),
-                     default=np.nan,
-                     nrequired=ddof+1)
-
+            return var_groups(data[x], group_starts(data._group_))
         aggregate.group_aware = True
         aggregate.colnames = [x]
         return aggregate
-    check_not_datetime(x, "var")
-    x = handle_na(x, drop_na)
-    return np.var(x, ddof=ddof).item() if len(x) >= ddof + 1 else np.nan
-
-def yield_groups(x, group, drop_na):
-    # Groups must be contiguous for this to work!
-    if len(x) == 0: return
-    if drop_na:
-        valid = ~x.is_na()
-    bounds = (np.flatnonzero(group[1:] != group[:-1]) + 1).tolist()
-    for i, j in zip([0] + bounds, bounds + [len(x)]):
-        xij = x[i:j]
-        if drop_na:
-            xij = xij[valid[i:j]]
-        yield xij
-
-@njit(cache=dataiter.USE_NUMBA_CACHE)
-def yield_groups_numba(x, group, drop_na):
-    # Groups must be contiguous for this to work!
-    i = 0
-    n = len(x)
-    out = []
-    for j in range(1, n + 1):
-        if j < n and group[j] == group[i]: continue
-        xij = x[i:j]
-        if drop_na:
-            xij = xij[~is_na_numba(xij)]
-        out.append(xij)
-        i = j
-    return out
+    return var_groups(x, np.array([0])).item(0)

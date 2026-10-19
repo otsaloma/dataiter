@@ -5,8 +5,6 @@ sys.path.insert(0, "..")
 
 import dataiter as di
 
-print(f"USE_NUMBA: {di.USE_NUMBA}")
-
 def read_csv(path):
     data = di.read_csv(path)
     for name in data.colnames:

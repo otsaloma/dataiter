@@ -40,26 +40,28 @@ files. Run `uv run make doc-check` to check these are up to date.
 
 Do not complain about these or spend too much time investigating.
 
-- Sorting by `StringDType` columns is slow, which makes also e.g.
-  grouping by strings slow, about 1–2 s per string column at 3M rows.
-  NumPy's string sort is simply slow. `DataFrame.sort` already uses
-  chained stable argsorts, which are faster than `np.lexsort` for
-  strings. Rejected alternatives: integer codes via a Python dict (fast
-  for categorical strings, slower for unique ones), Numba (doesn't
-  support `StringDType`) and a categorical type or string interning
-  (would need a second string type).
+- Sorting by `StringDType` columns of nearly unique strings is slow,
+  about 4 s for 7M unique strings. NumPy's string sort is simply slow.
+  `DataFrame.sort` and grouping sort strings via sorted codes
+  (`util.sorted_codes`: hashing with PyArrow, then sorting only unique
+  values), which is fast for repeated strings, but for unique strings
+  adds hashing on top of a full string sort. Rejected alternatives:
+  PyArrow's `sort_indices` (fast only for already sorted data, ~3 s for
+  7M random rows, slower than NumPy for a single numeric key), Numba
+  (doesn't support `StringDType`) and a categorical type or string
+  interning (would need a second string type).
 
 - Grouped `DataFrame.modify` is slow for large and wide data frames,
   e.g. 2.7 s for 3M rows, 24 columns and 8k groups. Most of the time
   goes to reordering all columns by group, since the functions given
   receive full rows and can access any column, and the rest to calling a
   Python function per group. Significantly speeding it up would require
-  Numba-accelerated helper functions like those for
-  `DataFrame.aggregate`, which declare the columns they use and avoid
-  per-group Python calls. That would be a big change, currently not
-  considered worth doing, as grouped modify is not commonly used.
-  Rejected alternative: reordering columns lazily upon first access (too
-  much magic in a data frame subclass).
+  vectorized helper functions like those for `DataFrame.aggregate`,
+  which declare the columns they use and avoid per-group Python calls.
+  That would be a big change, currently not considered worth doing, as
+  grouped modify is not commonly used. Rejected alternative: reordering
+  columns lazily upon first access (too much magic in a data frame
+  subclass).
 
 - `DataFrame` methods return new data frames with all columns copied,
   which makes long method chains on large and wide data frames slow,

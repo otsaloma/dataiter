@@ -197,36 +197,26 @@ class DataFrame(dict):
         >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
         """
         group_colnames = self._group_colnames
-        data = self.select(*group_colnames)
-        data._index_ = np.arange(self.nrow)
-        if group_colnames:
-            data = data.sort(**dict.fromkeys(group_colnames, 1))
-        starts = data._get_group_starts(*group_colnames)
-        stat = data.slice(starts)
+        order, starts = self._get_groups(*group_colnames)
+        rows = order[starts]
+        stat = self.__class__({x: self[x][rows] for x in group_colnames}, _index_=rows)
         group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
         if any(group_aware):
             # Group-aware functions declare the columns they use,
             # sort only those instead of the whole data frame.
+            data = self.__class__()
             for function in colname_function_pairs.values():
                 for colname in getattr(function, "colnames", []):
                     if colname not in data:
-                        data[colname] = self[colname][data._index_]
-            n = np.diff(starts, append=data.nrow)
+                        data[colname] = self[colname][order]
+            n = np.diff(starts, append=self.nrow)
             data._group_ = np.repeat(np.arange(len(starts)), n)
         ordered = None
         for colname, function in colname_function_pairs.items():
             if getattr(function, "group_aware", False):
-                # function might leave Nones in its output,
-                # once those are replaced with the proper default
-                # we can do a fast conversion to DataFrameColumn.
                 column = function(data)
-                default = function.default
-                for i in range(len(column)):
-                    if column[i] is None:
-                        column[i] = default
                 assert len(column) == stat.nrow
-                column = DataFrameColumn.fast(column)
-                stat[colname] = column
+                stat[colname] = DataFrameColumn.fast(column)
             else:
                 # When using an arbitrary function, we cannot know
                 # what special values to expect and thus we end up
@@ -236,7 +226,7 @@ class DataFrame(dict):
                     # so that slices make cheap NumPy views instead of copies.
                     # Create views lazily, as holding hundreds of thousands
                     # of views alive at once makes garbage collection slow.
-                    ordered = self._view_rows(data._index_)
+                    ordered = self._view_rows(order)
                     ends = np.append(starts[1:], self.nrow)
                     slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
                 stat[colname] = [function(ordered._view_rows(x)) for x in slices]
@@ -350,11 +340,9 @@ class DataFrame(dict):
         # Joins never match missing values, but here missing identifiers
         # should match, so join by codes that treat them as equal.
         keys = self.select(*by).rbind(other.select(*by))
-        keys._index_ = np.arange(keys.nrow)
-        keys = keys.sort(**dict.fromkeys(by, 1))
-        starts = keys._get_group_starts(*by)
+        order, starts = keys._get_groups(*by)
         codes = np.empty(keys.nrow, int)
-        codes[keys._index_] = np.repeat(np.arange(len(starts)), np.diff(starts, append=keys.nrow))
+        codes[order] = np.repeat(np.arange(len(starts)), np.diff(starts, append=keys.nrow))
         x = self.modify(_i_=range(self.nrow), _k_=codes[:self.nrow])
         y = other.modify(_j_=range(other.nrow), _k_=codes[self.nrow:])
         added = x.anti_join(y, "_k_").unselect("_i_", "_k_")
@@ -766,34 +754,73 @@ class DataFrame(dict):
                 b[item[0]] = b.pop(item[1])
         return ab.rbind(b)
 
+    @staticmethod
+    def _get_codes(columns):
+        # Return one combined code per row for a list of numeric or datetime
+        # columns, offsetting integers by their minimum and falling back to
+        # np.unique for floats or if the range would overflow.
+        def encode(x, dense=False):
+            # Return integer codes for x and an upper bound for them.
+            if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
+                x = x.astype(np.int64)
+                lo, hi = int(x.min()), int(x.max())
+                if hi - lo < 2**62:
+                    return x - lo, hi - lo + 1
+            codes = np.unique(x, return_inverse=True)[1]
+            return codes, int(codes.max(initial=0)) + 1
+        codes, size = 0, 1
+        for column in columns:
+            column, n = encode(column)
+            if size * n >= 2**62:
+                codes, size = encode(codes, dense=True)
+                column, n = encode(column, dense=True)
+            codes, size = codes * n + column, size * n
+        return codes
+
     def _get_group_positions(self):
         # Return row indices in group order, the position
         # of each row within its group and its group size.
-        group_colnames = self._group_colnames
-        data = self.select(*group_colnames)
-        data._index_ = np.arange(self.nrow)
-        data = data.sort(**dict.fromkeys(group_colnames, 1))
-        starts = data._get_group_starts(*group_colnames)
-        sizes = np.diff(starts, append=data.nrow)
-        positions = np.arange(data.nrow) - np.repeat(starts, sizes)
-        return data._index_, positions, np.repeat(sizes, sizes)
+        order, starts = self._get_groups(*self._group_colnames)
+        sizes = np.diff(starts, append=self.nrow)
+        positions = np.arange(self.nrow) - np.repeat(starts, sizes)
+        return order, positions, np.repeat(sizes, sizes)
 
-    def _get_group_starts(self, *colnames):
-        # Assumes data is sorted by colnames, i.e. groups are contiguous.
-        change = np.zeros(self.nrow, bool)
-        change[:1] = True
+    def _get_groups(self, *colnames):
+        # Return row indices in group order, as sort would give, and starts of
+        # groups in that order. Instead of sorting all columns, combine codes
+        # that preserve order and put missing values last into one key.
+        if not colnames:
+            return np.arange(self.nrow), np.arange(min(1, self.nrow))
+        columns = []
         for colname in colnames:
             column = self[colname]
             na = column.is_na()
-            change[1:] |= (column[1:] != column[:-1]) & ~(na[1:] & na[:-1])
-        return np.flatnonzero(change)
+            if column.is_string():
+                column = util.sorted_codes(column)
+            elif column.is_object():
+                column = column.rank(method="min")
+            elif column.is_datetime() or column.is_timedelta():
+                column = column.view(np.int64)
+            elif column.is_float():
+                column = np.unique(column, return_inverse=True)[1]
+            column = np.asarray(column)
+            if na.any():
+                column = column.astype(np.int64)
+                column[na] = column[~na].max(initial=0) + 1
+            columns.append(column)
+        key = self._get_codes(columns)
+        order = np.argsort(key, kind="stable")
+        key = key[order]
+        change = np.ones(self.nrow, bool)
+        change[1:] = key[1:] != key[:-1]
+        return order, np.flatnonzero(change)
 
     def _get_join_codes(self, other, by1, by2):
         # Return int64 codes for rows of self and other, equal for equal
         # keys and -1 for rows that can't match, i.e. missing values in by.
-        # Non-numeric columns are encoded together via a dict of tuples,
-        # the result of which is combined arithmetically with numeric
-        # and datetime columns.
+        # String columns are encoded as codes and other non-numeric columns
+        # together via a dict of tuples, the results of which are combined
+        # arithmetically with numeric and datetime columns.
         a_na = np.zeros(self.nrow, bool)
         b_na = np.zeros(other.nrow, bool)
         for colname1, colname2 in zip(by1, by2):
@@ -801,16 +828,21 @@ class DataFrame(dict):
             b_na |= other[colname2].is_na()
         numeric, hashable = [], []
         for colname1, colname2 in zip(by1, by2):
-            pair = self[colname1][~a_na], other[colname2][~b_na]
-            is_numeric = all(x.dtype.kind in "biufcmM" for x in pair)
-            (numeric if is_numeric else hashable).append(pair)
+            a, b = self[colname1][~a_na], other[colname2][~b_na]
+            if a.is_string() and b.is_string():
+                numeric.append(np.concatenate(self._get_join_codes_strings(a, b)))
+            elif all(x.dtype.kind in "biufcmM" for x in (a, b)):
+                numeric.append(np.concatenate([a, b]))
+            else:
+                hashable.append((a, b))
         if hashable:
-            numeric.append(self._get_join_codes_hashable(hashable))
-        a, b = self._get_join_codes_numeric(numeric)
+            numeric.append(np.concatenate(self._get_join_codes_hashable(hashable)))
+        codes = self._get_codes(numeric)
+        n = self.nrow - a_na.sum()
         a_codes = np.full(self.nrow, -1)
         b_codes = np.full(other.nrow, -1)
-        a_codes[~a_na] = a
-        b_codes[~b_na] = b
+        a_codes[~a_na] = codes[:n]
+        b_codes[~b_na] = codes[n:]
         return a_codes, b_codes
 
     @staticmethod
@@ -837,28 +869,24 @@ class DataFrame(dict):
         return (large, small) if swap else (small, large)
 
     @staticmethod
-    def _get_join_codes_numeric(pairs):
-        # Return one combined code per row for a list of pairs of numeric or
-        # datetime columns, offsetting integers by their minimum and falling
-        # back to np.unique for floats or if the range would overflow.
-        def encode(x, dense=False):
-            # Return integer codes for x and an upper bound for them.
-            if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
-                x = x.astype(np.int64)
-                lo, hi = int(x.min()), int(x.max())
-                if hi - lo < 2**62:
-                    return x - lo, hi - lo + 1
-            codes = np.unique(x, return_inverse=True)[1]
-            return codes, int(codes.max(initial=0)) + 1
-        codes, size = 0, 1
-        for a, b in pairs:
-            column, n = encode(np.concatenate([a, b]))
-            if size * n >= 2**62:
-                codes, size = encode(codes, dense=True)
-                column, n = encode(column, dense=True)
-            codes, size = codes * n + column, size * n
-        n = len(pairs[0][0])
-        return codes[:n], codes[n:]
+    def _get_join_codes_strings(a, b):
+        # Return codes for string columns a and b. If one side is much smaller,
+        # hash only it and look up the larger side, rows not found getting a
+        # shared code past the smaller side's, which can't match. Otherwise
+        # hashing both sides together is faster.
+        if 2 * min(len(a), len(b)) > max(len(a), len(b)):
+            codes = util.unique_codes(np.concatenate([a, b]))[2]
+            return codes[:len(a)], codes[len(a):]
+        import pyarrow as pa
+        import pyarrow.compute as pc
+        swap = len(a) > len(b)
+        small, large = (b, a) if swap else (a, b)
+        unique, _, small = util.unique_codes(small)
+        type = pa.large_string()
+        large = pc.index_in(pa.array(np.asarray(large), type=type),
+                            value_set=pa.array(np.asarray(unique), type=type))
+        large = large.fill_null(len(unique)).to_numpy().astype(np.int64)
+        return (large, small) if swap else (small, large)
 
     def _get_join_indices(self, other, by1, by2, multiple="first"):
         # Return aligned indices of rows in self and their matches in other.
@@ -1125,13 +1153,10 @@ class DataFrame(dict):
                 yield colname, data[colname].copy()
 
     def _modify_group_wise(self, **colname_function_pairs):
-        group_colnames = self._group_colnames
-        data = self.__class__(self)
-        data._index_ = np.arange(data.nrow)
-        data = data.sort(**dict.fromkeys(group_colnames, 1))
-        restore_indices = np.argsort(data.pop("_index_"))
-        starts = data._get_group_starts(*group_colnames)
-        ends = np.append(starts[1:], data.nrow)
+        order, starts = self._get_groups(*self._group_colnames)
+        data = self._view_rows(order)
+        restore_indices = np.argsort(order)
+        ends = np.append(starts[1:], self.nrow)
         # Contiguous slices make cheap NumPy views instead of copies.
         # Create them lazily, as holding hundreds of thousands
         # of views alive at once makes garbage collection slow.
@@ -1277,17 +1302,14 @@ class DataFrame(dict):
                              "with data.replace_na(...) or drop them with data.drop_na(...)")
         # Map rows to rows of wide via sorted groups, since unlike
         # joins, this treats missing values in ids as equal.
-        keys = self.select(*ids)
-        keys._index_ = np.arange(self.nrow)
-        keys = keys.sort(**dict.fromkeys(ids, 1))
-        starts = keys._get_group_starts(*ids)
-        # Sort is stable, so the first row of each group is its first occurrence.
-        firsts = keys._index_[starts]
+        order, starts = self._get_groups(*ids)
+        # Order is stable, so the first row of each group is its first occurrence.
+        firsts = order[starts]
         rank = np.empty(len(starts), int)
         rank[np.argsort(firsts)] = np.arange(len(starts))
         row = np.empty(self.nrow, int)
-        row[keys._index_] = np.repeat(rank, np.diff(starts, append=self.nrow))
-        wide = self.select(*ids).slice(firsts.sort())
+        row[order] = np.repeat(rank, np.diff(starts, append=self.nrow))
+        wide = self.select(*ids).slice(np.sort(firsts))
         if self[names].is_string():
             # np.unique sorts, which is slow for strings. unique_codes gives
             # unique values in order of appearance instead of sorted, which
@@ -1674,7 +1696,11 @@ class DataFrame(dict):
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
             na = column.is_na()
-            yield column.rank(method="min") if column.is_object() else column, dir
+            if column.is_string():
+                column = util.sorted_codes(column)
+            elif column.is_object():
+                column = column.rank(method="min")
+            yield column, dir
             # Keys are sorted by least significant first,
             # so yielding na after the values takes precedence.
             if na.any(): yield na, 1
@@ -1703,11 +1729,8 @@ class DataFrame(dict):
         >>> data = di.DataFrame(x=[1, 2, 2, 3, 3, 3])
         >>> data.split("x")
         """
-        data = self.select(*by)
-        data._index_ = np.arange(data.nrow)
-        data = data.sort(**dict.fromkeys(by, 1))
-        starts = data._get_group_starts(*by)
-        return np.split(data._index_, starts[1:]) if len(starts) > 0 else []
+        order, starts = self._get_groups(*by)
+        return np.split(DataFrameColumn.fast(order), starts[1:]) if len(starts) > 0 else []
 
     def _split_join_by(self, *by):
         by1 = [x if isinstance(x, str) else x[0] for x in by]
@@ -1742,14 +1765,7 @@ class DataFrame(dict):
         >>> data.to_arrow()
         """
         import pyarrow as pa
-        data = []
-        for column in self.columns:
-            na = np.asarray(column.is_na())
-            try:
-                data.append(pa.array(np.asarray(column), mask=na))
-            except pa.ArrowNotImplementedError:
-                # PyArrow < 26 doesn't support StringDType.
-                data.append(pa.array(column.astype(object), mask=na))
+        data = [pa.array(np.asarray(x), mask=np.asarray(x.is_na())) for x in self.columns]
         return pa.table(data, names=self.colnames)
 
     def to_json(self, **kwargs):
@@ -1839,19 +1855,19 @@ class DataFrame(dict):
         """
         colnames = colnames or self.colnames
         columns = [self[x] for x in colnames]
-        if all(x.is_number() or
+        if all(x.is_string() or
+               x.is_number() or
                x.is_boolean() or
                x.is_datetime() or
                x.is_timedelta() for x in columns):
-            # np.lexsort is stable, so the first row of each group
-            # in sorted order is the first occurrence in self.
-            order = np.lexsort(columns[::-1])
-            starts = self.select(*colnames).slice(order)._get_group_starts(*colnames)
-            keep = np.sort(order[starts])
+            # Hashing one combined code per row gives first occurrences
+            # without slow sorting, especially of strings.
+            columns = [util.unique_codes(x)[2] if x.is_string() else x for x in columns]
+            keep = util.unique_codes(self._get_codes(columns))[1]
             for colname, column in self.items():
                 yield colname, column[keep]
             return
-        # For strings and objects, a Python set is faster than sorting.
+        # For objects, a Python set is faster than sorting.
         # We just need to avoid NaN and NaT for the 'in' checks to work.
         for i, column in enumerate(columns):
             if not column.is_na().any(): continue

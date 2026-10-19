@@ -541,8 +541,17 @@ class Vector(np.ndarray):
         if self.is_string() and len(values) >= 10:
             # StringDType has hasobject set, so np.isin never sorts,
             # but compares one value at a time, slow for many values.
-            values = set(values)
-            return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
+            # Hash values instead, with a set for small inputs, as it beats
+            # Arrow's per-call overhead, e.g. many groups. Non-strings can't
+            # match, so drop them for Arrow.
+            if self.length < 1000:
+                values = set(values)
+                return self.fast(np.fromiter((x in values for x in self), bool, self.length), bool)
+            import pyarrow as pa
+            import pyarrow.compute as pc
+            values = pa.array([x for x in values if isinstance(x, str)], pa.large_string())
+            found = pc.is_in(pa.array(np.asarray(self), pa.large_string()), value_set=values)
+            return self.fast(found.to_numpy(zero_copy_only=False), bool)
         return self.fast(np.isin(self, values), bool)
 
     def is_integer(self):
@@ -776,11 +785,16 @@ class Vector(np.ndarray):
             return self.fast(np.repeat(1, self.length)).rank(method=method, dir=dir)
         out = np.zeros_like(self, int)
         def codes():
-            # return_index=True makes np.unique use a stable sort, the default
-            # quicksort can segfault for StringDType (NumPy 2.5.4).
-            # https://github.com/numpy/numpy/issues/33089
-            unique, _, inv = np.unique(self[~na], return_index=True, return_inverse=True)
-            return inv if dir > 0 else len(unique) - 1 - inv
+            if self.is_string():
+                # Hashing and sorting only unique values is faster
+                # than np.unique, which sorts all strings.
+                inv = util.sorted_codes(self[~na])
+            else:
+                # return_index=True makes np.unique use a stable sort, the default
+                # quicksort can segfault for StringDType (NumPy 2.5.4).
+                # https://github.com/numpy/numpy/issues/33089
+                inv = np.unique(self[~na], return_index=True, return_inverse=True)[2]
+            return inv if dir > 0 else inv.max() - inv
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
             inv = codes()
@@ -795,8 +809,10 @@ class Vector(np.ndarray):
             return out.view(self.__class__)
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
-            # Sorting values directly is faster than via codes.
-            keys = self[~na] if dir > 0 else codes()
+            # Sorting values directly is faster than via codes,
+            # except for strings with values that repeat.
+            direct = dir > 0 and not (self.is_string() and util.is_repetitive(self))
+            keys = self[~na] if direct else codes()
             indices = keys.argsort(kind="stable")
             rank = np.zeros_like(indices)
             rank[indices] = np.arange(len(indices)) + 1
@@ -890,8 +906,16 @@ class Vector(np.ndarray):
             new = self.fast(lst, object)
             na = new.is_na()
             return new[~na].concat(new[na])
-        new = self.copy()
-        np.ndarray.sort(new, kind="stable")
+        if self.is_string() and self.length >= 1000 and util.is_repetitive(self):
+            # Sorting only unique values and repeating each by its count
+            # is faster than sorting all strings if values repeat.
+            unique, _, codes = util.unique_codes(self)
+            order = np.argsort(unique, kind="stable")
+            counts = np.bincount(codes, minlength=len(unique))
+            new = self.fast(np.repeat(unique[order], counts[order]), self.dtype)
+        else:
+            new = self.copy()
+            np.ndarray.sort(new, kind="stable")
         if dir < 0:
             new = new[::-1]
         na = new.is_na()
@@ -1093,7 +1117,10 @@ class Vector(np.ndarray):
         >>> vector.unique()
         """
         if self.is_string():
-            # Python dict is faster than NumPy's sorting of strings.
-            return self.fast(list(dict.fromkeys(np.ndarray.tolist(self))), self.dtype)
+            # Hashing is faster than NumPy's sorting of strings. A dict beats
+            # Arrow's per-call overhead for small inputs, e.g. many groups.
+            if self.length < 1000:
+                return self.fast(list(dict.fromkeys(np.ndarray.tolist(self))), self.dtype)
+            return util.unique_codes(self)[0]
         u, indices = np.unique(self, return_index=True)
         return self[indices.sort()]

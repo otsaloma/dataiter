@@ -33,6 +33,7 @@ New:
 - `ListOfDicts.filter`, `ListOfDicts.filter_out`: Match any element if value is a sequence
 - `ListOfDicts.head`, `ListOfDicts.tail`: Return first or last items of each group if grouped
 - `ListOfDicts.replace_na`: New method
+- `mean`: Add `weights` argument for a weighted mean
 - `mean`, `median`, `quantile`: Support dates and datetimes
 - `of_type`: New function to check if data type is one of given, for use with `DataFrame.map_columns`
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
@@ -49,6 +50,8 @@ New:
 
 Breaking changes:
 - `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
+- Require PyArrow >= 26
+- Drop optional use of Numba in favor of vectorized aggregation helper functions in plain NumPy, remove `USE_NUMBA` and `USE_NUMBA_CACHE`
 
 Speed-ups:
 - `DataFrame.*_join`: Speed up when joining by a single numeric or datetime column
@@ -57,23 +60,29 @@ Speed-ups:
 - `DataFrame.full_join`: Speed up by matching rows only once
 - `DataFrame.aggregate`: Speed up by sorting only columns needed
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
-- `DataFrame.aggregate`: Speed up helper functions, e.g. `mode`, dropping missing values in columns not handled by Numba, e.g. strings
-- `DataFrame.aggregate`: Speed up helper functions, e.g. `first`, for columns not handled by Numba, e.g. strings, or without Numba
+- `DataFrame.aggregate`: Speed up helper functions for columns previously not handled by Numba, e.g. strings and timedeltas
+- `DataFrame.aggregate`, `DataFrame.count`, `DataFrame.filter`, `DataFrame.head`, `DataFrame.modify`, `DataFrame.split`, `DataFrame.tail`: Speed up grouping, especially by strings
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.pivot_longer`: Speed up, especially with many columns
 - `DataFrame.pivot_wider`: Speed up, especially with many ids or names
 - `DataFrame.sort`: Speed up, especially for strings
 - `DataFrame.unique`: Speed up with string columns when keeping many rows of wide data
-- `DataFrame.unique`: Speed up with string and datetime or timedelta columns
+- `DataFrame.unique`: Speed up, especially with string columns
 - `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_parquet`: Speed up and keep data types, e.g. float32 and datetime precision
-- `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_csv`, `DataFrame.write_parquet`: Speed up strings with PyArrow 26 or later
+- `DataFrame.to_arrow`, `DataFrame.to_pandas`, `DataFrame.write_csv`, `DataFrame.write_parquet`: Speed up strings
 - `dt.day`, `dt.hour`, `dt.isoweekday`, `dt.microsecond`, `dt.minute`, `dt.month`, `dt.quarter`, `dt.second`, `dt.weekday`, `dt.year`: Speed up
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`: Speed up
 - `dt.replace`, `dt.to_string`: Speed up when values repeat
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
+- `count`, `first`, `last`, `max`, `min`, `nth`: Speed up when grouped, especially with many groups
+- `median`, `quantile`: Speed up when grouped with very many groups
+- `count_unique`, `mode`: Speed up when grouped with very many groups
 - `mode`: Speed up for large groups
-- `regex.*`: Speed up
+- `regex.*`: Speed up, especially when values repeat
+- `std`, `var`: Speed up when grouped with `ddof` other than zero
+- `Vector.rank`: Speed up for strings, especially when values repeat
+- `Vector.sort`: Speed up for strings when values repeat
 - `Vector.unique`: Speed up for strings
 
 Fixes:
@@ -121,7 +130,7 @@ Fixes:
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix infinite values switching floats to scientific notation
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
-- `count_unique`: Count all missing values as one, as with Numba, instead of each NaN and NaT separately
+- `count_unique`: Count all missing values as one instead of each NaN and NaT separately in some cases, also fixing an error for objects with missing values
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `dt.from_string`, `Vector.rank`: Fix segmentation fault for strings in some orders, e.g. two sorted runs, due to a NumPy bug
 - `dt.isoformat`: Use the same format for all elements, with fractional seconds as precise as needed, instead of omitting them for elements with zero microseconds
@@ -140,7 +149,14 @@ Fixes:
 - `ListOfDicts.to_data_frame`, `ListOfDicts.to_pandas`: Fix dropping keys missing from the first item
 - `first`, `last`, `max`, `min`, `nth`: Fix error for string vectors
 - `max`, `mean`, `median`, `min`, `quantile`, `sum`: Fix errors and wrong results for timedeltas
+- `first`, `last`, `max`, `min`, `mode`, `nth`: Keep data type when grouped, e.g. float32 or object, instead of converting to float64 or int64
+- `first`, `last`, `max`, `median`, `min`, `mode`, `nth`, `quantile`: Return `None` instead of NaT or NaN for datetime and timedelta vectors with no values, as `mean` does
+- `mean`, `median`, `quantile`: Fix ignoring `drop_na=False` for datetime vectors
+- `median`, `quantile`: Return missing values for groups with missing values if `drop_na=False`, as NumPy does, previously ignored for some data types
+- `mean`: Round timedelta vectors to the nearest unit instead of truncating toward zero, as when grouped, and return `None` instead of NaN for no values
+- `mean`, `std`, `sum`, `var`: Calculate in float64 also for float32 for better accuracy
 - `mode`: Return Python builtin types for vectors, as other aggregation functions do, instead of NumPy scalars
+- `mode`: Count all missing values as one if `drop_na=False`, as `count_unique` does, instead of each NaN and NaT separately
 - `std`, `sum`, `var`: Raise `TypeError` for dates and datetimes
 - `std`, `var`: Return zero instead of NaN for a single value with the default `ddof=0`, as NumPy does
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType

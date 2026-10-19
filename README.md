@@ -8,7 +8,7 @@ Dataiter's **`DataFrame`** is a class for tabular data similar to R's
 is under the hood a dictionary of NumPy arrays and thus capable of fast
 vectorized operations. You can consider it to be a light-weight
 alternative to Pandas with a simple and consistent API. Performance-wise
-Dataiter relies on NumPy and Numba and is likely to be at best
+Dataiter relies on NumPy and PyArrow and is likely to be at best
 comparable to Pandas.
 
 ## Installation
@@ -19,17 +19,10 @@ pip install -U dataiter
 
 # Latest development version
 pip install -U git+https://github.com/otsaloma/dataiter
-
-# Numba (optional)
-pip install -U numba
 ```
 
 Recommended NumPy version is currently >= 2.4.0 due to various
 StringDType fixes that have landed in NumPy 2.2.1 and 2.4.0.
-
-Dataiter optionally uses **Numba** to speed up certain operations. If
-you have Numba installed, Dataiter will use it automatically. It's
-currently not a hard dependency, so you need to install it separately.
 
 ## Quick Start
 
