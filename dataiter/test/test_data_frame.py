@@ -1396,6 +1396,11 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.head(0).to_string()
         assert data.head(5).to_string()
 
+    def test_to_string_empty(self):
+        data = DataFrame(a=[1])
+        assert data.to_string() == "\n      a\n  int64\n  ─────\n0     1\n"
+        assert data.head(0).to_string() == "\n      a\n  int64\n  ─────\n"
+
     def test_unique(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.unique("make", "year", "displ")

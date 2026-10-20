@@ -1831,8 +1831,8 @@ class DataFrame(dict):
         ) for colname, column in self.items()}
         for column in columns.values():
             column.insert(2, "─" * util.ulen(column[0]))
-        row_numbers = [str(i) for i in range(n)]
-        row_numbers = util.upad(["", "", ""] + row_numbers)
+        width = len(str(max(n - 1, 0)))
+        row_numbers = [x.rjust(width) for x in ["", "", "", *map(str, range(n))]]
         # If the length of rows exceeds max_width, split to
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
