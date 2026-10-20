@@ -191,15 +191,6 @@ def handle_na_groups(x, starts, drop_na):
     nvalid_before = np.cumsum(valid) - valid
     return x[valid], nvalid_before[starts]
 
-def handle_na_weighted_groups(x, w, starts, drop_na):
-    # Return x, weights w and starts of their groups, dropping rows where
-    # either is missing if drop_na. Groups can be left empty.
-    if not drop_na: return x, w, starts
-    valid = ~(x.is_na() | w.is_na())
-    if valid.all(): return x, w, starts
-    nvalid_before = np.cumsum(valid) - valid
-    return x[valid], w[valid], nvalid_before[starts]
-
 def item(x):
     # NumPy returns strings as str, other scalars as NumPy generics.
     return x.item() if isinstance(x, np.generic) else x
@@ -255,20 +246,22 @@ def mean(x, *, weights=None, drop_na=True):
     def mean_groups(x, w, starts):
         y = datetime_as_float(x)
         if w is None:
-            y, starts = handle_na_groups(y, starts, drop_na)
+            valid = ~y.is_na()
+            num, den = y, np.broadcast_to(1.0, len(y))
         else:
-            y, w, starts = handle_na_weighted_groups(y, w, starts, drop_na)
-        n = np.diff(starts, append=len(y))
+            valid = ~(y.is_na() | w.is_na())
+            num, den = y * w, w
+        if drop_na and not valid.all():
+            nvalid_before = np.cumsum(valid) - valid
+            num, den, starts = num[valid], den[valid], nvalid_before[starts]
+        n = np.diff(starts, append=len(num))
         out = np.full(len(starts), np.nan)
         if n.any():
             # reduceat gives the next element for empty groups, skip them.
             s = starts[n > 0]
-            if w is None:
-                out[n > 0] = np.add.reduceat(y, s, dtype=float) / n[n > 0]
-            else:
-                with np.errstate(divide="ignore", invalid="ignore"):
-                    out[n > 0] = (np.add.reduceat(y * w, s, dtype=float) /
-                                  np.add.reduceat(w, s, dtype=float))
+            with np.errstate(divide="ignore", invalid="ignore"):
+                out[n > 0] = (np.add.reduceat(num, s, dtype=float) /
+                              np.add.reduceat(den, s, dtype=float))
         return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data):
