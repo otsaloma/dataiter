@@ -123,8 +123,9 @@ def is_glob(pattern):
     return isinstance(pattern, str) and any(x in pattern for x in "*?[")
 
 def is_repetitive(x):
-    # Return whether values of string x repeat enough for hashing to pay off,
-    # judging by a sample, as hashing is slow with many unique values.
+    # Return whether values of string or integer x repeat enough for hashing
+    # to pay off, judging by a sample, as hashing is slow with many unique
+    # values.
     sample = x[::max(1, len(x) // 100_000)]
     return len(unique_codes(sample)[0]) < 0.9 * len(sample)
 

@@ -195,7 +195,12 @@ def isoformat(x):
     if np.datetime_data(x.dtype)[0] not in ["Y", "M", "W", "D"]:
         values = x[~na]
         unit = next(u for u in ["s", "ms", "us", "ns"] if np.all(values.astype(f"datetime64[{u}]") == values))
-    out = Vector.fast(np.datetime_as_string(x, unit=unit), dtypes.string)
+    if util.is_repetitive(x.view(np.int64)):
+        # Formatting only unique values is faster if values repeat.
+        unique, _, codes = util.unique_codes(x.view(np.int64))
+        out = Vector.fast(np.datetime_as_string(unique.view(x.dtype), unit=unit), dtypes.string)[codes]
+    else:
+        out = Vector.fast(np.datetime_as_string(x, unit=unit), dtypes.string)
     out[na] = dtypes.string.na_object
     return out
 

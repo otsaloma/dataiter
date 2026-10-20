@@ -148,6 +148,11 @@ class TestDT:
         a = np.array(["2022-10-15T12:34:56", "2022-10-15T12:34:56.5"], "datetime64[us]")
         assert dt.isoformat(a).tolist() == ["2022-10-15T12:34:56.000", "2022-10-15T12:34:56.500"]
 
+    def test_isoformat_datetime_repetitive(self):
+        a = np.array(["2022-10-15T12:34:56.5", NaT, "2022-10-15T12:34"] * 10, np.datetime64)
+        b = ["2022-10-15T12:34:56.500", None, "2022-10-15T12:34:00.000"] * 10
+        assert dt.isoformat(a).tolist() == b
+
     def test_isoformat_datetime_scalar(self):
         x = np.datetime64("2022-10-15T12:34:56.789")
         assert dt.isoformat(x) == "2022-10-15T12:34:56.789"
