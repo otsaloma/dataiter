@@ -45,13 +45,13 @@ install-cli:
 # Interactive!
 publish:
 	$(MAKE) clean
-	python -m build
+	uv build
 	test -s dist/dataiter-*-py3-none-any.whl
 	test -s dist/dataiter-*.tar.gz
-	twine check dist/*
+	uvx twine check dist/*
 	ls -l dist
 	@printf "Press Enter to upload or Ctrl+C to abort: "; read _
-	twine upload dist/*
+	uvx twine upload dist/*
 
 # Interactive!
 release:
