@@ -1800,7 +1800,10 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.to_arrow()
         """
-        data = [pa.array(np.asarray(x), mask=np.asarray(x.is_na())) for x in self.columns]
+        def convert(x):
+            return pa.array(np.asarray(x), mask=np.asarray(x.is_na()))
+        data = [util.submit(convert, x) for x in self.columns]
+        data = [x.result() if isinstance(x, Future) else x for x in data]
         return pa.table(data, names=self.colnames)
 
     def to_json(self, **kwargs):
