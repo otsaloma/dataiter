@@ -690,7 +690,6 @@ class DataFrame(dict):
         return cls(**data)
 
     @classmethod
-    @deco.new_from_generator
     def from_pandas(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
@@ -700,38 +699,20 @@ class DataFrame(dict):
         for name in dtypes:
             if name not in data.columns:
                 raise KeyError(name)
-        for name in data.columns:
-            req_dtype = dtypes.get(name, None)
-            na = data[name].isna().to_numpy(copy=True)
-            column = data[name].to_numpy(copy=True)
-            if ((req_dtype is None or np.dtype(req_dtype) in
-                 [np.dtype("datetime64"), np.dtype("timedelta64")]) and
-                (np.issubdtype(column.dtype, np.datetime64) or
-                 np.issubdtype(column.dtype, np.timedelta64)) and
-                np.datetime_data(column.dtype)[0] == "ns"):
-                # Python's datetime and timedelta don't support nanoseconds,
-                # breaking conversions to object, e.g. in dt and tolist.
-                # Keep nanoseconds only if explicitly requested.
-                column = column.astype(column.dtype.name.replace("ns", "us"))
-            if np.issubdtype(column.dtype, np.object_):
-                if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
-                    # Likely to be strings, but not necessarily.
-                    # Force type-guessing in Vector.fast.
-                    column = column.tolist()
-            with np.errstate(invalid="ignore"):
-                # Casting NaN to int warns, but missing values are set below.
-                column = DataFrameColumn.fast(column, req_dtype)
-            if column.is_object() and req_dtype is None:
-                # Vector.fast doesn't recognize e.g. dates,
-                # try the slower full type-guessing of Vector.
-                column[na] = None
-                column = DataFrameColumn(column.tolist())
-            if na.any():
-                if column.dtype != column.na_dtype:
-                    # Upcast integer to float if needed.
-                    column = column.astype(column.na_dtype)
-                column[na] = column.na_value
-            yield name, column
+        # Convert via Arrow, naming columns by position,
+        # as Arrow requires string names, unlike pandas.
+        arrays, others = {}, {}
+        for i, name in enumerate(data.columns):
+            try:
+                arrays[str(i)] = pa.array(data[name], from_pandas=True)
+            except (pa.ArrowInvalid, pa.ArrowTypeError):
+                # Arrow can't hold e.g. mixed types, let Vector guess.
+                values = [None if na else x for x, na in zip(data[name].tolist(), data[name].isna())]
+                others[str(i)] = DataFrameColumn(values, dtypes.get(name))
+        table = pa.table(list(arrays.values()), names=list(arrays))
+        positions = {str(i): name for i, name in enumerate(data.columns)}
+        columns = cls.from_arrow(table, dtypes={k: dtypes[v] for k, v in positions.items() if k in arrays and v in dtypes})
+        return cls((v, columns[k] if k in columns else others[k]) for k, v in positions.items())
 
     def full_join(self, other, *by, multiple="first"):
         """

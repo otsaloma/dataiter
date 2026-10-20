@@ -550,6 +550,16 @@ class TestDataFrame:
             assert new.duration.dtype == np.dtype("timedelta64[us]")
             assert new.time.dt.to_string("%H:%M:%S").tolist() == ["05:36:24", None]
 
+    def test_from_pandas_special_columns(self):
+        import pandas as pd
+        time = pd.to_datetime(["2026-01-02T12:00", "NaT"]).tz_localize("Europe/Helsinki")
+        data = pd.DataFrame({0: [1, 2], "x": [[1, 2], None], "y": [1, "a"], "time": time})
+        data = DataFrame.from_pandas(data)
+        assert data[0].tolist() == [1, 2]
+        assert data.x.tolist() == [[1, 2], None]
+        assert data.y.tolist() == ["1", "a"]
+        assert data.time.tolist() == [datetime.datetime(2026, 1, 2, 12), None]
+
     def test_from_pandas_dtypes_missing(self):
         data = DataFrame(a=[1]).to_pandas()
         with pytest.raises(KeyError, match="b"):

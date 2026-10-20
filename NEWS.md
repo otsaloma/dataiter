@@ -66,7 +66,7 @@ Speed-ups:
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
 - `DataFrame.aggregate`: Speed up helper functions for columns previously not handled by Numba, e.g. strings and timedeltas
 - `DataFrame.aggregate`, `DataFrame.count`, `DataFrame.filter`, `DataFrame.head`, `DataFrame.modify`, `DataFrame.split`, `DataFrame.tail`: Speed up grouping, especially by strings
-- `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `read_csv`, `read_parquet`: Speed up strings, especially repeated or missing, by converting only unique values and processing columns in parallel threads
+- `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `read_csv`, `read_parquet`: Speed up strings, especially repeated or missing, by converting only unique values and processing columns in parallel threads
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.aggregate`, `DataFrame.filter`, `DataFrame.filter_out`, `DataFrame.modify`: Speed up functions when grouped by reordering only columns they use
 - `DataFrame.pivot_longer`: Speed up, especially with many columns
@@ -105,6 +105,8 @@ Fixes:
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read columns with no values as float instead of an object column of `None`
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read times of day as strings instead of an object column of `datetime.time`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix error reading list columns, now read as object columns of lists
+- `DataFrame.from_pandas`: Fix error converting list columns, now converted to object columns of lists
+- `DataFrame.from_pandas`: Convert timezone-aware datetimes to datetimes in their timezone instead of an object column of pandas `Timestamp`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Read decimals as float instead of an object column of `decimal.Decimal`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `read_csv`, `read_parquet`: Read blanks as missing when converting strings to numbers with `dtypes`, previously raising an error that named the blank instead of any actual bad value
