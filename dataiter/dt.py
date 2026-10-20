@@ -40,7 +40,10 @@ def day(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.day(x)
     """
-    return _pull_int(x, lambda y: (y.astype("M8[D]") - y.astype("M8[M]").astype("M8[D]")).astype(int) + 1)
+    return _pull_int(x, lambda y: (
+        y.astype("datetime64[D]") -
+        y.astype("datetime64[M]").astype("datetime64[D]")
+    ).astype(int) + 1)
 
 def floor(x, unit):
     """
@@ -104,13 +107,13 @@ def from_components(year, month=1, day=1, hour=None, minute=None, second=None, m
         valid &= x == np.floor(x)
     get = lambda k: np.where(na | ~valid, 0, components.get(k, 0)).astype(np.int64)
     y, mo, d, h, mi, s, us = map(get, ["year", "month", "day", "hour", "minute", "second", "microsecond"])
-    months = ((y - 1970) * 12 + mo - 1).astype("M8[M]")
-    out = months.astype("M8[D]") + (d - 1).astype("m8[D]")
+    months = ((y - 1970) * 12 + mo - 1).astype("datetime64[M]")
+    out = months.astype("datetime64[D]") + (d - 1).astype("timedelta64[D]")
     # Day past the end of the month overflows to the next month.
-    valid &= (mo >= 1) & (mo <= 12) & (d >= 1) & (out.astype("M8[M]") == months)
+    valid &= (mo >= 1) & (mo <= 12) & (d >= 1) & (out.astype("datetime64[M]") == months)
     if is_datetime:
         valid &= (h >= 0) & (h <= 23) & (mi >= 0) & (mi <= 59) & (s >= 0) & (s <= 59) & (us >= 0) & (us <= 999999)
-        out = out.astype("M8[us]") + (((h * 60 + mi) * 60 + s) * 1_000_000 + us).astype("m8[us]")
+        out = out.astype("datetime64[us]") + (((h * 60 + mi) * 60 + s) * 1_000_000 + us).astype("timedelta64[us]")
     invalid = ~na & ~valid
     if errors == "strict" and invalid.any():
         i = np.flatnonzero(invalid)[0]
@@ -165,7 +168,10 @@ def hour(x):
     >>> x = dt.new(["2022-10-15T12:34:56"])
     >>> dt.hour(x)
     """
-    return _pull_int(x, lambda y: (y.astype("M8[h]") - y.astype("M8[D]")).astype(int))
+    return _pull_int(x, lambda y: (
+        y.astype("datetime64[h]") -
+        y.astype("datetime64[D]")
+    ).astype(int))
 
 def isoformat(x):
     """
@@ -188,7 +194,7 @@ def isoformat(x):
     unit = "D"
     if np.datetime_data(x.dtype)[0] not in ["Y", "M", "W", "D"]:
         values = x[~na]
-        unit = next(u for u in ["s", "ms", "us", "ns"] if np.all(values.astype(f"M8[{u}]") == values))
+        unit = next(u for u in ["s", "ms", "us", "ns"] if np.all(values.astype(f"datetime64[{u}]") == values))
     out = Vector.fast(np.datetime_as_string(x, unit=unit), dtypes.string)
     out[na] = dtypes.string.na_object
     return out
@@ -202,9 +208,9 @@ def isoweek(x):
     """
     def f(y):
         # ISO week is the week of the Thursday of the same Monday-start week.
-        y = y.astype("M8[D]")
-        thursday = y - ((y.astype(int) + 3) % 7).astype("m8[D]") + np.timedelta64(3, "D")
-        return (thursday - thursday.astype("M8[Y]").astype("M8[D]")).astype(int) // 7 + 1
+        y = y.astype("datetime64[D]")
+        thursday = y - ((y.astype(int) + 3) % 7).astype("timedelta64[D]") + np.timedelta64(3, "D")
+        return (thursday - thursday.astype("datetime64[Y]").astype("datetime64[D]")).astype(int) // 7 + 1
     return _pull_int(x, f)
 
 def isoweekday(x):
@@ -228,7 +234,10 @@ def microsecond(x):
     >>> x = dt.new(["2022-10-15T12:34:56.789"])
     >>> dt.microsecond(x)
     """
-    return _pull_int(x, lambda y: (y.astype("M8[us]") - y.astype("M8[s]")).astype(int))
+    return _pull_int(x, lambda y: (
+        y.astype("datetime64[us]") -
+        y.astype("datetime64[s]")
+    ).astype(int))
 
 def minute(x):
     """
@@ -237,7 +246,10 @@ def minute(x):
     >>> x = dt.new(["2022-10-15T12:34:56"])
     >>> dt.minute(x)
     """
-    return _pull_int(x, lambda y: (y.astype("M8[m]") - y.astype("M8[h]")).astype(int))
+    return _pull_int(x, lambda y: (
+        y.astype("datetime64[m]") -
+        y.astype("datetime64[h]")
+    ).astype(int))
 
 def month(x):
     """
@@ -246,7 +258,7 @@ def month(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.month(x)
     """
-    return _pull_int(x, lambda y: y.astype("M8[M]").astype(int) % 12 + 1)
+    return _pull_int(x, lambda y: y.astype("datetime64[M]").astype(int) % 12 + 1)
 
 def new(x):
     """
@@ -357,7 +369,10 @@ def second(x):
     >>> x = dt.new(["2022-10-15T12:34:56"])
     >>> dt.second(x)
     """
-    return _pull_int(x, lambda y: (y.astype("M8[s]") - y.astype("M8[m]")).astype(int))
+    return _pull_int(x, lambda y: (
+        y.astype("datetime64[s]") -
+        y.astype("datetime64[m]")
+    ).astype(int))
 
 def to_string(x, format):
     """
@@ -427,7 +442,7 @@ def weekday(x):
     >>> dt.weekday(x)
     """
     # 1970-01-01 was a Thursday.
-    return _pull_int(x, lambda y: (y.astype("M8[D]").astype(int) + 3) % 7)
+    return _pull_int(x, lambda y: (y.astype("datetime64[D]").astype(int) + 3) % 7)
 
 def year(x):
     """
@@ -436,4 +451,4 @@ def year(x):
     >>> x = dt.new(["2022-10-15"])
     >>> dt.year(x)
     """
-    return _pull_int(x, lambda y: y.astype("M8[Y]").astype(int) + 1970)
+    return _pull_int(x, lambda y: y.astype("datetime64[Y]").astype(int) + 1970)

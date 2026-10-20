@@ -1088,7 +1088,7 @@ class Vector(np.ndarray):
             unit = np.datetime_data(self.dtype)[0]
             if unit in units:
                 values = self[~self.is_na()]
-                unit = next(x for x in units if np.all(values.astype(f"M8[{x}]") == values))
+                unit = next(x for x in units if np.all(values.astype(f"datetime64[{x}]") == values))
                 strings = np.datetime_as_string(self, unit=unit).tolist()
             else:
                 strings = np.datetime_as_string(self).tolist()

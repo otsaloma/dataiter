@@ -13,6 +13,14 @@ The `DataFrame` and `ListOfDicts` classes have a mostly matching API.
 When adding a method or an argument to one, also add it to the other if
 it makes sense there as well.
 
+## NumPy
+
+Avoid using NumPy's cryptic dtype shorthands, example: instead of
+`np.dtype("M8")` use `np.dtype("datetime64")`. As an exception,
+something like `x.dtype.kind in "biufc"` is acceptable as writing that
+out clearer would expand the code too much, into five lines of or'd
+`np.issubdtype` checks.
+
 ## PyArrow
 
 Besides reading and writing files, PyArrow can be used under the hood in

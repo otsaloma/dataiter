@@ -635,7 +635,7 @@ class DataFrame(dict):
                 # Python's datetime and timedelta don't support nanoseconds,
                 # breaking conversions to object, e.g. in dt and tolist.
                 # Keep nanoseconds only if explicitly requested.
-                column = column.astype(column.dtype.str.replace("ns", "us"))
+                column = column.astype(column.dtype.name.replace("ns", "us"))
             if np.issubdtype(column.dtype, np.object_):
                 if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
                     # Likely to be strings, but not necessarily.
@@ -694,7 +694,7 @@ class DataFrame(dict):
                 # Python's datetime and timedelta don't support nanoseconds,
                 # breaking conversions to object, e.g. in dt and tolist.
                 # Keep nanoseconds only if explicitly requested.
-                column = column.astype(column.dtype.str.replace("ns", "us"))
+                column = column.astype(column.dtype.name.replace("ns", "us"))
             if np.issubdtype(column.dtype, np.object_):
                 if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
                     # Likely to be strings, but not necessarily.

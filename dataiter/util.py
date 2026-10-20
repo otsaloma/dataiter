@@ -74,7 +74,7 @@ def format_timedeltas(x):
     na = np.isnat(x)
     unit = "ns" if np.datetime_data(x.dtype)[0] == "ns" else "us"
     second = 10**9 if unit == "ns" else 10**6
-    values = x.astype(f"m8[{unit}]").astype(np.int64).tolist()
+    values = x.astype(f"timedelta64[{unit}]").astype(np.int64).tolist()
     valid = [v for v, n in zip(values, na) if not n]
     whole_days = all(v % (86400 * second) == 0 for v in valid)
     digits = 0
