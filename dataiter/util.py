@@ -178,17 +178,18 @@ def sorted_codes(x):
     rank[np.argsort(unique, stable=True)] = np.arange(len(unique))
     return rank[codes]
 
-def submit(function, *args):
+def submit(function, *args, parallel=None):
     # Return a future of function called with args, run in a thread, or the
     # result directly if the largest array in args, e.g. a column or indices,
     # is too small for threads to pay off. NumPy releases the GIL for most
     # operations, partly for strings and not for objects, so this speeds up
     # especially wide data frames of numbers. For strings, np.take releases
     # the GIL, but indexing x[indices] doesn't, so use np.take for reordering.
+    # Pass parallel to skip the size check, which is slow for many args.
     # See deco.new_from_parallel_generator.
-    if max((len(x) for x in args if isinstance(x, np.ndarray)), default=0) < 50_000:
-        return function(*args)
-    return get_executor().submit(function, *args)
+    if parallel is None:
+        parallel = max((len(x) for x in args if isinstance(x, np.ndarray)), default=0) >= 50_000
+    return get_executor().submit(function, *args) if parallel else function(*args)
 
 def unique_codes(x):
     # Return unique elements of x, indices of their first occurrences and

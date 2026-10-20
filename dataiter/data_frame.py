@@ -1432,11 +1432,12 @@ class DataFrame(dict):
             try:
                 # Check types upfront, as errors in threads would
                 # surface only when collecting the results.
-                np.result_type(*(x.dtype for x in parts))
+                np.result_type(*{x.dtype for x in parts})
             except TypeError:
                 dtypes = ", ".join(util.unique_keys(x.dtype_label for x in parts))
                 raise TypeError(f"Can't combine column {colname!r} of incompatible types: {dtypes}") from None
-            yield colname, util.submit(concatenate, *parts)
+            parallel = max(map(len, parts)) >= 10_000
+            yield colname, util.submit(concatenate, *parts, parallel=parallel)
 
     @classmethod
     def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, colnames=[], na=[], select=[], dtypes={}):
