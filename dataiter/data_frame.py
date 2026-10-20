@@ -784,6 +784,9 @@ class DataFrame(dict):
             column, n = encode(column)
             if size * n >= 2**62:
                 codes, size = encode(codes, dense=True)
+                if not ordered and size == len(codes):
+                    # All rows are distinct, further columns can't merge any.
+                    return codes
                 column, n = encode(column, dense=True)
             codes, size = codes * n + column, size * n
         return codes
@@ -1894,7 +1897,8 @@ class DataFrame(dict):
                x.is_timedelta() for x in columns):
             # Hashing one combined code per row gives first occurrences
             # without slow sorting, especially of strings.
-            columns = [util.unique_codes(x)[2] if x.is_string() else x for x in columns]
+            columns = [util.submit(lambda x: util.unique_codes(x)[2], x) if x.is_string() else x for x in columns]
+            columns = [x.result() if isinstance(x, Future) else x for x in columns]
             keep = util.unique_codes(self._get_codes(columns, ordered=False))[1]
             for colname, column in self.items():
                 yield colname, util.submit(np.take, column, keep)

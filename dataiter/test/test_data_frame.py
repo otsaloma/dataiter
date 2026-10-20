@@ -1431,6 +1431,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = orig.unique("i", "j", "k")
         assert data.k.tolist() == [2**62, 1, -2**62]
 
+    def test_unique_by_large_integers_overflowing(self):
+        orig = DataFrame(i=[0, 2**61, 5, 7], j=[0, 0, 2**61, 2**61], k=[1, 1, 1, 1])
+        assert orig.unique("i", "j", "k").i.tolist() == [0, 2**61, 5, 7]
+        orig = DataFrame(i=[0, 2**61, 5, 5], j=[0, 0, 2**61, 2**61], k=[1, 1, 1, 1])
+        assert orig.unique("i", "j", "k").i.tolist() == [0, 2**61, 5]
+
     def test_unique_by_one(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.unique("make")
