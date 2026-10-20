@@ -1013,7 +1013,7 @@ class DataFrame(dict):
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
-            yield colname, util.submit(util.take, column, src)
+            yield colname, util.submit(np.take, column, src)
 
     @deco.new_from_parallel_generator
     def left_join(self, other, *by, multiple="first"):
@@ -1051,14 +1051,14 @@ class DataFrame(dict):
                             util.submit(np.ndarray.copy, column))
         def take_with_na(column, src, found):
             new = DataFrameColumn(column.na_value, column.na_dtype, len(src))
-            new[found] = util.take(column, src[found])
+            new[found] = np.take(column, src[found])
             return new
         for colname, column in other.items():
             if colname in by2: continue
             if colname in self: continue
             if len(found) == len(src):
                 # No missing values needed, keep data type.
-                yield colname, util.submit(util.take, column, src)
+                yield colname, util.submit(np.take, column, src)
                 continue
             yield colname, util.submit(take_with_na, column, src, found)
 
@@ -1730,7 +1730,7 @@ class DataFrame(dict):
         if indices is None:
             indices = np.arange(self.nrow)
         for colname, column in self.items():
-            yield colname, util.submit(util.take, column, indices)
+            yield colname, util.submit(np.take, column, indices)
 
     def split(self, *by):
         """
@@ -2019,8 +2019,7 @@ class LazyDataFrame(DataFrame):
     def __getitem__(self, key):
         column = super().__getitem__(key)
         if column is None:
-            # Materialize column from source. util.take would be
-            # faster only when taking many columns in parallel.
+            # Materialize column from source.
             column = self._source[key][self._rows]
             dict.__setitem__(self, key, column)
         return column
@@ -2079,7 +2078,7 @@ class LazyDataFrame(DataFrame):
         if isinstance(self._rows, slice):
             dict.update(self, {k: source[k][self._rows] for k in keys})
             return
-        columns = {k: util.submit(util.take, source[k], self._rows) for k in keys}
+        columns = {k: util.submit(np.take, source[k], self._rows) for k in keys}
         dict.update(self, {k: v.result() if isinstance(v, Future) else v for k, v in columns.items()})
 
     def values(self):

@@ -178,26 +178,13 @@ def submit(function, *args):
     # Return a future of function called with args, run in a thread, or the
     # result directly if the largest array in args, e.g. a column or indices,
     # is too small for threads to pay off. NumPy releases the GIL for most
-    # operations, except on strings and objects, so this speeds up especially
-    # wide data frames of numbers. See deco.new_from_parallel_generator.
+    # operations, partly for strings and not for objects, so this speeds up
+    # especially wide data frames of numbers. For strings, np.take releases
+    # the GIL, but indexing x[indices] doesn't, so use np.take for reordering.
+    # See deco.new_from_parallel_generator.
     if max((len(x) for x in args if isinstance(x, np.ndarray)), default=0) < 100_000:
         return function(*args)
     return get_executor().submit(function, *args)
-
-def take(x, indices):
-    # Return elements of x at non-negative integer indices. NumPy holds the
-    # GIL when taking strings and is slow at it for indices in random order,
-    # unless x is small enough to stay in cache. Arrow's take doesn't hold
-    # the GIL, which pays off in submit, despite converting back to
-    # NumPy via Python strings, which we do in chunks to limit memory use.
-    if x.dtype.kind != "T" or len(x) < 200_000 or len(indices) < 100_000:
-        return x[indices]
-    array = pa.array(np.asarray(x), pa.large_string())
-    out = np.empty(len(indices), x.dtype)
-    for i in range(0, len(indices), 1_000_000):
-        chunk = array.take(indices[i:i+1_000_000])
-        out[i:i+1_000_000] = chunk.to_numpy(zero_copy_only=False)
-    return out.view(x.__class__)
 
 def unique_codes(x):
     # Return unique elements of string or integer x, indices of their first
