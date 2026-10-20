@@ -140,11 +140,6 @@ class TestUtil:
         assert util.sequencify(1) == [1]
         assert util.sequencify(map(math.sqrt, [1, 4, 9])) == [1, 2, 3]
 
-    def test_ulen(self):
-        assert util.ulen("asdf") == 4
-        assert util.ulen("asdf\u200b") == 4
-        assert util.ulen("asdf\u200b\u200b") == 4
-
     def test_unique_keys(self):
         assert util.unique_keys([1, 2, 3]) == [1, 2, 3]
         assert util.unique_keys([1, 2, 3, 1]) == [1, 2, 3]
@@ -155,11 +150,6 @@ class TestUtil:
     def test_upad(self):
         assert util.upad(["a", "aa", "aaa"], align="right") == ["  a", " aa", "aaa"]
         assert util.upad(["a", "aa", "aaa"], align="left")  == ["a  ", "aa ", "aaa"]
-
-    def test_utruncate(self):
-        assert util.utruncate("abcdef", 4) == "abcd"
-        assert util.utruncate("abc\u200bdef", 4) == "abc\u200bd"
-        assert util.utruncate("abc\u200bdef\u200b", 4) == "abc\u200bd"
 
     def test_xopen_bz2(self, tmp_path):
         text = "test åäö"

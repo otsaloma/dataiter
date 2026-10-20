@@ -53,6 +53,7 @@ New:
 Breaking changes:
 - `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
 - Require PyArrow >= 26
+- Require wcwidth >= 0.3.0
 - Drop optional use of Numba in favor of vectorized aggregation helper functions in plain NumPy, remove `USE_NUMBA` and `USE_NUMBA_CACHE`
 
 Speed-ups:
@@ -139,6 +140,7 @@ Fixes:
 - `DataFrame.to_string`: Fix header of empty data frames shifted one character left
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix negative floats showing fewer significant digits
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix infinite values switching floats to scientific notation
+- `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix alignment of strings containing tabs or control characters
 - `DataFrame.unique`: Fix missing timedeltas matching zero durations when unique also by an object column
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit

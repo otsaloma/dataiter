@@ -27,6 +27,7 @@ import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pc
 import sys
+import wcwidth
 
 from dataiter import dtypes
 from dataiter import util
@@ -1028,7 +1029,7 @@ class Vector(np.ndarray):
             if len(rows[-1]) <= 1:
                 return rows[-1].append(string)
             row = " ".join(rows[-1] + [string])
-            if util.ulen(row) < print_width:
+            if wcwidth.width(row) < print_width:
                 return rows[-1].append(string)
             # Start a new row with padding and string.
             return rows.append([" ", string])
@@ -1069,17 +1070,17 @@ class Vector(np.ndarray):
             strings = [str(x) for x in self]
             for i in range(len(strings)):
                 lines = strings[i].splitlines()
-                if (util.ulen(strings[i]) > truncate_width or
+                if (wcwidth.width(strings[i]) > truncate_width or
                     (len(lines) > 1 and truncate_width < inf)):
-                    strings[i] = util.utruncate(lines[0], truncate_width-1) + "…"
+                    strings[i] = wcwidth.clip(lines[0], 0, truncate_width-1) + "…"
             return self.__class__.fast(pad(strings), str)
         if self.is_string():
             strings = [quote(x) for x in self]
             for i in range(len(strings)):
                 lines = strings[i].splitlines()
-                if (util.ulen(strings[i]) > truncate_width or
+                if (wcwidth.width(strings[i]) > truncate_width or
                     (len(lines) > 1 and truncate_width < inf)):
-                    strings[i] = util.utruncate(lines[0], truncate_width-1) + "…"
+                    strings[i] = wcwidth.clip(lines[0], 0, truncate_width-1) + "…"
             return self.__class__.fast(pad(strings), str)
         if self.is_datetime():
             # Use the coarsest unit that shows all values exactly,

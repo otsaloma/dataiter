@@ -37,7 +37,6 @@ import string
 import wcwidth
 
 from concurrent.futures import ThreadPoolExecutor
-from dataiter import deco
 from pathlib import Path
 
 def count_digits(value):
@@ -219,35 +218,15 @@ def unique_codes(x):
 def unique_keys(keys):
     return list(dict.fromkeys(keys))
 
-def ulen(string):
-    # Return the display length of string accounting for
-    # Unicode characters that have a display width != 1.
-    length = wcwidth.wcswidth(string)
-    return length if length >= 0 else 0
-
 def unique_types(seq):
     return set(x.__class__ for x in seq if
                x is not None and
                not (isinstance(x, float) and np.isnan(x)))
 
-@deco.listify
 def upad(strings, *, align="right"):
-    # Pad strings for display accounting for
-    # Unicode characters that have a display width != 1.
-    width = max(ulen(x) for x in strings)
-    for value in strings:
-        padding = " " * (width - ulen(value))
-        yield (padding + value
-               if align == "right"
-               else value + padding)
-
-def utruncate(string, width):
-    # Truncate string to display width accounting for
-    # Unicode characters that have a display width != 1.
-    for i in range(1, len(string)):
-        if ulen(string[:i]) > width:
-            return string[:(i-1)]
-    return string
+    width = max(map(wcwidth.width, strings))
+    justify = wcwidth.rjust if align == "right" else wcwidth.ljust
+    return [justify(x, width) for x in strings]
 
 def xopen(path, mode="r", **kwargs):
     if "b" not in mode:

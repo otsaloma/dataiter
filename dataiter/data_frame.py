@@ -31,6 +31,7 @@ import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
 import warnings
+import wcwidth
 
 from concurrent.futures import Future
 from dataiter import deco
@@ -1878,7 +1879,7 @@ class DataFrame(dict):
                 quote=False, pad=True, truncate_width=truncate_width)]
         ) for colname, column in self.items()}
         for column in columns.values():
-            column.insert(2, "─" * util.ulen(column[0]))
+            column.insert(2, "─" * wcwidth.width(column[0]))
         width = len(str(max(n - 1, 0)))
         row_numbers = [x.rjust(width) for x in ["", "", "", *map(str, range(n))]]
         # If the length of rows exceeds max_width, split to
@@ -1889,7 +1890,7 @@ class DataFrame(dict):
             batch_rows = [" ".join(x) for x in zip(
                 row_numbers, columns.pop(first))]
             for colname, column in list(columns.items()):
-                width = util.ulen(batch_rows[0] + column[0]) + 1
+                width = wcwidth.width(batch_rows[0] + column[0]) + 1
                 if width > max_width: break
                 for i in range(len(column)):
                     batch_rows[i] += " "
