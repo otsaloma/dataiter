@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
+import sys
 
 from pathlib import Path
 
@@ -21,12 +22,11 @@ di.PRINT_MAX_WIDTH = 72
 def get_output(lines):
     try:
         return subprocess.check_output(
-            args=["python3", "-c", "\n".join(lines)],
+            args=[sys.executable, "-c", "\n".join(lines)],
             stderr=subprocess.STDOUT,
             cwd=Path("..").resolve(),
             encoding="utf-8",
             errors="replace",
-            text=True,
             timeout=30,
         ).splitlines()
     except subprocess.CalledProcessError as e:
