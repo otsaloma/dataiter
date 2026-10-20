@@ -126,8 +126,12 @@ def is_glob(pattern):
 def is_repetitive(x):
     # Return whether values of string or integer x repeat enough for hashing
     # to pay off, judging by a sample, as hashing is slow with many unique values.
-    sample = x[::max(1, len(x) // 100_000)]
-    return len(unique_codes(sample)[0]) < 0.9 * len(sample)
+    # Sample evenly spaced blocks of consecutive rows, as single rows with a
+    # stride would miss repeats in sorted data with runs shorter than the stride.
+    if len(x) > 100_000:
+        starts = np.linspace(0, len(x) - 100, 1000).astype(np.int64)
+        x = x[(starts[:, None] + np.arange(100)).ravel()]
+    return len(unique_codes(x)[0]) < 0.9 * len(x)
 
 def is_scalar(value):
     # np.isscalar doesn't cover all needed cases.
