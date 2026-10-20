@@ -457,6 +457,19 @@ class TestDataFrame:
         data = DataFrame.from_arrow(table, dtypes={"time": "datetime64[ns]"})
         assert data.time.dtype == np.dtype("datetime64[ns]")
 
+    def test_from_arrow_numbers_from_strings(self):
+        table = pa.table({"a": pa.array(["1", "", None, " 2", "+3"])})
+        data = DataFrame.from_arrow(table, dtypes={"a": float})
+        assert data.a.tolist() == [1.0, None, None, 2.0, 3.0]
+        data = DataFrame.from_arrow(table, dtypes={"a": int})
+        assert data.a.is_float()
+        assert data.a.tolist() == [1.0, None, None, 2.0, 3.0]
+        data = DataFrame.from_arrow(table.slice(3), dtypes={"a": int})
+        assert data.a.is_integer()
+        table = pa.table({"a": pa.array(["1", "", "E2"])})
+        with pytest.raises(ValueError, match="'E2'"):
+            DataFrame.from_arrow(table, dtypes={"a": float})
+
     def test_from_arrow_null(self):
         table = pa.table({"a": pa.nulls(2)})
         data = DataFrame.from_arrow(table)

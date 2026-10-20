@@ -613,6 +613,21 @@ class DataFrame(dict):
                 # NumPy has no decimal type, use float instead
                 # of a slow object column of decimal.Decimal.
                 column = column.cast(pa.float64())
+            if (req_dtype is not None and
+                np.dtype(req_dtype).kind in "iuf" and
+                (pa.types.is_string(column.type) or
+                 pa.types.is_large_string(column.type))):
+                # Parse numbers with NumPy, which names bad values in errors,
+                # treating blanks as missing, as Vector.as_float does.
+                # Arrow's parsing is stricter, e.g. rejecting " 1" and "+1".
+                strings = strings_from_arrow(column)
+                na = strings == dataiter.dtypes.string.na_object
+                column = DataFrameColumn.fast(np.where(na, "0", strings), req_dtype)
+                if na.any():
+                    column = column.astype(column.na_dtype)
+                    column[na] = column.na_value
+                yield name, column
+                continue
             if (req_dtype is None and
                 (pa.types.is_list(column.type) or
                  pa.types.is_large_list(column.type) or
