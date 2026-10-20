@@ -815,7 +815,7 @@ class Vector(np.ndarray):
             # except for strings with values that repeat.
             direct = dir > 0 and not (self.is_string() and util.is_repetitive(self))
             keys = self[~na] if direct else codes()
-            indices = keys.argsort(kind="stable")
+            indices = keys.argsort(stable=True)
             rank = np.zeros_like(indices)
             rank[indices] = np.arange(len(indices)) + 1
             out[~na] = rank
@@ -912,12 +912,12 @@ class Vector(np.ndarray):
             # Sorting only unique values and repeating each by its count
             # is faster than sorting all strings if values repeat.
             unique, _, codes = util.unique_codes(self)
-            order = np.argsort(unique, kind="stable")
+            order = np.argsort(unique, stable=True)
             counts = np.bincount(codes, minlength=len(unique))
             new = np.repeat(unique[order], counts[order]).view(self.__class__)
         else:
             new = self.copy()
-            np.ndarray.sort(new, kind="stable")
+            np.ndarray.sort(new, stable=True)
         if dir < 0:
             new = new[::-1]
         na = new.is_na()

@@ -175,7 +175,7 @@ def sorted_codes(x):
     # sorting all strings, unless all are unique.
     unique, _, codes = unique_codes(x)
     rank = np.empty(len(unique), np.int64)
-    rank[np.argsort(unique, kind="stable")] = np.arange(len(unique))
+    rank[np.argsort(unique, stable=True)] = np.arange(len(unique))
     return rank[codes]
 
 def submit(function, *args):

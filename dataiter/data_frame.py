@@ -817,7 +817,7 @@ class DataFrame(dict):
                 column[na] = column[~na].max(initial=0) + 1
             columns.append(column)
         key = self._get_codes(columns)
-        order = np.argsort(key, kind="stable")
+        order = np.argsort(key, stable=True)
         key = key[order]
         change = np.ones(self.nrow, bool)
         change[1:] = key[1:] != key[:-1]
@@ -934,7 +934,7 @@ class DataFrame(dict):
         # as positions in order, the stable sort order of b. Codes -1 never
         # match: they are left out of order and get an empty range.
         order = np.flatnonzero(b > -1)
-        order = order[np.argsort(b[order], kind="stable")]
+        order = order[np.argsort(b[order], stable=True)]
         left = np.searchsorted(b[order], a, "left")
         right = np.searchsorted(b[order], a, "right")
         return left, right, order
