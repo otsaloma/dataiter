@@ -12,6 +12,8 @@ import uuid
 from dataiter import test
 from statistics import mean
 
+rng = np.random.default_rng(0)
+
 @functools.cache
 def _data_frame(path, nrow):
     data = test.data_frame(path)
@@ -20,7 +22,6 @@ def _data_frame(path, nrow):
     data = data.head(nrow)
     # The source data is sorted, shuffle to avoid unrealistically
     # fast sorting of already sorted rows.
-    rng = np.random.default_rng(0)
     return data.slice(rng.permutation(data.nrow))
 
 def data_frame(path, nrow=1_000_000):
@@ -28,8 +29,8 @@ def data_frame(path, nrow=1_000_000):
 
 @functools.cache
 def _data_frame_random(nrows, ngroups):
-    return di.DataFrame(g=np.random.choice(ngroups, nrows, replace=True),
-                        a=np.random.normal(10, 2, nrows))
+    return di.DataFrame(g=rng.integers(ngroups, size=nrows),
+                        a=rng.normal(10, 2, nrows))
 
 def data_frame_random(nrows, ngroups):
     return _data_frame_random(nrows, ngroups).deepcopy()
@@ -98,7 +99,7 @@ def data_frame_full_join():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "model").unique()
     meta = meta.rbind(meta.modify(model="X"))
-    meta.random = np.random.random(meta.nrow)
+    meta.random = rng.random(meta.nrow)
     assert meta.anti_join(data, "make", "model").nrow > 0
     start = time.time()
     data.full_join(meta, "make", "model")
@@ -107,7 +108,7 @@ def data_frame_full_join():
 def data_frame_left_join():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "model").unique()
-    meta.random = np.random.random(meta.nrow)
+    meta.random = rng.random(meta.nrow)
     start = time.time()
     data.left_join(meta, "make", "model")
     return time.time() - start
@@ -115,7 +116,7 @@ def data_frame_left_join():
 def data_frame_left_join_int():
     data = data_frame("vehicles.csv")
     meta = data.select("id").unique()
-    meta.random = np.random.random(meta.nrow)
+    meta.random = rng.random(meta.nrow)
     start = time.time()
     data.left_join(meta, "id")
     return time.time() - start
@@ -123,7 +124,7 @@ def data_frame_left_join_int():
 def data_frame_left_join_mixed():
     data = data_frame("vehicles.csv")
     meta = data.select("make", "year").unique()
-    meta.random = np.random.random(meta.nrow)
+    meta.random = rng.random(meta.nrow)
     start = time.time()
     data.left_join(meta, "make", "year")
     return time.time() - start
