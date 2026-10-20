@@ -570,6 +570,7 @@ class DataFrame(dict):
         for name in dtypes:
             if name not in data.column_names:
                 raise KeyError(name)
+
         def strings_from_arrow(column):
             # Conversion to StringDType goes via Python objects, which is slow
             # and holds the GIL. For large data, if values repeat, hash in
@@ -577,19 +578,18 @@ class DataFrame(dict):
             # Judge by a sample of evenly spaced blocks, as util.is_repetitive
             # does. For small data, threads and hashing don't pay off.
             column = column.fill_null(dataiter.dtypes.string.na_object)
-            if len(column) < 50_000:
-                return column.to_numpy().astype(dataiter.dtypes.string).view(DataFrameColumn)
-            sample = column
-            if len(column) > 100_000:
-                starts = np.linspace(0, len(column) - 100, 1000).astype(np.int64)
-                sample = column.take((starts[:, None] + np.arange(100)).ravel())
-            if pc.count_distinct(sample).as_py() < 0.9 * len(sample):
-                encoded = pc.dictionary_encode(column).combine_chunks()
-                unique = encoded.dictionary.to_numpy(zero_copy_only=False).astype(dataiter.dtypes.string)
-                return np.take(unique, encoded.indices.to_numpy()).view(DataFrameColumn)
+            if len(column) >= 50_000:
+                sample = column
+                if len(column) > 100_000:
+                    starts = np.linspace(0, len(column) - 100, 1000).astype(np.int64)
+                    sample = column.take((starts[:, None] + np.arange(100)).ravel())
+                if pc.count_distinct(sample).as_py() < 0.9 * len(sample):
+                    encoded = pc.dictionary_encode(column).combine_chunks()
+                    unique = encoded.dictionary.to_numpy(zero_copy_only=False).astype(dataiter.dtypes.string)
+                    return np.take(unique, encoded.indices.to_numpy()).view(DataFrameColumn)
             return column.to_numpy().astype(dataiter.dtypes.string).view(DataFrameColumn)
-        for name, column in zip(data.column_names, data.columns):
-            req_dtype = dtypes.get(name, None)
+
+        def column_from_arrow(column, req_dtype):
             if (timezone == "keep" and
                 pa.types.is_timestamp(column.type) and
                 column.type.tz is not None):
@@ -605,29 +605,15 @@ class DataFrame(dict):
                 for suffix in suffixes:
                     if pc.all(pc.ends_with(column, suffix)).as_py():
                         column = pc.utf8_slice_codeunits(column, 0, -len(suffix))
-            if req_dtype is None and pa.types.is_null(column.type):
-                # Arrow types columns with no values as null, use float
-                # instead of an object column of None, as for numbers.
+            if (req_dtype is None and
+                (pa.types.is_null(column.type) or
+                 pa.types.is_decimal(column.type))):
+                # Arrow types columns with no values as null and NumPy has no
+                # decimal type, use float instead of an object column of None
+                # or slow decimal.Decimal, as for numbers.
                 column = column.cast(pa.float64())
-            if req_dtype is None and pa.types.is_decimal(column.type):
-                # NumPy has no decimal type, use float instead
-                # of a slow object column of decimal.Decimal.
-                column = column.cast(pa.float64())
-            if (req_dtype is not None and
-                np.dtype(req_dtype).kind in "iuf" and
-                (pa.types.is_string(column.type) or
-                 pa.types.is_large_string(column.type))):
-                # Parse numbers with NumPy, which names bad values in errors,
-                # treating blanks as missing, as Vector.as_float does.
-                # Arrow's parsing is stricter, e.g. rejecting " 1" and "+1".
-                strings = strings_from_arrow(column)
-                na = strings == dataiter.dtypes.string.na_object
-                column = DataFrameColumn.fast(np.where(na, "0", strings), req_dtype)
-                if na.any():
-                    column = column.astype(column.na_dtype)
-                    column[na] = column.na_value
-                yield name, column
-                continue
+            is_string = (pa.types.is_string(column.type) or
+                         pa.types.is_large_string(column.type))
             if (req_dtype is None and
                 (pa.types.is_list(column.type) or
                  pa.types.is_large_list(column.type) or
@@ -635,44 +621,50 @@ class DataFrame(dict):
                 # to_numpy would give NumPy arrays as elements,
                 # use lists instead, as DataFrame(...) does.
                 column = column.to_pylist()
-                yield name, DataFrameColumn.fast(np.fromiter(column, object, len(column)), object)
-                continue
-            if ((req_dtype is None or Vector.fast([], req_dtype).is_string()) and
-                (pa.types.is_string(column.type) or
-                 pa.types.is_large_string(column.type))):
-                yield name, (strings_from_arrow(column) if len(column) < 50_000 else
-                             util.get_executor().submit(strings_from_arrow, column))
-                continue
-            na = column.is_null(nan_is_null=True).to_numpy()
-            if (req_dtype is None and
-                (pa.types.is_binary(column.type) or
-                 pa.types.is_large_binary(column.type))):
-                # Vector.fast assumes object if any element is missing i.e. None.
-                column = column.fill_null(b"")
-            column = column.to_numpy()
-            if ((req_dtype is None or np.dtype(req_dtype) in
-                 [np.dtype("datetime64"), np.dtype("timedelta64")]) and
-                (np.issubdtype(column.dtype, np.datetime64) or
-                 np.issubdtype(column.dtype, np.timedelta64)) and
-                np.datetime_data(column.dtype)[0] == "ns"):
-                # Python's datetime and timedelta don't support nanoseconds,
-                # breaking conversions to object, e.g. in dt and tolist.
-                # Keep nanoseconds only if explicitly requested.
-                column = column.astype(column.dtype.name.replace("ns", "us"))
-            if np.issubdtype(column.dtype, np.object_):
-                if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
+                return DataFrameColumn.fast(np.fromiter(column, object, len(column)), object)
+            if is_string and (req_dtype is None or Vector.fast([], req_dtype).is_string()):
+                return (strings_from_arrow(column) if len(column) < 50_000 else
+                        util.get_executor().submit(strings_from_arrow, column))
+            if is_string and np.dtype(req_dtype).kind in "iuf":
+                # Parse numbers with NumPy, which names bad values in errors,
+                # treating blanks as missing, as Vector.as_float does.
+                # Arrow's parsing is stricter, e.g. rejecting " 1" and "+1".
+                strings = strings_from_arrow(column)
+                na = strings == dataiter.dtypes.string.na_object
+                column = DataFrameColumn.fast(np.where(na, "0", strings), req_dtype)
+            else:
+                na = column.is_null(nan_is_null=True).to_numpy()
+                if (req_dtype is None and
+                    (pa.types.is_binary(column.type) or
+                     pa.types.is_large_binary(column.type))):
+                    # Vector.fast assumes object if any element is missing i.e. None.
+                    column = column.fill_null(b"")
+                column = column.to_numpy()
+                if ((req_dtype is None or np.dtype(req_dtype) in
+                     [np.dtype("datetime64"), np.dtype("timedelta64")]) and
+                    column.dtype.kind in "mM" and
+                    np.datetime_data(column.dtype)[0] == "ns"):
+                    # Python's datetime and timedelta don't support nanoseconds,
+                    # breaking conversions to object, e.g. in dt and tolist.
+                    # Keep nanoseconds only if explicitly requested.
+                    column = column.astype(column.dtype.name.replace("ns", "us"))
+                if (np.issubdtype(column.dtype, np.object_) and
+                    (req_dtype is None or np.dtype(req_dtype) != np.dtype(object))):
                     # Likely to be strings, but not necessarily.
                     # Force type-guessing in Vector.fast.
                     column = column.tolist()
-            with np.errstate(invalid="ignore"):
-                # Casting NaN to int warns, but missing values are set below.
-                column = DataFrameColumn.fast(column, req_dtype)
+                with np.errstate(invalid="ignore"):
+                    # Casting NaN to int warns, but missing values are set below.
+                    column = DataFrameColumn.fast(column, req_dtype)
             if na.any():
                 if column.dtype != column.na_dtype:
                     # Upcast integer to float if needed.
                     column = column.astype(column.na_dtype)
                 column[na] = column.na_value
-            yield name, column
+            return column
+
+        for name, column in zip(data.column_names, data.columns):
+            yield name, column_from_arrow(column, dtypes.get(name))
 
     @classmethod
     def from_json(cls, string, *, select=[], dtypes={}, **kwargs):
