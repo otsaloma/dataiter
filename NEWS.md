@@ -52,6 +52,8 @@ New:
 
 Breaking changes:
 - `*.from_json`, `*.read_*`, `read_*`: Rename arguments `columns` (`DataFrame`, `GeoJSON`) and `keys` (`ListOfDicts`) to `select`
+- Require Python >= 3.12
+- Require NumPy >= 2.5
 - Require PyArrow >= 26
 - Require wcwidth >= 0.3.0
 - Drop optional use of Numba in favor of vectorized aggregation helper functions in plain NumPy, remove `USE_NUMBA` and `USE_NUMBA_CACHE`

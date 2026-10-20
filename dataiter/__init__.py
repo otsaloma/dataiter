@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import numpy as np
-
 __version__ = "1.4"
 
 #: Default amount of elements to return from :meth:`Vector.head`,
@@ -62,11 +60,6 @@ PRINT_THOUSAND_SEPARATOR = ""
 #: output. When this is exceeded, strings will be cut and an ellipsis (``…``)
 #: rendered at the cut point.
 PRINT_TRUNCATE_WIDTH = 36
-
-if not np.__version__.startswith("2."):
-    raise Exception("NumPy 2.x required")
-
-globals().pop("np", None)
 
 from dataiter import dtypes
 from dataiter.vector import Vector

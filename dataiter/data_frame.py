@@ -1748,11 +1748,7 @@ class DataFrame(dict):
                 sort_keys(*x) for x in reversed(colname_dir_pairs.items())):
             if indices is not None:
                 key = key[indices]
-            if dir > 0:
-                order = np.argsort(key, kind="stable")
-            else:
-                # Sort reversed to keep ties in their original order.
-                order = len(key) - 1 - np.argsort(key[::-1], kind="stable")[::-1]
+            order = np.argsort(key, stable=True, descending=dir < 0)
             indices = order if indices is None else indices[order]
         if indices is None:
             indices = np.arange(self.nrow)
