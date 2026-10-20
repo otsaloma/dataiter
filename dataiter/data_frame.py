@@ -30,6 +30,7 @@ import pickle
 import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
+import warnings
 
 from concurrent.futures import Future
 from dataiter import deco
@@ -2008,7 +2009,11 @@ class DataFrame(dict):
         """
         util.makedirs_for_file(path)
         savez = np.savez_compressed if compress else np.savez
-        savez(path, **self)
+        with warnings.catch_warnings():
+            # StringDType is pickled, which read_npz allows by default.
+            message = "Custom dtypes are saved as python objects using the pickle protocol"
+            warnings.filterwarnings("ignore", message=message, category=UserWarning)
+            savez(path, **self)
 
     def write_parquet(self, path, **kwargs):
         """

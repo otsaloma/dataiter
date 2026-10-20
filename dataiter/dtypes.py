@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import warnings
-
 from numpy.dtypes import StringDType
 
 #: Instance of NumPy variable-width StringDType used
@@ -30,7 +28,3 @@ string = StringDType(na_object="")
 # Use a blank string as missing value sentinel (1) because that's what we used
 # prior to the NumPy 2.0 StringDType and (2) because in many cases, such as CSV
 # input, a distinction between NA and blank cannot usually be made.
-
-# Ignore pointless warnings about using StringDType in numpy.savez.
-_pattern = "Custom dtypes are saved as python objects using the pickle protocol"
-warnings.filterwarnings("ignore", message=_pattern, category=UserWarning)
