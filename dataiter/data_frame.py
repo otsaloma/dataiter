@@ -765,7 +765,7 @@ class DataFrame(dict):
                 lo, hi = int(x.min()), int(x.max())
                 if hi - lo < 2**62:
                     return x - lo, hi - lo + 1
-            if not ordered and x.dtype.kind in "iu":
+            if not ordered and x.dtype.kind in "iufmM":
                 # Hashing is faster than np.unique, which sorts.
                 codes = util.unique_codes(x)[2]
             else:
@@ -1320,10 +1320,11 @@ class DataFrame(dict):
         row = np.empty(self.nrow, int)
         row[order] = np.repeat(rank, np.diff(starts, append=self.nrow))
         wide = self.select(*ids).slice(np.sort(firsts))
-        if self[names].is_string():
-            # np.unique sorts, which is slow for strings. unique_codes gives
-            # unique values in order of appearance instead of sorted, which
-            # doesn't matter, as columns are ordered by first below.
+        if self[names].dtype.kind in "biufmMT":
+            # np.unique sorts, which is slow, especially for strings.
+            # unique_codes gives unique values in order of appearance
+            # instead of sorted, which doesn't matter, as columns are
+            # ordered by first below.
             unique, first, code = util.unique_codes(self[names])
         else:
             unique, first, code = np.unique(self[names], return_index=True, return_inverse=True)

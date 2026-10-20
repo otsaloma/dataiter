@@ -567,18 +567,10 @@ def sum_prod(x, function, name, drop_na):
     return sum_prod_groups(x, np.array([0])).item(0)
 
 def value_codes(x):
-    # Return integer codes of x, equal for equal values and for all missing
-    # values. Floats are normalized first, -0.0 to 0.0 and all NaNs to one,
-    # as hashing their bits would otherwise treat those as different.
+    # Return integer codes of x, equal for equal values and for all missing values.
     if x.is_object():
         found = {}
         return np.fromiter(map(found.setdefault, x.tolist(), itertools.count()), np.int64, len(x))
-    if x.is_float():
-        x = np.where(np.isnan(x), np.nan, x.astype(float) + 0.0).view(np.int64)
-    elif x.is_datetime() or x.is_timedelta():
-        x = x.view(np.int64)
-    elif x.is_boolean():
-        x = x.astype(np.int64)
     return util.unique_codes(x)[2]
 
 @composite

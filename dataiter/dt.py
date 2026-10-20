@@ -195,10 +195,10 @@ def isoformat(x):
     if np.datetime_data(x.dtype)[0] not in ["Y", "M", "W", "D"]:
         values = x[~na]
         unit = next(u for u in ["s", "ms", "us", "ns"] if np.all(values.astype(f"datetime64[{u}]") == values))
-    if util.is_repetitive(x.view(np.int64)):
+    if util.is_repetitive(x):
         # Formatting only unique values is faster if values repeat.
-        unique, _, codes = util.unique_codes(x.view(np.int64))
-        out = Vector.fast(np.datetime_as_string(unique.view(x.dtype), unit=unit), dtypes.string)[codes]
+        unique, _, codes = util.unique_codes(x)
+        out = Vector.fast(np.datetime_as_string(unique, unit=unit), dtypes.string)[codes]
     else:
         out = Vector.fast(np.datetime_as_string(x, unit=unit), dtypes.string)
     out[na] = dtypes.string.na_object
@@ -309,9 +309,9 @@ def _pull_str(x, function):
     if na.all(): return out
     # Hashing is faster than np.unique, which sorts.
     y = x[~na]
-    _, first, codes = util.unique_codes(y.view(np.int64))
+    unique, _, codes = util.unique_codes(y)
     f = np.vectorize(function)
-    out[~na] = f(_to_object(y[first]))[codes]
+    out[~na] = f(_to_object(unique))[codes]
     return out.as_string()
 
 def quarter(x):

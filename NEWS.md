@@ -88,7 +88,7 @@ Speed-ups:
 - `std`, `var`: Speed up when grouped with `ddof` other than zero
 - `Vector.rank`: Speed up for strings, especially when values repeat
 - `Vector.sort`: Speed up for strings when values repeat
-- `Vector.unique`: Speed up for strings
+- `Vector.unique`: Speed up
 
 Fixes:
 - `DataFrame`: Name the column and lengths in the error for columns of wrong length

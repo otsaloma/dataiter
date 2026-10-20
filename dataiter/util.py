@@ -124,8 +124,8 @@ def is_glob(pattern):
     return isinstance(pattern, str) and any(x in pattern for x in "*?[")
 
 def is_repetitive(x):
-    # Return whether values of string or integer x repeat enough for hashing
-    # to pay off, judging by a sample, as hashing is slow with many unique values.
+    # Return whether values of x repeat enough for hashing to pay off,
+    # judging by a sample, as hashing is slow with many unique values.
     # Sample evenly spaced blocks of consecutive rows, as single rows with a
     # stride would miss repeats in sorted data with runs shorter than the stride.
     if len(x) > 100_000:
@@ -166,9 +166,9 @@ def sequencify(value):
     raise ValueError(f"Unexpected type: {type(value)}")
 
 def sorted_codes(x):
-    # Return codes of elements of string or integer x as ranks of unique
-    # elements in sorted order. Sorting only unique elements is faster
-    # than sorting all strings, unless all are unique.
+    # Return codes of elements of x as ranks of unique elements in
+    # sorted order. Sorting only unique elements is faster than
+    # sorting all strings, unless all are unique.
     unique, _, codes = unique_codes(x)
     rank = np.empty(len(unique), np.int64)
     rank[np.argsort(unique, kind="stable")] = np.arange(len(unique))
@@ -187,16 +187,24 @@ def submit(function, *args):
     return get_executor().submit(function, *args)
 
 def unique_codes(x):
-    # Return unique elements of string or integer x, indices of their first
-    # occurrences and codes of elements as indices to unique, all in order of
-    # appearance. Unlike np.unique, use Arrow's hashing, which avoids slow
-    # sorting, especially for strings. Arrow doesn't treat NaN, NaT and -0.0
-    # as NumPy does, so encode floats and datetimes otherwise first.
+    # Return unique elements of x, indices of their first occurrences and
+    # codes of elements as indices to unique, all in order of appearance.
+    # Unlike np.unique, use Arrow's hashing, which avoids slow sorting,
+    # especially for strings. Arrow doesn't treat NaN, NaT and -0.0 as NumPy
+    # does, so hash floats and datetimes as integers, with floats normalized
+    # first, -0.0 to 0.0 and all NaNs to one, as their bits differ.
     # large_string avoids a chunked array for large data.
-    if x.dtype.kind not in "iuT":
-        raise TypeError(f"Expected string or integer, got {x.dtype}")
+    y = x
+    if x.dtype.kind == "f":
+        y = np.where(np.isnan(x), np.nan, x.astype(float) + 0.0).view(np.int64)
+    elif x.dtype.kind in "mM":
+        y = x.view(np.int64)
+    elif x.dtype.kind == "b":
+        y = x.view(np.uint8)
+    elif x.dtype.kind not in "iuT":
+        raise TypeError(f"Expected string, number or datetime, got {x.dtype}")
     type = pa.large_string() if x.dtype.kind == "T" else None
-    codes = pa.array(np.asarray(x), type=type).dictionary_encode().indices
+    codes = pa.array(np.asarray(y), type=type).dictionary_encode().indices
     codes = codes.to_numpy().astype(np.int64)
     first = np.ones(len(codes), bool)
     first[1:] = codes[1:] > np.maximum.accumulate(codes)[:-1]
