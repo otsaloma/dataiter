@@ -56,6 +56,7 @@ Breaking changes:
 - Require NumPy >= 2.5
 - Require PyArrow >= 26
 - Require wcwidth >= 0.3.0
+- `DataFrame.sample`, `Vector.sample`: Sample with Python's `random` module, as `ListOfDicts.sample` does, which is faster for large data; seed with `random.seed` instead of `np.random.seed`
 - Drop optional use of Numba in favor of vectorized aggregation helper functions in plain NumPy, remove `USE_NUMBA` and `USE_NUMBA_CACHE`
 
 Speed-ups:

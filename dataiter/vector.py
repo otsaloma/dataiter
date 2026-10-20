@@ -26,6 +26,7 @@ import functools
 import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pc
+import random
 import sys
 import wcwidth
 
@@ -857,8 +858,8 @@ class Vector(np.ndarray):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
-        indices = np.random.choice(self.length, n, replace=False)
-        return self[np.sort(indices)].copy()
+        indices = sorted(random.sample(range(self.length), n))
+        return self[indices].copy()
 
     def shift(self, n=1):
         """

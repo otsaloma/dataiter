@@ -30,6 +30,7 @@ import pickle
 import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
+import random
 import warnings
 import wcwidth
 
@@ -1603,8 +1604,8 @@ class DataFrame(dict):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ROWS
         n = min(self.nrow, n)
-        rows = np.random.choice(self.nrow, n, replace=False)
-        return self.slice(np.sort(rows))
+        rows = sorted(random.sample(range(self.nrow), n))
+        return self.slice(rows)
 
     @deco.new_from_parallel_generator
     def select(self, *colnames):
