@@ -729,6 +729,14 @@ class TestDataFrame:
         assert data.a.tolist() == [1, None]
         assert data.b.tolist() == ["-", "x"]
 
+    def test_map_columns_colnames(self):
+        data = DataFrame(a_x=[1], b_x=[2], c=[3])
+        assert data.map_columns("*_x", lambda x: x + 1) == DataFrame(a_x=[2], b_x=[3], c=[3])
+        assert data.map_columns("c", lambda x: x + 1) == DataFrame(a_x=[1], b_x=[2], c=[4])
+        assert data.map_columns(["a_x", "c"], lambda x: x + 1) == DataFrame(a_x=[2], b_x=[2], c=[4])
+        with pytest.raises(KeyError):
+            data.map_columns("d", lambda x: x + 1)
+
     def test_modify(self):
         orig = test.data_frame("vehicles.csv")
         data = orig.modify(test=1)

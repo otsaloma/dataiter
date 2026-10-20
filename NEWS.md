@@ -12,7 +12,7 @@ New:
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped
 - `DataFrame.map`: Deprecated in favor of a list comprehension or `to_list_of_dicts().map`
-- `DataFrame.map_columns`: New method to apply a function to columns matching a predicate, e.g. `of_type`
+- `DataFrame.map_columns`: New method to apply a function to columns matching a predicate, e.g. `of_type`, or names or glob patterns
 - `DataFrame.modify`: Evaluate arguments in order, allowing use of columns created by earlier ones
 - `DataFrame.pivot_longer`, `DataFrame.pivot_wider`: Default `names` and `values` to "name" and "value"
 - `DataFrame.pivot_wider`: Order new columns by first appearance instead of sorting, as tidyr does

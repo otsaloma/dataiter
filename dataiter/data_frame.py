@@ -1104,8 +1104,9 @@ class DataFrame(dict):
         """
         Return data frame with `function` applied to columns matching `predicate`.
 
-        `predicate` is either a function that receives a column as argument and returns ``True``
-        or ``False`` or ``None`` to match all columns. :func:`dataiter.of_type`
+        `predicate` is either a function that receives a column as argument
+        and returns ``True`` or ``False``, a column name or glob pattern, a
+        list of such, or ``None`` to match all columns. :func:`dataiter.of_type`
         is a shorthand for a `predicate` that checks the data type. `function`
         receives a column and `args` and `kwargs` as arguments and should
         return the new column.
@@ -1114,9 +1115,16 @@ class DataFrame(dict):
         >>> data.map_columns(di.of_type(float), lambda x: x.replace_na(0))
         >>> data.map_columns(di.of_type(float), lambda x: x.round(2))
         >>> data.map_columns(di.of_type(float), np.pow, 2)
+        >>> data.map_columns(["guests", "sqft"], lambda x: x.as_float())
         """
+        if predicate is None:
+            colnames = self.colnames
+        elif callable(predicate):
+            colnames = [k for k, v in self.items() if predicate(v)]
+        else:
+            colnames = self._glob([predicate] if isinstance(predicate, str) else predicate)
         for colname, column in self.items():
-            if predicate is None or predicate(column):
+            if colname in colnames:
                 yield colname, function(column, *args, **kwargs)
             else:
                 yield colname, util.submit(np.ndarray.copy, column)
