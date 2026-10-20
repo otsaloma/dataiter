@@ -185,7 +185,7 @@ def submit(function, *args):
     # especially wide data frames of numbers. For strings, np.take releases
     # the GIL, but indexing x[indices] doesn't, so use np.take for reordering.
     # See deco.new_from_parallel_generator.
-    if max((len(x) for x in args if isinstance(x, np.ndarray)), default=0) < 100_000:
+    if max((len(x) for x in args if isinstance(x, np.ndarray)), default=0) < 50_000:
         return function(*args)
     return get_executor().submit(function, *args)
 
