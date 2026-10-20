@@ -26,6 +26,8 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/otsaloma/dataiter"
+Documentation = "https://dataiter.readthedocs.io/"
+Changelog = "https://github.com/otsaloma/dataiter/blob/master/NEWS.md"
 
 [tool.hatch.version]
 path = "dataiter/__init__.py"
