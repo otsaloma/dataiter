@@ -906,7 +906,7 @@ class Vector(np.ndarray):
             new = self.fast(lst, object)
             na = new.is_na()
             return new[~na].concat(new[na])
-        if self.is_string() and self.length >= 1000 and util.is_repetitive(self):
+        if self.is_string() and util.is_repetitive(self):
             # Sorting only unique values and repeating each by its count
             # is faster than sorting all strings if values repeat.
             unique, _, codes = util.unique_codes(self)

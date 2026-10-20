@@ -42,10 +42,9 @@ def _apply(function, string, dtype=object, na_value=None, dedup=True):
     out = np.full_like(string, na_value, dtype)
     na = string == dtypes.string.na_object
     string = string[~na]
-    if dedup and len(string) >= 1000 and util.is_repetitive(string):
+    if dedup and util.is_repetitive(string):
         # Call function only once per unique value. Not for mutable results,
-        # e.g. lists, which equal rows would then share. For small inputs,
-        # Arrow's overhead in unique_codes outweighs the gain.
+        # e.g. lists, which equal rows would then share.
         unique, _, codes = util.unique_codes(string)
         out[~na] = apply(unique)[codes]
         return out.view(Vector)

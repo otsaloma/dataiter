@@ -128,6 +128,9 @@ def is_repetitive(x):
     # judging by a sample, as hashing is slow with many unique values.
     # Sample evenly spaced blocks of consecutive rows, as single rows with a
     # stride would miss repeats in sorted data with runs shorter than the stride.
+    # For small inputs, Arrow's per-call overhead outweighs the gain.
+    if len(x) < 1000:
+        return False
     if len(x) > 100_000:
         starts = np.linspace(0, len(x) - 100, 1000).astype(np.int64)
         x = x[(starts[:, None] + np.arange(100)).ravel()]
