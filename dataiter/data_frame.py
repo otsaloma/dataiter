@@ -258,7 +258,7 @@ class DataFrame(dict):
         for colname, column in self.items():
             yield colname, util.submit(np.take, column, rows)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def cbind(self, *others):
         """
         Return data frame with columns from `others` added.
@@ -273,7 +273,7 @@ class DataFrame(dict):
                 if colname in found_colnames: continue
                 found_colnames.add(colname)
                 new = self._reconcile_column(column)
-                yield colname, column.copy() if new is column else new
+                yield colname, util.submit(np.ndarray.copy, column) if new is column else new
 
     def _check_dimensions(self):
         if not self: return
@@ -1088,7 +1088,7 @@ class DataFrame(dict):
             DataFrame.map.warning_shown = True
         return [function(self, i) for i in range(self.nrow)]
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def map_columns(self, predicate, function, *args, **kwargs):
         """
         Return data frame with `function` applied to columns matching `predicate`.
@@ -1108,7 +1108,7 @@ class DataFrame(dict):
             if predicate is None or predicate(column):
                 yield colname, function(column, *args, **kwargs)
             else:
-                yield colname, column.copy()
+                yield colname, util.submit(np.ndarray.copy, column)
 
     def _match_pairs(self, colname_value_pairs):
         rows = Vector.fast([True], bool).repeat(self.nrow)
@@ -1589,9 +1589,14 @@ class DataFrame(dict):
         >>> data.replace_na(sqft=0)
         """
         for colname, column in self.items():
-            yield colname, util.submit(np.ndarray.copy, column)
+            # Replaced columns are yielded uncopied
+            # only to keep their position, values come later.
+            if colname in colname_value_pairs:
+                yield colname, column
+            else:
+                yield colname, util.submit(np.ndarray.copy, column)
         for colname, value in colname_value_pairs.items():
-            yield colname, self[colname].replace_na(value)
+            yield colname, util.submit(Vector.replace_na, self[colname], value)
 
     def sample(self, n=None):
         """
@@ -1937,7 +1942,7 @@ class DataFrame(dict):
             yield colname, util.submit(np.ndarray.copy, column)
         for colname, column in other.items():
             new = self._reconcile_column(column)
-            yield colname, column.copy() if new is column else new
+            yield colname, util.submit(np.ndarray.copy, column) if new is column else new
 
     def _view_rows(self, rows):
         return LazyDataFrame.from_rows(self, rows)
