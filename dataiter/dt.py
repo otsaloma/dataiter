@@ -286,22 +286,6 @@ def now():
     """
     return np.datetime64(datetime.datetime.now())
 
-def _pull_datetime(x, function):
-    if util.is_scalar(x):
-        x = Vector([x], np.datetime64)
-        return _pull_datetime(x, function)[0]
-    _check_datetime(x)
-    out = np.full_like(x, np.nan)
-    out = out.view(Vector)
-    na = np.isnat(x)
-    if na.all(): return out
-    # Hashing is faster than np.unique, which sorts.
-    y = x[~na]
-    _, first, codes = util.unique_codes(y.view(np.int64))
-    f = np.vectorize(function)
-    out[~na] = f(_to_object(y[first])).astype(x.dtype)[codes]
-    return out
-
 def _pull_int(x, function):
     if util.is_scalar(x):
         x = Vector([x], np.datetime64)
@@ -347,25 +331,20 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     >>> x = dt.new(["2022-10-15"])
     >>> dt.replace(x, month=1, day=1)
     """
-    kwargs = {k: v for k, v in locals().items() if k != "x" and v is not None}
-    if all(map(util.is_scalar, kwargs.values())):
-        return _pull_datetime(x, lambda y: y.replace(**kwargs))
-    for value in kwargs.values():
-        assert util.is_scalar(value) or len(value) == len(x)
-    scalar_keys = [x for x in kwargs if util.is_scalar(kwargs[x])]
-    vector_keys = [x for x in kwargs if x not in scalar_keys]
-    # Like _pull_datetime, but no vectorized function.
+    if util.is_scalar(x):
+        x = Vector([x], np.datetime64)
+        return replace(x, year, month, day, hour, minute, second, microsecond)[0]
     _check_datetime(x)
-    out = np.full_like(x, np.nan)
-    out = out.view(Vector)
-    na = np.isnat(x)
-    xobj = _to_object(x)
-    kwargs_scalar = {x: kwargs[x] for x in scalar_keys}
-    for i in np.flatnonzero(~na):
-        for key in vector_keys:
-            kwargs_scalar[key] = kwargs[key][i]
-        out[i] = xobj[i].replace(**kwargs_scalar)
-    return out
+    given = dict(year=year, month=month, day=day, hour=hour, minute=minute, second=second, microsecond=microsecond)
+    given = {k: v for k, v in given.items() if v is not None}
+    keys = ["year", "month", "day"]
+    is_date = np.datetime_data(x.dtype)[0] in ["Y", "M", "W", "D"]
+    if not is_date:
+        keys += ["hour", "minute", "second", "microsecond"]
+    # Arguments shadow the component functions of the same names.
+    components = {k: globals()[k](x) for k in keys} | given
+    out = from_components(**components)
+    return out if is_date and len(components) > 3 else out.astype(x.dtype)
 
 def second(x):
     """

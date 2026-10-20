@@ -77,7 +77,8 @@ Speed-ups:
 - `dt.day`, `dt.hour`, `dt.isoweek`, `dt.isoweekday`, `dt.microsecond`, `dt.minute`, `dt.month`, `dt.quarter`, `dt.second`, `dt.weekday`, `dt.year`: Speed up
 - `dt.from_string`: Speed up, especially when values repeat
 - `dt.isoformat`: Speed up, especially when values repeat
-- `dt.replace`, `dt.to_string`: Speed up when values repeat
+- `dt.replace`: Speed up, especially for vector arguments
+- `dt.to_string`: Speed up when values repeat
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
 - `count`, `first`, `last`, `max`, `min`, `nth`: Speed up when grouped, especially with many groups
 - `median`, `quantile`: Speed up when grouped with very many groups

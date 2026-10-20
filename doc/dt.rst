@@ -6,10 +6,10 @@ dataiter.dt
 
 The ``dt`` module contains vectorized functions for dealing with dates and
 datetimes, similar to ``numpy.strings`` for strings. Most functions use NumPy
-datetime arithmetic and are fast. :func:`~dataiter.dt.from_string`,
-:func:`~dataiter.dt.to_string` and :func:`~dataiter.dt.replace` use Python's
-standard library ``datetime`` module, calling it once per unique value where
-possible, which is fast when values repeat, but slow for many unique values.
+datetime arithmetic and are fast. :func:`~dataiter.dt.from_string` and
+:func:`~dataiter.dt.to_string` use Python's standard library ``datetime``
+module, calling it once per unique value where possible, which is fast when
+values repeat, but slow for many unique values.
 
 :func:`~dataiter.dt.day`
 :func:`~dataiter.dt.floor`
