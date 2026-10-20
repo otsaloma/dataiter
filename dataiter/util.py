@@ -129,6 +129,8 @@ def is_repetitive(x):
     # Sample evenly spaced blocks of consecutive rows, as single rows with a
     # stride would miss repeats in sorted data with runs shorter than the stride.
     # For small inputs, Arrow's per-call overhead outweighs the gain.
+    if x.dtype.kind not in "biufmMT":
+        raise TypeError(f"Expected string, number or datetime, got {x.dtype}")
     if len(x) < 1000:
         return False
     if len(x) > 100_000:
