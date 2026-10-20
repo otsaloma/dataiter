@@ -96,7 +96,7 @@ Fixes:
 - `DataFrame.compare`: Match rows with missing values in `by`, previously reported as both added and removed
 - `DataFrame.compare`: Rename `by` columns named "column", "xvalue" or "yvalue" in changed values by appending underscores, previously an error
 - `DataFrame.drop_na`: Use all columns if none given instead of dropping nothing
-- `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, fixing errors in `dt` functions and wrong values from `tolist` and others
+- `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Convert nanosecond datetimes and timedeltas to microseconds, also if `dtypes` gives unitless `np.datetime64` or `np.timedelta64`, fixing errors in `dt` functions and wrong values from `tolist` and others
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read columns with no values as float instead of an object column of `None`
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`: Read times of day as strings instead of an object column of `datetime.time`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix error reading list columns, now read as object columns of lists
@@ -137,6 +137,7 @@ Fixes:
 - `count_unique`: Count all missing values as one instead of each NaN and NaT separately in some cases, also fixing an error for objects with missing values
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `dt.from_string`, `Vector.rank`: Fix segmentation fault for strings in some orders, e.g. two sorted runs, due to a NumPy bug
+- `dt.replace`, `dt.to_string`: Fix error for nanosecond datetimes
 - `dt.isoformat`: Use the same format for all elements, with fractional seconds as precise as needed, instead of omitting them for elements with zero microseconds
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Return ungrouped lists, as `DataFrame` does, previously staying grouped and making e.g. `head` after `aggregate` operate group-wise

@@ -435,6 +435,16 @@ class TestDataFrame:
         data = DataFrame.from_arrow(pa.table({"a": array}))
         assert data.a.tolist() == [[1, 2], [3, 4]]
 
+    def test_from_arrow_nanoseconds(self):
+        time = pa.array([1767332184539000000, None], pa.timestamp("ns"))
+        table = pa.table({"time": time, "duration": pa.compute.subtract(time, time[0])})
+        for dtypes in [{}, {"time": np.datetime64, "duration": np.timedelta64}]:
+            data = DataFrame.from_arrow(table, dtypes=dtypes)
+            assert data.time.dtype == np.dtype("datetime64[us]")
+            assert data.duration.dtype == np.dtype("timedelta64[us]")
+        data = DataFrame.from_arrow(table, dtypes={"time": "datetime64[ns]"})
+        assert data.time.dtype == np.dtype("datetime64[ns]")
+
     def test_from_arrow_null(self):
         table = pa.table({"a": pa.nulls(2)})
         data = DataFrame.from_arrow(table)
@@ -502,10 +512,11 @@ class TestDataFrame:
         import pandas as pd
         time = np.array(["2026-01-02T05:36:24.539", "NaT"], "datetime64[ns]")
         data = pd.DataFrame({"time": time, "duration": time - time[0]})
-        data = DataFrame.from_pandas(data)
-        assert data.time.dtype == np.dtype("datetime64[us]")
-        assert data.duration.dtype == np.dtype("timedelta64[us]")
-        assert data.time.dt.to_string("%H:%M:%S").tolist() == ["05:36:24", None]
+        for dtypes in [{}, {"time": np.datetime64, "duration": np.timedelta64}]:
+            new = DataFrame.from_pandas(data, dtypes=dtypes)
+            assert new.time.dtype == np.dtype("datetime64[us]")
+            assert new.duration.dtype == np.dtype("timedelta64[us]")
+            assert new.time.dt.to_string("%H:%M:%S").tolist() == ["05:36:24", None]
 
     def test_from_pandas_dtypes_missing(self):
         data = DataFrame(a=[1]).to_pandas()

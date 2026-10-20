@@ -282,7 +282,7 @@ def _pull_datetime(x, function):
     y = x[~na]
     _, first, codes = util.unique_codes(y.view(np.int64))
     f = np.vectorize(function)
-    out[~na] = f(y[first].astype(object)).astype(x.dtype)[codes]
+    out[~na] = f(_to_object(y[first])).astype(x.dtype)[codes]
     return out
 
 def _pull_int(x, function):
@@ -310,7 +310,7 @@ def _pull_str(x, function):
     y = x[~na]
     _, first, codes = util.unique_codes(y.view(np.int64))
     f = np.vectorize(function)
-    out[~na] = f(y[first].astype(object))[codes]
+    out[~na] = f(_to_object(y[first]))[codes]
     return out.as_string()
 
 def quarter(x):
@@ -342,7 +342,7 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     out = np.full_like(x, np.nan)
     out = out.view(Vector)
     na = np.isnat(x)
-    xobj = x.astype(object)
+    xobj = _to_object(x)
     kwargs_scalar = {x: kwargs[x] for x in scalar_keys}
     for i in np.flatnonzero(~na):
         for key in vector_keys:
@@ -377,6 +377,13 @@ def to_string(x, format):
         found = [unit for unit, chars in units.items() if any(code in chars for code in codes)]
         x = floor(x, found[-1] if found else "year")
     return _pull_str(x, lambda x: x.strftime(format))
+
+def _to_object(x):
+    # Python's datetime doesn't support nanoseconds,
+    # for which astype(object) would give ints.
+    if np.datetime_data(x.dtype)[0] == "ns":
+        x = x.astype("datetime64[us]")
+    return x.astype(object)
 
 def today():
     """

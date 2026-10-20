@@ -627,12 +627,14 @@ class DataFrame(dict):
                 # Vector.fast assumes object if any element is missing i.e. None.
                 column = column.fill_null(b"")
             column = column.to_numpy()
-            if (req_dtype is None and
+            if ((req_dtype is None or np.dtype(req_dtype) in
+                 [np.dtype("datetime64"), np.dtype("timedelta64")]) and
                 (np.issubdtype(column.dtype, np.datetime64) or
                  np.issubdtype(column.dtype, np.timedelta64)) and
                 np.datetime_data(column.dtype)[0] == "ns"):
                 # Python's datetime and timedelta don't support nanoseconds,
                 # breaking conversions to object, e.g. in dt and tolist.
+                # Keep nanoseconds only if explicitly requested.
                 column = column.astype(column.dtype.str.replace("ns", "us"))
             if np.issubdtype(column.dtype, np.object_):
                 if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):
@@ -684,12 +686,14 @@ class DataFrame(dict):
             req_dtype = dtypes.get(name, None)
             na = data[name].isna().to_numpy(copy=True)
             column = data[name].to_numpy(copy=True)
-            if (req_dtype is None and
+            if ((req_dtype is None or np.dtype(req_dtype) in
+                 [np.dtype("datetime64"), np.dtype("timedelta64")]) and
                 (np.issubdtype(column.dtype, np.datetime64) or
                  np.issubdtype(column.dtype, np.timedelta64)) and
                 np.datetime_data(column.dtype)[0] == "ns"):
                 # Python's datetime and timedelta don't support nanoseconds,
                 # breaking conversions to object, e.g. in dt and tolist.
+                # Keep nanoseconds only if explicitly requested.
                 column = column.astype(column.dtype.str.replace("ns", "us"))
             if np.issubdtype(column.dtype, np.object_):
                 if req_dtype is None or np.dtype(req_dtype) != np.dtype(object):

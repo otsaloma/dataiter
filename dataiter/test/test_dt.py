@@ -208,6 +208,12 @@ class TestDT:
         b = dt.new(["2022-01-01", NaT])
         assert dt.replace(a, month=1, day=1).equal(b)
 
+    def test_replace_nanoseconds(self):
+        a = Vector(["2022-10-15T12:34:56", NaT], "datetime64[ns]")
+        b = Vector(["2022-01-01T12:34:56", NaT], "datetime64[ns]")
+        assert dt.replace(a, month=1, day=1).equal(b)
+        assert dt.replace(a, month=[1, 1], day=1).equal(b)
+
     def test_replace_vector(self):
         a = dt.new(["2023-08-09", "2023-08-10", "2023-08-11"])
         b = dt.new(["2023-07-01", "2023-07-02", "2023-07-03"])
@@ -235,6 +241,10 @@ class TestDT:
         b = dt.to_string(a, "%Y%m%d-%H%M%S")
         assert b.is_string()
         assert b.tolist() == ["20221114-224900", None]
+
+    def test_to_string_nanoseconds(self):
+        a = np.array(["2022-11-14T22:49:00", NaT], "datetime64[ns]")
+        assert dt.to_string(a, "%Y%m%d-%H%M%S").tolist() == ["20221114-224900", None]
 
     @pytest.mark.parametrize("format", ["%Y", "%b %Y", "%a", "%G-W%V", "%H %p", "%H:%M", "%S.%f", "%%Y", "const"])
     def test_to_string_floor(self, format):
