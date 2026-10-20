@@ -11,11 +11,11 @@ Work independently for 30–60 minutes doing data manipulation, data
 science and data engineering with dataiter, including joins, filtering
 etc. Like fuzzing, but end-to-end: do realistic full tasks, such as
 calculating dashboard-type figures from raw data, not isolated little
-operations. Use files under data or download more from the internet.
-Keep a record of any API surprises, broken functionality, complicated
-operations and slow operations. Then write your findings as numbered
-items into ISSUES.md and present them to me, and we'll see if there's
-something in dataiter that we should fix.
+operations. Download some suitable data from the internet. Keep a record
+of any API surprises, broken functionality, complicated operations and
+slow operations. Then write your findings as numbered items into
+ISSUES.md and present them to me, and we'll see if there's something in
+dataiter that we should fix.
 
 Regarding API surprises, note that Pandas is a pile of shit and our goal
 is not to emulate Pandas. Compare broadly across data frame
