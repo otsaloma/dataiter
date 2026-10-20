@@ -139,6 +139,7 @@ Fixes:
 - `DataFrame.to_string`: Fix header of empty data frames shifted one character left
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix negative floats showing fewer significant digits
 - `DataFrame.to_string`, `Vector.to_string`, `Vector.to_strings`: Fix infinite values switching floats to scientific notation
+- `DataFrame.unique`: Fix missing timedeltas matching zero durations when unique also by an object column
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
 - `count_unique`: Count all missing values as one instead of each NaN and NaT separately in some cases, also fixing an error for objects with missing values

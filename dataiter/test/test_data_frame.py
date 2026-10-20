@@ -1493,6 +1493,13 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.c.dtype == np.dtype("timedelta64[m]")
         assert data.c.is_na().tolist() == [False, True, False, False]
 
+    def test_unique_by_object_and_timedelta(self):
+        orig = DataFrame(a=[None, None, None, None],
+                         b=np.array([0, "NaT", 0, "NaT"], "timedelta64[m]"))
+        assert orig.a.is_object()
+        data = orig.unique("a", "b")
+        assert data.b.is_na().tolist() == [False, True]
+
     def test_unique_preserve_order(self):
         orig = test.data_frame("vehicles.csv")
         orig.order = np.arange(orig.nrow)

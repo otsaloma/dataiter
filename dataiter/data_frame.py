@@ -1912,48 +1912,25 @@ class DataFrame(dict):
         """
         colnames = colnames or self.colnames
         columns = [self[x] for x in colnames]
-        if all(x.is_string() or
-               x.is_number() or
-               x.is_boolean() or
-               x.is_datetime() or
-               x.is_timedelta() for x in columns):
-            # Hashing one combined code per row gives first occurrences
-            # without slow sorting, especially of strings.
-            columns = [util.submit(lambda x: util.unique_codes(x)[2], x) if x.is_string() else x for x in columns]
-            columns = [x.result() if isinstance(x, Future) else x for x in columns]
+        # Hashing one combined code per row gives first occurrences
+        # without slow sorting, especially of strings.
+        columns = [util.submit(lambda x: util.unique_codes(x)[2], x) if x.is_string() else x for x in columns]
+        columns = [x.result() if isinstance(x, Future) else x for x in columns]
+        objects = [x for x in columns if x.dtype == np.dtype(object)]
+        if objects:
+            # Arrow can't hash Python objects, use a Python set of rows instead,
+            # with other columns as one combined code, as NaN != NaN.
+            others = [x for x in columns if x.dtype != np.dtype(object)]
+            rows = zip(*objects, self._get_codes(others, ordered=False)) if others else zip(*objects)
+            seen = set()
+            keep = []
+            for i, row in enumerate(rows):
+                if row not in seen:
+                    seen.add(row)
+                    keep.append(i)
+            keep = np.array(keep, np.int64)
+        else:
             keep = util.unique_codes(self._get_codes(columns, ordered=False))[1]
-            for colname, column in self.items():
-                yield colname, util.submit(np.take, column, keep)
-            return
-        # For objects, a Python set is faster than sorting.
-        # We just need to avoid NaN and NaT for the 'in' checks to work.
-        for i, column in enumerate(columns):
-            if not column.is_na().any(): continue
-            if column.is_datetime():
-                flag = np.nanmin(column) - np.timedelta64(1, "D")
-                if np.isnat(flag):
-                    flag = np.datetime64("-001-01-01")
-                columns[i] = column.replace_na(flag)
-            if column.is_timedelta():
-                unit = np.datetime_data(column.dtype)[0]
-                flag = np.nanmin(column) - np.timedelta64(1, unit)
-                if np.isnat(flag):
-                    flag = np.timedelta64(0, unit)
-                columns[i] = column.replace_na(flag)
-            if column.is_float():
-                flag = np.nanmin(column) - 1
-                if np.isnan(flag):
-                    flag = -1
-                columns[i] = column.replace_na(flag)
-        # NumPy datetime and timedelta scalars are slow to hash, integers not.
-        columns = [x.view(np.int64) if x.is_datetime() or x.is_timedelta() else x for x in columns]
-        seen = set()
-        keep = []
-        for i, row in enumerate(zip(*columns)):
-            if row not in seen:
-                seen.add(row)
-                keep.append(i)
-        keep = np.array(keep, np.int64)
         for colname, column in self.items():
             yield colname, util.submit(np.take, column, keep)
 
