@@ -62,6 +62,7 @@ tabular data and the `DataFrame` class.
 - Open-Meteo hourly weather
 - OpenPowerlifting
 - Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
+- SF Fire Department calls for service and fire incidents (data.sf.gov)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
