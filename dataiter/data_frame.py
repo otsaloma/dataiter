@@ -514,14 +514,15 @@ class DataFrame(dict):
         """
         Return rows that match condition.
 
-        Filtering can be done by either `rows` or `colname_value_pairs`. `rows`
-        can be either a boolean vector or a function that receives the data
-        frame as argument and returns a boolean vector. The latter is
-        especially useful in a method chaining context where you don't have
-        direct access to the data frame in question. Alternatively,
-        `colname_value_pairs` provides a shorthand to check against a fixed
-        value, or if `value` is a sequence, such as a list, against any of its
-        elements. See the example below of equivalent filtering all three ways.
+        Filtering can be done by `rows`, `colname_value_pairs` or both, in
+        which case rows must match all conditions. `rows` can be either a
+        boolean vector or a function that receives the data frame as argument
+        and returns a boolean vector. The latter is especially useful in a
+        method chaining context where you don't have direct access to the data
+        frame in question. `colname_value_pairs` provides a shorthand to check
+        against a fixed value, or if `value` is a sequence, such as a list,
+        against any of its elements. See the example below of equivalent
+        filtering all three ways.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.filter((data.hood == "Manhattan") & (data.guests == 2))
@@ -534,13 +535,7 @@ class DataFrame(dict):
         >>> # Listings priced over the mean of their neighbourhood
         >>> data.group_by("hood").filter(lambda x: x.price > x.price.mean())
         """
-        if rows is not None:
-            if callable(rows):
-                rows = (self._modify_group_wise(_rows_=rows)["_rows_"]
-                        if self._group_colnames else rows(self))
-        elif colname_value_pairs:
-            rows = self._match_pairs(colname_value_pairs)
-        rows = self._parse_rows_from_boolean(rows)
+        rows = self._parse_rows_from_filter(rows, colname_value_pairs)
         for colname, column in self.items():
             yield colname, util.submit(np.take, column, rows)
 
@@ -555,13 +550,7 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.filter_out(hood="Manhattan")
         """
-        if rows is not None:
-            if callable(rows):
-                rows = (self._modify_group_wise(_rows_=rows)["_rows_"]
-                        if self._group_colnames else rows(self))
-        elif colname_value_pairs:
-            rows = self._match_pairs(colname_value_pairs)
-        rows = self._parse_rows_from_boolean(rows)
+        rows = self._parse_rows_from_filter(rows, colname_value_pairs)
         for colname, column in self.items():
             yield colname, util.submit(np.delete, column, rows)
 
@@ -1233,6 +1222,15 @@ class DataFrame(dict):
         if len(rows) != self.nrow:
             raise ValueError("Bad length for boolean rows")
         return Vector.fast(np.nonzero(rows)[0], int)
+
+    def _parse_rows_from_filter(self, rows, colname_value_pairs):
+        if callable(rows):
+            rows = (self._modify_group_wise(_rows_=rows)["_rows_"]
+                    if self._group_colnames else rows(self))
+        if colname_value_pairs:
+            pairs = self._match_pairs(colname_value_pairs)
+            rows = pairs if rows is None else pairs & rows
+        return self._parse_rows_from_boolean(rows)
 
     def pivot_longer(self, *, ids, names="name", values="value"):
         """

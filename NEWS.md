@@ -7,6 +7,7 @@ New:
 - `DataFrame.explode`: New method to expand sequences or delimited strings to rows
 - `DataFrame.filter`, `DataFrame.filter_out`: Match any element if value is a sequence
 - `DataFrame.filter`, `DataFrame.filter_out`: Apply `rows` function group-wise if grouped
+- `DataFrame.filter`, `DataFrame.filter_out`, `ListOfDicts.filter`, `ListOfDicts.filter_out`: Combine `rows` or `function` and keyword conditions, previously keywords were ignored if both given
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`, `read_parquet`: Add `timezone` argument, by default keeping timestamps in the timezone they're stored in instead of converting to UTC
 - `DataFrame.full_join`, `DataFrame.inner_join`, `DataFrame.left_join`: Add `multiple` argument to choose the first, last or all matches
 - `DataFrame.head`, `DataFrame.tail`: Return first or last rows of each group if grouped

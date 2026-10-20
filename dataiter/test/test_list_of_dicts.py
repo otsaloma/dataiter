@@ -273,6 +273,11 @@ class TestListOfDicts:
         assert len(data) == 181
         assert sum(data.pluck("downloads")) == 510902781
 
+    def test_filter_given_function_and_key_value_pairs(self):
+        data = ListOfDicts([{"x": "a", "y": 1}, {"x": "b", "y": 2}, {"x": "a", "y": 3}, {"x": "b", "y": 4}])
+        assert data.filter(lambda x: x.y > 1, x="a").pluck("y") == [3]
+        assert data.filter_out(lambda x: x.y > 1, x="a").pluck("y") == [1, 2, 4]
+
     def test_filter_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
         data = orig.filter(b=None)

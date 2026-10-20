@@ -334,48 +334,38 @@ class ListOfDicts(list):
         """
         Return items that match condition.
 
-        Filtering can be done either by `function`, which receives an
-        individual item as its argument and returns ``True`` or ``False``, or
-        by `key_value_pairs`, which are a shorthand to check against a fixed
-        value, or if `value` is a sequence, such as a list, against any of its
-        elements. See the example below of equivalent filtering with both ways.
+        Filtering can be done by `function`, `key_value_pairs` or both, in
+        which case items must match all conditions. `function` receives an
+        individual item as its argument and returns ``True`` or ``False``.
+        `key_value_pairs` are a shorthand to check against a fixed value, or
+        if `value` is a sequence, such as a list, against any of its elements.
+        See the example below of equivalent filtering all three ways.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.filter(lambda x: x.hood == "Manhattan" and x.guests == 2)
         >>> data.filter(hood="Manhattan", guests=2)
         """
-        if callable(function):
-            for item in self:
-                if function(item):
-                    yield item
-        elif key_value_pairs:
-            for item, match in zip(self, self._match_pairs(key_value_pairs)):
-                if match:
-                    yield item
+        matches = self._match_pairs(key_value_pairs) if key_value_pairs else itertools.repeat(True)
+        for item, match in zip(self, matches):
+            if match and (function is None or function(item)):
+                yield item
 
     @deco.new_from_generator
     def filter_out(self, function=None, **key_value_pairs):
         """
         Return items that don't match condition.
 
-        Filtering can be done either by `function`, which receives an
-        individual item as its argument and returns ``True`` or ``False``, or
-        by `key_value_pairs`, which are a shorthand to check against a fixed
-        value, or if `value` is a sequence, such as a list, against any of its
-        elements. See the example below of equivalent filtering with both ways.
+        `filter_out` is the inverse of :meth:`filter`, see it for details on
+        the arguments, which are the same.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.filter_out(lambda x: x.hood == "Manhattan")
         >>> data.filter_out(hood="Manhattan")
         """
-        if callable(function):
-            for item in self:
-                if not function(item):
-                    yield item
-        elif key_value_pairs:
-            for item, match in zip(self, self._match_pairs(key_value_pairs)):
-                if not match:
-                    yield item
+        matches = self._match_pairs(key_value_pairs) if key_value_pairs else itertools.repeat(True)
+        for item, match in zip(self, matches):
+            if not (match and (function is None or function(item))):
+                yield item
 
     @classmethod
     def from_json(cls, string, *, select=[], types={}, **kwargs):

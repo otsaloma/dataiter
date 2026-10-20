@@ -356,6 +356,18 @@ class TestDataFrame:
         assert np.all(data.make == "Saab")
         assert np.sum(data.hwy) == 10672
 
+    def test_filter_given_rows_and_colname_value_pairs(self):
+        data = DataFrame(x=["a", "b", "a", "b"], y=[1, 2, 3, 4])
+        assert data.filter(data.y > 1, x="a").y.tolist() == [3]
+        assert data.filter(lambda x: x.y > 1, x="a").y.tolist() == [3]
+        assert data.filter_out(lambda x: x.y > 1, x="a").y.tolist() == [1, 2, 4]
+
+    def test_filter_group_wise_and_colname_value_pairs(self):
+        data = DataFrame(g=[1, 3, 3, 2, 3, 2], x=[1, 5, 9, 2, 3, 7])
+        data = data.group_by("g").filter(lambda x: x.x == x.x.max(), g=[2, 3])
+        assert data.g.tolist() == [3, 2]
+        assert data.x.tolist() == [9, 7]
+
     def test_filter_given_colname_sequence_pairs(self):
         data = DataFrame(x=["a", "b", "c", "d"], y=[1, 2, 3, 4])
         for value in [["a", "c"], ("a", "c"), {"a", "c"}, np.array(["a", "c"]), Vector(["a", "c"])]:
