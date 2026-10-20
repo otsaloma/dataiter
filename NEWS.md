@@ -68,6 +68,7 @@ Speed-ups:
 - `DataFrame.aggregate`, `DataFrame.filter`, `DataFrame.filter_out`, `DataFrame.modify`: Speed up functions when grouped by reordering only columns they use
 - `DataFrame.pivot_longer`: Speed up, especially with many columns
 - `DataFrame.pivot_wider`: Speed up, especially with many ids or names
+- `DataFrame.rbind`: Speed up by not copying columns twice and combining them in parallel threads
 - `DataFrame.sort`: Speed up, especially for strings
 - `DataFrame.unique`: Speed up with string columns when keeping many rows of wide data
 - `DataFrame.unique`: Speed up, especially with string columns

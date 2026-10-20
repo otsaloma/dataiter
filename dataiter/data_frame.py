@@ -1407,7 +1407,7 @@ class DataFrame(dict):
         nas.colnames = [x.upper() for x in nas.colnames]
         nas.print_(max_rows=nas.nrow)
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def rbind(self, *others):
         """
         Return data frame with rows from `others` added.
@@ -1428,14 +1428,18 @@ class DataFrame(dict):
                 value = ref[colname].na_value
                 dtype = ref[colname].na_dtype
                 return Vector.fast([value], dtype).repeat(data.nrow)
+        def concatenate(*parts):
+            return np.concatenate(parts).view(DataFrameColumn)
         for colname in colnames:
             parts = [get_part(x, colname) for x in nonempty if colname in x or x.nrow > 0]
             try:
-                total = DataFrameColumn(np.concatenate(parts))
+                # Check types upfront, as errors in threads would
+                # surface only when collecting the results.
+                np.result_type(*(x.dtype for x in parts))
             except TypeError:
                 dtypes = ", ".join(util.unique_keys(x.dtype_label for x in parts))
                 raise TypeError(f"Can't combine column {colname!r} of incompatible types: {dtypes}") from None
-            yield colname, total
+            yield colname, util.submit(concatenate, *parts)
 
     @classmethod
     def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, colnames=[], na=[], select=[], dtypes={}):
