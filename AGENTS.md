@@ -60,10 +60,10 @@ Do not complain about these or spend too much time investigating.
   interning (would need a second string type).
 
 - Grouped `DataFrame.modify` is slow for large data frames, e.g. 0.75 s
-  for 3M rows and 8k groups, as it calls a Python function per group
-  and reorders the columns used and the result between group and
-  original order. Functions get a `LazyDataFrame`, which reorders only
-  the columns they access. Significantly speeding it up further would
+  for 3M rows and 8k groups, as it calls a Python function per group and
+  reorders the columns used and the result between group and original
+  order. Functions get a `LazyDataFrame`, which reorders only the
+  columns they access. Significantly speeding it up further would
   require vectorized helper functions like those for
   `DataFrame.aggregate`, which avoid per-group Python calls. That would
   be a big change, currently not considered worth doing, as grouped

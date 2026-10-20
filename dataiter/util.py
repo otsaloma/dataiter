@@ -55,7 +55,8 @@ def format_alias_doc(alias, target):
 
 def format_floats(seq, ksep=None):
     precision = dataiter.PRINT_FLOAT_PRECISION
-    if any(0 < abs(x) < 1/10**precision or 10**16 - 1 < abs(x) < math.inf for x in seq):
+    if any(0 < abs(x) < 1/10**precision or
+           10**16 - 1 < abs(x) < math.inf for x in seq):
         # Format tiny and huge numbers in scientific notation.
         f = np.format_float_scientific
         return [f(x, precision=precision, trim="-") for x in seq]
@@ -124,8 +125,7 @@ def is_glob(pattern):
 
 def is_repetitive(x):
     # Return whether values of string or integer x repeat enough for hashing
-    # to pay off, judging by a sample, as hashing is slow with many unique
-    # values.
+    # to pay off, judging by a sample, as hashing is slow with many unique values.
     sample = x[::max(1, len(x) // 100_000)]
     return len(unique_codes(sample)[0]) < 0.9 * len(sample)
 
