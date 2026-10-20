@@ -555,7 +555,7 @@ class DataFrame(dict):
             yield colname, util.submit(np.delete, column, rows)
 
     @classmethod
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def from_arrow(cls, data, *, dtypes={}, timezone="keep"):
         """
         Return a new data frame from ``pyarrow.Table`` `data`.
@@ -570,6 +570,24 @@ class DataFrame(dict):
         for name in dtypes:
             if name not in data.column_names:
                 raise KeyError(name)
+        def strings_from_arrow(column):
+            # Conversion to StringDType goes via Python objects, which is slow
+            # and holds the GIL. For large data, if values repeat, hash in
+            # Arrow, which releases the GIL, and convert only unique values.
+            # Judge by a sample of evenly spaced blocks, as util.is_repetitive
+            # does. For small data, threads and hashing don't pay off.
+            column = column.fill_null(dataiter.dtypes.string.na_object)
+            if len(column) < 50_000:
+                return column.to_numpy().astype(dataiter.dtypes.string).view(DataFrameColumn)
+            sample = column
+            if len(column) > 100_000:
+                starts = np.linspace(0, len(column) - 100, 1000).astype(np.int64)
+                sample = column.take((starts[:, None] + np.arange(100)).ravel())
+            if pc.count_distinct(sample).as_py() < 0.9 * len(sample):
+                encoded = pc.dictionary_encode(column).combine_chunks()
+                unique = encoded.dictionary.to_numpy(zero_copy_only=False).astype(dataiter.dtypes.string)
+                return np.take(unique, encoded.indices.to_numpy()).view(DataFrameColumn)
+            return column.to_numpy().astype(dataiter.dtypes.string).view(DataFrameColumn)
         for name, column in zip(data.column_names, data.columns):
             req_dtype = dtypes.get(name, None)
             if (timezone == "keep" and
@@ -604,11 +622,12 @@ class DataFrame(dict):
                 column = column.to_pylist()
                 yield name, DataFrameColumn.fast(np.fromiter(column, object, len(column)), object)
                 continue
-            if (req_dtype is None and
+            if ((req_dtype is None or Vector.fast([], req_dtype).is_string()) and
                 (pa.types.is_string(column.type) or
                  pa.types.is_large_string(column.type))):
-                # Vector.fast assumes object if the first element is missing i.e. None.
-                req_dtype = str
+                yield name, (strings_from_arrow(column) if len(column) < 50_000 else
+                             util.get_executor().submit(strings_from_arrow, column))
+                continue
             na = column.is_null(nan_is_null=True).to_numpy()
             if (req_dtype is None and
                 (pa.types.is_binary(column.type) or

@@ -65,6 +65,7 @@ Speed-ups:
 - `DataFrame.aggregate`: Speed up arbitrary functions, especially with many groups and columns
 - `DataFrame.aggregate`: Speed up helper functions for columns previously not handled by Numba, e.g. strings and timedeltas
 - `DataFrame.aggregate`, `DataFrame.count`, `DataFrame.filter`, `DataFrame.head`, `DataFrame.modify`, `DataFrame.split`, `DataFrame.tail`: Speed up grouping, especially by strings
+- `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `read_csv`, `read_parquet`: Speed up strings, especially repeated or missing, by converting only unique values and processing columns in parallel threads
 - `DataFrame.modify`: Speed up when grouped
 - `DataFrame.aggregate`, `DataFrame.filter`, `DataFrame.filter_out`, `DataFrame.modify`: Speed up functions when grouped by reordering only columns they use
 - `DataFrame.pivot_longer`: Speed up, especially with many columns
