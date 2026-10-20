@@ -448,7 +448,7 @@ class DataFrame(dict):
             for colname, value, index in zip(colname_value_pairs, values, indices)
         })
 
-    @deco.new_from_generator
+    @deco.new_from_parallel_generator
     def explode(self, colname, *, sep=None, dtype=None):
         """
         Return data frame with elements of `colname` split to rows.
@@ -481,7 +481,7 @@ class DataFrame(dict):
             counts, values = self._explode_sequences(column, dtype)
         rows = np.repeat(np.arange(self.nrow), counts)
         for name, column in self.items():
-            yield name, values if name == colname else column[rows]
+            yield name, values if name == colname else util.submit(np.take, column, rows)
 
     @staticmethod
     def _explode_strings(column, sep):
