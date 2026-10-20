@@ -297,8 +297,8 @@ def median(x, *, drop_na=True):
         y = np.asarray(y)
         n = np.diff(starts, append=len(y))
         out = np.full(len(starts), np.nan)
-        if len(starts) < 40_000:
-            # Looping is faster than sorting for few groups.
+        if len(starts) == 1 or len(y) >= 200 * len(starts):
+            # Looping is faster than sorting for one or large groups.
             for i, (a, k) in enumerate(zip(starts.tolist(), n.tolist())):
                 if k > 0: out[i] = np.median(y[a:a+k])
             return datetime_from_float(out, x)
@@ -466,8 +466,9 @@ def quantile(x, q, *, drop_na=True):
         y = np.asarray(y)
         n = np.diff(starts, append=len(y))
         out = np.full(len(starts), np.nan)
-        if len(starts) < 20_000:
-            # Looping is faster than sorting for few groups.
+        if len(starts) == 1 or len(y) >= 500 * len(starts):
+            # Looping is faster than sorting for one or large groups,
+            # less so than for median, as np.quantile is slower.
             for i, (a, k) in enumerate(zip(starts.tolist(), n.tolist())):
                 if k > 0: out[i] = np.quantile(y[a:a+k], q)
             return datetime_from_float(out, x)

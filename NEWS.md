@@ -81,7 +81,7 @@ Speed-ups:
 - `dt.to_string`: Speed up when values repeat
 - `dt.to_string`: Speed up when format needs only part of the values, e.g. "%Y-%m"
 - `count`, `first`, `last`, `max`, `min`, `nth`: Speed up when grouped, especially with many groups
-- `median`, `quantile`: Speed up when grouped with very many groups
+- `median`, `quantile`: Speed up when grouped with many small groups
 - `count_unique`, `mode`: Speed up when grouped with very many groups
 - `mode`: Speed up for large groups
 - `regex.*`: Speed up, especially when values repeat
