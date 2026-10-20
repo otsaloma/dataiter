@@ -107,6 +107,7 @@ Fixes:
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Read decimals as float instead of an object column of `decimal.Decimal`
 - `DataFrame.from_arrow`, `DataFrame.read_parquet`: Fix string columns becoming object if the first value is missing
 - `DataFrame.from_arrow`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `read_csv`, `read_parquet`: Read blanks as missing when converting strings to numbers with `dtypes`, previously raising an error that named the blank instead of any actual bad value
+- `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `read_csv`, `read_parquet`: Fix spurious NumPy warning for integer `dtypes` of columns with missing values
 - `DataFrame.from_arrow`, `DataFrame.from_pandas`, `DataFrame.read_csv`, `DataFrame.read_parquet`, `ListOfDicts.read_csv`, `read_csv`, `read_parquet`: Raise `KeyError` for `dtypes` or `types` referring to missing columns instead of silently ignoring them
 - `DataFrame.from_pandas`: Fix dates becoming object, e.g. in a `to_pandas` roundtrip
 - `DataFrame.*_join`: Raise `TypeError` for incompatible types of `by` columns, e.g. string and number, instead of silently matching nothing

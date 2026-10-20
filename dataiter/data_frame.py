@@ -664,7 +664,9 @@ class DataFrame(dict):
                     # Likely to be strings, but not necessarily.
                     # Force type-guessing in Vector.fast.
                     column = column.tolist()
-            column = DataFrameColumn.fast(column, req_dtype)
+            with np.errstate(invalid="ignore"):
+                # Casting NaN to int warns, but missing values are set below.
+                column = DataFrameColumn.fast(column, req_dtype)
             if na.any():
                 if column.dtype != column.na_dtype:
                     # Upcast integer to float if needed.
@@ -723,7 +725,9 @@ class DataFrame(dict):
                     # Likely to be strings, but not necessarily.
                     # Force type-guessing in Vector.fast.
                     column = column.tolist()
-            column = DataFrameColumn.fast(column, req_dtype)
+            with np.errstate(invalid="ignore"):
+                # Casting NaN to int warns, but missing values are set below.
+                column = DataFrameColumn.fast(column, req_dtype)
             if column.is_object() and req_dtype is None:
                 # Vector.fast doesn't recognize e.g. dates,
                 # try the slower full type-guessing of Vector.

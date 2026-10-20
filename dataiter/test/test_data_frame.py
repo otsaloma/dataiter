@@ -437,6 +437,16 @@ class TestDataFrame:
         data = DataFrame.from_arrow(table, dtypes={"a": object})
         assert data.a.tolist() == values
 
+    @pytest.mark.filterwarnings("error")
+    def test_from_arrow_int_with_missing(self):
+        table = pa.table({"a": pa.array([1, None])})
+        data = DataFrame.from_arrow(table, dtypes={"a": int})
+        assert data.a.is_float()
+        assert data.a.tolist() == [1.0, None]
+        data = DataFrame.from_pandas(table.to_pandas(), dtypes={"a": int})
+        assert data.a.is_float()
+        assert data.a.tolist() == [1.0, None]
+
     def test_from_arrow_list(self):
         orig = DataFrame(a=[[1, 2], None, []], b=[[1, 2], [3, 4], [5, 6]])
         data = DataFrame.from_arrow(orig.to_arrow())
