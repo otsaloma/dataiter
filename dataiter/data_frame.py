@@ -443,10 +443,9 @@ class DataFrame(dict):
         """
         values = [DataFrameColumn(x) for x in colname_value_pairs.values()]
         indices = np.meshgrid(*[np.arange(len(x)) for x in values], indexing="ij")
-        return cls(**{
-            colname: value[index.ravel()]
-            for colname, value, index in zip(colname_value_pairs, values, indices)
-        })
+        return cls(**{colname: value[index.ravel()]
+                      for colname, value, index
+                      in zip(colname_value_pairs, values, indices)})
 
     @deco.new_from_parallel_generator
     def explode(self, colname, *, sep=None, dtype=None):
