@@ -53,6 +53,7 @@ tabular data and the `DataFrame` class.
 - Lichess puzzle database
 - MBTA GTFS schedule
 - MovieLens 25M
+- MTA subway hourly ridership (data.ny.gov) and subway stations
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
 - NYC Citywide Payroll
