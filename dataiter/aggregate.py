@@ -409,23 +409,29 @@ def nth(x, index, *, drop_na=False):
     >>> di.nth(di.Vector([1, 2, 3]), 1)
     >>> di.nth("x", 1)
     """
-    def nth_groups(x, starts):
-        y, starts = handle_na_groups(x, starts, drop_na)
-        n = np.diff(starts, append=len(y))
+    def nth_groups(take, starts, length):
+        # take is a function returning elements at given indices.
+        n = np.diff(starts, append=length)
         i = n + index if index < 0 else np.full(len(n), index)
         found = (i >= 0) & (i < n)
-        values = y[(starts + i)[found]]
+        values = take((starts + i)[found])
         if found.all(): return values
         # Upcast to have missing values for groups without index, e.g. int to float.
-        out = np.full(len(starts), x.na_value, x.na_dtype)
+        out = np.full(len(starts), values.na_value, values.na_dtype)
         out[found] = values
         return out
     if isinstance(x, str):
         def aggregate(data):
-            return nth_groups(data[x], group_starts(data._group_))
+            starts = group_starts(data._group_)
+            if not drop_na:
+                # Take only the needed rows, not the whole column.
+                return nth_groups(functools.partial(data._peek, x), starts, data.nrow)
+            y, starts = handle_na_groups(data[x], starts, drop_na)
+            return nth_groups(y.__getitem__, starts, len(y))
         aggregate.group_aware = True
         return aggregate
-    return item(nth_groups(x, np.array([0]))[0])
+    y, starts = handle_na_groups(x, np.array([0]), drop_na)
+    return item(nth_groups(y.__getitem__, starts, len(y))[0])
 
 @composite
 def prod(x, *, drop_na=True):

@@ -340,6 +340,14 @@ class TestAggregate:
         assert nth(Vector([NaN, 1, 2]), 0, drop_na=True) == 1
         assert nth(Vector(["a", "b"]), 1) == "b"
 
+    def test_nth_grouped(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2], a=[1, 2, 3, 4, 5])
+        stat = data.group_by("g").aggregate(a=nth("a", 2), b=max("a"), c=nth("a", 0), d=nth("a", -1, drop_na=True))
+        assert stat.a.equal(Vector([NaN, 5.0]))
+        assert stat.b.tolist() == [4, 5]
+        assert stat.c.tolist() == [2, 1]
+        assert stat.d.tolist() == [4, 5]
+
     def test_nth_nan(self):
         assert np.isnan(nth(EMPTY_VECTOR, 0))
         assert np.isnan(nth(Vector([NaN, 1, 2]), 0))

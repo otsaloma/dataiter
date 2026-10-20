@@ -2097,7 +2097,24 @@ class LazyDataFrame(DataFrame):
     def setdefault(self, key, default=None):
         return self[key] if key in self else super().setdefault(key, default)
 
+    def _peek(self, key, indices):
+        # Return elements of column key at indices, read through to source
+        # without materializing the column. Unlike __getitem__ and _take_all,
+        # this leaves self unchanged, which pays off when needing only a few
+        # elements of a column, e.g. one per group.
+        column = dict.__getitem__(self, key)
+        if column is not None:
+            return column[indices]
+        rows = (np.arange(*self._rows.indices(self._source.nrow))[indices]
+                if isinstance(self._rows, slice) else self._rows[indices])
+        if isinstance(self._source, LazyDataFrame):
+            return self._source._peek(key, rows)
+        return self._source[key][rows]
+
     def _take_all(self):
+        # Materialize all columns not yet taken from source, as __getitem__
+        # does for one column, storing them in self. To get only some elements
+        # of a column without materializing it, use _peek.
         keys = [k for k, v in dict.items(self) if v is None]
         if not keys: return
         # Via items, a lazy source takes all its columns in parallel.
