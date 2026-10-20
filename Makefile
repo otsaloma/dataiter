@@ -6,7 +6,7 @@ PREFIX = /usr/local
 
 check:
 	flake8 .
-	flake8 . `grep -Fl '#!/usr/bin/env python3' bin/*`
+	flake8 . `grep -Fl '#!/usr/bin/env -S uv run --script' bin/*`
 
 clean:
 	rm -rf build
@@ -33,8 +33,8 @@ install:
 	pip install --break-system-packages .
 
 # Non-essential scripts, not installed by default.
-# Note that these don't go through setuptools rewriting,
-# instead they just do a plain unspecified dataiter import.
+# These run via uv, which installs the dependencies
+# declared in the scripts, using dataiter from PyPI.
 install-cli:
 	mkdir -p $(PREFIX)/bin
 	for X in `ls bin | grep di-`; do \
