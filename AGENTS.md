@@ -104,3 +104,12 @@ Do not complain about these or spend too much time investigating.
   `data.group_by(...).aggregate(...)`, is explicit and clear code.
   Carrying grouping along longer would be concealed state that leads to
   surprises.
+
+- NumPy integers can't represent missing values, so operations that
+  introduce missing values upcast integer columns to float64, e.g.
+  `pivot_wider` for missing combinations, `rbind` for missing columns
+  and joins for unmatched rows. Replacing the missing values afterwards,
+  e.g. with `replace_na(x=0)`, keeps the column float64; users can
+  convert back with e.g. `Vector.as_integer`. This is a NumPy
+  limitation, not something we can work around: integers can't always
+  have an integer data type.
