@@ -106,7 +106,8 @@ def get_executor():
     return ThreadPoolExecutor(pa.cpu_count(), thread_name_prefix="dataiter")
 
 # Threads don't survive fork, a child needs its own executor.
-os.register_at_fork(after_in_child=get_executor.cache_clear)
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=get_executor.cache_clear)
 
 def get_print_width():
     return shutil.get_terminal_size((dataiter.PRINT_MAX_WIDTH, 24))[0] - 1
