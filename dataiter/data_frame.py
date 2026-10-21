@@ -1806,13 +1806,12 @@ class DataFrame(dict):
         max_width = max_width or util.get_print_width()
         truncate_width = truncate_width or dataiter.PRINT_TRUNCATE_WIDTH
         n = min(self.nrow, max_rows)
-        columns = {colname: util.upad(
-            [colname] +
-            [str(column.dtype_label)] +
-            [str(x) for x in column[:n].to_strings(
-                quote=False, pad=True, truncate_width=truncate_width)]
-        ) for colname, column in self.items()}
-        for column in columns.values():
+        columns = [util.upad([
+            colname,
+            column.dtype_label,
+            *column[:n].to_strings(quote=False, truncate_width=truncate_width),
+        ]) for colname, column in self.items()]
+        for column in columns:
             column.insert(2, "─" * wcwidth.width(column[0]))
         width = len(str(max(n - 1, 0)))
         row_numbers = [x.rjust(width) for x in ["", "", "", *map(str, range(n))]]
@@ -1820,18 +1819,10 @@ class DataFrame(dict):
         # batches of columns (like R's print.data.frame).
         rows_to_print = []
         while columns:
-            first = next(iter(columns.keys()))
-            batch_rows = [" ".join(x) for x in zip(
-                row_numbers, columns.pop(first))]
-            for colname, column in list(columns.items()):
-                width = wcwidth.width(batch_rows[0] + column[0]) + 1
-                if width > max_width: break
-                for i in range(len(column)):
-                    batch_rows[i] += " "
-                    batch_rows[i] += column[i]
-                del columns[colname]
-            rows_to_print.append("")
-            rows_to_print += batch_rows
+            batch_rows = [" ".join(x) for x in zip(row_numbers, columns.pop(0))]
+            while columns and wcwidth.width(batch_rows[0] + columns[0][0]) + 1 <= max_width:
+                batch_rows = [" ".join(x) for x in zip(batch_rows, columns.pop(0))]
+            rows_to_print += ["", *batch_rows]
         rows_to_print.append("")
         if max_rows < self.nrow:
             rows_to_print.append(f"... {self.nrow} rows total")
