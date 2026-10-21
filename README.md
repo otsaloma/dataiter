@@ -21,9 +21,6 @@ pip install -U dataiter
 pip install -U git+https://github.com/otsaloma/dataiter
 ```
 
-Recommended NumPy version is currently >= 2.4.0 due to various
-StringDType fixes that have landed in NumPy 2.2.1 and 2.4.0.
-
 ## Quick Start
 
 ```python
