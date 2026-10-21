@@ -57,6 +57,7 @@ tabular data and the `DataFrame` class.
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
 - NYC Citywide Payroll
+- NYC DOF parking violations issued (fiscal year), parking violation codes and Open Parking and Camera Violations (payments)
 - NYC taxi
 - Ookla open data fixed broadband performance tiles
 - Open-Meteo hourly weather
