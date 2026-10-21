@@ -229,6 +229,18 @@ class Vector(np.ndarray):
         # this will not be called and no attributes added here will exist!
         self._check_dimensions()
 
+    def __array_function__(self, func, types, args, kwargs):
+        if func not in [np.sort, np.unique]:
+            return super().__array_function__(func, types, args, kwargs)
+        # These sort copies of input in place via ndarray.sort, which
+        # Vector.sort overrides to return a sorted copy, leaving input
+        # unsorted, so call them with plain arrays instead.
+        base = lambda x: x.view(np.ndarray) if isinstance(x, Vector) else x
+        result = func(*map(base, args), **{k: base(v) for k, v in kwargs.items()})
+        if isinstance(result, tuple):
+            return (result[0].view(self.__class__), *result[1:])
+        return result.view(self.__class__)
+
     def __array_wrap__(self, array, context=None, return_scalar=False):
         # Avoid returning 0-dimensional arrays.
         # https://github.com/numpy/numpy/issues/7403
@@ -886,10 +898,8 @@ class Vector(np.ndarray):
             result[self.length - k:] = self.na_value
         return result
 
-    def sort(self, *, dir=1, **kwargs):
+    def sort(self, *, dir=1):
         """
-        sort(*, dir=1)
-
         Return elements in sorted order.
 
         `dir` is ``1`` for ascending sort, ``-1`` for descending. Missing
@@ -899,10 +909,6 @@ class Vector(np.ndarray):
         >>> vector.sort(dir=1)
         >>> vector.sort(dir=-1)
         """
-        if kwargs:
-            # np.sort calls ndarray.sort with these arguments.
-            raise TypeError(f"Unexpected arguments {list(kwargs)}, "
-                            "use vector.sort() instead of np.sort(vector)")
         if self.is_object():
             # Let's compare objects via str(x).
             lst = sorted(self, key=str, reverse=dir<0)

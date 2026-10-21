@@ -693,8 +693,11 @@ class TestVector:
 
     def test_sort_np_sort(self):
         a = Vector([3, 4, 2, 1, 5])
-        with pytest.raises(TypeError, match="np.sort"):
-            np.sort(a)
+        b = np.sort(a)
+        assert isinstance(b, Vector)
+        assert b.tolist() == [1, 2, 3, 4, 5]
+        assert a.tolist() == [3, 4, 2, 1, 5]
+        assert np.histogram(a, bins=[0, 2, 6])[0].tolist() == [1, 4]
 
     def test_sort_object(self):
         a = Vector([1, None, True, None, "Hello"], object)
@@ -864,6 +867,14 @@ class TestVector:
     def test_unique_int(self):
         a = Vector([1, 2, None, 1, 2, 3])
         assert a.unique().tolist() == [1, 2, None, 3]
+
+    def test_unique_np_unique(self):
+        a = Vector([3, 1, 3, 2])
+        values, counts = np.unique(a, return_counts=True)
+        assert isinstance(values, Vector)
+        assert values.tolist() == [1, 2, 3]
+        assert counts.tolist() == [1, 1, 2]
+        assert np.unique_counts(a).counts.tolist() == [1, 1, 2]
 
     def test_unique_string(self):
         a = Vector(["a", "b", None, "a", "b", "c"])
