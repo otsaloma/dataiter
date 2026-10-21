@@ -112,8 +112,11 @@ def count(x="", *, drop_na=False):
     def count_groups(x, starts):
         y, starts = handle_na_groups(x, starts, drop_na)
         return np.diff(starts, append=len(y))
-    if isinstance(x, str):
-        x = x or "_group_"
+    if isinstance(x, str) and not x:
+        def aggregate(data, starts):
+            return np.diff(starts, append=data.nrow)
+        aggregate.group_aware = True
+        return aggregate
     return dispatch(count_groups, x)
 
 @composite
@@ -156,8 +159,8 @@ def dispatch(function, x):
     # per group. Return a group-aware function for use with
     # DataFrame.aggregate if x is a column name, else the value for x.
     if isinstance(x, str):
-        def aggregate(data):
-            return function(data[x], group_starts(data._group_))
+        def aggregate(data, starts):
+            return function(data[x], starts)
         aggregate.group_aware = True
         return aggregate
     return item(function(x, np.array([0]))[0])
@@ -269,9 +272,9 @@ def mean(x, *, weights=None, drop_na=True):
                               np.add.reduceat(den, s, dtype=float))
         return datetime_from_float(out, x)
     if isinstance(x, str):
-        def aggregate(data):
+        def aggregate(data, starts):
             w = None if weights is None else data[weights]
-            return mean_groups(data[x], w, group_starts(data._group_))
+            return mean_groups(data[x], w, starts)
         aggregate.group_aware = True
         return aggregate
     return mean_groups(x, weights, np.array([0])).item(0)
@@ -398,8 +401,7 @@ def nth(x, index, *, drop_na=False):
         found = (i >= 0) & (i < n)
         return fill_missing(take((starts + i)[found]), found)
     if isinstance(x, str):
-        def aggregate(data):
-            starts = group_starts(data._group_)
+        def aggregate(data, starts):
             if not drop_na:
                 # Take only the needed rows, not the whole column.
                 return nth_groups(functools.partial(data._peek, x), starts, data.nrow)
@@ -496,9 +498,9 @@ def std(x, *, ddof=0, drop_na=True):
     """
     if isinstance(x, str):
         f = var(x, ddof=ddof, drop_na=drop_na)
-        def aggregate(data):
+        def aggregate(data, starts):
             check_not_datetime(data[x], "std")
-            return np.sqrt(f(data))
+            return np.sqrt(f(data, starts))
         aggregate.group_aware = True
         return aggregate
     check_not_datetime(x, "std")

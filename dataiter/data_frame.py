@@ -211,19 +211,12 @@ class DataFrame(dict):
         # Reorder columns upon first use to make groups contiguous,
         # so that slices make cheap NumPy views instead of copies.
         ordered = self._view_rows(order)
-        group_aware = [getattr(x, "group_aware", False) for x in colname_function_pairs.values()]
-        if any(group_aware):
-            # Give group ids as a column on top of ordered,
-            # to keep it out of data seen by other functions.
-            grouped = ordered._view_rows(slice(None))
-            n = np.diff(starts, append=self.nrow)
-            grouped._group_ = np.repeat(np.arange(len(starts)), n)
-        if not all(group_aware):
+        if not all(getattr(x, "group_aware", False) for x in colname_function_pairs.values()):
             ends = np.append(starts[1:], self.nrow)
             slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
         for colname, function in colname_function_pairs.items():
             if getattr(function, "group_aware", False):
-                column = function(grouped)
+                column = function(ordered, starts)
                 assert len(column) == stat.nrow
                 stat[colname] = DataFrameColumn.fast(column)
             else:
