@@ -835,11 +835,14 @@ class DataFrame(dict):
                 numeric.append(np.concatenate(self._get_join_codes_strings(a, b)))
             elif all(x.dtype.kind in "biufcmM" for x in (a, b)):
                 dtype = np.result_type(a.dtype, b.dtype)
-                if dtype.kind in "fc" and any(x.dtype.kind in "iu" for x in (a, b)):
-                    # Promotion to float can round large integer keys.
-                    hashable.append((a, b))
-                else:
-                    numeric.append(np.concatenate([a, b]))
+                if dtype.kind in "fc":
+                    # Promotion to float rounds integer keys beyond its exact range.
+                    limit = 2**(np.finfo(dtype).nmant + 1)
+                    if any(x.dtype.kind in "iu" and (x.min(initial=0) < -limit or x.max(initial=0) > limit)
+                           for x in (a, b)):
+                        hashable.append((a, b))
+                        continue
+                numeric.append(np.concatenate([a, b]))
             else:
                 hashable.append((a, b))
         if hashable:
