@@ -242,7 +242,7 @@ class ListOfDicts(list):
         Return item counts grouped by `keys`.
 
         The count key is always "n". If `keys` include "n", that key is
-        renamed by appending underscores, e.g. "n_".
+        renamed by appending underscores, e.g. ``"n_"``.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.count("hood")
