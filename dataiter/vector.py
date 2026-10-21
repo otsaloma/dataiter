@@ -298,6 +298,8 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(["a", "b"])
         >>> vector.as_bytes()
         """
+        if self.is_bytes():
+            return self.copy()
         # Missing strings encode to b"", the missing value of bytes.
         return self.as_string().str.encode("utf-8")
 
