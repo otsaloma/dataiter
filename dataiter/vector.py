@@ -384,8 +384,16 @@ class Vector(np.ndarray):
     def _coerce_datetime(self, other):
         # NumPy considers datetimes and strings unequal or raises
         # for ordering, convert strings to allow e.g. x >= "2025-01-01".
-        if isinstance(other, str) and self.is_datetime():
+        if not self.is_datetime():
+            return other
+        if isinstance(other, str):
             return np.datetime64(other)
+        # Strings can be more precise than self, e.g. times for dates.
+        dtype = np.promote_types(self.dtype, np.dtype("datetime64[us]"))
+        if isinstance(other, (list, tuple)) and any(isinstance(x, str) for x in other):
+            return np.array(other, object).astype(dtype)
+        if isinstance(other, np.ndarray) and other.dtype.kind in "TU":
+            return other.astype(dtype)
         return other
 
     def concat(self, *others):
@@ -540,8 +548,7 @@ class Vector(np.ndarray):
         if not isinstance(values, np.ndarray):
             # np.isin treats sets and other non-sequences as a single element.
             values = list(values)
-            if self.is_datetime():
-                values = [self._coerce_datetime(x) for x in values]
+        values = self._coerce_datetime(values)
         if self.is_string() and len(values) >= 10:
             # StringDType has hasobject set, so np.isin never sorts,
             # but compares one value at a time, slow for many values.

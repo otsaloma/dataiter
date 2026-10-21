@@ -42,7 +42,7 @@ New:
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
 - `prod`: New aggregation function
 - `regex.extract`: New function to extract a group of the first match
-- `Vector`: Convert strings when comparing to datetimes, e.g. `x >= "2025-01-01"`, previously raising an error or, for equality, silently not matching
+- `Vector`: Convert strings when comparing to datetimes, e.g. `x >= "2025-01-01"`, also lists and vectors of strings, previously raising an error or, for equality, silently not matching
 - `Vector`: Create an object vector from lists or tuples, previously raising an error if all were of equal length
 - `Vector`: Use `b""` as missing value for bytes, as `""` for strings, instead of upcasting to object for `None`
 - `Vector.as_float`: Add `errors` argument for values that can't be converted, e.g. non-numeric strings

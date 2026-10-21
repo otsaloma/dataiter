@@ -202,6 +202,14 @@ class TestVector:
         assert op(a, "2025-01-02").tolist() == expected
         b = Vector(["2025-01-01T12:00:00", "2025-01-02T00:00:00", None]).as_datetime()
         assert op(b, "2025-01-02").tolist() == expected
+        for other in [["2025-01-02"] * 3, ("2025-01-02",) * 3, Vector(["2025-01-02"] * 3)]:
+            assert op(a, other).tolist() == expected
+            assert op(b, other).tolist() == expected
+
+    def test___eq___datetime_string_na(self):
+        a = Vector(["2025-01-01", "2025-01-02"]).as_date()
+        assert (a == Vector(["2025-01-01", ""])).tolist() == [True, False]
+        assert (a != ["2025-01-01", None]).tolist() == [False, True]
 
     def test___len__(self):
         assert len(Vector([1, 2, 3])) == 3
@@ -457,6 +465,7 @@ class TestVector:
         a = Vector(["2025-01-01", "2025-01-02", None]).as_date()
         assert a.is_in(["2025-01-02"]).tolist() == [False, True, False]
         assert a.is_in({"2025-01-01", "2025-01-02"}).tolist() == [True, True, False]
+        assert a.is_in(Vector(["2025-01-02"])).tolist() == [False, True, False]
 
     def test_is_in_many_strings(self):
         a = Vector([str(i) for i in range(100)])
