@@ -72,12 +72,7 @@ def all_any(x, function, empty, drop_na):
         out = out.astype(object)
         out[(out == empty) & has_na] = None
         return out
-    if isinstance(x, str):
-        def aggregate(data):
-            return all_any_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return item(all_any_groups(x, np.array([0]))[0])
+    return dispatch(all_any_groups, x)
 
 @composite
 def any(x, *, drop_na=True):
@@ -118,11 +113,8 @@ def count(x="", *, drop_na=False):
         y, starts = handle_na_groups(x, starts, drop_na)
         return np.diff(starts, append=len(y))
     if isinstance(x, str):
-        def aggregate(data):
-            return count_groups(data[x or "_group_"], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return count_groups(x, np.array([0])).item(0)
+        x = x or "_group_"
+    return dispatch(count_groups, x)
 
 @composite
 def count_unique(x, *, drop_na=False):
@@ -144,12 +136,7 @@ def count_unique(x, *, drop_na=False):
         # Count unique pairs of group and value.
         keys = util.unique_codes(group * m + codes)[0]
         return np.bincount(keys // m, minlength=len(starts))
-    if isinstance(x, str):
-        def aggregate(data):
-            return count_unique_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return count_unique_groups(x, np.array([0])).item(0)
+    return dispatch(count_unique_groups, x)
 
 def datetime_as_float(x):
     if not (x.is_datetime() or x.is_timedelta()): return x
@@ -163,6 +150,17 @@ def datetime_from_float(value, x):
     # Float conversion loses precision for datetime64[ns],
     # results are exact to only about a microsecond.
     return np.round(np.asarray(value, float)).astype(x.dtype)
+
+def dispatch(function, x):
+    # function takes a vector and starts of its groups and returns a value
+    # per group. Return a group-aware function for use with
+    # DataFrame.aggregate if x is a column name, else the value for x.
+    if isinstance(x, str):
+        def aggregate(data):
+            return function(data[x], group_starts(data._group_))
+        aggregate.group_aware = True
+        return aggregate
+    return item(function(x, np.array([0]))[0])
 
 def fill_missing(values, found):
     if found.all(): return values
@@ -311,12 +309,7 @@ def median(x, *, drop_na=True):
         values[np.isnan(ys[s + k - 1])] = np.nan
         out[ok] = values
         return datetime_from_float(out, x)
-    if isinstance(x, str):
-        def aggregate(data):
-            return median_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return median_groups(x, np.array([0])).item(0)
+    return dispatch(median_groups, x)
 
 @composite
 def min(x, *, drop_na=True):
@@ -349,12 +342,7 @@ def min_max(x, function, drop_na):
         else:
             values = function.reduceat(y, starts[nonempty])
         return fill_missing(values, nonempty)
-    if isinstance(x, str):
-        def aggregate(data):
-            return min_max_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return item(min_max_groups(x, np.array([0]))[0])
+    return dispatch(min_max_groups, x)
 
 @composite
 def mode(x, *, drop_na=True):
@@ -390,12 +378,7 @@ def mode(x, *, drop_na=True):
         else:
             values = y[:0]
         return fill_missing(values, found)
-    if isinstance(x, str):
-        def aggregate(data):
-            return mode_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return item(mode_groups(x, np.array([0]))[0])
+    return dispatch(mode_groups, x)
 
 @composite
 def nth(x, index, *, drop_na=False):
@@ -488,12 +471,7 @@ def quantile(x, q, *, drop_na=True):
         values[np.isnan(ys[s + k - 1])] = np.nan
         out[ok] = values
         return datetime_from_float(out, x)
-    if isinstance(x, str):
-        def aggregate(data):
-            return quantile_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return quantile_groups(x, np.array([0])).item(0)
+    return dispatch(quantile_groups, x)
 
 def sort_groups(x, starts):
     # Return float x sorted within groups, NaN last.
@@ -553,12 +531,7 @@ def sum_prod(x, function, name, drop_na):
             # reduceat gives the next element for empty groups, skip them.
             out[n > 0] = function.reduceat(y.astype(dtype, copy=False), starts[n > 0])
         return out
-    if isinstance(x, str):
-        def aggregate(data):
-            return sum_prod_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return sum_prod_groups(x, np.array([0])).item(0)
+    return dispatch(sum_prod_groups, x)
 
 def value_codes(x):
     # Return integer codes of x, equal for equal values and for all missing values.
@@ -594,9 +567,4 @@ def var(x, *, ddof=0, drop_na=True):
                 out[n > 0] = np.add.reduceat((y - np.repeat(mean, k))**2, s) / (k - ddof)
             out[n <= ddof] = np.nan
         return out
-    if isinstance(x, str):
-        def aggregate(data):
-            return var_groups(data[x], group_starts(data._group_))
-        aggregate.group_aware = True
-        return aggregate
-    return var_groups(x, np.array([0])).item(0)
+    return dispatch(var_groups, x)
