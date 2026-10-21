@@ -245,6 +245,12 @@ def xopen(path, mode="r", **kwargs):
         return gzip.open(path, mode, **kwargs)
     if str(path).endswith(".xz"):
         return lzma.open(path, mode)
+    if str(path).endswith(".zst"):
+        try:
+            from compression import zstd
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError("Zstandard compression requires Python 3.14 or later") from None
+        return zstd.open(path, mode, **kwargs)
     return open(path, mode, **kwargs)
 
 def yield_colnames():

@@ -1434,7 +1434,7 @@ class DataFrame(dict):
         """
         Return a new data frame from CSV file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `quote` is the character used to quote values, ``None`` to disable
         quoting. `header` is whether the first row contains column names.
         `colnames` is an optional list of column names to use instead of those
@@ -1490,7 +1490,7 @@ class DataFrame(dict):
         """
         Return a new data frame from JSON file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
@@ -1528,7 +1528,7 @@ class DataFrame(dict):
         """
         Return a new data frame from Pickle file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         """
         with util.xopen(path, "rb") as f:
             return cls(pickle.load(f))
@@ -1915,7 +1915,7 @@ class DataFrame(dict):
         """
         Write data frame to CSV file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         """
         data = self.copy()
         for colname, column in data.items():
@@ -1942,7 +1942,7 @@ class DataFrame(dict):
         """
         Write data frame to JSON file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         return self.to_list_of_dicts().write_json(path, encoding=encoding, **kwargs)
@@ -1973,7 +1973,7 @@ class DataFrame(dict):
         """
         Write data frame to Pickle file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         """
         util.makedirs_for_file(path)
         with util.xopen(path, "wb") as f:

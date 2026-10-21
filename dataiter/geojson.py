@@ -86,7 +86,7 @@ class GeoJSON(DataFrame):
         """
         Return data from GeoJSON file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `select` is an optional list of columns to limit to. `dtypes` is an
         optional dict mapping column names to NumPy datatypes. `kwargs` are
         passed to ``json.load``.
@@ -137,7 +137,7 @@ class GeoJSON(DataFrame):
         """
         Write data to GeoJSON file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `kwargs` are passed to ``json.dumps``.
         """
         kwargs.setdefault("default", str)

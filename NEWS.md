@@ -1,6 +1,7 @@
 # PENDING: Dataiter 1.5
 
 New:
+- `*.read_csv`, `*.read_json`, `*.read_pickle`, `*.write_csv`, `*.write_json`, `*.write_pickle`, `GeoJSON.read`, `GeoJSON.write`, `read_csv`, `read_geojson`, `read_json`: Support Zstandard compression for paths ending in `.zst`, requires Python >= 3.14
 - `all`, `any`: Add `drop_na` argument, default true
 - `DataFrame.compare`: No longer experimental
 - `DataFrame.expand_grid`: New classmethod

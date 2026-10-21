@@ -715,7 +715,7 @@ class ListOfDicts(list):
         """
         Return a new list from CSV file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `quote` is the character used to quote values, ``None`` to disable
         quoting. `header` is whether the first row contains keys. `colnames`
         is an optional list of keys to use instead of those in the header row
@@ -759,7 +759,7 @@ class ListOfDicts(list):
         """
         Return a new list from JSON file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `select` is an optional list of keys to limit to. `types` is an
         optional dict mapping keys to datatypes. `kwargs` are passed to
         ``json.load``.
@@ -772,7 +772,7 @@ class ListOfDicts(list):
         """
         Return a new list from Pickle file `path`.
 
-        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         """
         with util.xopen(path, "rb") as f:
             return cls(pickle.load(f))
@@ -1041,7 +1041,7 @@ class ListOfDicts(list):
         """
         Write list to CSV file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         """
         if not self:
             raise ValueError("Cannot write empty CSV file")
@@ -1065,7 +1065,7 @@ class ListOfDicts(list):
         """
         Write list to JSON file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         kwargs.setdefault("default", str)
@@ -1082,7 +1082,7 @@ class ListOfDicts(list):
         """
         Write list to Pickle file `path`.
 
-        Will automatically compress if `path` ends in ``.bz2|.gz|.xz``.
+        Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         """
         util.makedirs_for_file(path)
         with util.xopen(path, "wb") as f:

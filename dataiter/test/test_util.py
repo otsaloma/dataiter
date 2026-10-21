@@ -23,6 +23,8 @@
 import datetime
 import math
 import numpy as np
+import pytest
+import sys
 
 from dataiter import util
 
@@ -178,6 +180,15 @@ class TestUtil:
     def test_xopen_xz(self, tmp_path):
         text = "test åäö"
         path = str(tmp_path / "test.xz")
+        with util.xopen(path, "wt") as f:
+            f.write(text)
+        with util.xopen(path, "rt") as f:
+            assert f.read() == text
+
+    @pytest.mark.skipif(sys.version_info < (3, 14), reason="compression.zstd requires Python 3.14")
+    def test_xopen_zst(self, tmp_path):
+        text = "test åäö"
+        path = str(tmp_path / "test.zst")
         with util.xopen(path, "wt") as f:
             f.write(text)
         with util.xopen(path, "rt") as f:
