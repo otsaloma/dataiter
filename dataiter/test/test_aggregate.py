@@ -391,6 +391,21 @@ class TestAggregate:
         assert quantile(Vector([1, 4, 6, 8, 5]), 0.5) == 5
         assert quantile(Vector([1, 4, 6, NaN, NaN]), 0.5) == 4
 
+    @pytest.mark.parametrize("q", [-0.1, 1.1, np.nan, -np.inf, np.inf])
+    def test_quantile_bad_q(self, q):
+        with pytest.raises(ValueError, match="range"):
+            quantile(Vector([10, 20]), q)
+        data = DataFrame(g=[1, 1, 2, 2], x=[10, 20, 30, 40])
+        with pytest.raises(ValueError, match="range"):
+            data.group_by("g").aggregate(x=quantile("x", q))
+
+    @pytest.mark.parametrize("q", [0, 0.0, 1, 1.0])
+    def test_quantile_bounds(self, q):
+        assert quantile(Vector([10, 20]), q) == (10 if q == 0 else 20)
+        data = DataFrame(g=[1, 1, 2, 2], x=[10, 20, 30, 40])
+        stat = data.group_by("g").aggregate(x=quantile("x", q))
+        assert stat.x.tolist() == ([10, 30] if q == 0 else [20, 40])
+
     def test_quantile_date(self):
         assert quantile(Vector([D1, D3, NaT]), 0.5) == D2
 

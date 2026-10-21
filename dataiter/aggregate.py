@@ -445,6 +445,8 @@ def quantile(x, q, *, drop_na=True):
     >>> di.quantile(di.Vector([1, 5, 6]), 0.5)
     >>> di.quantile("x", 0.5)
     """
+    if not 0 <= q <= 1:
+        raise ValueError("Quantiles must be in the range [0, 1]")
     def quantile_groups(x, starts):
         y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
         y = np.asarray(y)
