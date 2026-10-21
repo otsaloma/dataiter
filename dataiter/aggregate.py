@@ -264,7 +264,7 @@ def mean(x, *, weights=None, drop_na=True):
             num, den = y, np.broadcast_to(1.0, len(y))
         else:
             valid = ~(y.is_na() | w.is_na())
-            num, den = y * w, w
+            num, den = np.multiply(y, w, dtype=float), w
         if drop_na and not valid.all():
             nvalid_before = np.cumsum(valid) - valid
             num, den, starts = num[valid], den[valid], nvalid_before[starts]

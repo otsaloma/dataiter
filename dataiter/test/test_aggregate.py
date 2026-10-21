@@ -303,6 +303,21 @@ class TestAggregate:
         stat = data.group_by("g").aggregate(x=mean("x", weights="w"))
         assert stat.x.equal(Vector([2.5, NaN]))
 
+    @pytest.mark.parametrize("dtype,value,weight", [
+        (np.int32, 2_000_000_000, 2),
+        (np.int64, 10**12, 10**8),
+        (np.uint64, 2**63, 3),
+        (np.float32, 1e20, 1e20),
+    ])
+    def test_mean_weights_overflow(self, dtype, value, weight):
+        x = Vector([value, value], dtype)
+        w = Vector([weight, weight], dtype)
+        expected = float(x[0])
+        assert np.isclose(mean(x, weights=w), expected)
+        data = DataFrame(g=[1, 1], x=x, w=w)
+        stat = data.group_by("g").aggregate(x=mean("x", weights="w"))
+        assert np.isclose(stat.x[0], expected)
+
     def test_mean_weights_nan(self):
         assert mean(Vector([1, 2, NaN]), weights=Vector([1, NaN, 1])) == 1
         assert np.isnan(mean(Vector([1, 2]), weights=Vector([1, NaN]), drop_na=False))
