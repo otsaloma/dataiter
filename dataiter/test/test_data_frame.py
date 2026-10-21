@@ -1461,6 +1461,15 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.shape[0] == orig.nrow
         assert data.shape[1] == orig.ncol
 
+    def test_to_pandas_object(self):
+        orig = DataFrame(a=[1, 2], b=Vector(["x", 1], object), c=[{1}, None])
+        data = orig.to_pandas()
+        assert data.columns.tolist() == ["a", "b", "c"]
+        assert data.b.tolist() == ["x", 1]
+        assert data.c.tolist() == [{1}, None]
+        data = orig.select("b").to_pandas()
+        assert data.b.tolist() == ["x", 1]
+
     def test_to_string(self):
         data = test.data_frame("vehicles.csv")
         assert data.head(0).to_string()

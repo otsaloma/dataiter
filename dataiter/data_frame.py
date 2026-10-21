@@ -1807,7 +1807,12 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.to_pandas()
         """
-        return self.to_arrow().to_pandas()
+        # Arrow can't hold e.g. mixed types, pass objects as is.
+        objects = [k for k, v in self.items() if v.is_object()]
+        data = self.unselect(*objects).to_arrow().to_pandas()
+        for colname in objects:
+            data[colname] = np.asarray(self[colname])
+        return data[self.colnames]
 
     def to_string(self, *, max_rows=None, max_width=None, truncate_width=None):
         """
