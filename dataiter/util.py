@@ -36,6 +36,7 @@ import shutil
 import string
 import wcwidth
 
+from concurrent.futures import Future
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -158,6 +159,10 @@ def makedirs_for_file(path):
 
 def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))
+
+def result(value):
+    # Return the result of a future from submit, other values as is.
+    return value.result() if isinstance(value, Future) else value
 
 def sequencify(value):
     if isinstance(value, (np.ndarray, list, tuple)):

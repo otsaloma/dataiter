@@ -22,7 +22,7 @@
 
 import functools
 
-from concurrent.futures import Future
+from dataiter import util
 
 def listify(function):
     @functools.wraps(function)
@@ -44,7 +44,7 @@ def new_from_parallel_generator(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):
         items = list(function(self, *args, **kwargs))
-        return self._new((k, v.result() if isinstance(v, Future) else v) for k, v in items)
+        return self._new((k, util.result(v)) for k, v in items)
     return wrapper
 
 def new_independent_from_generator(function):

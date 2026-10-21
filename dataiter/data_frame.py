@@ -34,7 +34,6 @@ import random
 import warnings
 import wcwidth
 
-from concurrent.futures import Future
 from dataiter import deco
 from dataiter import util
 from dataiter import Vector
@@ -1775,7 +1774,7 @@ class DataFrame(dict):
         def convert(x):
             return pa.array(np.asarray(x), mask=np.asarray(x.is_na()))
         data = [util.submit(convert, x) for x in self.columns]
-        data = [x.result() if isinstance(x, Future) else x for x in data]
+        data = [util.result(x) for x in data]
         return pa.table(data, names=self.colnames)
 
     def to_json(self, **kwargs):
@@ -1868,7 +1867,7 @@ class DataFrame(dict):
         # Hashing one combined code per row gives first occurrences
         # without slow sorting, especially of strings.
         columns = [util.submit(lambda x: util.unique_codes(x)[2], x) if x.is_string() else x for x in columns]
-        columns = [x.result() if isinstance(x, Future) else x for x in columns]
+        columns = [util.result(x) for x in columns]
         objects = [x for x in columns if x.dtype == np.dtype(object)]
         if objects:
             # Arrow can't hash Python objects, use a Python set of rows instead,
@@ -2079,7 +2078,7 @@ class LazyDataFrame(DataFrame):
             dict.update(self, {k: source[k][self._rows] for k in keys})
             return
         columns = {k: util.submit(np.take, source[k], self._rows) for k in keys}
-        dict.update(self, {k: v.result() if isinstance(v, Future) else v for k, v in columns.items()})
+        dict.update(self, {k: util.result(v) for k, v in columns.items()})
 
     def values(self):
         self._take_all()
