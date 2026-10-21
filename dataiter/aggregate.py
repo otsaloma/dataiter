@@ -341,8 +341,8 @@ def min_max(x, function, drop_na):
         nonempty = n > 0
         if not nonempty.any():
             values = y[:0]
-        elif y.is_string():
-            # reduceat doesn't support strings, reduce their sorted codes
+        elif y.is_string() or y.is_bytes():
+            # reduceat doesn't support strings or bytes, reduce their sorted codes
             # and map back to strings via a row index for each code.
             codes = util.sorted_codes(y)
             rows = np.empty(codes.max() + 1, int)

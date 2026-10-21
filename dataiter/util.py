@@ -212,8 +212,8 @@ def unique_codes(x):
         y = x.view(np.int64)
     elif x.dtype.kind == "b":
         y = x.view(np.uint8)
-    elif x.dtype.kind not in "iuT":
-        raise TypeError(f"Expected string, number or datetime, got {x.dtype}")
+    elif x.dtype.kind not in "iuST":
+        raise TypeError(f"Expected string, bytes, number or datetime, got {x.dtype}")
     type = pa.large_string() if x.dtype.kind == "T" else None
     codes = pa.array(np.asarray(y), type=type).dictionary_encode().indices
     codes = codes.to_numpy().astype(np.int64)

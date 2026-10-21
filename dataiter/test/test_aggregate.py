@@ -250,6 +250,7 @@ class TestAggregate:
         assert count_unique(Vector([1, 1, 2, NaN])) == 3
         assert count_unique(Vector([1, 1, 2, NaN, NaN])) == 3
         assert count_unique(Vector([1, 1, 2, NaN]), drop_na=True) == 2
+        assert count_unique(Vector([b"a", b"a", b"b"])) == 2
 
     def test_first(self):
         assert first(Vector([1, 2, 3])) == 1
@@ -273,6 +274,7 @@ class TestAggregate:
         assert max(Vector([3, 2, 1])) == 3
         assert max(Vector([3, 2, NaN])) == 3
         assert max(Vector(["b", "c", "a"])) == "c"
+        assert max(Vector([b"b", b"c", b"a"])) == b"c"
 
     def test_max_nanoseconds(self):
         x = Vector([D1, D2]).as_datetime("ns")
@@ -338,6 +340,7 @@ class TestAggregate:
         assert min(Vector([3, 2, 1])) == 1
         assert min(Vector([3, 2, NaN])) == 2
         assert min(Vector(["b", "c", "a"])) == "a"
+        assert min(Vector([b"b", b"c", b"a"])) == b"a"
 
     def test_min_nan(self):
         assert np.isnan(min(EMPTY_VECTOR))
@@ -350,6 +353,7 @@ class TestAggregate:
         assert mode(Vector([1, 2, 2, NaN])) == 2
         assert mode(Vector([1, 2, 2, NaN]), drop_na=False) == 2
         assert type(mode(Vector([1.5]))) is float
+        assert mode(Vector([b"a", b"b", b"b"])) == b"b"
 
     def test_mode_nan(self):
         assert np.isnan(mode(EMPTY_VECTOR))
