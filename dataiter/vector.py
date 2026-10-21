@@ -1108,5 +1108,5 @@ class Vector(np.ndarray):
         if self.dtype.kind in "biufmMT":
             # Hashing is faster than np.unique, which sorts.
             return util.unique_codes(self)[0]
-        u, indices = np.unique(self, return_index=True)
-        return self[indices.sort()]
+        u, indices = np.unique(np.asarray(self), return_index=True)
+        return self[np.sort(indices)]
