@@ -376,6 +376,14 @@ class TestAggregate:
         assert np.isnan(nth(EMPTY_VECTOR, 0))
         assert np.isnan(nth(Vector([NaN, 1, 2]), 0))
 
+    @pytest.mark.parametrize("function", [mean, median, prod, std, sum, var, lambda x: quantile(x, 0.5)])
+    @pytest.mark.parametrize("x", [["a", "b"], [b"a", b"b"], Vector([1, 2], object)])
+    def test_numeric_non_number(self, function, x):
+        with pytest.raises(TypeError, match="Can't calculate"):
+            function(Vector(x))
+        with pytest.raises(TypeError, match="Can't calculate"):
+            DataFrame(g=[1, 1], a=x).group_by("g").aggregate(a=function("a"))
+
     def test_prod(self):
         assert prod(EMPTY_VECTOR) == 1
         assert prod(Vector([2])) == 2

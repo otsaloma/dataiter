@@ -97,9 +97,9 @@ def any(x, *, drop_na=True):
     """
     return all_any(x, np.logical_or, False, drop_na)
 
-def check_not_datetime(x, name):
-    if x.is_datetime():
-        raise TypeError(f"Can't calculate {name} of datetimes")
+def check_kind(x, name, kinds):
+    if x.dtype.kind not in kinds:
+        raise TypeError(f"Can't calculate {name} of {x.dtype}")
 
 # @composite skipped on purpose due to allowing calls with no x given.
 def count(x="", *, drop_na=False):
@@ -258,6 +258,7 @@ def mean(x, *, weights=None, drop_na=True):
     >>> di.mean("x", weights="w")
     """
     def mean_groups(x, w, starts):
+        check_kind(x, "mean", "biufmM")
         y = datetime_as_float(x)
         if w is None:
             valid = ~y.is_na()
@@ -300,6 +301,7 @@ def median(x, *, drop_na=True):
     >>> di.median("x")
     """
     def median_groups(x, starts):
+        check_kind(x, "median", "biufmM")
         y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
         y = np.asarray(y)
         n = np.diff(starts, append=len(y))
@@ -429,7 +431,7 @@ def prod(x, *, drop_na=True):
     >>> di.prod(di.Vector([1, 2, 3]))
     >>> di.prod("x")
     """
-    return sum_prod(x, np.multiply, "product", drop_na)
+    return sum_prod(x, np.multiply, "product", "biufc", drop_na)
 
 @composite
 def quantile(x, q, *, drop_na=True):
@@ -448,6 +450,7 @@ def quantile(x, q, *, drop_na=True):
     if not 0 <= q <= 1:
         raise ValueError("Quantiles must be in the range [0, 1]")
     def quantile_groups(x, starts):
+        check_kind(x, "quantile", "biufmM")
         y, starts = handle_na_groups(datetime_as_float(x).as_float(), starts, drop_na)
         y = np.asarray(y)
         n = np.diff(starts, append=len(y))
@@ -507,11 +510,11 @@ def std(x, *, ddof=0, drop_na=True):
     if isinstance(x, str):
         f = var(x, ddof=ddof, drop_na=drop_na)
         def aggregate(data, starts):
-            check_not_datetime(data[x], "std")
+            check_kind(data[x], "std", "biuf")
             return np.sqrt(f(data, starts))
         aggregate.group_aware = True
         return aggregate
-    check_not_datetime(x, "std")
+    check_kind(x, "std", "biuf")
     return np.sqrt(var(x, ddof=ddof, drop_na=drop_na)).item()
 
 @composite
@@ -525,12 +528,12 @@ def sum(x, *, drop_na=True):
     >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
     """
-    return sum_prod(x, np.add, "sum", drop_na)
+    return sum_prod(x, np.add, "sum", "biufcm", drop_na)
 
-def sum_prod(x, function, name, drop_na):
+def sum_prod(x, function, name, kinds, drop_na):
     # function is np.add or np.multiply.
     def sum_prod_groups(x, starts):
-        check_not_datetime(x, name)
+        check_kind(x, name, kinds)
         y, starts = handle_na_groups(x, starts, drop_na)
         n = np.diff(starts, append=len(y))
         # Like np.sum and np.prod, promote small integers and booleans to
@@ -565,7 +568,7 @@ def var(x, *, ddof=0, drop_na=True):
     >>> di.var("x")
     """
     def var_groups(x, starts):
-        check_not_datetime(x, "var")
+        check_kind(x, "var", "biuf")
         y, starts = handle_na_groups(x, starts, drop_na)
         n = np.diff(starts, append=len(y))
         out = np.full(len(starts), np.nan)
