@@ -120,15 +120,17 @@ class DtProxy:
 class ReProxy:
     def __init__(self, vector):
         from dataiter import regex
-        wrap = lambda f: functools.partial(f, string=vector)
+        # Insert vector as string positionally after the n arguments
+        # preceding it, so that arguments after it can be positional too.
+        wrap = lambda f, n=1: lambda *args, **kwargs: f(*args[:n], vector, *args[n:], **kwargs)
         self.extract = wrap(regex.extract)
         self.findall = wrap(regex.findall)
         self.fullmatch = wrap(regex.fullmatch)
         self.match = wrap(regex.match)
         self.search = wrap(regex.search)
         self.split = wrap(regex.split)
-        self.sub = wrap(regex.sub)
-        self.subn = wrap(regex.subn)
+        self.sub = wrap(regex.sub, 2)
+        self.subn = wrap(regex.subn, 2)
 
 class StrProxy:
     def __init__(self, vector):

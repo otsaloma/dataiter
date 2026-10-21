@@ -664,6 +664,9 @@ class TestVector:
     def test_re(self):
         a = Vector(["great", "fantastic"])
         assert a.re.sub(r"$", r"!").tolist() == ["great!", "fantastic!"]
+        assert a.re.sub(r"a", r"o", 1).tolist() == ["greot", "fontastic"]
+        assert a.re.extract(r"(.)a", 1).tolist() == ["e", "f"]
+        assert a.re.split(r"a", 1).tolist() == [["gre", "t"], ["f", "ntastic"]]
 
     def test_replace_na(self):
         a = Vector([1, 2, 3, None])
