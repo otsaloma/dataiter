@@ -268,8 +268,7 @@ class DataFrame(dict):
         >>> data.cbind(di.DataFrame(x=1))
         """
         found_colnames = set()
-        data_frames = [self] + list(others)
-        for i, data in enumerate(data_frames):
+        for data in [self, *others]:
             for colname, column in data.items():
                 if colname in found_colnames: continue
                 found_colnames.add(colname)

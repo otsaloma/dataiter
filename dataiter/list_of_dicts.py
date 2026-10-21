@@ -1055,11 +1055,9 @@ class ListOfDicts(list):
                                     delimiter=sep,
                                     quoting=csv.QUOTE_MINIMAL)
 
-            writer.writeheader() if header else None
-            for item in self:
-                # Fill in missing as None.
-                item = {**dict.fromkeys(keys), **item}
-                writer.writerow(item)
+            if header:
+                writer.writeheader()
+            writer.writerows(self)
 
     def write_json(self, path, *, encoding="utf-8", **kwargs):
         """

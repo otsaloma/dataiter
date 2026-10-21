@@ -408,7 +408,7 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([1, 2, 3, None])
         >>> vector.drop_na()
         """
-        return self[~self.is_na()].copy()
+        return self[~self.is_na()]
 
     @property
     def dt(self) -> DtProxy:
@@ -497,7 +497,7 @@ class Vector(np.ndarray):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
-        return self[np.arange(n)].copy()
+        return self[np.arange(n)]
 
     def is_boolean(self):
         """
@@ -858,7 +858,7 @@ class Vector(np.ndarray):
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
         indices = sorted(random.sample(range(self.length), n))
-        return self[indices].copy()
+        return self[indices]
 
     def shift(self, n=1):
         """
@@ -1014,7 +1014,7 @@ class Vector(np.ndarray):
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
         n = min(self.length, n)
-        return self[np.arange(self.length - n, self.length)].copy()
+        return self[np.arange(self.length - n, self.length)]
 
     def to_string(self, *, max_elements=None):
         """
