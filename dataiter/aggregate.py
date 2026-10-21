@@ -164,6 +164,13 @@ def datetime_from_float(value, x):
     # results are exact to only about a microsecond.
     return np.round(np.asarray(value, float)).astype(x.dtype)
 
+def fill_missing(values, found):
+    if found.all(): return values
+    # Upcast to have missing values, e.g. int to float.
+    out = np.full(len(found), values.na_value, values.na_dtype)
+    out[found] = values
+    return out
+
 def first(x, *, drop_na=False):
     """
     Return the first element of `x`.
@@ -341,11 +348,7 @@ def min_max(x, function, drop_na):
             values = y[rows[function.reduceat(codes, starts[nonempty])]]
         else:
             values = function.reduceat(y, starts[nonempty])
-        if nonempty.all(): return values
-        # Upcast to have missing values for empty groups, e.g. int to float.
-        out = np.full(len(starts), x.na_value, x.na_dtype)
-        out[nonempty] = values
-        return out
+        return fill_missing(values, nonempty)
     if isinstance(x, str):
         def aggregate(data):
             return min_max_groups(data[x], group_starts(data._group_))
@@ -386,11 +389,7 @@ def mode(x, *, drop_na=True):
             values = y[first[chosen]]
         else:
             values = y[:0]
-        if found.all(): return values
-        # Upcast to have missing values for empty groups, e.g. int to float.
-        out = np.full(len(starts), x.na_value, x.na_dtype)
-        out[found] = values
-        return out
+        return fill_missing(values, found)
     if isinstance(x, str):
         def aggregate(data):
             return mode_groups(data[x], group_starts(data._group_))
@@ -414,12 +413,7 @@ def nth(x, index, *, drop_na=False):
         n = np.diff(starts, append=length)
         i = n + index if index < 0 else np.full(len(n), index)
         found = (i >= 0) & (i < n)
-        values = take((starts + i)[found])
-        if found.all(): return values
-        # Upcast to have missing values for groups without index, e.g. int to float.
-        out = np.full(len(starts), values.na_value, values.na_dtype)
-        out[found] = values
-        return out
+        return fill_missing(take((starts + i)[found]), found)
     if isinstance(x, str):
         def aggregate(data):
             starts = group_starts(data._group_)
