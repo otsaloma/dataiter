@@ -679,6 +679,18 @@ class TestDataFrame:
         b = DataFrame(i=[2**62, 0], j=[2**62, -2**62], k=[-2**62, 2**62], y=[1, 2])
         assert a.left_join(b, "i", "j", "k").y.tolist() == [2, None, 1]
 
+    @pytest.mark.parametrize("dtype1,dtype2", [
+        (np.int64, np.uint64),
+        (np.int64, np.float64),
+        (np.uint64, np.float64),
+    ])
+    @pytest.mark.parametrize("by", [("i",), ("i", "j")])
+    def test_left_join_mixed_numeric_types(self, dtype1, dtype2, by):
+        a = DataFrame(i=Vector([2**53, 2**53 + 1, 2**53 + 2], dtype1), j=[1, 1, 1], x=[1, 2, 3])
+        b = DataFrame(i=Vector([2**53, 2**53 + 2], dtype2), j=[1, 1], y=[1, 2])
+        assert a.left_join(b, *by).y.tolist() == [1, None, 2]
+        assert b.left_join(a, *by).x.tolist() == [1, 3]
+
     def test_left_join_by_columns_strings(self):
         # Test both self smaller and larger than other.
         a = DataFrame(s=["a", "b", "c"], t=["x", "x", "x"], x=[1, 2, 3])

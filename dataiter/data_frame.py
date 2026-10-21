@@ -834,7 +834,12 @@ class DataFrame(dict):
             if a.is_string() and b.is_string():
                 numeric.append(np.concatenate(self._get_join_codes_strings(a, b)))
             elif all(x.dtype.kind in "biufcmM" for x in (a, b)):
-                numeric.append(np.concatenate([a, b]))
+                dtype = np.result_type(a.dtype, b.dtype)
+                if dtype.kind in "fc" and any(x.dtype.kind in "iu" for x in (a, b)):
+                    # Promotion to float can round large integer keys.
+                    hashable.append((a, b))
+                else:
+                    numeric.append(np.concatenate([a, b]))
             else:
                 hashable.append((a, b))
         if hashable:
