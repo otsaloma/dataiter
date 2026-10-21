@@ -1197,24 +1197,16 @@ class DataFrame(dict):
 
     def _parse_cols(self, cols):
         cols = Vector.fast(cols)
-        if cols.is_boolean():
-            return self._parse_cols_from_boolean(cols)
-        return Vector.fast(cols, int)
-
-    def _parse_cols_from_boolean(self, cols):
-        cols = Vector.fast(cols, bool)
+        if not cols.is_boolean():
+            return Vector.fast(cols, int)
         if len(cols) != self.ncol:
             raise ValueError("Bad length for boolean cols")
         return Vector.fast(np.nonzero(cols)[0], int)
 
     def _parse_rows(self, rows):
         rows = Vector.fast(rows)
-        if rows.is_boolean():
-            return self._parse_rows_from_boolean(rows)
-        return Vector.fast(rows, int)
-
-    def _parse_rows_from_boolean(self, rows):
-        rows = Vector.fast(rows, bool)
+        if not rows.is_boolean():
+            return Vector.fast(rows, int)
         if len(rows) != self.nrow:
             raise ValueError("Bad length for boolean rows")
         return Vector.fast(np.nonzero(rows)[0], int)
@@ -1226,7 +1218,7 @@ class DataFrame(dict):
         if colname_value_pairs:
             pairs = self._match_pairs(colname_value_pairs)
             rows = pairs if rows is None else pairs & rows
-        return self._parse_rows_from_boolean(rows)
+        return self._parse_rows(Vector.fast(rows, bool))
 
     def pivot_longer(self, *, ids, names="name", values="value"):
         """
