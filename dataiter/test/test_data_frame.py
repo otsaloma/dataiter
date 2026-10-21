@@ -1418,6 +1418,20 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.num_rows == orig.nrow
         assert data.num_columns == orig.ncol
 
+    @pytest.mark.parametrize("unit", ["Y", "M", "W", "D", "h", "m", "s", "ms", "us", "ns"])
+    def test_to_arrow_datetime_unit(self, unit):
+        orig = DataFrame(a=np.array(["2026-01-01", "NaT"], f"datetime64[{unit}]"))
+        data = DataFrame.from_arrow(orig.to_arrow())
+        assert data.a[0] == orig.a[0]
+        assert data.a.is_na().tolist() == [False, True]
+
+    @pytest.mark.parametrize("unit", ["W", "D", "h", "m", "s", "ms", "us", "ns"])
+    def test_to_arrow_timedelta_unit(self, unit):
+        orig = DataFrame(a=np.array([5000, "NaT"], f"timedelta64[{unit}]"))
+        data = DataFrame.from_arrow(orig.to_arrow())
+        assert data.a[0] == orig.a[0]
+        assert data.a.is_na().tolist() == [False, True]
+
     def test_to_pandas(self):
         import pandas as pd
         orig = test.data_frame("vehicles.csv")

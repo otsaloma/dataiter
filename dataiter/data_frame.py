@@ -1757,6 +1757,11 @@ class DataFrame(dict):
         >>> data.to_arrow()
         """
         def convert(x):
+            # Arrow supports only some units, cast others to a supported one.
+            if x.is_datetime() and (unit := np.datetime_data(x.dtype)[0]) not in ["D", "s", "ms", "us", "ns"]:
+                x = x.astype("datetime64[D]" if unit in ["Y", "M", "W"] else "datetime64[s]")
+            if x.is_timedelta() and np.datetime_data(x.dtype)[0] not in ["s", "ms", "us", "ns"]:
+                x = x.astype("timedelta64[s]")
             return pa.array(np.asarray(x), mask=np.asarray(x.is_na()))
         data = [util.submit(convert, x) for x in self.columns]
         data = [util.result(x) for x in data]
