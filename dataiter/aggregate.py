@@ -34,6 +34,12 @@ def composite(function):
     def wrapper(x, *args, **kwargs):
         if not isinstance(x, (Vector, str)):
             raise TypeError("Expected Vector or str")
+        if (isinstance(x, Vector) and
+            x.dtype.kind in "mM" and
+            np.datetime_data(x.dtype)[0] == "ns"):
+            # Python's datetime and timedelta don't support nanoseconds,
+            # for which item() would give ints.
+            x = x.astype(x.dtype.name.replace("ns", "us"))
         return function(x, *args, **kwargs)
     return wrapper
 

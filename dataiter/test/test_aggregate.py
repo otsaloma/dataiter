@@ -274,6 +274,11 @@ class TestAggregate:
         assert max(Vector([3, 2, NaN])) == 3
         assert max(Vector(["b", "c", "a"])) == "c"
 
+    def test_max_nanoseconds(self):
+        x = Vector([D1, D2]).as_datetime("ns")
+        assert max(x) == datetime.datetime.combine(D2, datetime.time())
+        assert max(x - x[0]) == datetime.timedelta(days=1)
+
     def test_max_nan(self):
         assert np.isnan(max(EMPTY_VECTOR))
         assert np.isnan(max(Vector([3, 2, NaN]), drop_na=False))
