@@ -1012,7 +1012,7 @@ class ListOfDicts(list):
         """
         if max_items is None:
             max_items = dataiter.PRINT_MAX_ITEMS
-        string = self.head(max_items).to_json()
+        string = self._new(self[:max_items]).to_json()
         if max_items < len(self):
             string += f" ... {len(self)} items total"
         return string
