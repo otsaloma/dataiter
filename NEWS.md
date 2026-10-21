@@ -156,6 +156,7 @@ Fixes:
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `dt.from_string`, `Vector.rank`: Fix segmentation fault for strings in some orders, e.g. two sorted runs, due to a NumPy bug
 - `dt.replace`, `dt.to_string`: Fix error for nanosecond datetimes
+- `dt.to_string`: Return a string vector instead of object if all values are missing
 - `dt.isoformat`: Use the same format for all elements, with fractional seconds as precise as needed, instead of omitting them for elements with zero microseconds
 - `first`, `last`, `nth`: Fix wrong results for dates and datetimes when grouped
 - `ListOfDicts.*`: Return ungrouped lists, as `DataFrame` does, previously staying grouped and making e.g. `head` after `aggregate` operate group-wise

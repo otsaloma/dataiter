@@ -303,7 +303,7 @@ def _pull_str(x, function):
         x = Vector([x], np.datetime64)
         return _pull_str(x, function)[0]
     _check_datetime(x)
-    out = np.full_like(x, dtypes.string.na_object, object)
+    out = np.full_like(x, dtypes.string.na_object, dtypes.string)
     out = out.view(Vector)
     na = np.isnat(x)
     if na.all(): return out
@@ -312,7 +312,7 @@ def _pull_str(x, function):
     unique, _, codes = util.unique_codes(y)
     f = np.vectorize(function)
     out[~na] = f(_to_object(unique))[codes]
-    return out.as_string()
+    return out
 
 def quarter(x):
     """

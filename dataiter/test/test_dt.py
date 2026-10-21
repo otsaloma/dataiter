@@ -247,6 +247,12 @@ class TestDT:
         assert b.is_string()
         assert b.tolist() == ["20221114-224900", None]
 
+    def test_to_string_na(self):
+        a = dt.new([NaT, NaT])
+        b = dt.to_string(a, "%d.%m.%Y")
+        assert b.is_string()
+        assert b.tolist() == [None, None]
+
     def test_to_string_nanoseconds(self):
         a = np.array(["2022-11-14T22:49:00", NaT], "datetime64[ns]")
         assert dt.to_string(a, "%Y%m%d-%H%M%S").tolist() == ["20221114-224900", None]
