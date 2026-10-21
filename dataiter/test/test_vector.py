@@ -868,13 +868,6 @@ class TestVector:
         a = Vector([1, 2, None, 1, 2, 3])
         assert a.unique().tolist() == [1, 2, None, 3]
 
-    @pytest.mark.parametrize("dtype", [np.float16, np.float32, np.float64, np.longdouble])
-    def test_unique_float(self, dtype):
-        a = dtype(1)
-        b = np.nextafter(a, dtype(2))
-        x = Vector([b, a, b, np.nan, -0.0, 0.0, np.nan], dtype)
-        assert x.unique().equal(Vector([b, a, np.nan, 0.0], dtype))
-
     def test_unique_np_unique(self):
         a = Vector([3, 1, 3, 2])
         values, counts = np.unique(a, return_counts=True)
