@@ -416,6 +416,11 @@ class TestVector:
         a = Vector([1, 2, 3, 4, 5])
         assert a.head(3).tolist() == [1, 2, 3]
 
+    def test_head_negative(self):
+        a = Vector([1, 2, 3, 4, 5])
+        assert a.head(-2).tolist() == [1, 2, 3]
+        assert a.head(-9).tolist() == []
+
     def test_is_boolean(self):
         assert not Vector([b"1"]).is_boolean()
         assert Vector([True]).is_boolean()
@@ -751,6 +756,11 @@ class TestVector:
     def test_tail(self):
         a = Vector([1, 2, 3, 4, 5])
         assert a.tail(3).tolist() == [3, 4, 5]
+
+    def test_tail_negative(self):
+        a = Vector([1, 2, 3, 4, 5])
+        assert a.tail(-2).tolist() == [3, 4, 5]
+        assert a.tail(-9).tolist() == []
 
     def test_to_string(self):
         assert Vector(np.arange(1)).to_string()

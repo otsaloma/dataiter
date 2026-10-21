@@ -509,12 +509,14 @@ class Vector(np.ndarray):
         """
         Return the first `n` elements.
 
+        If `n` is negative, return all elements except the last ``-n``.
+
         >>> vector = di.Vector(range(100))
         >>> vector.head(10)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
-        n = min(self.length, n)
+        n = min(self.length, n) if n >= 0 else max(0, self.length + n)
         return self[np.arange(n)]
 
     def is_boolean(self):
@@ -1014,12 +1016,14 @@ class Vector(np.ndarray):
         """
         Return the last `n` elements.
 
+        If `n` is negative, return all elements except the first ``-n``.
+
         >>> vector = di.Vector(range(100))
         >>> vector.tail(10)
         """
         if n is None:
             n = dataiter.DEFAULT_PEEK_ELEMENTS
-        n = min(self.length, n)
+        n = min(self.length, n) if n >= 0 else max(0, self.length + n)
         return self[np.arange(self.length - n, self.length)]
 
     def to_string(self, *, max_elements=None):

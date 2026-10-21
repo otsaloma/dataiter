@@ -36,6 +36,7 @@ New:
 - `regex.extract`: New function to extract a group of the first match
 - `Vector`: Datetimes can now be compared to strings, e.g. `x >= "2026-10-21"`
 - `Vector.as_float`: Add `errors` argument for values that can't be converted
+- `Vector.head`, `Vector.tail`: Support negative argument for all but last/first
 - `Vector.is_in`: New method, faster than `np.isin`
 - `Vector.rank`: Add `dir` argument for descending order
 - `Vector.shift`: New method to shift elements (lead or lag)
