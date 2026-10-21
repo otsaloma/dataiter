@@ -418,7 +418,7 @@ class Vector(np.ndarray):
         """
         return self[~self.is_na()]
 
-    @property
+    @functools.cached_property
     def dt(self) -> DtProxy:
         """
         Proxy object for calling :mod:`dataiter.dt` functions.
@@ -428,9 +428,7 @@ class Vector(np.ndarray):
         >>> x.dt.month()
         >>> x.dt.day()
         """
-        if not hasattr(self, "_dt"):
-            self._dt = DtProxy(self)
-        return self._dt
+        return DtProxy(self)
 
     @property
     def dtype_label(self):
@@ -828,7 +826,7 @@ class Vector(np.ndarray):
             return out.view(self.__class__)
         raise ValueError(f"Unexpected method: {method!r}")
 
-    @property
+    @functools.cached_property
     def re(self) -> ReProxy:
         """
         Proxy object for calling :mod:`dataiter.regex` functions.
@@ -836,9 +834,7 @@ class Vector(np.ndarray):
         >>> x = di.Vector(["great", "fantastic"])
         >>> x.re.sub(r"$", r"!")
         """
-        if not hasattr(self, "_re"):
-            self._re = ReProxy(self)
-        return self._re
+        return ReProxy(self)
 
     def replace_na(self, value):
         """
@@ -984,7 +980,7 @@ class Vector(np.ndarray):
         # Usually causes dtype to be object!
         return None
 
-    @property
+    @functools.cached_property
     def str(self) -> StrProxy:
         """
         Proxy object for calling ``numpy.strings`` functions.
@@ -1006,9 +1002,7 @@ class Vector(np.ndarray):
         >>> x.str.str_len()
         >>> x.str.upper()
         """
-        if not hasattr(self, "_str"):
-            self._str = StrProxy(self)
-        return self._str
+        return StrProxy(self)
 
     def tail(self, n=None):
         """
