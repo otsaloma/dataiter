@@ -207,7 +207,11 @@ def unique_codes(x):
     # large_string avoids a chunked array for large data.
     y = x
     if x.dtype.kind == "f":
-        y = np.where(np.isnan(x), np.nan, x.astype(float) + 0.0).view(np.int64)
+        if x.dtype.itemsize > 8:
+            # Arrow doesn't support wider floats, sorting keeps their precision.
+            y = np.unique(np.asarray(x), return_inverse=True)[1]
+        else:
+            y = np.where(np.isnan(x), np.nan, x.astype(float) + 0.0).view(np.int64)
     elif x.dtype.kind in "mM":
         y = x.view(np.int64)
     elif x.dtype.kind == "b":

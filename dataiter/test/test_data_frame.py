@@ -679,6 +679,15 @@ class TestDataFrame:
         b = DataFrame(i=[2**62, 0], j=[2**62, -2**62], k=[-2**62, 2**62], y=[1, 2])
         assert a.left_join(b, "i", "j", "k").y.tolist() == [2, None, 1]
 
+    @pytest.mark.parametrize("dtype", [np.float16, np.float32, np.float64, np.longdouble])
+    def test_left_join_float_precision(self, dtype):
+        first = dtype(1)
+        second = np.nextafter(first, dtype(2))
+        a = DataFrame(k=Vector([first, second], dtype), x=[1, 2])
+        b = DataFrame(k=Vector([second], dtype), y=[1])
+        assert a.left_join(b, "k").y.tolist() == [None, 1]
+        assert b.left_join(a, "k").x.tolist() == [2]
+
     @pytest.mark.parametrize("dtype1,dtype2", [
         (np.int64, np.uint64),
         (np.int64, np.float64),
