@@ -226,6 +226,12 @@ class TestDT:
         b = dt.new(["2022-01-01", NaT])
         assert dt.replace(a, month=1, day=1).equal(b)
 
+    def test_replace_all(self):
+        a = dt.new(["2022-10-15", NaT])
+        b = dt.new(["2025-02-03", NaT])
+        assert dt.replace(a, year=2025, month=2, day=3).equal(b)
+        assert dt.replace(a, year=[2025, 2025], month=2, day=3).equal(b)
+
     def test_replace_nanoseconds(self):
         a = Vector(["2022-10-15T12:34:56", NaT], "datetime64[ns]")
         b = Vector(["2022-01-01T12:34:56", NaT], "datetime64[ns]")

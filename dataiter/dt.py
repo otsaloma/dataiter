@@ -345,6 +345,8 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
         keys += ["hour", "minute", "second", "microsecond"]
     # Arguments shadow the component functions of the same names.
     components = {k: globals()[k](x) for k in keys} | given
+    # Keep shape and missing values of x even if all components are given.
+    components["year"] = np.where(np.isnat(x), np.nan, components["year"])
     out = from_components(**components)
     return out if is_date and len(components) > 3 else out.astype(x.dtype)
 
