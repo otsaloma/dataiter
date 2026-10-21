@@ -18,7 +18,7 @@ ISSUES.md and present them to me, and we'll see if there's something in
 dataiter that we should fix.
 
 Regarding API surprises, note that Pandas is a pile of shit and our goal
-is not to emulate Pandas. Compare broadly across data frame
+is not to clone Pandas. Compare broadly across data frame
 implementations in Python and R: Pandas, Polars, Arrow, dplyr. Is there
 a consensus on how certain operations are done? Missing a consensus,
 favor dplyr most as reference, it's the best designed API among those.

@@ -56,16 +56,15 @@ https://dataiter.readthedocs.io/en/stable/comparison.html
 
 Dataiter's API is small enough that the complete documentation fits in
 about 40k tokens. Coding agents can read all of it in one go and know
-the whole API before writing any code. Bigger packages, like Pandas and
-Polars, must fight against outdated training data and introduce their
-huge API piecemeal, hoping the agent knows what to ask for. For best
-results, have your agent download `llms-full.txt` and read it in full,
-rather than fetch it with a tool that summarizes web pages. Each
-documentation page is also available as Markdown by replacing `.html`
-with `.md` in the URL.
+the whole API before writing any code. This differs from bigger
+packages, like Pandas and Polars, which must fight against outdated
+training data and introduce their huge API piecemeal, hoping the agent
+knows what to ask for. For best results, have your agent download
+`llms-full.txt` and read it in full, rather than fetch it with a tool
+that summarizes web pages. Each documentation page is also available as
+Markdown by replacing `.html` with `.md` in the URL.
 
 - https://dataiter.readthedocs.io/en/stable/llms-full.txt
-- https://dataiter.readthedocs.io/en/stable/llms.txt
 - https://dataiter.readthedocs.io/en/stable/data-frame.md
 
 ## Development
