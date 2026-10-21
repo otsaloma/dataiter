@@ -1054,34 +1054,20 @@ class Vector(np.ndarray):
         """
         if self.length == 0:
             return self.__class__.fast([], str)
-        identity = lambda x, *args, **kwargs: x
         if ksep is None:
             ksep = dataiter.PRINT_THOUSAND_SEPARATOR
-        quote = util.quote if quote else identity
-        pad = util.upad if pad else identity
         if self.is_float():
             strings = util.format_floats(self, ksep=ksep)
-            return self.__class__.fast(pad(strings), str)
-        if self.is_integer() and not self.is_timedelta():
+        elif self.is_integer() and not self.is_timedelta():
             strings = [f"{x:,d}".replace(",", ksep) for x in self]
-            return self.__class__.fast(pad(strings), str)
-        if self.is_object():
-            strings = [str(x) for x in self]
+        elif self.is_object() or self.is_string():
+            strings = [util.quote(x) if quote and self.is_string() else str(x) for x in self]
             for i in range(len(strings)):
                 lines = strings[i].splitlines()
                 if (wcwidth.width(strings[i]) > truncate_width or
                     (len(lines) > 1 and truncate_width < inf)):
                     strings[i] = wcwidth.clip(lines[0], 0, truncate_width-1) + "…"
-            return self.__class__.fast(pad(strings), str)
-        if self.is_string():
-            strings = [quote(x) for x in self]
-            for i in range(len(strings)):
-                lines = strings[i].splitlines()
-                if (wcwidth.width(strings[i]) > truncate_width or
-                    (len(lines) > 1 and truncate_width < inf)):
-                    strings[i] = wcwidth.clip(lines[0], 0, truncate_width-1) + "…"
-            return self.__class__.fast(pad(strings), str)
-        if self.is_datetime():
+        elif self.is_datetime():
             # Use the coarsest unit that shows all values exactly,
             # e.g. omit microseconds if all are zero.
             units = ["s", "ms", "us", "ns"]
@@ -1092,14 +1078,13 @@ class Vector(np.ndarray):
                 strings = np.datetime_as_string(self, unit=unit).tolist()
             else:
                 strings = np.datetime_as_string(self).tolist()
-            return self.__class__.fast(pad(strings), str)
         # Years and months have no fixed length and finer units than
         # nanoseconds would be truncated, keep NumPy's format for those.
-        if self.is_timedelta() and np.datetime_data(self.dtype)[0] in ["W", "D", "h", "m", "s", "ms", "us", "ns"]:
+        elif self.is_timedelta() and np.datetime_data(self.dtype)[0] in ["W", "D", "h", "m", "s", "ms", "us", "ns"]:
             strings = util.format_timedeltas(self)
-            return self.__class__.fast(pad(strings), str)
-        strings = [str(x) for x in self]
-        return self.__class__.fast(pad(strings), str)
+        else:
+            strings = [str(x) for x in self]
+        return self.__class__.fast(util.upad(strings) if pad else strings, str)
 
     def tolist(self):
         """
