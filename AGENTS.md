@@ -113,3 +113,13 @@ Do not complain about these or spend too much time investigating.
   convert back with e.g. `Vector.as_integer`. This is a NumPy
   limitation, not something we can work around: integers can't always
   have an integer data type.
+
+- Nanosecond datetimes and timedeltas are rare and not expected to work
+  fully. Python's datetime and timedelta don't support nanoseconds, so
+  NumPy converts such values to int when casting to object, breaking
+  e.g. `tolist`, `dt` functions and aggregation. `from_arrow` (used by
+  `read_csv` and `read_parquet`) and `from_pandas` convert nanoseconds
+  to microseconds unless explicitly requested. Elsewhere, convert to
+  microseconds before any operation that could break with nanoseconds.
+  Losing nanosecond precision in any operation or I/O round-trip is
+  fine, don't try to preserve it.
