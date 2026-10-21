@@ -127,11 +127,11 @@ class GeoJSON(DataFrame):
             data.pop("geometry", None)
         return DataFrame(**data)
 
-    def to_string(self, *, max_rows=None, max_width=None):
+    def to_string(self, *, max_rows=None, max_width=None, truncate_width=None):
         if "geometry" in self.colnames:
             geometry = [f"<{x['type']}>" for x in self.geometry]
             self = self.modify(geometry=Vector.fast(geometry, object))
-        return DataFrame.to_string(self, max_rows=max_rows, max_width=max_width)
+        return DataFrame.to_string(self, max_rows=max_rows, max_width=max_width, truncate_width=truncate_width)
 
     def write(self, path, *, encoding="utf-8", **kwargs):
         """

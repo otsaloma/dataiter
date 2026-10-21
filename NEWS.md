@@ -150,6 +150,7 @@ Fixes:
 - `DataFrame.unique`: Fix missing timedeltas matching zero durations when unique also by an object column
 - `DataFrame.write_csv`: Fix to compress if path ends in `.bz2|.gz|.xz`, as documented
 - `DataFrame.write_csv`: Write timedeltas as printed, e.g. "1 day 04:44:39", instead of integers with no indication of unit
+- `GeoJSON.print_`: Fix error about unexpected argument "truncate_width"
 - `count_unique`: Count all missing values as one instead of each NaN and NaT separately in some cases, also fixing an error for objects with missing values
 - `dt.*`, `regex.*`: Raise `TypeError` for wrong input type instead of `AssertionError`
 - `dt.from_string`, `Vector.rank`: Fix segmentation fault for strings in some orders, e.g. two sorted runs, due to a NumPy bug

@@ -60,6 +60,11 @@ class TestGeoJSON:
         assert not isinstance(data, GeoJSON)
         assert "geometry" not in data.colnames
 
+    def test_print_(self, capsys):
+        data = test.geojson(self.path)
+        data.print_(truncate_width=10)
+        assert capsys.readouterr().out
+
     def test_to_string(self):
         data = test.geojson(self.path)
         assert data.head(0).to_string()
