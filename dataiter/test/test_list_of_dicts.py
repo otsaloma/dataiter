@@ -341,10 +341,18 @@ class TestListOfDicts:
     def test_full_join_multiple(self):
         a = ListOfDicts([{"k": 1, "x": 1}, {"k": 2, "x": 2}, {"k": 3, "x": 3}])
         b = ListOfDicts([{"k": 2, "y": 1}, {"k": 1, "y": 2}, {"k": 2, "y": 3}, {"k": 4, "y": 4}])
-        data = a.full_join(b, "k")
+        data = a.deepcopy().full_join(b, "k", multiple="all")
+        assert data.pluck("k") == [1, 2, 2, 3, 4]
+        assert data.pluck("x") == [1, 2, 2, 3, None]
+        assert data.pluck("y") == [2, 1, 3, None, 4]
+        data = a.deepcopy().full_join(b, "k", multiple="first")
         assert data.pluck("k") == [1, 2, 3, 2, 4]
         assert data.pluck("x") == [1, 2, 3, None, None]
         assert data.pluck("y") == [2, 1, None, 3, 4]
+        data = a.deepcopy().full_join(b, "k", multiple="last")
+        assert data.pluck("k") == [1, 2, 3, 2, 4]
+        assert data.pluck("x") == [1, 2, 3, None, None]
+        assert data.pluck("y") == [2, 3, None, 1, 4]
 
     def test_group_by_next_operation_only(self):
         data = ListOfDicts(dict(g=g, x=x) for g, x in zip([2, 1, 2, 1, 2], [1, 2, 3, 4, 5]))
@@ -385,6 +393,15 @@ class TestListOfDicts:
         data = orig.inner_join(other, "b")
         assert data.pluck("a") == [1]
 
+    def test_inner_join_multiple(self):
+        a = ListOfDicts([{"k": 1, "x": 1}, {"k": 2, "x": 2}, {"k": 3, "x": 3}])
+        b = ListOfDicts([{"k": 2, "y": 1}, {"k": 1, "y": 2}, {"k": 2, "y": 3}])
+        assert a.deepcopy().inner_join(b, "k", multiple="first").pluck("y") == [2, 1]
+        assert a.deepcopy().inner_join(b, "k", multiple="last").pluck("y") == [2, 3]
+        data = a.deepcopy().inner_join(b, "k", multiple="all")
+        assert data.pluck("x") == [1, 2, 2]
+        assert data.pluck("y") == [2, 1, 3]
+
     def test_insert(self):
         orig = test.list_of_dicts("downloads.json")
         item = dict(date="3000-01-01")
@@ -420,6 +437,16 @@ class TestListOfDicts:
         other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])
         data = orig.left_join(other, "b")
         assert data.pluck("c") == [1, None, None]
+
+    def test_left_join_multiple(self):
+        a = ListOfDicts([{"k": 1, "x": 1}, {"k": 2, "x": 2}, {"k": 3, "x": 3}, {"k": None, "x": 4}])
+        b = ListOfDicts([{"k": 2, "y": 1}, {"k": 1, "y": 2}, {"k": 2, "y": 3}, {"k": None, "y": 4}])
+        assert a.deepcopy().left_join(b, "k", multiple="first").pluck("y") == [2, 1, None, None]
+        assert a.deepcopy().left_join(b, "k", multiple="last").pluck("y") == [2, 3, None, None]
+        data = a.deepcopy().left_join(b, "k", multiple="all")
+        assert data.pluck("x") == [1, 2, 2, 3, 4]
+        assert data.pluck("y") == [2, 1, 3, None, None]
+        assert data[1] is not data[2]
 
     def test_join_common_keys(self):
         a = ListOfDicts([{"id": 1, "x": 1}, {"id": 2, "x": 2}])

@@ -390,14 +390,15 @@ class ListOfDicts(list):
                     item[key] = type(item[key])
         return cls(data)
 
-    def full_join(self, other, *by):
+    def full_join(self, other, *by, multiple="first"):
         """
         Return list with matching items merged from `self` and `other`.
 
         `full_join` keeps all items from both lists, merging matching ones. If
-        there are multiple matches, the first one will be used. Items of
-        `other` not used are added after items of `self`. For items, for which
-        matches are not found or not used, no keys are added.
+        there are multiple matches, `multiple` determines which to use:
+        ``"first"``, ``"last"`` or ``"all"``. Items of `other` not used are
+        added after items of `self`. For items, for which matches are not
+        found or not used, no keys are added.
 
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
@@ -416,13 +417,28 @@ class ListOfDicts(list):
         """
         bcounter = itertools.count(start=1)
         b = other.deepcopy().modify(_bid_=lambda x: next(bcounter))
-        ab = self.deepcopy().left_join(b, *by)
+        ab = self.deepcopy().left_join(b, *by, multiple=multiple)
         b = b.anti_join(ab, "_bid_")
         # For identifiers in by whose name differs in self and b,
         # rename and keep the variant found in self.
         by1, by2 = self._split_join_by(*by)
         b = b.rename(**{k1: k2 for k1, k2 in zip(by1, by2) if k1 != k2})
         return (ab + b).unselect("_bid_")
+
+    @staticmethod
+    def _get_join_matches(other, by2, multiple):
+        if multiple not in ["first", "last", "all"]:
+            raise ValueError(f"Bad {multiple=}")
+        other = other.drop_na(*by2)
+        extract2 = itemgetter(*by2)
+        if multiple == "first":
+            return {extract2(x): [x] for x in reversed(other)}
+        if multiple == "last":
+            return {extract2(x): [x] for x in other}
+        matches = {}
+        for item in other:
+            matches.setdefault(extract2(item), []).append(item)
+        return matches
 
     def group_by(self, *keys):
         """
@@ -465,12 +481,13 @@ class ListOfDicts(list):
 
     @deco.obsoletes
     @deco.new_from_generator
-    def inner_join(self, other, *by):
+    def inner_join(self, other, *by, multiple="first"):
         """
         Return list with matching items merged from `self` and `other`.
 
         `inner_join` keeps only items found in both lists, merging matching
-        ones. If there are multiple matches, the first one will be used.
+        ones. If there are multiple matches, `multiple` determines which to
+        use: ``"first"``, ``"last"`` or ``"all"``.
 
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
@@ -487,17 +504,18 @@ class ListOfDicts(list):
         >>> listings.inner_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.drop_na(*by2)
+        matches = self._get_join_matches(other, by2, multiple)
         extract1 = itemgetter(*by1)
-        extract2 = itemgetter(*by2)
-        other_by_id = {extract2(x): x for x in reversed(other)}
+        def merge(new, match):
+            new.update({k: v for k, v in match.items() if k not in by2 and k not in new})
+            return new
         for item in self:
             id = extract1(item)
-            if id in other_by_id:
-                new = other_by_id[id]
-                new = {k: v for k, v in new.items() if k not in by2 and k not in item}
-                item.update(new)
-                yield item
+            if id in matches:
+                *rest, last = matches[id]
+                for match in rest:
+                    yield merge(AttributeDict(item), match)
+                yield merge(item, last)
 
     @deco.new_from_generator
     def insert(self, index, item):
@@ -526,13 +544,14 @@ class ListOfDicts(list):
 
     @deco.obsoletes
     @deco.new_from_generator
-    def left_join(self, other, *by):
+    def left_join(self, other, *by, multiple="first"):
         """
         Return list with matching items merged from `self` and `other`.
 
         `left_join` keeps all items in `self`, merging matching ones from
-        `other`. If there are multiple matches, the first one will be used. For
-        items, for which matches are not found, no keys are added.
+        `other`. If there are multiple matches, `multiple` determines which to
+        use: ``"first"``, ``"last"`` or ``"all"``. For items, for which matches
+        are not found, no keys are added.
 
         `by` are keys, by which to look for matching items, or tuples of keys
         if the correspoding key differs between `self` and `other`.
@@ -549,15 +568,16 @@ class ListOfDicts(list):
         >>> listings.left_join(reviews, "id")
         """
         by1, by2 = self._split_join_by(*by)
-        other = other.drop_na(*by2)
+        matches = self._get_join_matches(other, by2, multiple)
         extract1 = itemgetter(*by1)
-        extract2 = itemgetter(*by2)
-        other_by_id = {extract2(x): x for x in reversed(other)}
+        def merge(new, match):
+            new.update({k: v for k, v in match.items() if k not in by2 and k not in new})
+            return new
         for item in self:
-            new = other_by_id.get(extract1(item), {})
-            new = {k: v for k, v in new.items() if k not in by2 and k not in item}
-            item.update(new)
-            yield item
+            *rest, last = matches.get(extract1(item), [{}])
+            for match in rest:
+                yield merge(AttributeDict(item), match)
+            yield merge(item, last)
 
     def map(self, function):
         """
