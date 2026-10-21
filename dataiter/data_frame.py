@@ -1090,7 +1090,8 @@ class DataFrame(dict):
             colnames = self._glob([predicate] if isinstance(predicate, str) else predicate)
         for colname, column in self.items():
             if colname in colnames:
-                yield colname, function(column, *args, **kwargs)
+                new = function(column, *args, **kwargs)
+                yield colname, util.submit(np.ndarray.copy, new) if isinstance(new, DataFrameColumn) else new
             else:
                 yield colname, util.submit(np.ndarray.copy, column)
 

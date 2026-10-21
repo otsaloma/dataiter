@@ -752,6 +752,15 @@ class TestDataFrame:
         assert data.a.tolist() == [2.5, 1.5]
         assert data.b.tolist() == ["y", "x"]
 
+    @pytest.mark.parametrize("function", [lambda x: x, lambda x: x[::-1]])
+    def test_map_columns_independent(self, function):
+        orig = DataFrame(a=[1, 2], b=["x", "y"])
+        data = orig.map_columns(None, function)
+        data.a[0] = 0
+        data.b[0] = "z"
+        assert orig.a.tolist() == [1, 2]
+        assert orig.b.tolist() == ["x", "y"]
+
     def test_map_columns_args(self):
         data = DataFrame(a=[1, None], b=["", "x"])
         data = data.map_columns(lambda x: x.is_string(), Vector.replace_na, "-")
