@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import datetime
+import functools
 import numpy as np
 import re
 
@@ -29,9 +30,16 @@ from dataiter import util
 from dataiter import Vector
 from numpy.dtypes import StringDType
 
-def _check_datetime(x):
-    if not (isinstance(x, np.ndarray) and np.issubdtype(x.dtype, np.datetime64)):
-        raise TypeError(f"Expected datetime, got {_type_label(x)}")
+def _vectorized_datetime(function):
+    # Call function with a vector of one for a scalar x.
+    @functools.wraps(function)
+    def wrapper(x, *args, **kwargs):
+        if util.is_scalar(x):
+            return function(Vector([x], np.datetime64), *args, **kwargs)[0]
+        if not (isinstance(x, np.ndarray) and np.issubdtype(x.dtype, np.datetime64)):
+            raise TypeError(f"Expected datetime, got {_type_label(x)}")
+        return function(x, *args, **kwargs)
+    return wrapper
 
 def day(x):
     """
@@ -45,6 +53,7 @@ def day(x):
         y.astype("datetime64[M]").astype("datetime64[D]")
     ).astype(int) + 1)
 
+@_vectorized_datetime
 def floor(x, unit):
     """
     Round datetime `x` down to the start of `unit`.
@@ -56,10 +65,6 @@ def floor(x, unit):
     >>> x = dt.new(["2022-10-15", "2022-11-20"])
     >>> dt.floor(x, "month")
     """
-    if util.is_scalar(x):
-        x = Vector([x], np.datetime64)
-        return floor(x, unit)[0]
-    _check_datetime(x)
     if unit == "quarter":
         out = x.astype("datetime64[M]")
         out -= (out.astype(int) % 3).astype("timedelta64[M]")
@@ -173,6 +178,7 @@ def hour(x):
         y.astype("datetime64[D]")
     ).astype(int))
 
+@_vectorized_datetime
 def isoformat(x):
     """
     Return datetime `x` as a string in ISO 8601 format.
@@ -186,10 +192,6 @@ def isoformat(x):
     >>> y = dt.new([dt.now()])
     >>> dt.isoformat(y)
     """
-    if util.is_scalar(x):
-        x = Vector([x], np.datetime64)
-        return isoformat(x)[0]
-    _check_datetime(x)
     na = np.isnat(x)
     unit = "D"
     if np.datetime_data(x.dtype)[0] not in ["Y", "M", "W", "D"]:
@@ -286,11 +288,8 @@ def now():
     """
     return np.datetime64(datetime.datetime.now())
 
+@_vectorized_datetime
 def _pull_int(x, function):
-    if util.is_scalar(x):
-        x = Vector([x], np.datetime64)
-        return _pull_int(x, function)[0]
-    _check_datetime(x)
     out = np.full_like(x, np.nan, float)
     out = out.view(Vector)
     na = np.isnat(x)
@@ -298,11 +297,8 @@ def _pull_int(x, function):
     out[~na] = function(np.asarray(x[~na]))
     return out if na.any() else out.as_integer()
 
+@_vectorized_datetime
 def _pull_str(x, function):
-    if util.is_scalar(x):
-        x = Vector([x], np.datetime64)
-        return _pull_str(x, function)[0]
-    _check_datetime(x)
     out = np.full_like(x, dtypes.string.na_object, dtypes.string)
     out = out.view(Vector)
     na = np.isnat(x)
@@ -324,6 +320,7 @@ def quarter(x):
     y = np.ceil(month(x) / 3)
     return y if np.isnan(y).any() else y.astype(int)
 
+@_vectorized_datetime
 def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=None, microsecond=None):
     """
     Return datetime `x` with given components replaced.
@@ -331,10 +328,6 @@ def replace(x, year=None, month=None, day=None, hour=None, minute=None, second=N
     >>> x = dt.new(["2022-10-15"])
     >>> dt.replace(x, month=1, day=1)
     """
-    if util.is_scalar(x):
-        x = Vector([x], np.datetime64)
-        return replace(x, year, month, day, hour, minute, second, microsecond)[0]
-    _check_datetime(x)
     given = dict(year=year, month=month, day=day, hour=hour, minute=minute, second=second, microsecond=microsecond)
     given = {k: v for k, v in given.items() if v is not None}
     keys = ["year", "month", "day"]
