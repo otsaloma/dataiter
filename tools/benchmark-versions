@@ -9,14 +9,18 @@ if git rev-parse -q --verify "refs/tags/$1" > /dev/null; then
     RELEASE=$1
     shift
 fi
-CURRENT=$(git describe --tags --dirty)
+CURRENT=$(git branch --show-current)
 OUT_FILE=benchmark-versions.csv
 WORKTREE=$(mktemp -d)
 trap 'git worktree remove --force "$WORKTREE"' EXIT
 trap 'exit 1' INT TERM
 git worktree add -q --detach "$WORKTREE" "$RELEASE"
 printf "\n$RELEASE:\n"
-PYTHONPATH="$WORKTREE" uv run python tools/benchmark -o "$OUT_FILE" --version="$RELEASE" "$@"
+PYTHONPATH="$WORKTREE" uv run python tools/benchmark -o "$WORKTREE/release.csv" --version="$RELEASE" "$@"
 printf "\n$CURRENT:\n"
 uv run python tools/benchmark -o "$WORKTREE/current.csv" --version="$CURRENT" "$@"
-tail -n+2 "$WORKTREE/current.csv" >> "$OUT_FILE"
+uv run python - "$WORKTREE/release.csv" "$WORKTREE/current.csv" "$OUT_FILE" <<EOF
+import dataiter as di, sys
+release, current = (di.read_csv(x, dtypes={"version": str}) for x in sys.argv[1:3])
+release.rbind(current).pivot_wider(ids="name", names="version", values="elapsed").write_csv(sys.argv[3])
+EOF
