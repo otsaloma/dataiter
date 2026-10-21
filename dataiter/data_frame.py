@@ -615,8 +615,7 @@ class DataFrame(dict):
                 column = column.to_pylist()
                 return DataFrameColumn.fast(np.fromiter(column, object, len(column)), object)
             if is_string and (req_dtype is None or Vector.fast([], req_dtype).is_string()):
-                return (strings_from_arrow(column) if len(column) < 50_000 else
-                        util.get_executor().submit(strings_from_arrow, column))
+                return util.submit(strings_from_arrow, column, parallel=len(column) >= 50_000)
             if is_string and np.dtype(req_dtype).kind in "iuf":
                 # Parse numbers with NumPy, which names bad values in errors,
                 # treating blanks as missing, as Vector.as_float does.
