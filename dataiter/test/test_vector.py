@@ -751,6 +751,7 @@ class TestVector:
         assert a.str.slice(2).tolist() == ["as", "12", None]
         assert a.str.slice(1, -1).tolist() == ["sd", "23", None]
         assert a.str.slice(0, Vector([1, 2, 3])).tolist() == ["a", "12", None]
+        assert a.str.slice([0, 1, 2], [1, 2, 3]).tolist() == ["a", "2", None]
         assert isinstance(a.str.slice(2), Vector)
 
     def test_tail(self):

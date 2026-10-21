@@ -90,7 +90,7 @@ def str_slice(vector, *args):
     if not na.any():
         return np.strings.slice(vector, *args)
     out = np.array(vector, copy=True)
-    args = [x[~na] if np.ndim(x) > 0 else x for x in args]
+    args = [np.asarray(x)[~na] if np.ndim(x) > 0 else x for x in args]
     out[~na] = np.strings.slice(out[~na], *args)
     return out
 
