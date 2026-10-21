@@ -98,6 +98,7 @@ Speed-ups:
 - `Vector.unique`: Speed up
 
 Fixes:
+- `*.read_json`, `*.write_csv`, `*.write_json`, `GeoJSON.read`, `GeoJSON.write`, `ListOfDicts.read_csv`, `read_geojson`, `read_json`: Fix ignoring `encoding` for paths ending in `.xz`
 - `DataFrame`: Name the column and lengths in the error for columns of wrong length
 - `DataFrame.*`: Handle empty data frames gracefully
 - `DataFrame.aggregate`, `DataFrame.count`: Return single row when ungrouped, or none for empty data

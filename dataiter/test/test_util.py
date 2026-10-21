@@ -185,6 +185,14 @@ class TestUtil:
         with util.xopen(path, "rt") as f:
             assert f.read() == text
 
+    def test_xopen_xz_encoding(self, tmp_path):
+        text = "test åäö"
+        path = str(tmp_path / "test.xz")
+        with util.xopen(path, "wt", encoding="latin-1") as f:
+            f.write(text)
+        with util.xopen(path, "rb") as f:
+            assert f.read() == text.encode("latin-1")
+
     @pytest.mark.skipif(sys.version_info < (3, 14), reason="compression.zstd requires Python 3.14")
     def test_xopen_zst(self, tmp_path):
         text = "test åäö"

@@ -244,7 +244,7 @@ def xopen(path, mode="r", **kwargs):
         kwargs.setdefault("compresslevel", 6)
         return gzip.open(path, mode, **kwargs)
     if str(path).endswith(".xz"):
-        return lzma.open(path, mode)
+        return lzma.open(path, mode, **kwargs)
     if str(path).endswith(".zst"):
         try:
             from compression import zstd
