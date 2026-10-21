@@ -797,7 +797,7 @@ class DataFrame(dict):
         for colname in colnames:
             column = self[colname]
             na = column.is_na()
-            if column.is_string():
+            if column.is_string() or column.is_bytes():
                 column = util.sorted_codes(column)
             elif column.is_object():
                 column = column.rank(method="min")

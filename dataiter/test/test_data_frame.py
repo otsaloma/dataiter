@@ -158,6 +158,12 @@ class TestDataFrame:
         assert np.isclose(np.sum(stat.cyl), 19964.5, atol=0.1)
         assert np.isclose(np.sum(stat.displ), 11430.1, atol=0.1)
 
+    def test_aggregate_bytes_missing(self):
+        data = DataFrame(g=np.array([b"b", b"", b"a", b"b"]), x=[1, 2, 3, 4])
+        stat = data.group_by("g").aggregate(x=di.sum("x"))
+        assert stat.g.tolist() == [b"a", b"b", None]
+        assert stat.x.tolist() == [3, 5, 2]
+
     def test_aggregate_function(self):
         def function(x):
             values = x.x.tolist()
