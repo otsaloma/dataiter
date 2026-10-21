@@ -63,6 +63,19 @@ class TestDT:
     def test_floor_scalar(self):
         assert dt.floor(dt.new("2022-10-15"), "week") == dt.new("2022-10-10")
 
+    def test_floor_unit(self):
+        a = dt.new(["2022-10-15T12:34:56"])
+        assert dt.floor(a, "days").equal(dt.floor(a, "day"))
+        assert dt.floor(a, "y").equal(dt.floor(a, "year"))
+        assert dt.floor(a, "mo").equal(dt.floor(a, "month"))
+        assert dt.floor(a, "min").equal(dt.floor(a, "minute"))
+        with pytest.raises(ValueError, match="Ambiguous"):
+            dt.floor(a, "m")
+        with pytest.raises(ValueError, match="Bad"):
+            dt.floor(a, "")
+        with pytest.raises(ValueError, match="Bad"):
+            dt.floor(a, "dayss")
+
     def test_from_components_date(self):
         a = dt.from_components(Vector([2022, 2023, np.nan]), 6, 30)
         assert a.dtype == np.dtype("datetime64[D]")

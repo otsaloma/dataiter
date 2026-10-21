@@ -59,12 +59,14 @@ def floor(x, unit):
     Round datetime `x` down to the start of `unit`.
 
     `unit` can be "year", "quarter", "month", "week", "day", "hour", "minute"
-    or "second". Weeks start on Monday, as in ISO 8601. The data type of `x`
-    is retained.
+    or "second", in singular or plural or abbreviated to any unambiguous
+    prefix, e.g. "mo" for month and "min" for minute. Weeks start on
+    Monday, as in ISO 8601. The data type of `x` is retained.
 
     >>> x = dt.new(["2022-10-15", "2022-11-20"])
     >>> dt.floor(x, "month")
     """
+    unit = _parse_unit(unit)
     if unit == "quarter":
         out = x.astype("datetime64[M]")
         out -= (out.astype(int) % 3).astype("timedelta64[M]")
@@ -74,8 +76,6 @@ def floor(x, unit):
         out -= ((out.astype(int) + 3) % 7).astype("timedelta64[D]")
     else:
         codes = dict(year="Y", month="M", day="D", hour="h", minute="m", second="s")
-        if unit not in codes:
-            raise ValueError(f"Bad {unit=}")
         out = x.astype(f"datetime64[{codes[unit]}]")
     return out.astype(x.dtype).view(Vector)
 
@@ -288,6 +288,15 @@ def now():
     """
     return np.datetime64(datetime.datetime.now())
 
+def _parse_unit(unit):
+    units = ["year", "quarter", "month", "week", "day", "hour", "minute", "second"]
+    found = [x for x in units if f"{x}s".startswith(unit)] if unit else []
+    if len(found) > 1:
+        raise ValueError(f"Ambiguous {unit=}, could be {' or '.join(found)}")
+    if not found:
+        raise ValueError(f"Bad {unit=}")
+    return found[0]
+
 @_vectorized_datetime
 def _pull_int(x, function):
     out = np.full_like(x, np.nan, float)
@@ -356,16 +365,16 @@ def sequence(start, stop, unit):
     Return a vector of dates or datetimes from `start` to `stop`, inclusive.
 
     `unit` is the step: "year", "quarter", "month", "week", "day", "hour",
-    "minute" or "second". Steps of years, quarters and months keep the day
-    of month of `start`, limited to the last day of shorter months. The data
-    type is that of `start`, or finer if needed for `unit`.
+    "minute" or "second", in singular or plural or abbreviated to any
+    unambiguous prefix, e.g. "mo" for month and "min" for minute. Steps
+    of years, quarters and months keep the day of month of `start`, limited
+    to the last day of shorter months. The data type is that of `start`, or
+    finer if needed for `unit`.
 
     >>> dt.sequence(dt.new("2026-10-19"), dt.new("2026-10-25"), "day")
     """
     steps = dict(year=(12, "M"), quarter=(3, "M"), month=(1, "M"), week=(7, "D"), day=(1, "D"), hour=(1, "h"), minute=(1, "m"), second=(1, "s"))
-    if unit not in steps:
-        raise ValueError(f"Bad {unit=}")
-    n, code = steps[unit]
+    n, code = steps[_parse_unit(unit)]
     start, stop = np.datetime64(start), np.datetime64(stop)
     dtype = np.promote_types(start.dtype, np.dtype(f"datetime64[{code}]"))
     if code == "M":
