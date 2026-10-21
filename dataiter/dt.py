@@ -306,7 +306,7 @@ def _pull_str(x, function):
     # Hashing is faster than np.unique, which sorts.
     y = x[~na]
     unique, _, codes = util.unique_codes(y)
-    f = np.vectorize(function)
+    f = np.vectorize(function, otypes=[dtypes.string])
     out[~na] = f(_to_object(unique))[codes]
     return out
 
