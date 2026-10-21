@@ -351,6 +351,36 @@ def second(x):
         y.astype("datetime64[m]")
     ).astype(int))
 
+def sequence(start, stop, unit):
+    """
+    Return a vector of dates or datetimes from `start` to `stop`, inclusive.
+
+    `unit` is the step: "year", "quarter", "month", "week", "day", "hour",
+    "minute" or "second". Steps of years, quarters and months keep the day
+    of month of `start`, limited to the last day of shorter months. The data
+    type is that of `start`, or finer if needed for `unit`.
+
+    >>> dt.sequence(dt.new("2026-10-19"), dt.new("2026-10-25"), "day")
+    """
+    steps = dict(year=(12, "M"), quarter=(3, "M"), month=(1, "M"), week=(7, "D"), day=(1, "D"), hour=(1, "h"), minute=(1, "m"), second=(1, "s"))
+    if unit not in steps:
+        raise ValueError(f"Bad {unit=}")
+    n, code = steps[unit]
+    start, stop = np.datetime64(start), np.datetime64(stop)
+    dtype = np.promote_types(start.dtype, np.dtype(f"datetime64[{code}]"))
+    if code == "M":
+        x = start.astype(np.promote_types(dtype, np.dtype("datetime64[D]")))
+        day = x.astype("datetime64[D]")
+        first = day.astype("datetime64[M]")
+        months = np.arange(first, stop.astype("datetime64[M]") + np.timedelta64(1, "M"), np.timedelta64(n, "M"))
+        last = (months + np.timedelta64(1, "M")).astype("datetime64[D]") - np.timedelta64(1, "D")
+        out = np.minimum(months.astype("datetime64[D]") + (day - first.astype("datetime64[D]")), last) + (x - day)
+    else:
+        step = np.timedelta64(n, code)
+        out = np.arange(start.astype(dtype), stop.astype(dtype) + step, step)
+    out = out.astype(dtype)
+    return out[out <= stop].view(Vector)
+
 def to_string(x, format):
     """
     Format datetime `x` as string.

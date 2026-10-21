@@ -28,6 +28,7 @@ New:
 - `dt.floor`, `Vector.dt.floor`: New function
 - `dt.from_components`: New function to create dates or datetimes from components, e.g. year, month and day columns
 - `dt.from_string`: Add `errors` argument for unparseable values
+- `dt.sequence`: New function to create a sequence of dates or datetimes, e.g. to complete a time series
 - `dt.total_seconds`, `Vector.dt.total_seconds`: New function to convert timedeltas to seconds
 - `GeoJSON`: Read and write feature identifiers as column "id"
 - `ListOfDicts.count`: New method, replacing `list.count`, to count items grouped by keys, as `DataFrame.count` does

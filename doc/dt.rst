@@ -27,6 +27,7 @@ values repeat, but slow for many unique values.
 :func:`~dataiter.dt.quarter`
 :func:`~dataiter.dt.replace`
 :func:`~dataiter.dt.second`
+:func:`~dataiter.dt.sequence`
 :func:`~dataiter.dt.to_string`
 :func:`~dataiter.dt.today`
 :func:`~dataiter.dt.total_seconds`

@@ -235,6 +235,33 @@ class TestDT:
         a = dt.new(["2022-10-15T12:34:56", NaT])
         assert dt.second(a).tolist() == [56, None]
 
+    def test_sequence_date(self):
+        a = dt.sequence(dt.new("2022-10-15"), dt.new("2022-10-18"), "day")
+        assert a.equal(dt.new(["2022-10-15", "2022-10-16", "2022-10-17", "2022-10-18"]))
+        a = dt.sequence(dt.new("2022-10-10"), dt.new("2022-10-30"), "week")
+        assert a.equal(dt.new(["2022-10-10", "2022-10-17", "2022-10-24"]))
+        a = dt.sequence(dt.new("2022-10-18"), dt.new("2022-10-15"), "day")
+        assert a.dtype == np.dtype("datetime64[D]")
+        assert len(a) == 0
+
+    def test_sequence_datetime(self):
+        a = dt.sequence(dt.new("2022-10-15T22:30"), dt.new("2022-10-16T01:00"), "hour")
+        assert a.dtype == np.dtype("datetime64[m]")
+        assert a.equal(dt.new(["2022-10-15T22:30", "2022-10-15T23:30", "2022-10-16T00:30"]))
+        a = dt.sequence(dt.new("2022-10-15"), dt.new("2022-10-15T02:00"), "hour")
+        assert a.dtype == np.dtype("datetime64[h]")
+        assert a.equal(dt.new(["2022-10-15T00", "2022-10-15T01", "2022-10-15T02"]))
+
+    def test_sequence_month(self):
+        a = dt.sequence(dt.new("2022-01-31"), dt.new("2022-04-30"), "month")
+        assert a.equal(dt.new(["2022-01-31", "2022-02-28", "2022-03-31", "2022-04-30"]))
+        a = dt.sequence(dt.new("2022-11-30"), dt.new("2023-06-01"), "quarter")
+        assert a.equal(dt.new(["2022-11-30", "2023-02-28", "2023-05-30"]))
+        a = dt.sequence(dt.new("2024-02-29"), dt.new("2026-03-01"), "year")
+        assert a.equal(dt.new(["2024-02-29", "2025-02-28", "2026-02-28"]))
+        a = dt.sequence(dt.new("2022-01-31T12:00"), dt.new("2022-03-31"), "month")
+        assert a.equal(dt.new(["2022-01-31T12:00", "2022-02-28T12:00"]))
+
     def test_to_string_date(self):
         a = dt.new(["2022-11-14", NaT])
         b = dt.to_string(a, "%d.%m.%Y")

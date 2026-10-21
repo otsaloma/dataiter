@@ -427,7 +427,8 @@ class DataFrame(dict):
 
         Rows are ordered so that the first column varies the slowest. A common
         use is completing data to include missing combinations by following up
-        with a :meth:`left_join`.
+        with a :meth:`left_join`. To include also values missing from the data,
+        e.g. dates, pass a full sequence, e.g. from :func:`.dt.sequence`.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> stat = data.group_by("hood", "guests").aggregate(n=di.count())
