@@ -169,7 +169,7 @@ class ListOfDicts(list):
             if self:
                 yield AttributeDict({k: f(self) for k, f in key_function_pairs.items()})
             return
-        groups = self.unique(*by).deepcopy().select(*by).fill_missing_keys(**dict.fromkeys(by))
+        groups = self.unique(*by).select(*by).fill_missing_keys(**dict.fromkeys(by))
         extract = itemgetter(*by)
         items_by_group = {}
         for item in self:

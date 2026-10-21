@@ -51,7 +51,6 @@ class DataFrameColumn(Vector):
     """
 
     def __new__(cls, object, dtype=None, nrow=None):
-        object = util.sequencify(object)
         column = Vector(object, dtype)
         if nrow is not None and nrow != column.length:
             if column.length != 1 or nrow < 0:
@@ -1849,7 +1848,7 @@ class DataFrame(dict):
                     batch_rows[i] += " "
                     batch_rows[i] += column[i]
                 del columns[colname]
-            rows_to_print.append("" if rows_to_print else "")
+            rows_to_print.append("")
             rows_to_print += batch_rows
         rows_to_print.append("")
         if max_rows < self.nrow:

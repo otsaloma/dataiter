@@ -733,7 +733,6 @@ class Vector(np.ndarray):
         if dtype is None and not isinstance(object, np.ndarray):
             if object and isinstance(object[0], str):
                 dtype = dtypes.string
-        dtype = cls._map_input_dtype(dtype)
         if (dtype is not None and
             np.dtype(dtype) == np.object_ and
             not isinstance(object, np.ndarray)):
@@ -927,7 +926,6 @@ class Vector(np.ndarray):
     def _std_to_np(cls, seq, dtype=None):
         # Convert missing values in seq to NumPy equivalents.
         # Can be empty if all of seq are missing values.
-        dtype = cls._map_input_dtype(dtype)
         types = util.unique_types(seq)
         if dtype is not None:
             na = Vector.fast([], dtype).na_value
