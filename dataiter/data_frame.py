@@ -461,9 +461,13 @@ class DataFrame(dict):
         For JSON strings, first parse them into lists with :meth:`modify` and
         ``json.loads``.
 
-        >>> data = di.DataFrame(id=[1, 2], x=["a, b", "c"], y=["[1, 2]", "[3]"])
-        >>> data.explode("x", sep=",").modify(x=lambda x: x.x.str.strip())
-        >>> data.modify(y=lambda x: x.y.map(json.loads)).explode("y", dtype=int)
+        >>> # Explode comma-delimited strings
+        >>> data = di.DataFrame(id=[1, 2], type=["a,b", "c"])
+        >>> data.explode("type", sep=",")
+        >>> # Explode JSON lists
+        >>> data = di.DataFrame(id=[1, 2], type=["[5, 6]", "[7]"])
+        >>> data.type = data.type.map(json.loads)
+        >>> data.explode("type", dtype=int)
         """
         column = self[colname]
         if column.is_string():
@@ -1071,9 +1075,7 @@ class DataFrame(dict):
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.map_columns(di.of_type(float), lambda x: x.replace_na(0))
-        >>> data.map_columns(di.of_type(float), lambda x: x.round(2))
-        >>> data.map_columns(di.of_type(float), np.pow, 2)
-        >>> data.map_columns(["guests", "sqft"], lambda x: x.as_float())
+        >>> data.map_columns(["sqft", "price"], lambda x: x.round())
         """
         if predicate is None:
             colnames = self.colnames
@@ -1603,7 +1605,7 @@ class DataFrame(dict):
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.select("id", "hood", "zipcode")
-        >>> data.select("id", "*")
+        >>> data.select("zipcode", "*")
         """
         for colname in self._glob(colnames):
             yield colname, util.submit(np.ndarray.copy, self[colname])
