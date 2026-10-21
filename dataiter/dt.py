@@ -98,8 +98,8 @@ def from_components(year, month=1, day=1, hour=None, minute=None, second=None, m
     """
     if errors not in ["strict", "replace"]:
         raise ValueError(f"Bad {errors=}")
-    components = dict(year=year, month=month, day=day, hour=hour, minute=minute, second=second, microsecond=microsecond)
-    components = {k: v for k, v in components.items() if v is not None}
+    time = dict(hour=hour, minute=minute, second=second, microsecond=microsecond)
+    components = dict(year=year, month=month, day=day) | {k: v for k, v in time.items() if v is not None}
     if all(map(util.is_scalar, components.values())):
         components = {k: [v] for k, v in components.items()}
         return from_components(**components, errors=errors)[0]

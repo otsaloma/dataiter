@@ -102,6 +102,11 @@ class TestDT:
         assert dt.from_components(2022, 10, 15, 12) == np.datetime64("2022-10-15T12:00:00")
         assert np.isnat(dt.from_components(2023, 2, 29, errors="replace"))
 
+    def test_from_components_scalar_missing(self):
+        assert np.isnat(dt.from_components(None))
+        assert np.isnat(dt.from_components(2025, None, 1))
+        assert np.isnat(dt.from_components(2025, 1, np.nan))
+
     def test_from_string_date(self):
         a = Vector(["14.11.2022", ""], str)
         b = dt.from_string(a, "%d.%m.%Y")
