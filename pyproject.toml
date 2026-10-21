@@ -16,12 +16,11 @@ dependencies = ["attd>=0.3", "numpy>=2.5.0,<3.0", "pyarrow>=26.0", "wcwidth>=0.3
 dev = [
     "click",
     "flake8",
-    "jinja2==3.1.6",
     "pandas",
     "pytest",
-    "sphinx==8.1.3",
-    "sphinx-llm==1.1.0",
-    "sphinx-rtd-theme==3.1.0",
+    "sphinx==8.1.*",
+    "sphinx-llm==1.*",
+    "sphinx-rtd-theme==3.*",
 ]
 
 [project.urls]
