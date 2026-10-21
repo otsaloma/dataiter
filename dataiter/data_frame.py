@@ -1435,7 +1435,8 @@ class DataFrame(dict):
         columns and common markers such as "NA" and "NULL" in non-string
         columns. `select` is an optional list of columns to limit to and
         `dtypes` an optional dict mapping column names to NumPy datatypes,
-        both using `colnames` if given. Timestamps with UTC offsets, e.g.
+        both using `colnames` if given. Columns with no values are read as
+        float, use `dtypes` to specify. Timestamps with UTC offsets, e.g.
         "2025-01-01T12:00:00+02:00", are converted to UTC.
         """
         na = [na] if isinstance(na, str) else list(na)
