@@ -639,7 +639,6 @@ class Vector(np.ndarray):
         >>> vector.map({"a": 1, "b": 2}.get)
         >>> vector.map({"a": 1, "b": 2}.get, 0)
         """
-        dtype = self._map_input_dtype(dtype)
         return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
 
     @classmethod
