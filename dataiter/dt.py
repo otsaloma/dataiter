@@ -168,13 +168,13 @@ def from_string(x, format, *, errors="strict"):
     for i, sep in enumerate(format):
         # Dates and times repeat a lot more than their combinations,
         # parsing them separately needs far fewer strptime calls.
-        date, time = format[:i], format[i+1:]
-        if (sep not in date and
-            sorted(re.findall(r"%(.)", date)) == ["Y", "d", "m"] and
-            sorted(re.findall(r"%(.)", time)) == ["H", "M", "S"]):
-            x_date, x_sep, x_time = x.view(Vector).str.partition(sep)
-            date = from_string(x_date, date, errors="replace")
-            time = from_string(x_time, time, errors="replace")
+        head, tail = format[:i], format[i+1:]
+        codes = [sorted(re.findall(r"%(.)", part)) for part in (head, tail)]
+        if sep not in head and sorted(codes) == [["H", "M", "S"], ["Y", "d", "m"]]:
+            x_head, x_sep, x_tail = x.view(Vector).str.partition(sep)
+            head = from_string(x_head, head, errors="replace")
+            tail = from_string(x_tail, tail, errors="replace")
+            date, time = (head, tail) if codes[0] == ["Y", "d", "m"] else (tail, head)
             out = date + (time - time.as_date())
             # Leave any failures, e.g. a missing separator or whitespace
             # that strptime allows, for the general path to handle.

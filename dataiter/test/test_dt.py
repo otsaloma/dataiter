@@ -142,6 +142,11 @@ class TestDT:
             None,
         ]
 
+    def test_from_string_datetime_split_time_first(self):
+        a = Vector(["22:49:01 14.11.2022", ""], str)
+        b = dt.from_string(a, "%H:%M:%S %d.%m.%Y")
+        assert b.tolist() == [datetime.datetime(2022, 11, 14, 22, 49, 1), None]
+
     def test_from_string_datetime_split_midnight(self):
         a = Vector(["14.11.2022 00:00:00"], str)
         b = dt.from_string(a, "%d.%m.%Y %H:%M:%S")
