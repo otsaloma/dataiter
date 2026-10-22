@@ -165,6 +165,22 @@ def from_string(x, format, *, errors="strict"):
         return from_string(x, format, errors=errors)[0]
     if not (isinstance(x, np.ndarray) and isinstance(x.dtype, StringDType)):
         raise TypeError(f"Expected string, got {_type_label(x)}")
+    for i, sep in enumerate(format):
+        # Dates and times repeat a lot more than their combinations,
+        # parsing them separately needs far fewer strptime calls.
+        date, time = format[:i], format[i+1:]
+        if (sep not in date and
+            sorted(re.findall(r"%(.)", date)) == ["Y", "d", "m"] and
+            sorted(re.findall(r"%(.)", time)) == ["H", "M", "S"]):
+            x_date, x_sep, x_time = x.view(Vector).str.partition(sep)
+            date = from_string(x_date, date, errors="replace")
+            time = from_string(x_time, time, errors="replace")
+            out = date + (time - time.as_date())
+            # Leave any failures, e.g. a missing separator or whitespace
+            # that strptime allows, for the general path to handle.
+            if (out.is_na() == (x == dtypes.string.na_object)).all():
+                return out
+            break
     out = np.full(len(x), np.datetime64("NaT", "us")).view(Vector)
     na = x == dtypes.string.na_object
     if na.all(): return out

@@ -133,6 +133,31 @@ class TestDT:
         assert b[0] == np.datetime64("2022-11-14T22:49:00")
         assert np.isnat(b[1])
 
+    def test_from_string_datetime_split(self):
+        a = Vector(["14.11.2022 22:49:01", "1.1.2023 00:00:00", ""], str)
+        b = dt.from_string(a, "%d.%m.%Y %H:%M:%S")
+        assert b.tolist() == [
+            datetime.datetime(2022, 11, 14, 22, 49, 1),
+            datetime.datetime(2023, 1, 1),
+            None,
+        ]
+
+    def test_from_string_datetime_split_midnight(self):
+        a = Vector(["14.11.2022 00:00:00"], str)
+        b = dt.from_string(a, "%d.%m.%Y %H:%M:%S")
+        assert b.dtype == np.dtype("datetime64[D]")
+
+    def test_from_string_datetime_split_fallback(self):
+        a = Vector(["14.11.2022  22:49:01", "14.11.2022\t22:49:01", "14.11.2022"], str)
+        b = dt.from_string(a, "%d.%m.%Y %H:%M:%S", errors="replace")
+        assert b.tolist() == [
+            datetime.datetime(2022, 11, 14, 22, 49, 1),
+            datetime.datetime(2022, 11, 14, 22, 49, 1),
+            None,
+        ]
+        with pytest.raises(ValueError):
+            dt.from_string(a, "%d.%m.%Y %H:%M:%S")
+
     @pytest.mark.filterwarnings("error")
     def test_from_string_utc_offset(self):
         a = Vector(["2022-11-14T22:49:00+0200", "2022-11-14T22:49:00Z"], str)
