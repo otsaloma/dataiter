@@ -19,6 +19,7 @@ New:
 - `DataFrame.rename`: Support renaming all columns with a function, e.g. `rename(str.lower)`
 - `DataFrame.replace_na`: New method to replace missing values
 - `DataFrame.select`, `DataFrame.unselect`: Support glob patterns, e.g. `select("id", "price_*")`
+- `dt.day_of_year`: New function to extract day of the year
 - `dt.floor`: New function to round down datetimes
 - `dt.from_components`: New function to create datetimes from components
 - `dt.from_string`: Add `errors` argument for unparseable values

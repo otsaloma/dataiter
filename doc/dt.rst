@@ -12,6 +12,7 @@ module, calling it once per unique value where possible, which is fast when
 values repeat, but slow for many unique values.
 
 :func:`~dataiter.dt.day`
+:func:`~dataiter.dt.day_of_year`
 :func:`~dataiter.dt.floor`
 :func:`~dataiter.dt.from_components`
 :func:`~dataiter.dt.from_string`

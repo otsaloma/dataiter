@@ -123,6 +123,7 @@ class DtProxy:
         self._vector = vector
 
     day = dt_method("day")
+    day_of_year = dt_method("day_of_year")
     floor = dt_method("floor")
     from_string = dt_method("from_string")
     hour = dt_method("hour")

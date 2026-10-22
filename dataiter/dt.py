@@ -53,6 +53,20 @@ def day(x):
         y.astype("datetime64[M]").astype("datetime64[D]")
     ).astype(int) + 1)
 
+def day_of_year(x):
+    """
+    Extract day of the year from datetime `x`.
+
+    Day of the year is an integer between 1 and 366.
+
+    >>> x = dt.new(["2022-10-15"])
+    >>> dt.day_of_year(x)
+    """
+    return _pull_int(x, lambda y: (
+        y.astype("datetime64[D]") -
+        y.astype("datetime64[Y]").astype("datetime64[D]")
+    ).astype(int) + 1)
+
 @_vectorized_datetime
 def floor(x, unit):
     """

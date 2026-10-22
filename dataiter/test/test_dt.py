@@ -46,6 +46,18 @@ class TestDT:
         x = np.datetime64("2022-10-15")
         assert dt.day(x) == 15
 
+    def test_day_of_year(self):
+        a = dt.new(["2022-01-01", "2022-10-15", "2020-12-31", NaT])
+        assert dt.day_of_year(a).tolist() == [1, 288, 366, None]
+
+    def test_day_of_year_datetime(self):
+        a = dt.new(["1969-12-31T23:59:59"])
+        assert dt.day_of_year(a).tolist() == [365]
+
+    def test_day_of_year_scalar(self):
+        x = np.datetime64("2022-10-15")
+        assert dt.day_of_year(x) == 288
+
     def test_floor_date(self):
         a = dt.new(["2022-10-15", "2022-11-20", "1969-12-31", NaT])
         assert dt.floor(a, "year").equal(dt.new(["2022-01-01", "2022-01-01", "1969-01-01", NaT]))
