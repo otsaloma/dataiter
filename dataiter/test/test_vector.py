@@ -296,6 +296,17 @@ class TestVector:
         assert a.is_datetime()
         assert np.all(a == [np.datetime64(DATETIME, "us")])
 
+    def test_as_datetime_errors(self):
+        x = Vector(["2020-01-01T12:00:00", "12:00:00", "20200101", ""])
+        with pytest.raises(ValueError):
+            x.as_datetime()
+        a = x.as_datetime(errors="replace")
+        assert a.dtype == np.dtype("datetime64[us]")
+        assert a.tolist() == [datetime.datetime(2020, 1, 1, 12), None, None, None]
+        b = x.as_date(errors="replace")
+        assert b.dtype == np.dtype("datetime64[D]")
+        assert b.tolist() == [datetime.date(2020, 1, 1), None, None, None]
+
     @pytest.mark.filterwarnings("error")
     def test_as_datetime_utc(self):
         a = Vector(["2020-01-01T12:00:00.5Z", ""]).as_datetime()

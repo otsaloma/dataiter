@@ -334,37 +334,61 @@ class Vector(np.ndarray):
         # Missing strings encode to b"", the missing value of bytes.
         return self.as_string().str.encode("utf-8")
 
-    def as_date(self):
+    def as_date(self, *, errors="strict"):
         """
         Return vector converted to date data type.
 
         Strings should be in ISO 8601 format, e.g. "2020-01-01". For other
-        formats, use :func:`.dt.from_string`.
+        formats, use :func:`.dt.from_string`. `errors` determines how to
+        handle strings that can't be converted: ``"strict"`` to raise
+        ``ValueError``, ``"replace"`` to replace them with missing values.
 
         >>> vector = di.Vector(["2020-01-01"])
         >>> vector.as_date()
+        >>> vector = di.Vector(["2020-01-01", "???"])
+        >>> vector.as_date(errors="replace")
         """
-        # NumPy parses a "Z" suffix (UTC) to the same value as without
-        # it, but warns and is slow, so drop it.
-        x = self.str.rstrip("Z") if self.is_string() else self
-        x._check_string_years("date")
-        return x.astype(np.dtype("datetime64[D]"))
+        return self._as_datetime64(np.dtype("datetime64[D]"), "date", errors)
 
-    def as_datetime(self, precision="us"):
+    def as_datetime(self, precision="us", *, errors="strict"):
         """
         Return vector converted to datetime data type.
 
         Strings should be in ISO 8601 format, e.g. "2020-01-01T12:00:00".
-        For other formats, use :func:`.dt.from_string`.
+        For other formats, use :func:`.dt.from_string`. `errors` determines
+        how to handle strings that can't be converted: ``"strict"`` to raise
+        ``ValueError``, ``"replace"`` to replace them with missing values.
 
         >>> vector = di.Vector(["2020-01-01T12:00:00"])
         >>> vector.as_datetime()
+        >>> vector = di.Vector(["2020-01-01T12:00:00", "12:00:00"])
+        >>> vector.as_datetime(errors="replace")
         """
+        return self._as_datetime64(np.dtype(f"datetime64[{precision}]"), "datetime", errors)
+
+    def _as_datetime64(self, dtype, type, errors):
+        if errors not in ["strict", "replace"]:
+            raise ValueError(f"Bad {errors=}")
         # NumPy parses a "Z" suffix (UTC) to the same value as without
         # it, but warns and is slow, so drop it.
         x = self.str.rstrip("Z") if self.is_string() else self
-        x._check_string_years("datetime")
-        return x.astype(np.dtype(f"datetime64[{precision}]"))
+        try:
+            x._check_string_years(type)
+            return x.astype(dtype)
+        except ValueError:
+            if errors == "strict" or not x.is_string(): raise
+            unit = np.datetime_data(dtype)[0]
+            first, last = np.datetime64("0001"), np.datetime64("9999")
+            def parse(value):
+                try:
+                    # Reject digits-only strings as in _check_string_years.
+                    if first <= np.datetime64(value, "Y") <= last:
+                        return np.datetime64(value, unit)
+                except ValueError:
+                    pass
+                return None
+            unique, _, codes = util.unique_codes(x)
+            return Vector.fast([parse(y) for y in unique], dtype)[codes].view(self.__class__)
 
     def as_float(self, *, errors="strict"):
         """
