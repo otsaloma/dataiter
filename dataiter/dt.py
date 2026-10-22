@@ -162,8 +162,7 @@ def from_string(x, format, *, errors="strict"):
         return from_string(x, format, errors=errors)[0]
     if not (isinstance(x, np.ndarray) and isinstance(x.dtype, StringDType)):
         raise TypeError(f"Expected string, got {_type_label(x)}")
-    out = np.full_like(x, None, object)
-    out = out.view(Vector).as_datetime()
+    out = np.full(len(x), np.datetime64("NaT", "us")).view(Vector)
     na = x == dtypes.string.na_object
     if na.all(): return out
     def parse(x):
@@ -174,10 +173,11 @@ def from_string(x, format, *, errors="strict"):
             return None
     unique, _, codes = util.unique_codes(x[~na])
     f = np.vectorize(parse, otypes=[object])
-    out[~na] = f(unique.astype(object)).astype(out.dtype)[codes]
-    valid = ~out.is_na()
-    if valid.any() and (out[valid] == out[valid].as_date()).all():
-        out = out.as_date()
+    parsed = f(unique.astype(object)).astype(out.dtype).view(Vector)
+    valid = ~parsed.is_na()
+    if valid.any() and (parsed[valid] == parsed[valid].as_date()).all():
+        out, parsed = out.as_date(), parsed.as_date()
+    out[~na] = parsed[codes]
     return out
 
 def hour(x):
