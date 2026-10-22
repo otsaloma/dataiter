@@ -47,6 +47,7 @@ tabular data and the `DataFrame` class.
 
 - Backblaze hard drive stats (daily SMART snapshots)
 - BLS QCEW employment and wages (annual and quarterly single files, area, industry, ownership and aggregation level titles)
+- CFPB HMDA loan/application register (Washington 2018–2023, data browser API) and filers (lender names)
 - Chicago crimes
 - Citi Bike GBFS station feeds
 - Citi Bike trips
@@ -79,6 +80,7 @@ tabular data and the `DataFrame` class.
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
+- US Census national county codes (2020)
 - US Census ZCTA gazetteer
 - US flights
 - Wikipedia clickstream
