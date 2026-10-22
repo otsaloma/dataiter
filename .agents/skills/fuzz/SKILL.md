@@ -59,6 +59,7 @@ tabular data and the `DataFrame` class.
 - GHCN-Daily weather station data (1900 and 1920 year files, fixed-width stations, inventory, countries and states)
 - Helsinki city bikes
 - IMDb non-commercial datasets
+- Instacart Online Grocery Shopping Dataset 2017 (orders, training basket items, products, aisles and departments)
 - Lichess puzzle database
 - MBTA GTFS schedule
 - MovieLens 25M
@@ -78,6 +79,7 @@ tabular data and the `DataFrame` class.
 - SSA baby names (national and state counts, Social Security card-holder totals)
 - Stanford Open Policing Project traffic stops (Nashville, New Orleans, San Diego)
 - UCI Online Retail II (two-year retail transactions)
+- UCI Individual Household Electric Power Consumption (minute readings, 2006–2010)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
