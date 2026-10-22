@@ -300,6 +300,10 @@ class TestAggregate:
         assert np.isclose(mean(Vector([1, 2, 10]), weights=Vector([3, 2, 1])), 17 / 6)
         assert mean(Vector([D1, D3]), weights=Vector([1, 1])) == D2
 
+    def test_mean_weights_not_vector(self):
+        with pytest.raises(TypeError, match="Expected Vector for weights"):
+            mean(Vector([1, 2]), weights=[1, 3])
+
     def test_mean_weights_grouped(self):
         data = DataFrame(g=[1, 1, 2, 2, 3, 3], x=[1.0, 3.0, 5.0, 7.0, 1.0, 2.0], w=[1, 3, 0, 0, 1, -1])
         stat = data.group_by("g").aggregate(x=mean("x", weights="w"))

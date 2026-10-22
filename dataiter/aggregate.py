@@ -285,6 +285,8 @@ def mean(x, *, weights=None, drop_na=True):
             return mean_groups(data[x], w, starts)
         aggregate.group_aware = True
         return aggregate
+    if weights is not None and not isinstance(weights, Vector):
+        raise TypeError("Expected Vector for weights")
     return mean_groups(x, weights, np.array([0])).item(0)
 
 @composite
