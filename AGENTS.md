@@ -44,6 +44,10 @@ The API documentation currently requires new methods, properties and
 attributes to be manually added to the index at the top of `doc/*.rst`
 files. Run `uv run make doc-check` to check these are up to date.
 
+Avoid exploring the numerous files under `doc/comparison`. We rarely
+have need to update that and the existing static documentation page
+therein does not need to be any state-of-the-art web app.
+
 ## Known Issues
 
 Do not complain about these or spend too much time investigating.
