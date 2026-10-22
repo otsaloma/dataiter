@@ -345,14 +345,15 @@ class DataFrame(dict):
         z = x.inner_join(y.select("_j_", "_k_"), "_k_")
         colnames = util.unique_keys(self.colnames + other.colnames)
         colnames = [x for x in colnames if x not in ignore_columns]
-        # Find candidate changes vectorized to check only those one by one.
+        # Find changes vectorized to list only those one by one.
         candidates = {}
         for colname in colnames:
             if colname in x and colname in y:
                 xs, ys = x[colname][z._i_], y[colname][z._j_]
                 candidates[colname] = (xs != ys) & ~(xs.is_na() & ys.is_na())
             else:
-                candidates[colname] = np.ones(z.nrow, bool)
+                present = x[colname][z._i_] if colname in x else y[colname][z._j_]
+                candidates[colname] = ~present.is_na()
         rows = np.flatnonzero(np.any(list(candidates.values()), axis=0))
         changed = []
         for row, i, j in zip(rows, z._i_[rows], z._j_[rows]):
@@ -366,13 +367,11 @@ class DataFrame(dict):
                 # a missing column and a missing value?
                 xvalue = x[colname][i] if colname in x else None
                 yvalue = y[colname][j] if colname in y else None
-                if (xvalue != yvalue and
-                    not Vector([xvalue, yvalue]).is_na().all()):
-                    byrow = {k: x[k][i] for k in by}
-                    changed.append(dict(**byrow,
-                                        _column_=colname,
-                                        _xvalue_=xvalue,
-                                        _yvalue_=yvalue))
+                byrow = {k: x[k][i] for k in by}
+                changed.append(dict(**byrow,
+                                    _column_=colname,
+                                    _xvalue_=xvalue,
+                                    _yvalue_=yvalue))
 
         added = added if added.nrow > 0 else self.__class__()
         removed = removed if removed.nrow > 0 else self.__class__()
