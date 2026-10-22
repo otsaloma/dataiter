@@ -1183,5 +1183,9 @@ class Vector(np.ndarray):
         if self.dtype.kind in "biufmMT":
             # Hashing is faster than np.unique, which sorts.
             return util.unique_codes(self)[0]
+        if self.is_object():
+            # Rank, as DataFrame.unique does, handles None,
+            # which makes np.unique fail to sort.
+            return self[util.unique_codes(self.rank(method="min"))[1]]
         u, indices = np.unique(np.asarray(self), return_index=True)
         return self[np.sort(indices)]

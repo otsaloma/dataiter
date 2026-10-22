@@ -947,6 +947,12 @@ class TestVector:
         assert counts.tolist() == [1, 1, 2]
         assert np.unique_counts(a).counts.tolist() == [1, 1, 2]
 
+    def test_unique_object(self):
+        a = Vector([True, None, False, True, None])
+        assert a.unique().tolist() == [True, None, False]
+        a = Vector([[1], None, [1], [2]])
+        assert a.unique().tolist() == [[1], None, [2]]
+
     def test_unique_string(self):
         a = Vector(["a", "b", None, "a", "b", "c"])
         assert a.unique().tolist() == ["a", "b", None, "c"]
