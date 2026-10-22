@@ -136,3 +136,10 @@ Do not complain about these or spend too much time investigating.
   microseconds before any operation that could break with nanoseconds.
   Losing nanosecond precision in any operation or I/O round-trip is
   fine, don't try to preserve it.
+
+- Datetime and timedelta results of `mean`, `median` and `quantile` keep
+  the unit of the input, rounded, e.g. the mean of 1 and 2 days
+  (`timedelta64[D]`) is 2 days, not 1.5 days. This is by design and
+  matches NumPy, which also keeps the unit (but truncates). Promoting to
+  a finer unit would turn e.g. mean dates into datetimes. Users can cast
+  to a finer unit before aggregating.
