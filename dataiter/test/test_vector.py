@@ -647,6 +647,16 @@ class TestVector:
         a = Vector([np.nan, np.nan], float)
         assert a.range().is_na().all()
 
+    def test_rank_dense(self):
+        a = Vector([1, 3, 1, 3, 4])
+        b = a.rank(method="dense")
+        assert b.tolist() == [1, 2, 1, 2, 3]
+
+    def test_rank_dense_na(self):
+        a = Vector([NaN, 1, 2, 2, NaN])
+        b = a.rank(method="dense")
+        assert b.tolist() == [3, 1, 2, 2, 3]
+
     def test_rank_max(self):
         a = Vector([1, 2, 1, 2, 3])
         b = a.rank(method="max")
@@ -684,15 +694,18 @@ class TestVector:
         a = Vector([NaN, NaN, NaN])
         assert a.rank(method="min").tolist() == [1, 1, 1]
         assert a.rank(method="max").tolist() == [3, 3, 3]
+        assert a.rank(method="dense").tolist() == [1, 1, 1]
         assert a.rank(method="ordinal").tolist() == [1, 2, 3]
 
     def test_rank_descending(self):
         a = Vector([1, 2, 1, NaN, 3])
         assert a.rank(method="min", dir=-1).tolist() == [3, 2, 3, 5, 1]
         assert a.rank(method="max", dir=-1).tolist() == [4, 2, 4, 5, 1]
+        assert a.rank(method="dense", dir=-1).tolist() == [3, 2, 3, 4, 1]
         assert a.rank(method="ordinal", dir=-1).tolist() == [3, 2, 4, 5, 1]
         b = Vector(["b", "a", "c", ""])
         assert b.rank(dir=-1).tolist() == [2, 3, 1, 4]
+        assert b.rank(method="dense", dir=-1).tolist() == [2, 3, 1, 4]
 
     def test_rank_string_sorted_runs(self):
         # https://github.com/numpy/numpy/issues/33089
@@ -706,6 +719,7 @@ class TestVector:
         a = Vector([NaN, 3, 2, 4, 5, 1])
         assert a.rank(method="min").equal(a.rank(method="max"))
         assert a.rank(method="min").equal(a.rank(method="ordinal"))
+        assert a.rank(method="min").equal(a.rank(method="dense"))
 
     def test_re(self):
         a = Vector(["great", "fantastic"])

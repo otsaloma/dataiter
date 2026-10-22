@@ -837,10 +837,12 @@ class Vector(np.ndarray):
         `method` determines how ties are resolved. **'min'** assigns each of
         equal values the same rank, the minimum of the set (also called
         "competition ranking"). **'max'** is the same, but assigning the
-        maximum of the set. **'ordinal'** gives each element a distinct rank
-        with equal values ranked by their order in input. Ranks begin at 1.
-        `dir` is ``1`` for ascending order, ``-1`` for descending. Missing
-        values are ranked last, regardless of `dir`.
+        maximum of the set. **'dense'** is like 'min', but without gaps after
+        ties, i.e. ranks are consecutive integers over the distinct values.
+        **'ordinal'** gives each element a distinct rank with equal values
+        ranked by their order in input. Ranks begin at 1. `dir` is ``1`` for
+        ascending order, ``-1`` for descending. Missing values are ranked last,
+        regardless of `dir`.
 
         **References**
 
@@ -850,6 +852,7 @@ class Vector(np.ndarray):
         >>> vector = di.Vector([3, 1, 1, 1, 2, 2])
         >>> vector.rank(method="min")
         >>> vector.rank(method="max")
+        >>> vector.rank(method="dense")
         >>> vector.rank(method="ordinal")
         """
         if self.length == 0:
@@ -881,6 +884,11 @@ class Vector(np.ndarray):
             inv = codes()
             out[~na] = np.bincount(inv).cumsum()[inv]
             out[na] = len(self)
+            return out.view(self.__class__)
+        if method == "dense":
+            inv = codes()
+            out[~na] = inv + 1
+            out[na] = inv.max() + 2
             return out.view(self.__class__)
         if method == "ordinal":
             # https://stackoverflow.com/a/5284703/16369038
