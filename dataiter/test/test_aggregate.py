@@ -301,9 +301,9 @@ class TestAggregate:
         assert mean(Vector([D1, D3]), weights=Vector([1, 1])) == D2
 
     def test_mean_weights_grouped(self):
-        data = DataFrame(g=[1, 1, 2, 2], x=[1.0, 3.0, 5.0, 7.0], w=[1, 3, 0, 0])
+        data = DataFrame(g=[1, 1, 2, 2, 3, 3], x=[1.0, 3.0, 5.0, 7.0, 1.0, 2.0], w=[1, 3, 0, 0, 1, -1])
         stat = data.group_by("g").aggregate(x=mean("x", weights="w"))
-        assert stat.x.equal(Vector([2.5, NaN]))
+        assert stat.x.equal(Vector([2.5, NaN, NaN]))
 
     @pytest.mark.parametrize("dtype,value,weight", [
         (np.int32, 2_000_000_000, 2),
@@ -324,6 +324,7 @@ class TestAggregate:
         assert mean(Vector([1, 2, NaN]), weights=Vector([1, NaN, 1])) == 1
         assert np.isnan(mean(Vector([1, 2]), weights=Vector([1, NaN]), drop_na=False))
         assert np.isnan(mean(Vector([1, 2]), weights=Vector([0, 0])))
+        assert np.isnan(mean(Vector([1, 2]), weights=Vector([1, -1])))
 
     def test_median(self):
         assert median(Vector([1, 4, 6, 8, 5])) == 5

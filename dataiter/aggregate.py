@@ -274,9 +274,10 @@ def mean(x, *, weights=None, drop_na=True):
         if n.any():
             # reduceat gives the next element for empty groups, skip them.
             s = starts[n > 0]
+            num = np.add.reduceat(num, s, dtype=float)
+            den = np.add.reduceat(den, s, dtype=float)
             with np.errstate(divide="ignore", invalid="ignore"):
-                out[n > 0] = (np.add.reduceat(num, s, dtype=float) /
-                              np.add.reduceat(den, s, dtype=float))
+                out[n > 0] = np.where(den == 0, np.nan, num / den)
         return datetime_from_float(out, x)
     if isinstance(x, str):
         def aggregate(data, starts):
