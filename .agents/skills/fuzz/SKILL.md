@@ -59,6 +59,7 @@ tabular data and the `DataFrame` class.
 - Lichess puzzle database
 - MBTA GTFS schedule
 - MovieLens 25M
+- mledoze/countries (country names, regions and currencies)
 - MTA subway hourly ridership (data.ny.gov) and subway stations
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
@@ -70,6 +71,7 @@ tabular data and the `DataFrame` class.
 - OpenPowerlifting
 - Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
+- UCI Online Retail II (two-year retail transactions)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
