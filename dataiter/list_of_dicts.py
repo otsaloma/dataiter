@@ -814,6 +814,8 @@ class ListOfDicts(list):
         for item in self:
             keys = map(function, item.keys()) if function else item.keys()
             keys = [renames.get(x, x) for x in keys]
+            if len(set(keys)) < len(keys):
+                raise ValueError(f"Duplicate keys after renaming: {keys}")
             yield AttributeDict(zip(keys, item.values()))
 
     @deco.obsoletes

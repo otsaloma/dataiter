@@ -642,6 +642,13 @@ class TestListOfDicts:
         assert all("date" not in x for x in data)
         assert not orig._obsolete
 
+    def test_rename_duplicate(self):
+        data = ListOfDicts([dict(a=1, A=2, b=3)])
+        with pytest.raises(ValueError):
+            data.rename(str.lower)
+        with pytest.raises(ValueError):
+            data.rename(a="b")
+
     def test_rename_function(self):
         orig = ListOfDicts([{" a ": 1, "b": 2}])
         assert list(orig.rename(str.strip)[0]) == ["a", "b"]
