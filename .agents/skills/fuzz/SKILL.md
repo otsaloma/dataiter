@@ -51,6 +51,7 @@ tabular data and the `DataFrame` class.
 - Citi Bike GBFS station feeds
 - Citi Bike trips
 - Complete Journey retail purchases, promotions, products, household demographics, campaigns and coupons (completejourney R data)
+- EIA-930 hourly electricity balance and balancing-authority interchange
 - EPA AQS air quality (hourly ozone, daily PM2.5, daily AQI by county, sites, monitors)
 - Eurostat weekly deaths by NUTS region, regional population and GEO codelist
 - FEC campaign finance bulk data (individual and committee contributions, committees, candidates)
@@ -71,6 +72,7 @@ tabular data and the `DataFrame` class.
 - OpenPowerlifting
 - Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
+- SSA baby names (national and state counts, Social Security card-holder totals)
 - UCI Online Retail II (two-year retail transactions)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
