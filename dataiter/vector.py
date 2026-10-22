@@ -337,18 +337,26 @@ class Vector(np.ndarray):
         """
         Return vector converted to date data type.
 
+        Strings should be in ISO 8601 format, e.g. "2020-01-01". For other
+        formats, use :func:`.dt.from_string`.
+
         >>> vector = di.Vector(["2020-01-01"])
         >>> vector.as_date()
         """
+        self._check_string_years("date")
         return self.astype(np.dtype("datetime64[D]"))
 
     def as_datetime(self, precision="us"):
         """
         Return vector converted to datetime data type.
 
+        Strings should be in ISO 8601 format, e.g. "2020-01-01T12:00:00".
+        For other formats, use :func:`.dt.from_string`.
+
         >>> vector = di.Vector(["2020-01-01T12:00:00"])
         >>> vector.as_datetime()
         """
+        self._check_string_years("datetime")
         return self.astype(np.dtype(f"datetime64[{precision}]"))
 
     def as_float(self, *, errors="strict"):
@@ -424,6 +432,17 @@ class Vector(np.ndarray):
     def _check_dimensions(self):
         if self.ndim == 1: return
         raise ValueError(f"Bad dimensions: {self.ndim!r}")
+
+    def _check_string_years(self, type):
+        # NumPy parses digits-only strings as years, e.g. "20200101" as year
+        # 20200101, which for finer units than days overflows silently.
+        # Parse years first to reject such values instead of returning junk.
+        if not self.is_string(): return
+        years = np.asarray(self).astype(np.dtype("datetime64[Y]"))
+        bad = (years < np.datetime64("0001")) | (years > np.datetime64("9999"))
+        if not bad.any(): return
+        value = str(self[bad][0])
+        raise ValueError(f"Can't convert {value!r} to {type}, use dt.from_string with a format, e.g. '%Y%m%d'")
 
     def _coerce_datetime(self, other):
         # NumPy considers datetimes and strings unequal or raises

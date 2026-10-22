@@ -283,10 +283,23 @@ class TestVector:
         assert a.is_datetime()
         assert np.all(a == [np.datetime64(DATE, "D")])
 
+    def test_as_date_year_only(self):
+        a = Vector(["2020", ""]).as_date()
+        assert a.tolist() == [datetime.date(2020, 1, 1), None]
+
+    def test_as_date_digits_only(self):
+        with pytest.raises(ValueError):
+            Vector(["2020-01-01", "20200101"]).as_date()
+
     def test_as_datetime(self):
         a = Vector([DATETIME]).as_datetime()
         assert a.is_datetime()
         assert np.all(a == [np.datetime64(DATETIME, "us")])
+
+    @pytest.mark.parametrize("precision", ["us", "ns"])
+    def test_as_datetime_digits_only(self, precision):
+        with pytest.raises(ValueError):
+            Vector(["20200101"]).as_datetime(precision)
 
     def test_as_datetime_precision(self):
         a = Vector([DATETIME]).as_datetime("s")
