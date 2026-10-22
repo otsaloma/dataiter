@@ -314,6 +314,14 @@ class TestListOfDicts:
         data = ListOfDicts.from_json(text)
         assert data == orig
 
+    def test_from_json_types_missing(self):
+        data = ListOfDicts.from_json('[{"a": "1"}, {"b": "2"}]', types={"b": int})
+        assert data == [{"a": "1"}, {"b": 2}]
+        with pytest.raises(KeyError, match="c"):
+            ListOfDicts.from_json('[{"a": "1"}]', types={"c": int})
+        with pytest.raises(KeyError, match="b"):
+            ListOfDicts.from_json('[{"a": "1", "b": "2"}]', select=["a"], types={"b": int})
+
     def test_full_join(self):
         orig = test.list_of_dicts("downloads.json")
         holidays = test.list_of_dicts("holidays.json")

@@ -379,10 +379,13 @@ class ListOfDicts(list):
         data = json.loads(string, **kwargs)
         if not isinstance(data, list):
             raise TypeError("Not a list")
+        keys = util.unique_keys(itertools.chain(*data)) if select or types else []
         if select:
-            select = util.glob_all(select, util.unique_keys(itertools.chain(*data)))
-            data = [{k: item[k] for k in select if k in item} for item in data]
+            keys = util.glob_all(select, keys)
+            data = [{k: item[k] for k in keys if k in item} for item in data]
         for key, type in types.items():
+            if key not in keys:
+                raise KeyError(key)
             for item in data:
                 if key in item:
                     item[key] = type(item[key])
