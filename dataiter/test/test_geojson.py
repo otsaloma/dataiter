@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import json
+
 from dataiter import GeoJSON
 from dataiter import test
 
@@ -83,6 +85,24 @@ class TestGeoJSON:
         data = GeoJSON.read(path)
         assert data == orig
         assert data.metadata == orig.metadata
+
+    def test_write_feature_id(self, tmp_path):
+        feature = {"type": "Feature", "id": "a", "properties": {"x": 1}, "geometry": {"type": "Point", "coordinates": [0, 0]}}
+        path = tmp_path / "test.geojson"
+        path.write_text(json.dumps({"type": "FeatureCollection", "features": [feature]}))
+        data = GeoJSON.read(path)
+        assert data.colnames == ["feature_id", "x", "geometry"]
+        data.write(path)
+        assert json.loads(path.read_text())["features"] == [feature]
+
+    def test_write_property_id(self, tmp_path):
+        feature = {"type": "Feature", "properties": {"id": "a"}, "geometry": {"type": "Point", "coordinates": [0, 0]}}
+        path = tmp_path / "test.geojson"
+        path.write_text(json.dumps({"type": "FeatureCollection", "features": [feature]}))
+        data = GeoJSON.read(path)
+        assert data.colnames == ["id", "geometry"]
+        data.write(path)
+        assert json.loads(path.read_text())["features"] == [feature]
 
     def test_write_path(self, tmp_path):
         orig = test.geojson(self.path)

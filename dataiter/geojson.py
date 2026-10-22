@@ -37,8 +37,9 @@ class GeoJSON(DataFrame):
     :class:`.DataFrame`. Any operations on the data are thus done with methods
     provided by the data frame class. Geometry is available in the "geometry"
     column, but no special geometric operations are supported. Feature
-    identifiers, if present, are available in the "id" column. All other data
-    is available in the "metadata" attribute as an ``attd.AttributeDict``.
+    identifiers, if present, are available in the "feature_id" column. All
+    other data is available in the "metadata" attribute as an
+    ``attd.AttributeDict``.
     """
 
     # List of names that are actual attributes, not columns
@@ -99,8 +100,8 @@ class GeoJSON(DataFrame):
             for key in feature.properties:
                 data.setdefault(key, [])
         has_ids = any("id" in x for x in raw.features)
-        if has_ids and "id" in data:
-            print("Warning: Ignoring feature key 'id' in favor of property 'id'")
+        if has_ids and "feature_id" in data:
+            print("Warning: Ignoring feature key 'id' in favor of property 'feature_id'")
             has_ids = False
         if select:
             data = {k: v for k, v in data.items() if k in select}
@@ -108,8 +109,8 @@ class GeoJSON(DataFrame):
             for key in data:
                 value = feature.properties.get(key, None)
                 data[key].append(value)
-        if has_ids and (not select or "id" in select):
-            data = {"id": [x.get("id") for x in raw.features], **data}
+        if has_ids and (not select or "feature_id" in select):
+            data = {"feature_id": [x.get("id") for x in raw.features], **data}
         data["geometry"] = [x.geometry for x in raw.features]
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
@@ -157,7 +158,7 @@ class GeoJSON(DataFrame):
             f.write(f'{indent1}"features": [\n')
             for i, item in enumerate(data):
                 geometry = item.pop("geometry")
-                id = item.pop("id", None)
+                id = item.pop("feature_id", None)
                 blob = {"type": "Feature", "id": id, "properties": item, "geometry": geometry}
                 if id is None:
                     del blob["id"]
