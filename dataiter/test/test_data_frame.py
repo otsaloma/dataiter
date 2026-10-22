@@ -588,6 +588,24 @@ class TestDataFrame:
         assert sum(data.downloads.is_na()) == 25
         assert np.nansum(data.downloads) == 541335745
 
+    def test_full_join_by_tuple_conflicting_key(self):
+        a = DataFrame(ka=[1], x=[1])
+        b = DataFrame(kb=[1, 2], ka=[90, 99], y=[1, 2])
+        data = a.full_join(b, ("ka", "kb"))
+        assert data.colnames == ["ka", "x", "y"]
+        assert data.ka.tolist() == [1, 2]
+        assert data.y.tolist() == [1, 2]
+        assert b.ka.tolist() == [90, 99]
+
+    def test_full_join_by_tuple_swapped(self):
+        a = DataFrame(k1=["A", "C"], k2=["B", "D"], x=[1, 2])
+        b = DataFrame(k1=["B", "E"], k2=["A", "F"], y=[3, 4])
+        data = a.full_join(b, ("k1", "k2"), ("k2", "k1"))
+        assert data.k1.tolist() == ["A", "C", "F"]
+        assert data.k2.tolist() == ["B", "D", "E"]
+        assert data.x.tolist() == [1, 2, None]
+        assert data.y.tolist() == [3, None, 4]
+
     def test_full_join_multiple(self):
         a = DataFrame(k=[1, 2, 3], x=[1, 2, 3])
         b = DataFrame(k=[2, 1, 2, 4], y=[1, 2, 3, 4])

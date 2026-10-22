@@ -741,12 +741,12 @@ class DataFrame(dict):
         ab = ab.unselect("_bid_")
         if b.nrow == 0:
             return ab
-        for item in by:
-            # For identifiers in by whose name differs in self and b,
-            # rename and keep the variant found in self.
-            if isinstance(item, (list, tuple)):
-                b[item[0]] = b.pop(item[1])
-        return ab.rbind(b)
+        # For identifiers in by whose name differs in self and b,
+        # rename and keep the variant found in self.
+        by1, by2 = self._split_join_by(*by)
+        renames = {k1: k2 for k1, k2 in zip(by1, by2) if k1 != k2}
+        conflicts = [x for x in renames if x in b and x not in renames.values()]
+        return ab.rbind(b.unselect(*conflicts).rename(**renames))
 
     @staticmethod
     def _get_codes(columns, ordered=True):
