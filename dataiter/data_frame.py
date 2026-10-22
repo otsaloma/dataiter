@@ -700,7 +700,7 @@ class DataFrame(dict):
         for i, name in enumerate(data.columns):
             try:
                 arrays[str(i)] = pa.array(data[name], from_pandas=True)
-            except (pa.ArrowInvalid, pa.ArrowTypeError):
+            except (pa.ArrowInvalid, pa.ArrowNotImplementedError, pa.ArrowTypeError):
                 # Arrow can't hold e.g. mixed types, let Vector guess.
                 values = [None if na else x for x, na in zip(data[name].tolist(), data[name].isna())]
                 others[str(i)] = DataFrameColumn(values, dtypes.get(name))
