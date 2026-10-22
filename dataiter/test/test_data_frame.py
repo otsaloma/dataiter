@@ -271,6 +271,13 @@ class TestDataFrame:
         assert changed.b.tolist() == [None]
         assert changed.xvalue.tolist() == [5]
 
+    def test_compare_na_values_and_missing_columns(self):
+        old = DataFrame(a=[1, 2, 3], b=[np.nan, np.nan, 1.0], c=["x", "", ""])
+        new = old.modify(b=[np.nan, 5.0, 1.0], d=[1, 2, 3]).unselect("c")
+        added, removed, changed = new.compare(old, "a")
+        assert changed.a.tolist() == [1, 1, 2, 2, 3]
+        assert changed.column.tolist() == ["d", "c", "b", "d", "d"]
+
     def test_compare_name_clash(self):
         old = DataFrame(column=[1, 2], xvalue=[1, 2], a=[1, 2])
         new = old.modify(a=[1, 3])

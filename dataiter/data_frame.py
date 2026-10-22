@@ -345,13 +345,23 @@ class DataFrame(dict):
         z = x.inner_join(y.select("_j_", "_k_"), "_k_")
         colnames = util.unique_keys(self.colnames + other.colnames)
         colnames = [x for x in colnames if x not in ignore_columns]
+        # Find candidate changes vectorized to check only those one by one.
+        candidates = {}
+        for colname in colnames:
+            if colname in x and colname in y:
+                xs, ys = x[colname][z._i_], y[colname][z._j_]
+                candidates[colname] = (xs != ys) & ~(xs.is_na() & ys.is_na())
+            else:
+                candidates[colname] = np.ones(z.nrow, bool)
+        rows = np.flatnonzero(np.any(list(candidates.values()), axis=0))
         changed = []
-        for i, j in zip(z._i_, z._j_):
+        for row, i, j in zip(rows, z._i_[rows], z._j_[rows]):
             if len(changed) >= max_changed:
                 print(f"max_changed={max_changed} reached, terminating")
                 break
             for colname in colnames:
                 if len(changed) >= max_changed: break
+                if not candidates[colname][row]: continue
                 # XXX: How to make a distinction between
                 # a missing column and a missing value?
                 xvalue = x[colname][i] if colname in x else None
