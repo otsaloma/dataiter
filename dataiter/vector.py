@@ -42,12 +42,12 @@ TYPE_CONVERSIONS = {
     datetime.timedelta: "timedelta64[us]",
 }
 
-def as_vector(function):
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        array = function(*args, **kwargs)
-        return array.view(Vector)
-    return wrapper
+def dt_method(name):
+    # dataiter.dt imports Vector, look up the function only when called.
+    def method(self, *args, **kwargs):
+        return getattr(dataiter.dt, name)(self._vector, *args, **kwargs)
+    method.__name__ = name
+    return method
 
 def not_implemented(*args, **kwargs):
     raise NotImplementedError
@@ -79,6 +79,28 @@ def of_type(*types):
 
     return is_type
 
+def re_method(name):
+    # dataiter.regex imports Vector, look up the function only when called.
+    @functools.cache
+    def get_function_and_signature():
+        function = getattr(dataiter.regex, name)
+        # Bind arguments to the signature without string, so that
+        # arguments both before and after it can be positional or keyword.
+        params = inspect.signature(function).parameters.values()
+        return function, inspect.Signature([x for x in params if x.name != "string"])
+    def method(self, *args, **kwargs):
+        function, signature = get_function_and_signature()
+        return function(**signature.bind(*args, **kwargs).arguments, string=self._vector)
+    method.__name__ = name
+    return method
+
+def str_method(name):
+    function = getattr(np.strings, name, not_implemented)
+    def method(self, *args, **kwargs):
+        return function(self._vector, *args, **kwargs).view(Vector)
+    method.__name__ = name
+    return method
+
 def str_partition(vector, function, sep):
     # np.strings.partition has no loop for StringDType
     # with a str separator, it needs to be StringDType too.
@@ -98,101 +120,100 @@ def str_slice(vector, *args):
 
 class DtProxy:
     def __init__(self, vector):
-        from dataiter import dt
-        wrap = lambda f: functools.partial(f, vector)
-        self.day = wrap(dt.day)
-        self.floor = wrap(dt.floor)
-        self.from_string = wrap(dt.from_string)
-        self.hour = wrap(dt.hour)
-        self.isoformat = wrap(dt.isoformat)
-        self.isoweek = wrap(dt.isoweek)
-        self.isoweekday = wrap(dt.isoweekday)
-        self.microsecond = wrap(dt.microsecond)
-        self.minute = wrap(dt.minute)
-        self.month = wrap(dt.month)
-        self.new = wrap(dt.new)
-        self.quarter = wrap(dt.quarter)
-        self.replace = wrap(dt.replace)
-        self.second = wrap(dt.second)
-        self.to_string = wrap(dt.to_string)
-        self.total_seconds = wrap(dt.total_seconds)
-        self.weekday = wrap(dt.weekday)
-        self.year = wrap(dt.year)
+        self._vector = vector
+
+    day = dt_method("day")
+    floor = dt_method("floor")
+    from_string = dt_method("from_string")
+    hour = dt_method("hour")
+    isoformat = dt_method("isoformat")
+    isoweek = dt_method("isoweek")
+    isoweekday = dt_method("isoweekday")
+    microsecond = dt_method("microsecond")
+    minute = dt_method("minute")
+    month = dt_method("month")
+    new = dt_method("new")
+    quarter = dt_method("quarter")
+    replace = dt_method("replace")
+    second = dt_method("second")
+    to_string = dt_method("to_string")
+    total_seconds = dt_method("total_seconds")
+    weekday = dt_method("weekday")
+    year = dt_method("year")
 
 class ReProxy:
     def __init__(self, vector):
-        from dataiter import regex
-        def wrap(f):
-            # Bind arguments to the signature without string, so that
-            # arguments both before and after it can be positional or keyword.
-            params = inspect.signature(f).parameters.values()
-            signature = inspect.Signature([x for x in params if x.name != "string"])
-            def wrapper(*args, **kwargs):
-                return f(**signature.bind(*args, **kwargs).arguments, string=vector)
-            return wrapper
-        self.extract = wrap(regex.extract)
-        self.findall = wrap(regex.findall)
-        self.fullmatch = wrap(regex.fullmatch)
-        self.match = wrap(regex.match)
-        self.search = wrap(regex.search)
-        self.split = wrap(regex.split)
-        self.sub = wrap(regex.sub)
-        self.subn = wrap(regex.subn)
+        self._vector = vector
+
+    extract = re_method("extract")
+    findall = re_method("findall")
+    fullmatch = re_method("fullmatch")
+    match = re_method("match")
+    search = re_method("search")
+    split = re_method("split")
+    sub = re_method("sub")
+    subn = re_method("subn")
 
 class StrProxy:
     def __init__(self, vector):
-        wrap = lambda name: as_vector(functools.partial(
-            getattr(np.strings, name, not_implemented),
-            vector))
+        self._vector = vector
 
-        # https://numpy.org/doc/stable/reference/routines.strings.html
-        self.add = wrap("add")
-        self.capitalize = wrap("capitalize")
-        self.center = wrap("center")
-        self.contains = lambda x: self.find(x) > -1
-        self.count = wrap("count")
-        self.decode = wrap("decode")
-        self.encode = wrap("encode")
-        self.endswith = wrap("endswith")
-        self.equal = wrap("equal")
-        self.expandtabs = wrap("expandtabs")
-        self.find = wrap("find")
-        self.greater = wrap("greater")
-        self.greater_equal = wrap("greater_equal")
-        self.index = wrap("index")
-        self.isalnum = wrap("isalnum")
-        self.isalpha = wrap("isalpha")
-        self.isdecimal = wrap("isdecimal")
-        self.isdigit = wrap("isdigit")
-        self.islower = wrap("islower")
-        self.isnumeric = wrap("isnumeric")
-        self.isspace = wrap("isspace")
-        self.istitle = wrap("istitle")
-        self.isupper = wrap("isupper")
-        self.less = wrap("less")
-        self.less_equal = wrap("less_equal")
-        self.ljust = wrap("ljust")
-        self.lower = wrap("lower")
-        self.lstrip = wrap("lstrip")
-        self.mod = wrap("mod")
-        self.multiply = wrap("multiply")
-        self.not_equal = wrap("not_equal")
-        self.partition = functools.partial(str_partition, vector, np.strings.partition)
-        self.replace = wrap("replace")
-        self.rfind = wrap("rfind")
-        self.rindex = wrap("rindex")
-        self.rjust = wrap("rjust")
-        self.rpartition = functools.partial(str_partition, vector, np.strings.rpartition)
-        self.rstrip = wrap("rstrip")
-        self.slice = as_vector(functools.partial(str_slice, vector))
-        self.startswith = wrap("startswith")
-        self.str_len = wrap("str_len")
-        self.strip = wrap("strip")
-        self.swapcase = wrap("swapcase")
-        self.title = wrap("title")
-        self.translate = wrap("translate")
-        self.upper = wrap("upper")
-        self.zfill = wrap("zfill")
+    # https://numpy.org/doc/stable/reference/routines.strings.html
+    add = str_method("add")
+    capitalize = str_method("capitalize")
+    center = str_method("center")
+    count = str_method("count")
+    decode = str_method("decode")
+    encode = str_method("encode")
+    endswith = str_method("endswith")
+    equal = str_method("equal")
+    expandtabs = str_method("expandtabs")
+    find = str_method("find")
+    greater = str_method("greater")
+    greater_equal = str_method("greater_equal")
+    index = str_method("index")
+    isalnum = str_method("isalnum")
+    isalpha = str_method("isalpha")
+    isdecimal = str_method("isdecimal")
+    isdigit = str_method("isdigit")
+    islower = str_method("islower")
+    isnumeric = str_method("isnumeric")
+    isspace = str_method("isspace")
+    istitle = str_method("istitle")
+    isupper = str_method("isupper")
+    less = str_method("less")
+    less_equal = str_method("less_equal")
+    ljust = str_method("ljust")
+    lower = str_method("lower")
+    lstrip = str_method("lstrip")
+    mod = str_method("mod")
+    multiply = str_method("multiply")
+    not_equal = str_method("not_equal")
+    replace = str_method("replace")
+    rfind = str_method("rfind")
+    rindex = str_method("rindex")
+    rjust = str_method("rjust")
+    rstrip = str_method("rstrip")
+    startswith = str_method("startswith")
+    str_len = str_method("str_len")
+    strip = str_method("strip")
+    swapcase = str_method("swapcase")
+    title = str_method("title")
+    translate = str_method("translate")
+    upper = str_method("upper")
+    zfill = str_method("zfill")
+
+    def contains(self, x):
+        return self.find(x) > -1
+
+    def partition(self, sep):
+        return str_partition(self._vector, np.strings.partition, sep)
+
+    def rpartition(self, sep):
+        return str_partition(self._vector, np.strings.rpartition, sep)
+
+    def slice(self, *args):
+        return str_slice(self._vector, *args).view(Vector)
 
 class Vector(np.ndarray):
 
@@ -445,7 +466,7 @@ class Vector(np.ndarray):
         """
         return self[~self.is_na()]
 
-    @functools.cached_property
+    @property
     def dt(self) -> DtProxy:
         """
         Proxy object for calling :mod:`dataiter.dt` functions.
@@ -855,7 +876,7 @@ class Vector(np.ndarray):
             return out.view(self.__class__)
         raise ValueError(f"Unexpected method: {method!r}")
 
-    @functools.cached_property
+    @property
     def re(self) -> ReProxy:
         """
         Proxy object for calling :mod:`dataiter.regex` functions.
@@ -1012,7 +1033,7 @@ class Vector(np.ndarray):
         # Usually causes dtype to be object!
         return None
 
-    @functools.cached_property
+    @property
     def str(self) -> StrProxy:
         """
         Proxy object for calling ``numpy.strings`` functions.

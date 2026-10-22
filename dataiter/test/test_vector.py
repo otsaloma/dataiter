@@ -25,6 +25,7 @@ import math
 import numpy as np
 import operator
 import pytest
+import weakref
 
 from dataiter import of_type
 from dataiter import Vector
@@ -368,6 +369,15 @@ class TestVector:
         assert a.dt.day().tolist() == [11]
         assert a.dt.floor("month").tolist() == [datetime.date(2025, 1, 1)]
         assert a.dt.isoformat().tolist() == ["2025-01-11"]
+
+    @pytest.mark.parametrize("proxy", ["dt", "re", "str"])
+    def test_proxy_no_reference_cycle(self, proxy):
+        # The vector should be freed without waiting for garbage collection.
+        a = Vector(["a"])
+        getattr(a, proxy)
+        ref = weakref.ref(a)
+        del a
+        assert ref() is None
 
     def test_equal_boolean(self):
         a = Vector([True, False])
