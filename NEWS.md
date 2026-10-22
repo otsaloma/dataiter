@@ -58,6 +58,7 @@ Fixes:
 - `Vector.as_float`: Convert missing values to NaN
 - `Vector.as_integer`: Raise `ValueError` for missing values
 - `Vector.as_string`: Convert missing values to ""
+- `Vector.round`: Always return a vector, not a plain NumPy array
 
 Dependencies:
 - Require NumPy ≥ 2.5

@@ -877,6 +877,12 @@ class Vector(np.ndarray):
             vector[na] = value
         return vector
 
+    def round(self, decimals=0, out=None):
+        """"""
+        # NumPy returns a plain array for non-zero decimals.
+        result = super().round(decimals, out)
+        return result if out is not None else result.view(self.__class__)
+
     def sample(self, n=None):
         """
         Return randomly chosen `n` elements.

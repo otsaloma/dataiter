@@ -692,6 +692,15 @@ class TestVector:
         a = Vector([1, 2, 3])
         assert a.replace_na("").tolist() == [1, 2, 3]
 
+    def test_round(self):
+        a = Vector([1.234, 15.0, NaN])
+        for decimals in [0, 2, -1]:
+            assert isinstance(a.round(decimals), Vector)
+            assert isinstance(np.round(a, decimals), Vector)
+        assert a.round(2).tolist()[:2] == [1.23, 15.0]
+        assert a.round(-1).tolist()[:2] == [0.0, 20.0]
+        assert isinstance(Vector([15, 25]).round(-1), Vector)
+
     def test_sample(self):
         a = Vector([1, 2, 3, 4, 5])
         assert np.all(a.sample(3).is_in(a))

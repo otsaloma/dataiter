@@ -24,6 +24,7 @@ PAGES = {
 SKIP = [
     "DataFrame.clear",
     "GeoJSON.to_string",
+    "Vector.round",
 ]
 
 DIRECTORY = Path(__file__).parent
