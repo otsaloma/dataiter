@@ -1600,6 +1600,11 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = orig.unique("a", "b")
         assert data.b.is_na().tolist() == [False, True]
 
+    def test_unique_by_unhashable_object(self):
+        orig = DataFrame(a=Vector([[1, 2], [3], [1, 2], None], object), b=[1, 2, 1, 3])
+        assert orig.unique("a").b.tolist() == [1, 2, 3]
+        assert orig.unique().b.tolist() == [1, 2, 3]
+
     def test_unique_preserve_order(self):
         orig = test.data_frame("vehicles.csv")
         orig.order = np.arange(orig.nrow)

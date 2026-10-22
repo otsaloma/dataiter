@@ -1913,21 +1913,10 @@ class DataFrame(dict):
         # without slow sorting, especially of strings.
         columns = [util.submit(lambda x: util.unique_codes(x)[2], x) if x.is_string() else x for x in columns]
         columns = [util.result(x) for x in columns]
-        objects = [x for x in columns if x.dtype == np.dtype(object)]
-        if objects:
-            # Arrow can't hash Python objects, use a Python set of rows instead,
-            # with other columns as one combined code, as NaN != NaN.
-            others = [x for x in columns if x.dtype != np.dtype(object)]
-            rows = zip(*objects, self._get_codes(others, ordered=False)) if others else zip(*objects)
-            seen = set()
-            keep = []
-            for i, row in enumerate(rows):
-                if row not in seen:
-                    seen.add(row)
-                    keep.append(i)
-            keep = np.array(keep, np.int64)
-        else:
-            keep = self._get_unique_rows(columns, self.nrow)
+        # Arrow can't hash Python objects, rank them as grouping does,
+        # which handles unhashable values, e.g. lists.
+        columns = [x.rank(method="min") if x.dtype == np.dtype(object) else x for x in columns]
+        keep = self._get_unique_rows(columns, self.nrow)
         for colname, column in self.items():
             yield colname, util.submit(np.take, column, keep)
 
