@@ -1440,8 +1440,10 @@ class DataFrame(dict):
         limit to, as in :meth:`.DataFrame.select`, and `dtypes` an optional
         dict mapping column names to NumPy datatypes, both using `colnames` if
         given. Columns with no values are read as float, use `dtypes` to
-        specify. Timestamps with UTC offsets, e.g.
-        "2025-01-01T12:00:00+02:00", are converted to UTC.
+        specify. Date and datetime `dtypes` expect ISO 8601 text, for other
+        formats, read as string and use :func:`.dt.from_string`. Timestamps
+        with UTC offsets, e.g. "2025-01-01T12:00:00+02:00", are converted to
+        UTC.
         """
         na = [na] if isinstance(na, str) else list(na)
         # Strings need to be requested already at parse time,
