@@ -74,6 +74,7 @@ tabular data and the `DataFrame` class.
 - Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
 - SSA baby names (national and state counts, Social Security card-holder totals)
+- Stanford Open Policing Project traffic stops (Nashville, New Orleans, San Diego)
 - UCI Online Retail II (two-year retail transactions)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
