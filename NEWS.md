@@ -7,7 +7,7 @@ Highlights:
 - Support group-wise operation in `filter`, `filter_out`, `head` and `tail`
 - Support Zstandard compression (requires Python ≥ 3.14)
 - Add Markdown documentation pages for coding agents
-- Add `llms.txt` and `llms-full.txt` (~40k tokens) for coding agents
+- Add `llms.txt` and `llms-full.txt` (~50k tokens) for coding agents
 
 New:
 - `DataFrame.*_join`: Add `multiple` argument to choose the first, last or all matches

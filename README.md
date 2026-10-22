@@ -55,7 +55,7 @@ the differences and similarities in common operations.
 https://dataiter.readthedocs.io/en/stable/comparison.html
 
 Dataiter's API is small enough that the complete documentation fits in
-about 40k tokens. Coding agents can read all of it in one go and know
+about 50k tokens. Coding agents can read all of it in one go and know
 the whole API before writing any code. This differs from bigger
 packages, like Pandas and Polars, which must fight against outdated
 training data and introduce their huge API piecemeal, hoping the agent
