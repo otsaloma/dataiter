@@ -344,8 +344,11 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(["2020-01-01"])
         >>> vector.as_date()
         """
-        self._check_string_years("date")
-        return self.astype(np.dtype("datetime64[D]"))
+        # NumPy parses a "Z" suffix (UTC) to the same value as without
+        # it, but warns and is slow, so drop it.
+        x = self.str.rstrip("Z") if self.is_string() else self
+        x._check_string_years("date")
+        return x.astype(np.dtype("datetime64[D]"))
 
     def as_datetime(self, precision="us"):
         """
@@ -357,8 +360,11 @@ class Vector(np.ndarray):
         >>> vector = di.Vector(["2020-01-01T12:00:00"])
         >>> vector.as_datetime()
         """
-        self._check_string_years("datetime")
-        return self.astype(np.dtype(f"datetime64[{precision}]"))
+        # NumPy parses a "Z" suffix (UTC) to the same value as without
+        # it, but warns and is slow, so drop it.
+        x = self.str.rstrip("Z") if self.is_string() else self
+        x._check_string_years("datetime")
+        return x.astype(np.dtype(f"datetime64[{precision}]"))
 
     def as_float(self, *, errors="strict"):
         """

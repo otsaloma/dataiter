@@ -296,6 +296,13 @@ class TestVector:
         assert a.is_datetime()
         assert np.all(a == [np.datetime64(DATETIME, "us")])
 
+    @pytest.mark.filterwarnings("error")
+    def test_as_datetime_utc(self):
+        a = Vector(["2020-01-01T12:00:00.5Z", ""]).as_datetime()
+        assert a.tolist() == [datetime.datetime(2020, 1, 1, 12, 0, 0, 500000), None]
+        b = Vector(["2020-01-01T12:00:00Z"]).as_date()
+        assert b.tolist() == [datetime.date(2020, 1, 1)]
+
     @pytest.mark.parametrize("precision", ["us", "ns"])
     def test_as_datetime_digits_only(self, precision):
         with pytest.raises(ValueError):
