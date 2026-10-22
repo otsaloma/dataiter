@@ -332,6 +332,18 @@ class TestListOfDicts:
         assert list(data[2].keys()) == ["ka", "y"]
         assert all("kb" not in x for x in data)
 
+    def test_full_join_by_tuple_conflicting_key(self):
+        a = ListOfDicts([{"ka": 1, "x": 1}])
+        b = ListOfDicts([{"kb": 1, "ka": 90, "y": 1},
+                         {"kb": 2, "ka": 99, "y": 2},
+                         {"ka": 3, "y": 3}])
+        data = a.full_join(b, ("ka", "kb"))
+        assert data == [{"ka": 1, "x": 1, "y": 1},
+                        {"ka": 2, "y": 2},
+                        {"ka": 3, "y": 3}]
+        assert list(data[1]) == ["ka", "y"]
+        assert b[1] == {"kb": 2, "ka": 99, "y": 2}
+
     def test_full_join_missing_key(self):
         orig = ListOfDicts([{"a": 1, "b": 2}, {"a": 2}, {"a": 3, "b": None}])
         other = ListOfDicts([{"b": 2, "c": 1}, {"c": 2}])

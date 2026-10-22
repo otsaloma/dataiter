@@ -422,7 +422,12 @@ class ListOfDicts(list):
         # For identifiers in by whose name differs in self and b,
         # rename and keep the variant found in self.
         by1, by2 = self._split_join_by(*by)
-        b = b.rename(**{k1: k2 for k1, k2 in zip(by1, by2) if k1 != k2})
+        renames = {k1: k2 for k1, k2 in zip(by1, by2) if k1 != k2}
+        for item in b:
+            for to, fm in renames.items():
+                if fm in item and to not in renames.values():
+                    item.pop(to, None)
+        b = b.rename(**renames)
         return (ab + b).unselect("_bid_")
 
     @staticmethod
