@@ -596,12 +596,11 @@ class DataFrame(dict):
                 # of an object column of datetime.time.
                 digits = {"s": 0, "ms": 3, "us": 6, "ns": 9}[column.type.unit]
                 column = column.cast(pa.string())
-                # Drop fractional seconds and seconds if all are zero,
-                # e.g. "16:06" in a CSV file would become "16:06:00".
-                suffixes = [":00"] if digits == 0 else ["." + "0" * digits, ":00"]
-                for suffix in suffixes:
-                    if pc.all(pc.ends_with(column, suffix)).as_py():
-                        column = pc.utf8_slice_codeunits(column, 0, -len(suffix))
+                # Drop fractional seconds if all are zero. Keep seconds
+                # always, so that the format doesn't depend on the data.
+                suffix = "." + "0" * digits
+                if digits > 0 and pc.all(pc.ends_with(column, suffix)).as_py():
+                    column = pc.utf8_slice_codeunits(column, 0, -len(suffix))
             if (req_dtype is None and
                 (pa.types.is_null(column.type) or
                  pa.types.is_decimal(column.type))):

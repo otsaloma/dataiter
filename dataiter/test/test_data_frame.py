@@ -510,11 +510,11 @@ class TestDataFrame:
         assert data.a.tolist() == ["16:06:30", None]
 
     def test_from_arrow_time_zeros(self):
-        a = pa.array([datetime.time(16, 6), datetime.time(8, 0, 30)], pa.time64("us"))
+        a = pa.array([datetime.time(16, 6), datetime.time(8, 0, 30, 500000)], pa.time64("us"))
         b = pa.array([datetime.time(16, 6), datetime.time(8, 0)], pa.time64("us"))
         data = DataFrame.from_arrow(pa.table({"a": a, "b": b}))
-        assert data.a.tolist() == ["16:06:00", "08:00:30"]
-        assert data.b.tolist() == ["16:06", "08:00"]
+        assert data.a.tolist() == ["16:06:00.000000", "08:00:30.500000"]
+        assert data.b.tolist() == ["16:06:00", "08:00:00"]
 
     def test_from_arrow_timezone(self):
         values = [datetime.datetime(2025, 1, 1, 10), datetime.datetime(2025, 7, 1, 10), None]
@@ -1087,10 +1087,10 @@ class TestDataFrame:
 
     def test_read_csv_time(self, tmp_path):
         path = tmp_path / "test.csv"
-        path.write_text("time\n16:06\n08:00\n", "utf-8")
+        path.write_text("time\n16:06\n08:00:00\n", "utf-8")
         data = DataFrame.read_csv(path)
         assert data.time.is_string()
-        assert data.time.tolist() == ["16:06", "08:00"]
+        assert data.time.tolist() == ["16:06:00", "08:00:00"]
 
     def test_read_csv_no_header_select(self, tmp_path):
         path = tmp_path / "test.csv"
