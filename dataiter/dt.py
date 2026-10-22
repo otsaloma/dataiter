@@ -148,6 +148,9 @@ def from_string(x, format, *, errors="strict"):
     `format` uses Python ``strptime`` format codes:
     https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 
+    Timestamps with UTC offsets, e.g. parsed with ``%z``, are converted to
+    UTC.
+
     `errors` determines how to handle strings that can't be parsed:
     ``"strict"`` to raise ``ValueError``, ``"replace"`` to replace them
     with missing values.
@@ -167,10 +170,13 @@ def from_string(x, format, *, errors="strict"):
     if na.all(): return out
     def parse(x):
         try:
-            return datetime.datetime.strptime(x, format)
+            y = datetime.datetime.strptime(x, format)
         except ValueError:
             if errors == "strict": raise
             return None
+        if y.tzinfo is not None:
+            y = y.astimezone(datetime.UTC).replace(tzinfo=None)
+        return y
     unique, _, codes = util.unique_codes(x[~na])
     f = np.vectorize(parse, otypes=[object])
     parsed = f(unique.astype(object)).astype(out.dtype).view(Vector)

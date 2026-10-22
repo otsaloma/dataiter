@@ -133,6 +133,15 @@ class TestDT:
         assert b[0] == np.datetime64("2022-11-14T22:49:00")
         assert np.isnat(b[1])
 
+    @pytest.mark.filterwarnings("error")
+    def test_from_string_utc_offset(self):
+        a = Vector(["2022-11-14T22:49:00+0200", "2022-11-14T22:49:00Z"], str)
+        b = dt.from_string(a, "%Y-%m-%dT%H:%M:%S%z")
+        assert b.tolist() == [
+            datetime.datetime(2022, 11, 14, 20, 49),
+            datetime.datetime(2022, 11, 14, 22, 49),
+        ]
+
     def test_from_string_errors_replace(self):
         a = Vector(["14.11.2022", "32.11.2022"], str)
         b = dt.from_string(a, "%d.%m.%Y", errors="replace")
