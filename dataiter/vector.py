@@ -23,6 +23,7 @@
 import dataiter
 import datetime
 import functools
+import inspect
 import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pc
@@ -120,17 +121,22 @@ class DtProxy:
 class ReProxy:
     def __init__(self, vector):
         from dataiter import regex
-        # Insert vector as string positionally after the n arguments
-        # preceding it, so that arguments after it can be positional too.
-        wrap = lambda f, n=1: lambda *args, **kwargs: f(*args[:n], vector, *args[n:], **kwargs)
+        def wrap(f):
+            # Bind arguments to the signature without string, so that
+            # arguments both before and after it can be positional or keyword.
+            params = inspect.signature(f).parameters.values()
+            signature = inspect.Signature([x for x in params if x.name != "string"])
+            def wrapper(*args, **kwargs):
+                return f(**signature.bind(*args, **kwargs).arguments, string=vector)
+            return wrapper
         self.extract = wrap(regex.extract)
         self.findall = wrap(regex.findall)
         self.fullmatch = wrap(regex.fullmatch)
         self.match = wrap(regex.match)
         self.search = wrap(regex.search)
         self.split = wrap(regex.split)
-        self.sub = wrap(regex.sub, 2)
-        self.subn = wrap(regex.subn, 2)
+        self.sub = wrap(regex.sub)
+        self.subn = wrap(regex.subn)
 
 class StrProxy:
     def __init__(self, vector):

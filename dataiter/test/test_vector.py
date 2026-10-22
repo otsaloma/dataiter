@@ -665,6 +665,8 @@ class TestVector:
         a = Vector(["great", "fantastic"])
         assert a.re.sub(r"$", r"!").tolist() == ["great!", "fantastic!"]
         assert a.re.sub(r"a", r"o", 1).tolist() == ["greot", "fontastic"]
+        assert a.re.sub(r"a", repl=r"o", count=1).tolist() == ["greot", "fontastic"]
+        assert a.re.sub(pattern=r"a", repl=r"o").tolist() == ["greot", "fontostic"]
         assert a.re.extract(r"(.)a", 1).tolist() == ["e", "f"]
         assert a.re.split(r"a", 1).tolist() == [["gre", "t"], ["f", "ntastic"]]
 
