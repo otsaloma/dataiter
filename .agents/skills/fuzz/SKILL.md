@@ -34,7 +34,12 @@ for long data, string keys, datetime keys, single keys etc.
 Start by reading `doc/_build/html/llms-full.txt` in full and work based
 on that, since that's what we recommend users point their coding agents
 at. If it doesn't exist, build the documentation first with `uv run make
-doc`. Then read the source code too as you see fit.
+doc`. Do not read the dataiter source code before writing and running
+your analysis code! Real users will work based on the API documentation
+and we want to make sure that alone enables writing code that works
+right. Once you find an actual problem, such as slow performance, then
+read the source code to understand what happens and to help you draft a
+suggestion to fix the problem.
 
 Previously you have used the following datasets. Try something different
 this time. Find preferably something with 1–10M rows. Focus primarily on
