@@ -758,33 +758,37 @@ class DataFrame(dict):
         return ab.rbind(b.unselect(*conflicts).rename(**renames))
 
     @staticmethod
+    def _encode(x, dense=False, ordered=True):
+        # Return integer codes for a numeric or datetime x and an upper bound
+        # for them, offsetting integers by their minimum and falling back to
+        # dense codes for floats or if the range would overflow. If ordered,
+        # codes follow the sort order of x.
+        if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
+            x = x.astype(np.int64)
+            lo, hi = int(x.min()), int(x.max())
+            if hi - lo < 2**62:
+                return x - lo, hi - lo + 1
+        if not ordered and x.dtype.kind in "iufmM":
+            # Hashing is faster than np.unique, which sorts.
+            codes = util.unique_codes(x)[2]
+        else:
+            codes = np.unique(x, return_inverse=True)[1]
+        return codes, int(codes.max(initial=0)) + 1
+
+    @staticmethod
     def _get_codes(columns, ordered=True):
         # Return one combined code per row for a list of numeric or datetime
-        # columns, offsetting integers by their minimum and falling back to
-        # dense codes for floats or if the range would overflow. If ordered,
-        # codes follow the sort order of rows, as needed for grouping.
-        def encode(x, dense=False):
-            # Return integer codes for x and an upper bound for them.
-            if not dense and x.dtype.kind in "biumM" and x.dtype != np.uint64 and len(x) > 0:
-                x = x.astype(np.int64)
-                lo, hi = int(x.min()), int(x.max())
-                if hi - lo < 2**62:
-                    return x - lo, hi - lo + 1
-            if not ordered and x.dtype.kind in "iufmM":
-                # Hashing is faster than np.unique, which sorts.
-                codes = util.unique_codes(x)[2]
-            else:
-                codes = np.unique(x, return_inverse=True)[1]
-            return codes, int(codes.max(initial=0)) + 1
+        # columns. If ordered, codes follow the sort order of rows, as needed
+        # for grouping.
         codes, size = 0, 1
         for column in columns:
-            column, n = encode(column)
+            column, n = DataFrame._encode(column, ordered=ordered)
             if size * n >= 2**62:
-                codes, size = encode(codes, dense=True)
+                codes, size = DataFrame._encode(codes, dense=True, ordered=ordered)
                 if not ordered and size == len(codes):
                     # All rows are distinct, further columns can't merge any.
                     return codes
-                column, n = encode(column, dense=True)
+                column, n = DataFrame._encode(column, dense=True, ordered=ordered)
             codes, size = codes * n + column, size * n
         return codes
 
@@ -1867,6 +1871,32 @@ class DataFrame(dict):
             rows_to_print.append(f"... {self.nrow} rows total")
         return "\n".join(rows_to_print)
 
+    @staticmethod
+    def _get_unique_rows(columns, nrow):
+        # Return indices of first occurrences of unique rows for a list of
+        # numeric or datetime columns, combining codes as in _get_codes. When
+        # re-encoding, keep rows with codes occurring once, as further columns
+        # can't merge them, and continue only with the rest, which is much
+        # faster for wide data, where rows are usually unique early on.
+        keep = np.zeros(nrow, bool)
+        rows = np.arange(nrow)
+        codes, size = 0, 1
+        for column in columns:
+            column = column[rows] if len(rows) < nrow else column
+            column, n = DataFrame._encode(column, ordered=False)
+            if size * n >= 2**62:
+                codes, size = DataFrame._encode(codes, dense=True, ordered=False)
+                single = np.bincount(codes)[codes] == 1
+                keep[rows[single]] = True
+                rows, codes, column = rows[~single], codes[~single], column[~single]
+                column, n = DataFrame._encode(column, dense=True, ordered=False)
+            codes, size = codes * n + column, size * n
+        first = util.unique_codes(codes)[1]
+        if len(rows) == nrow:
+            return first
+        keep[rows[first]] = True
+        return np.flatnonzero(keep)
+
     @deco.new_from_parallel_generator
     def unique(self, *colnames):
         """
@@ -1895,7 +1925,7 @@ class DataFrame(dict):
                     keep.append(i)
             keep = np.array(keep, np.int64)
         else:
-            keep = util.unique_codes(self._get_codes(columns, ordered=False))[1]
+            keep = self._get_unique_rows(columns, self.nrow)
         for colname, column in self.items():
             yield colname, util.submit(np.take, column, keep)
 
