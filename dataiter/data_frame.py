@@ -667,9 +667,9 @@ class DataFrame(dict):
         """
         Return a new data frame from JSON `string`.
 
-        `select` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes. `kwargs` are
-        passed to ``json.load``.
+        `select` is an optional list of columns or glob patterns to limit to,
+        as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
+        column names to NumPy datatypes. `kwargs` are passed to ``json.load``.
         """
         data = string
         if isinstance(data, str):
@@ -678,7 +678,7 @@ class DataFrame(dict):
             raise TypeError("Not a list")
         keys = util.unique_keys(itertools.chain(*data))
         if select:
-            keys = [x for x in keys if x in select]
+            keys = util.glob_all(select, keys)
         data = {k: [x.get(k, None) for x in data] for k in keys}
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)
@@ -941,15 +941,6 @@ class DataFrame(dict):
         right = np.searchsorted(b[order], a, "right")
         return left, right, order
 
-    def _glob(self, colnames):
-        matches = {}
-        for colname in colnames:
-            found = util.glob(colname, self)
-            if not found:
-                raise KeyError(colname)
-            matches.update(dict.fromkeys(found))
-        return list(matches)
-
     def group_by(self, *colnames):
         """
         Return data frame with `colnames` set for grouped operations.
@@ -1090,7 +1081,7 @@ class DataFrame(dict):
         elif callable(predicate):
             colnames = [k for k, v in self.items() if predicate(v)]
         else:
-            colnames = self._glob([predicate] if isinstance(predicate, str) else predicate)
+            colnames = util.glob_all([predicate] if isinstance(predicate, str) else predicate, self)
         for colname, column in self.items():
             if colname in colnames:
                 new = function(column, *args, **kwargs)
@@ -1445,16 +1436,32 @@ class DataFrame(dict):
         "a", "b", "c", etc. `na` is an optional string or list of strings to
         read as missing values, in addition to the defaults: blanks in all
         columns and common markers such as "NA" and "NULL" in non-string
-        columns. `select` is an optional list of columns to limit to and
-        `dtypes` an optional dict mapping column names to NumPy datatypes,
-        both using `colnames` if given. Columns with no values are read as
-        float, use `dtypes` to specify. Timestamps with UTC offsets, e.g.
+        columns. `select` is an optional list of columns or glob patterns to
+        limit to, as in :meth:`.DataFrame.select`, and `dtypes` an optional
+        dict mapping column names to NumPy datatypes, both using `colnames` if
+        given. Columns with no values are read as float, use `dtypes` to
+        specify. Timestamps with UTC offsets, e.g.
         "2025-01-01T12:00:00+02:00", are converted to UTC.
         """
         na = [na] if isinstance(na, str) else list(na)
         # Strings need to be requested already at parse time,
         # otherwise e.g. leading zeros would be lost to type guessing.
         column_types = {k: pa.string() for k, v in dtypes.items() if Vector.fast([], v).is_string()}
+        read_options = csv.ReadOptions(encoding=encoding,
+                                       column_names=colnames,
+                                       autogenerate_column_names=not header and not colnames,
+                                       # Unlike skip_rows, this counts parsed rows,
+                                       # handling line breaks in quoted names.
+                                       skip_rows_after_names=int(header and bool(colnames)))
+        parse_options = csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True)
+        if select:
+            names = colnames
+            if not names:
+                # Get column names to match select against by parsing only the first block.
+                with util.xopen(path, "rb") as f:
+                    names = csv.open_csv(f, read_options=read_options, parse_options=parse_options).schema.names
+                names = names if header else util.generate_colnames(len(names))
+            select = util.glob_all(select, names)
         if not header and not colnames and (select or column_types):
             # Translate our generated column names to pyarrow's f0, f1, ...
             names = list(util.yield_colnames())
@@ -1464,13 +1471,8 @@ class DataFrame(dict):
         with util.xopen(path, "rb") as f:
             table = csv.read_csv(
                 f,
-                read_options=csv.ReadOptions(encoding=encoding,
-                                             column_names=colnames,
-                                             autogenerate_column_names=not header and not colnames,
-                                             # Unlike skip_rows, this counts parsed rows,
-                                             # handling line breaks in quoted names.
-                                             skip_rows_after_names=int(header and bool(colnames))),
-                parse_options=csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True),
+                read_options=read_options,
+                parse_options=parse_options,
                 convert_options=csv.ConvertOptions(include_columns=select,
                                                    column_types=column_types,
                                                    null_values=csv.ConvertOptions().null_values + na))
@@ -1495,9 +1497,9 @@ class DataFrame(dict):
         Return a new data frame from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
-        `select` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes. `kwargs` are
-        passed to ``json.load``.
+        `select` is an optional list of columns or glob patterns to limit to,
+        as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
+        column names to NumPy datatypes. `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), select=select, dtypes=dtypes, **kwargs)
@@ -1518,12 +1520,15 @@ class DataFrame(dict):
         """
         Return a new data frame from Parquet file `path`.
 
-        `select` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes. `timezone`
-        determines how to handle timestamps with a timezone, which NumPy
-        datetimes can't hold: ``"keep"`` to keep them in the timezone they're
-        stored in, ``"utc"`` to convert them to UTC.
+        `select` is an optional list of columns or glob patterns to limit to,
+        as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
+        column names to NumPy datatypes. `timezone` determines how to handle
+        timestamps with a timezone, which NumPy datetimes can't hold:
+        ``"keep"`` to keep them in the timezone they're stored in, ``"utc"``
+        to convert them to UTC.
         """
+        if select:
+            select = util.glob_all(select, pq.read_schema(path).names)
         data = pq.read_table(path, columns=select or None)
         return cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
 
@@ -1616,7 +1621,7 @@ class DataFrame(dict):
         >>> data.select("id", "hood", "zipcode")
         >>> data.select("zipcode", "*")
         """
-        for colname in self._glob(colnames):
+        for colname in util.glob_all(colnames, self):
             yield colname, util.submit(np.ndarray.copy, self[colname])
 
     @deco.new_from_parallel_generator
@@ -1893,7 +1898,7 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.unselect("guests", "sqft", "price")
         """
-        colnames = set(self._glob(colnames))
+        colnames = set(util.glob_all(colnames, self))
         for colname in self.colnames:
             if colname not in colnames:
                 yield colname, util.submit(np.ndarray.copy, self[colname])

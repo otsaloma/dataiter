@@ -372,18 +372,16 @@ class ListOfDicts(list):
         """
         Return a new list of dicts from JSON `string`.
 
-        `select` is an optional list of keys to limit to. `types` is an
-        optional dict mapping keys to datatypes. `kwargs` are passed to
-        ``json.load``.
+        `select` is an optional list of keys or glob patterns to limit to, as
+        in :meth:`.ListOfDicts.select`. `types` is an optional dict mapping
+        keys to datatypes. `kwargs` are passed to ``json.load``.
         """
         data = json.loads(string, **kwargs)
         if not isinstance(data, list):
             raise TypeError("Not a list")
         if select:
-            select = set(select)
-            for item in data:
-                for key in set(item) - select:
-                    del item[key]
+            select = util.glob_all(select, util.unique_keys(itertools.chain(*data)))
+            data = [{k: item[k] for k in select if k in item} for item in data]
         for key, type in types.items():
             for item in data:
                 if key in item:
@@ -746,9 +744,9 @@ class ListOfDicts(list):
         is an optional list of keys to use instead of those in the header row
         or, if there's no header row, instead of the default "a", "b", "c",
         etc. `na` is an optional string or list of strings to read as
-        ``None``. `select` is an optional list of keys to limit to and `types`
-        an optional dict mapping keys to datatypes, both using `colnames` if
-        given.
+        ``None``. `select` is an optional list of keys or glob patterns to
+        limit to, as in :meth:`.ListOfDicts.select`, and `types` an optional
+        dict mapping keys to datatypes, both using `colnames` if given.
         """
         na = {na} if isinstance(na, str) else set(na)
         quoting = csv.QUOTE_MINIMAL if quote else csv.QUOTE_NONE
@@ -761,12 +759,10 @@ class ListOfDicts(list):
                     raise ValueError(f"Expected {len(colnames)} columns, got {len(names)}")
                 names = list(colnames)
             if select:
-                for key in select:
-                    if key not in names:
-                        raise KeyError(key)
+                select = util.glob_all(select, names)
                 indices = [names.index(x) for x in select]
                 rows = [[row[i] for i in indices] for row in rows]
-                names = list(select)
+                names = select
             if na:
                 rows = [[None if x in na else x for x in row] for row in rows]
             for key in types:
@@ -785,9 +781,9 @@ class ListOfDicts(list):
         Return a new list from JSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
-        `select` is an optional list of keys to limit to. `types` is an
-        optional dict mapping keys to datatypes. `kwargs` are passed to
-        ``json.load``.
+        `select` is an optional list of keys or glob patterns to limit to, as
+        in :meth:`.ListOfDicts.select`. `types` is an optional dict mapping
+        keys to datatypes. `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             return cls.from_json(f.read(), select=select, types=types, **kwargs)

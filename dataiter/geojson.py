@@ -88,29 +88,28 @@ class GeoJSON(DataFrame):
         Return data from GeoJSON file `path`.
 
         Will automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
-        `select` is an optional list of columns to limit to. `dtypes` is an
-        optional dict mapping column names to NumPy datatypes. `kwargs` are
-        passed to ``json.load``.
+        `select` is an optional list of columns or glob patterns to limit to,
+        as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
+        column names to NumPy datatypes. `kwargs` are passed to ``json.load``.
         """
         with util.xopen(path, "rt", encoding=encoding) as f:
             raw = AttributeDict(json.load(f, **kwargs))
         cls._check_raw_data(raw)
-        data = {}
-        for feature in raw.features:
-            for key in feature.properties:
-                data.setdefault(key, [])
+        keys = util.unique_keys(key for x in raw.features for key in x.properties)
         has_ids = any("id" in x for x in raw.features)
-        if has_ids and "feature_id" in data:
+        if has_ids and "feature_id" in keys:
             print("Warning: Ignoring feature key 'id' in favor of property 'feature_id'")
             has_ids = False
+        names = ["feature_id", *keys] if has_ids else keys
         if select:
-            data = {k: v for k, v in data.items() if k in select}
-        for feature in raw.features:
-            for key in data:
-                value = feature.properties.get(key, None)
-                data[key].append(value)
-        if has_ids and (not select or "feature_id" in select):
-            data = {"feature_id": [x.get("id") for x in raw.features], **data}
+            # Geometry is always included last, but can be selected too.
+            names = [x for x in util.glob_all(select, [*names, "geometry"]) if x != "geometry"]
+        data = {}
+        for name in names:
+            if has_ids and name == "feature_id":
+                data[name] = [x.get("id") for x in raw.features]
+            else:
+                data[name] = [x.properties.get(name, None) for x in raw.features]
         data["geometry"] = [x.geometry for x in raw.features]
         for name, dtype in dtypes.items():
             data[name] = DataFrameColumn(data[name], dtype)

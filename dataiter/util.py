@@ -121,6 +121,16 @@ def glob(pattern, names):
         return [x for x in names if fnmatch.fnmatchcase(x, pattern)]
     return []
 
+def glob_all(patterns, names):
+    # Return names matching patterns, in pattern order, each once.
+    matches = {}
+    for pattern in patterns:
+        found = glob(pattern, names)
+        if not found:
+            raise KeyError(pattern)
+        matches.update(dict.fromkeys(found))
+    return list(matches)
+
 def is_glob(pattern):
     return isinstance(pattern, str) and any(x in pattern for x in "*?[")
 

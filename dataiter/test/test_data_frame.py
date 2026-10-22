@@ -1036,6 +1036,18 @@ class TestDataFrame:
         data = DataFrame.read_csv(path, select=["make", "model"])
         assert data.colnames == ["make", "model"]
 
+    def test_read_csv_select_glob(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("a,price_x,price_y\n1,2,3\n", "utf-8")
+        data = DataFrame.read_csv(path, select=["price_*", "a"])
+        assert data.colnames == ["price_x", "price_y", "a"]
+        data = DataFrame.read_csv(path, header=False, select=["[bc]"])
+        assert data.colnames == ["b", "c"]
+        with pytest.raises(KeyError, match="d"):
+            DataFrame.read_csv(path, header=False, select=["a", "d"])
+        with pytest.raises(KeyError, match="x_"):
+            DataFrame.read_csv(path, select=["x_*"])
+
     def test_read_csv_dtypes(self):
         path = test.get_data_path("vehicles.csv")
         dtypes = {"make": object, "model": object}
@@ -1216,6 +1228,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = DataFrame.read_json(path, select=["make", "model"])
         assert data.colnames == ["make", "model"]
 
+    def test_read_json_select_glob(self):
+        data = DataFrame.from_json('[{"a": 1, "price_x": 2}, {"price_y": 3}]', select=["price_*", "a"])
+        assert data.colnames == ["price_x", "price_y", "a"]
+        with pytest.raises(KeyError, match="x_"):
+            DataFrame.from_json('[{"a": 1}]', select=["x_*"])
+
     def test_read_json_dtypes(self):
         path = str(test.get_data_path("vehicles.json"))
         dtypes = {"make": object, "model": object}
@@ -1245,6 +1263,14 @@ NULL,2.5,"test",TRUE,2025-01-01
         orig.write_parquet(path)
         data = DataFrame.read_parquet(path)
         assert data == orig
+
+    def test_read_parquet_select_glob(self, tmp_path):
+        path = str(tmp_path / "test.parquet")
+        DataFrame(a=[1], price_x=[2], price_y=[3]).write_parquet(path)
+        data = DataFrame.read_parquet(path, select=["price_*", "a"])
+        assert data.colnames == ["price_x", "price_y", "a"]
+        with pytest.raises(KeyError, match="x_"):
+            DataFrame.read_parquet(path, select=["x_*"])
 
     def test_read_pickle(self, tmp_path):
         orig = test.data_frame("vehicles.csv")

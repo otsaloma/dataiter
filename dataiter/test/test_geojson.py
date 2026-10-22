@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import json
+import pytest
 
 from dataiter import GeoJSON
 from dataiter import test
@@ -39,6 +40,13 @@ class TestGeoJSON:
         path = test.get_data_path(self.path)
         data = GeoJSON.read(path, select=["neighbourhood"])
         assert data.colnames == ["neighbourhood", "geometry"]
+
+    def test_read_select_glob(self):
+        path = test.get_data_path(self.path)
+        data = GeoJSON.read(path, select=["geometry", "*_group"])
+        assert data.colnames == ["neighbourhood_group", "geometry"]
+        with pytest.raises(KeyError, match="x_"):
+            GeoJSON.read(path, select=["x_*"])
 
     def test_read_dtypes(self):
         path = test.get_data_path(self.path)

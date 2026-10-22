@@ -592,6 +592,14 @@ class TestListOfDicts:
         with pytest.raises(KeyError, match="d"):
             ListOfDicts.read_csv(path, select=["a", "d"])
 
+    def test_read_csv_select_glob(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("a,price_x,price_y\n1,2,3\n", "utf-8")
+        data = ListOfDicts.read_csv(path, select=["price_*", "a"])
+        assert list(data[0].keys()) == ["price_x", "price_y", "a"]
+        with pytest.raises(KeyError, match="x_"):
+            ListOfDicts.read_csv(path, select=["x_*"])
+
     def test_read_csv_types(self):
         path = str(test.get_data_path("vehicles.csv"))
         types = {"hwy": int, "cty": int}
@@ -618,6 +626,13 @@ class TestListOfDicts:
         data = ListOfDicts.read_json(path, select=["date", "downloads"])
         assert list(data[0].keys()) == ["date", "downloads"]
         assert list(data[100].keys()) == ["date", "downloads"]
+
+    def test_read_json_select_glob(self):
+        data = ListOfDicts.from_json('[{"a": 1, "price_x": 2}, {"price_y": 3}]', select=["price_*", "a"])
+        assert data == [{"price_x": 2, "a": 1}, {"price_y": 3}]
+        assert list(data[0].keys()) == ["price_x", "a"]
+        with pytest.raises(KeyError, match="x_"):
+            ListOfDicts.from_json('[{"a": 1}]', select=["x_*"])
 
     def test_read_json_path(self):
         ListOfDicts.read_csv(test.get_data_path("vehicles.json"))
