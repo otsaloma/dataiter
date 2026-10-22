@@ -257,26 +257,26 @@ class Vector(np.ndarray):
         return array.view(self.__class__)
 
     def __eq__(self, other):
-        return super().__eq__(self._coerce_datetime(other))
+        return np.ndarray.__eq__(*self._coerce_datetime(other))
 
     def __ge__(self, other):
-        return super().__ge__(self._coerce_datetime(other))
+        return np.ndarray.__ge__(*self._coerce_datetime(other))
 
     def __gt__(self, other):
-        return super().__gt__(self._coerce_datetime(other))
+        return np.ndarray.__gt__(*self._coerce_datetime(other))
 
     def __iter__(self):
         # NumPy iterates subclasses ~2x slower than base arrays.
         return iter(self.view(np.ndarray))
 
     def __le__(self, other):
-        return super().__le__(self._coerce_datetime(other))
+        return np.ndarray.__le__(*self._coerce_datetime(other))
 
     def __lt__(self, other):
-        return super().__lt__(self._coerce_datetime(other))
+        return np.ndarray.__lt__(*self._coerce_datetime(other))
 
     def __ne__(self, other):
-        return super().__ne__(self._coerce_datetime(other))
+        return np.ndarray.__ne__(*self._coerce_datetime(other))
 
     def __repr__(self):
         return self.to_string()
@@ -406,17 +406,21 @@ class Vector(np.ndarray):
     def _coerce_datetime(self, other):
         # NumPy considers datetimes and strings unequal or raises
         # for ordering, convert strings to allow e.g. x >= "2025-01-01".
+        if self.is_string() and isinstance(other, np.ndarray) and other.dtype.kind == "M":
+            # Strings can be more precise than other, e.g. times for dates.
+            dtype = np.promote_types(other.dtype, np.dtype("datetime64[us]"))
+            return self.astype(dtype), other
         if not self.is_datetime():
-            return other
+            return self, other
         if isinstance(other, str):
-            return np.datetime64(other)
+            return self, np.datetime64(other)
         # Strings can be more precise than self, e.g. times for dates.
         dtype = np.promote_types(self.dtype, np.dtype("datetime64[us]"))
         if isinstance(other, (list, tuple)) and any(isinstance(x, str) for x in other):
-            return np.array(other, object).astype(dtype)
+            return self, np.array(other, object).astype(dtype)
         if isinstance(other, np.ndarray) and other.dtype.kind in "TU":
-            return other.astype(dtype)
-        return other
+            return self, other.astype(dtype)
+        return self, other
 
     def concat(self, *others):
         """
@@ -570,7 +574,7 @@ class Vector(np.ndarray):
         if not isinstance(values, np.ndarray):
             # np.isin treats sets and other non-sequences as a single element.
             values = list(values)
-        values = self._coerce_datetime(values)
+        values = self._coerce_datetime(values)[1]
         if self.is_string() and len(values) >= 10:
             # StringDType has hasobject set, so np.isin never sorts,
             # but compares one value at a time, slow for many values.

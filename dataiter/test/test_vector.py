@@ -206,6 +206,20 @@ class TestVector:
             assert op(a, other).tolist() == expected
             assert op(b, other).tolist() == expected
 
+    @pytest.mark.parametrize("op,expected", [
+        (operator.eq, [False, True, False]),
+        (operator.ge, [True, True, False]),
+        (operator.gt, [True, False, False]),
+        (operator.le, [False, True, False]),
+        (operator.lt, [False, False, False]),
+        (operator.ne, [True, False, True]),
+    ])
+    def test___eq___string_datetime(self, op, expected):
+        a = Vector(["2025-01-01", "2025-01-02", None]).as_date()
+        assert op(Vector(["2025-01-02"] * 3), a).tolist() == expected
+        b = Vector(["2025-01-01T12:00:00", "2025-01-02T00:00:00", None]).as_datetime()
+        assert op(Vector(["2025-01-02"] * 3), b).tolist() == expected
+
     def test___eq___datetime_string_na(self):
         a = Vector(["2025-01-01", "2025-01-02"]).as_date()
         assert (a == Vector(["2025-01-01", ""])).tolist() == [True, False]
