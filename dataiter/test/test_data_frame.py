@@ -1459,6 +1459,7 @@ NULL,2.5,"test",TRUE,2025-01-01
             y=[1, 1, 1, 1, 1, 2],
         )
         rows = data.split("x", "y")
+        assert all(type(x) is Vector for x in rows)
         rows = [x.tolist() for x in rows]
         assert rows == [[0], [1, 2], [3, 4], [5]]
 

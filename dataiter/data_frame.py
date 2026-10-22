@@ -1746,13 +1746,16 @@ class DataFrame(dict):
 
     def split(self, *by):
         """
-        Split data frame into groups and return a list of their rows.
+        Split data frame into groups and return a list of their row indices.
+
+        To get data frames, use :meth:`slice`, e.g. ``[data.slice(x) for x
+        in data.split("x")]``.
 
         >>> data = di.DataFrame(x=[1, 2, 2, 3, 3, 3])
         >>> data.split("x")
         """
         order, starts = self._get_groups(*by)
-        return np.split(DataFrameColumn.fast(order), starts[1:]) if len(starts) > 0 else []
+        return np.split(Vector.fast(order), starts[1:]) if len(starts) > 0 else []
 
     def _split_join_by(self, *by):
         by1 = [x if isinstance(x, str) else x[0] for x in by]
