@@ -118,6 +118,15 @@ Do not complain about these or spend too much time investigating.
   limitation, not something we can work around: integers can't always
   have an integer data type.
 
+- NumPy booleans can't represent missing values, so operations that
+  introduce missing values cast boolean columns to object and use
+  `None`. Object columns behave differently from boolean columns, e.g.
+  `di.sum` and `di.mean` reject them. Users can explicitly convert to
+  float with `Vector.as_float`, using 0.0 for false, 1.0 for true and
+  NaN for missing values. This conversion is left to users. This is a
+  NumPy limitation, not something for us to fix: booleans can't always
+  have a boolean data type.
+
 - Nanosecond datetimes and timedeltas are rare and not expected to work
   fully. Python's datetime and timedelta don't support nanoseconds, so
   NumPy converts such values to int when casting to object, breaking
