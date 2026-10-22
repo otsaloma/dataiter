@@ -98,6 +98,15 @@ class TestVector:
         assert a.is_datetime()
         assert a.equal(b)
 
+    def test___new___na_timedelta(self):
+        # Should be converted to np.timedelta64.
+        # Missing values should be NaT.
+        td = datetime.timedelta(days=1, microseconds=1)
+        a = Vector([td, NaN, np.timedelta64("NaT", "us"), None])
+        assert a.dtype == np.dtype("timedelta64[us]")
+        assert a.is_na().tolist() == [False, True, True, True]
+        assert a[0] == td
+
     def test___new___na_float(self):
         # Missing values should be NaN.
         a = Vector([1.1, 2.2, NaN, None])

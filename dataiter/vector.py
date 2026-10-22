@@ -39,6 +39,7 @@ from numpy.dtypes import StringDType
 TYPE_CONVERSIONS = {
     datetime.date: "datetime64[D]",
     datetime.datetime: "datetime64[us]",
+    datetime.timedelta: "timedelta64[us]",
 }
 
 def as_vector(function):
@@ -979,8 +980,9 @@ class Vector(np.ndarray):
                 # Upcast from integer to float as required.
                 dtype = float
             return cls._np_array(seq, dtype)
-        # NaT values bring in np.datetime64 to types.
+        # NaT values bring in np.datetime64 or np.timedelta64 to types.
         types.discard(np.datetime64)
+        types.discard(np.timedelta64)
         for fm, to in TYPE_CONVERSIONS.items():
             if types and all(x == fm for x in types):
                 return cls._np_array(seq, to)
@@ -1005,6 +1007,8 @@ class Vector(np.ndarray):
         datetimes = [datetime.date, datetime.datetime, np.datetime64]
         if all(x in datetimes for x in types):
             return np.datetime64("NaT", "D")
+        if all(x in [datetime.timedelta, np.timedelta64] for x in types):
+            return np.timedelta64("NaT", "us")
         # Usually causes dtype to be object!
         return None
 
