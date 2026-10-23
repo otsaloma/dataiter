@@ -928,6 +928,9 @@ class DataFrame(dict):
         for colname1, colname2 in zip(by1, by2):
             a, b = self[colname1], other[colname2]
             if a.is_object() or b.is_object(): continue
+            # Data types of empty data are often guesses, e.g. float64 from
+            # grouped aggregation, and can't cause any wrong matches.
+            if a.length == 0 or b.length == 0: continue
             if kind(a) != kind(b):
                 raise TypeError(f"Can't join {colname1!r} with {colname2!r} due to incompatible "
                                 f"types: {a.dtype_label} vs. {b.dtype_label}")

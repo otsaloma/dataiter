@@ -757,6 +757,16 @@ class TestDataFrame:
         b = DataFrame(k=[1.0, 2.0], v=[3, 4])
         assert a.left_join(b, "k").v.tolist() == [3, 4]
 
+    def test_join_empty_incompatible_types(self):
+        a = DataFrame(k=["a", "b"], x=[1, 2])
+        b = DataFrame(k=[], y=[])
+        assert a.left_join(b, "k").k.tolist() == ["a", "b"]
+        assert a.inner_join(b, "k").nrow == 0
+        assert a.semi_join(b, "k").nrow == 0
+        assert a.anti_join(b, "k").nrow == 2
+        assert a.full_join(b, "k").k.tolist() == ["a", "b"]
+        assert b.full_join(a, "k").k.tolist() == ["a", "b"]
+
     def test_left_join_multiple(self):
         a = DataFrame(k=[1, 2, 3, np.nan], x=[1, 2, 3, 4])
         b = DataFrame(k=[2, 1, 2, np.nan], y=[1, 2, 3, 4])
