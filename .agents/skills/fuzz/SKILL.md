@@ -84,6 +84,8 @@ tabular data and the `DataFrame` class.
 - Stanford Open Policing Project traffic stops (Nashville, New Orleans, San Diego)
 - UCI Online Retail II (two-year retail transactions)
 - UCI Individual Household Electric Power Consumption (minute readings, 2006–2010)
+- UCI Gas Sensor Array Temperature Modulation (13 measurement runs)
+- UCI PAMAP2 Physical Activity Monitoring (protocol and optional sessions)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
