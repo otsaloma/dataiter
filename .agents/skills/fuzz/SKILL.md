@@ -71,6 +71,7 @@ tabular data and the `DataFrame` class.
 - MovieLens 25M
 - mledoze/countries (country names, regions and currencies)
 - MTA subway hourly ridership (data.ny.gov) and subway stations
+- NHTSA vehicle safety complaints, recalls (pre- and post-2010 flat files) and defect investigations
 - nflverse NFL play-by-play (1999–2024 Parquet, 2022 CSV), games, players, rosters and participation
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
