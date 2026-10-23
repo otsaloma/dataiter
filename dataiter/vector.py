@@ -29,6 +29,7 @@ import pyarrow as pa
 import pyarrow.compute as pc
 import random
 import sys
+import warnings
 import wcwidth
 
 from dataiter import dtypes
@@ -339,9 +340,11 @@ class Vector(np.ndarray):
         Return vector converted to date data type.
 
         Strings should be in ISO 8601 format, e.g. "2020-01-01". For other
-        formats, use :func:`.dt.from_string`. `errors` determines how to
-        handle strings that can't be converted: ``"strict"`` to raise
-        ``ValueError``, ``"replace"`` to replace them with missing values.
+        formats, use :func:`.dt.from_string`. Timestamps with UTC offsets,
+        e.g. "2025-01-01T12:00:00+02:00", are converted to UTC before taking
+        the date. `errors` determines how to handle strings that can't be
+        converted: ``"strict"`` to raise ``ValueError``, ``"replace"`` to
+        replace them with missing values.
 
         >>> vector = di.Vector(["2020-01-01"])
         >>> vector.as_date()
@@ -355,9 +358,11 @@ class Vector(np.ndarray):
         Return vector converted to datetime data type.
 
         Strings should be in ISO 8601 format, e.g. "2020-01-01T12:00:00".
-        For other formats, use :func:`.dt.from_string`. `errors` determines
-        how to handle strings that can't be converted: ``"strict"`` to raise
-        ``ValueError``, ``"replace"`` to replace them with missing values.
+        For other formats, use :func:`.dt.from_string`. Timestamps with UTC
+        offsets, e.g. "2025-01-01T12:00:00+02:00", are converted to UTC.
+        `errors` determines how to handle strings that can't be converted:
+        ``"strict"`` to raise ``ValueError``, ``"replace"`` to replace them
+        with missing values.
 
         >>> vector = di.Vector(["2020-01-01T12:00:00"])
         >>> vector.as_datetime()
@@ -372,23 +377,27 @@ class Vector(np.ndarray):
         # NumPy parses a "Z" suffix (UTC) to the same value as without
         # it, but warns and is slow, so drop it.
         x = self.str.rstrip("Z") if self.is_string() else self
-        try:
-            x._check_string_years(type)
-            return x.astype(dtype)
-        except ValueError:
-            if errors == "strict" or not x.is_string(): raise
-            unit = np.datetime_data(dtype)[0]
-            first, last = np.datetime64("0001"), np.datetime64("9999")
-            def parse(value):
-                try:
-                    # Reject digits-only strings as in _check_string_years.
-                    if first <= np.datetime64(value, "Y") <= last:
-                        return np.datetime64(value, unit)
-                except ValueError:
-                    pass
-                return None
-            unique, _, codes = util.unique_codes(x)
-            return Vector.fast([parse(y) for y in unique], dtype)[codes].view(self.__class__)
+        with warnings.catch_warnings():
+            # NumPy converts UTC offsets, e.g. "+02:00", to UTC, but warns.
+            message = "no explicit representation of timezones"
+            warnings.filterwarnings("ignore", message=message, category=UserWarning)
+            try:
+                x._check_string_years(type)
+                return x.astype(dtype)
+            except ValueError:
+                if errors == "strict" or not x.is_string(): raise
+                unit = np.datetime_data(dtype)[0]
+                first, last = np.datetime64("0001"), np.datetime64("9999")
+                def parse(value):
+                    try:
+                        # Reject digits-only strings as in _check_string_years.
+                        if first <= np.datetime64(value, "Y") <= last:
+                            return np.datetime64(value, unit)
+                    except ValueError:
+                        pass
+                    return None
+                unique, _, codes = util.unique_codes(x)
+                return Vector.fast([parse(y) for y in unique], dtype)[codes].view(self.__class__)
 
     def as_float(self, *, errors="strict"):
         """

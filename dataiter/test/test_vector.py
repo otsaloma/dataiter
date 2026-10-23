@@ -316,6 +316,14 @@ class TestVector:
         b = Vector(["2020-01-01T12:00:00Z"]).as_date()
         assert b.tolist() == [datetime.date(2020, 1, 1)]
 
+    @pytest.mark.filterwarnings("error")
+    def test_as_datetime_utc_offset(self):
+        x = Vector(["2020-01-01T12:00:00+02:00", "2020-01-01 00:30:00+02:00", "???"])
+        a = x.as_datetime(errors="replace")
+        assert a.tolist() == [datetime.datetime(2020, 1, 1, 10), datetime.datetime(2019, 12, 31, 22, 30), None]
+        b = x.as_date(errors="replace")
+        assert b.tolist() == [datetime.date(2020, 1, 1), datetime.date(2019, 12, 31), None]
+
     @pytest.mark.parametrize("precision", ["us", "ns"])
     def test_as_datetime_digits_only(self, precision):
         with pytest.raises(ValueError):
