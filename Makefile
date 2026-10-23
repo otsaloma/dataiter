@@ -13,6 +13,7 @@ clean:
 	rm -rf dist
 	rm -rf doc/_build
 	rm -rf doc/comparison/comparison.html
+	rm -rf tmp
 	rm -rf validation/*.csv
 	find . -type d -name __pycache__ -prune -exec rm -rf {} +
 	find . -type d -name .pytest_cache -prune -exec rm -rf {} +

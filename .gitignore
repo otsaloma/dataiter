@@ -11,6 +11,7 @@ dist
 doc/_build
 doc/comparison/comparison.html
 test.py
+tmp
 tmp.csv
 uv.lock
 validation/*.csv

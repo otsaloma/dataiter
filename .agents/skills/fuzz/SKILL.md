@@ -41,6 +41,10 @@ right. Once you find an actual problem, such as slow performance, then
 read the source code to understand what happens and to help you draft a
 suggestion to fix the problem.
 
+If you want to place your working files under this repo, put them under
+`tmp/fuzz/{dataset}`. `tmp` is gitignored and persistent across our
+sessions until eventually wiped by `make clean`.
+
 Previously you have used the following datasets. Try something different
 this time. Find preferably something with 1–10M rows. Focus primarily on
 tabular data and the `DataFrame` class.
