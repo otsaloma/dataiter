@@ -65,6 +65,7 @@ tabular data and the `DataFrame` class.
 - IMDb non-commercial datasets
 - Inside Airbnb listings, calendar, reviews and neighbourhoods (Amsterdam, Berlin and Copenhagen, September 2026)
 - Instacart Online Grocery Shopping Dataset 2017 (orders, training basket items, products, aisles and departments)
+- JHU CSSE COVID-19 time series (US county and global confirmed and deaths, UID/ISO/FIPS lookup table)
 - Lichess puzzle database
 - MBTA GTFS schedule
 - MovieLens 25M
