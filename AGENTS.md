@@ -143,3 +143,11 @@ Do not complain about these or spend too much time investigating.
   matches NumPy, which also keeps the unit (but truncates). Promoting to
   a finer unit would turn e.g. mean dates into datetimes. Users can cast
   to a finer unit before aggregating.
+
+- CSV is an inherently lossy format, not everything survives a
+  `write_csv`-`read_csv` round-trip. Examples: a missing value in a
+  one-column data frame is written as an empty line, which `read_csv`
+  skips, and timedeltas are written as text, which `read_csv` can't
+  parse back, even with `dtypes`. Do not try to make everything survive.
+  Users can be expected to be aware of this and to use NPZ or Parquet
+  when they need a lossless round-trip.
