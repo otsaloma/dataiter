@@ -92,6 +92,7 @@ tabular data and the `DataFrame` class.
 - US Census national county codes (2020)
 - US Census ZCTA gazetteer
 - US flights
+- USGS earthquake catalog (2016–2025 CSV events, magnitude ≥6 GeoJSON, contributor directory)
 - Wikipedia clickstream
 - World Bank country population (datasets/population on GitHub)
 
