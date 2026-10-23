@@ -78,6 +78,8 @@ tabular data and the `DataFrame` class.
 - Ookla open data fixed broadband performance tiles
 - Open-Meteo hourly weather
 - OpenPowerlifting
+- OpenSky Network flight lists (Zenodo, April 2019 and April 2020) and aircraft database
+- OurAirports airports and countries
 - Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
 - SSA baby names (national and state counts, Social Security card-holder totals)
