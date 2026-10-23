@@ -33,6 +33,7 @@ import pyarrow.parquet as pq
 import random
 import warnings
 import wcwidth
+import zipfile
 
 from dataiter import deco
 from dataiter import util
@@ -2005,12 +2006,17 @@ class DataFrame(dict):
         Write data frame to NumPy file `path`.
         """
         util.makedirs_for_file(path)
-        savez = np.savez_compressed if compress else np.savez
-        with warnings.catch_warnings():
+        # Write the zip ourselves as numpy.savez takes columns as keyword
+        # arguments, which clash with its 'file' and 'allow_pickle' arguments,
+        # i.e. a data frame with a 'file' or 'allow_pickle' column cannot be saved.
+        compression = zipfile.ZIP_DEFLATED if compress else zipfile.ZIP_STORED
+        with zipfile.ZipFile(path, "w", compression=compression, allowZip64=True) as zf, warnings.catch_warnings():
             # StringDType is pickled, which read_npz allows by default.
             message = "Custom dtypes are saved as python objects using the pickle protocol"
             warnings.filterwarnings("ignore", message=message, category=UserWarning)
-            savez(path, **self)
+            for name, column in self.items():
+                with zf.open(f"{name}.npy", "w", force_zip64=True) as f:
+                    np.lib.format.write_array(f, column, allow_pickle=True)
 
     def write_parquet(self, path, **kwargs):
         """

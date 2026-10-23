@@ -1701,6 +1701,15 @@ NULL,2.5,"test",TRUE,2025-01-01
         path = tmp_path / "test.npz"
         orig.write_npz(path)
 
+    @pytest.mark.parametrize("compress", [False, True])
+    def test_write_npz_numpy_argument_colnames(self, tmp_path, compress):
+        orig = DataFrame(file=[1, 2], allow_pickle=[True, False], name=["a", "b"])
+        path = tmp_path / "test.npz"
+        orig.write_npz(path, compress=compress)
+        data = DataFrame.read_npz(path)
+        assert data == orig
+        assert data.colnames == orig.colnames
+
     def test_write_parquet(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
         path = str(tmp_path / "test.parquet")
