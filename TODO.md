@@ -15,3 +15,9 @@
   `StringDType` and object, expected after 2.5.4:
   https://github.com/numpy/numpy/pull/32286
   https://github.com/numpy/numpy/pull/31431
+
+- Consider adding a `di.NA` sentinel that works everywhere regardless of
+  data type, e.g. `Vector([1, 2, 3, di.NA])` and `x[10] = di.NA`,
+  instead of having to remember and type `np.nan`,
+  `np.datetime64("NaT")` and `dataiter.dtypes.string.na_object`, if
+  doable.
