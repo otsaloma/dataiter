@@ -166,6 +166,19 @@ class TestDataFrame:
         assert stat.g.tolist() == [b"a", b"b", None]
         assert stat.x.tolist() == [3, 5, 2]
 
+    @pytest.mark.parametrize("by", [("a", "b"), ("b", "a"), ("a", "c"), ("c", "a")])
+    def test_aggregate_large_integers_overflowing(self, by):
+        rng = np.random.default_rng(0)
+        data = DataFrame(a=rng.integers(0, 3, 10000),
+                         b=rng.choice([0, 5, 2**61], 10000),
+                         c=rng.choice([-2**62, 0, 2**62], 10000))
+        stat = data.group_by(*by).aggregate(n=di.count())
+        expected = data.sort(**dict.fromkeys(by, 1)).unique(*by)
+        assert stat.select(*by) == expected.select(*by)
+        assert stat.n.sum() == data.nrow
+        assert stat.n.tolist() == [((data[by[0]] == x) & (data[by[1]] == y)).sum()
+                                   for x, y in zip(stat[by[0]].tolist(), stat[by[1]].tolist())]
+
     def test_aggregate_function(self):
         def function(x):
             values = x.x.tolist()

@@ -771,6 +771,9 @@ class DataFrame(dict):
         if not ordered and x.dtype.kind in "iufmM":
             # Hashing is faster than np.unique, which sorts.
             codes = util.unique_codes(x)[2]
+        elif x.dtype.kind in "iufmM" and util.is_repetitive(x):
+            # Hashing and sorting only unique values is faster than np.unique.
+            codes = util.sorted_codes(x)
         else:
             codes = np.unique(x, return_inverse=True)[1]
         return codes, int(codes.max(initial=0)) + 1
@@ -783,11 +786,15 @@ class DataFrame(dict):
         codes, size = 0, 1
         for column in columns:
             column, n = DataFrame._encode(column, ordered=ordered)
+            # On overflow, make the larger one dense first, often enough alone.
+            if size * n >= 2**62 and n > size:
+                column, n = DataFrame._encode(column, dense=True, ordered=ordered)
             if size * n >= 2**62:
                 codes, size = DataFrame._encode(codes, dense=True, ordered=ordered)
                 if not ordered and size == len(codes):
                     # All rows are distinct, further columns can't merge any.
                     return codes
+            if size * n >= 2**62:
                 column, n = DataFrame._encode(column, dense=True, ordered=ordered)
             codes, size = codes * n + column, size * n
         return codes
