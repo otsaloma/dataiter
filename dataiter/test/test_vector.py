@@ -860,6 +860,17 @@ class TestVector:
         assert a.str.contains("df").tolist() == [True, False]
         assert a.str.contains("23").tolist() == [False, True]
 
+    def test_str_contains_missing(self):
+        a = Vector(["asdf", ""])
+        assert a.str.contains("df").tolist() == [True, False]
+        assert a.str.contains("").tolist() == [True, True]
+
+    def test_str_contains_unicode(self):
+        a = Vector(["café", "café", "北京", "a\x00"])
+        assert a.str.contains("é").tolist() == [True, False, False, False]
+        assert a.str.contains("北").tolist() == [False, False, True, False]
+        assert a.str.contains("\x00").tolist() == [False, False, False, True]
+
     def test_str_partition(self):
         a = Vector(["A B C", "A", ""])
         before, sep, after = a.str.partition(" ")

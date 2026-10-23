@@ -207,7 +207,14 @@ class StrProxy:
     zfill = str_method("zfill")
 
     def contains(self, x):
-        return self.find(x) > -1
+        if not self._vector.is_string():
+            return self.find(x) > -1
+        # np.strings.find is slow for long strings, as it counts characters
+        # to return an index. Arrow matches bytes, with the same results,
+        # as missing values are converted to empty strings, not nulls.
+        return (pc.match_substring(pa.array(self._vector), x)
+                .to_numpy(zero_copy_only=False)
+                .view(Vector))
 
     def partition(self, sep):
         return str_partition(self._vector, np.strings.partition, sep)
