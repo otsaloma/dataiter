@@ -2031,6 +2031,11 @@ class DataFrame(dict):
     def write_npz(self, path, *, compress=False):
         """
         Write data frame to NumPy file `path`.
+
+        While NumPy's NPZ is the most native format with Dataiter, its string
+        columns are pickled, which is slow for large data. Parquet is also
+        lossless for common data types and much faster with string data, see
+        :meth:`write_parquet`.
         """
         util.makedirs_for_file(path)
         # Write the zip ourselves as numpy.savez takes columns as keyword
@@ -2062,6 +2067,10 @@ class DataFrame(dict):
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
         Zstandard (``.zst``, requires Python 3.14) is recommended as it's
         much faster than the others with a compression ratio close to gzip.
+
+        String columns are pickled, which is slow for large data. Parquet is
+        also lossless for common data types and much faster with string data,
+        see :meth:`write_parquet`.
         """
         util.makedirs_for_file(path)
         with util.xopen(path, "wb") as f:
