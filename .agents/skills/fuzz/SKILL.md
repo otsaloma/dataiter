@@ -63,6 +63,7 @@ tabular data and the `DataFrame` class.
 - GHCN-Daily weather station data (1900 and 1920 year files, fixed-width stations, inventory, countries and states)
 - Helsinki city bikes
 - IMDb non-commercial datasets
+- Inside Airbnb listings, calendar, reviews and neighbourhoods (Amsterdam, Berlin and Copenhagen, September 2026)
 - Instacart Online Grocery Shopping Dataset 2017 (orders, training basket items, products, aisles and departments)
 - Lichess puzzle database
 - MBTA GTFS schedule
