@@ -138,6 +138,8 @@ class GeoJSON(DataFrame):
         Write data to GeoJSON file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        Zstandard (``.zst``, requires Python 3.14) is recommended as it's
+        much faster than the others with a compression ratio close to gzip.
         `kwargs` are passed to ``json.dumps``.
         """
         kwargs.setdefault("default", str)

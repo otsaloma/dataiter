@@ -1970,6 +1970,8 @@ class DataFrame(dict):
         Write data frame to CSV file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        Zstandard (``.zst``, requires Python 3.14) is recommended as it's
+        much faster than the others with a compression ratio close to gzip.
         """
         data = self.copy()
         for colname, column in data.items():
@@ -1997,6 +1999,8 @@ class DataFrame(dict):
         Write data frame to JSON file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        Zstandard (``.zst``, requires Python 3.14) is recommended as it's
+        much faster than the others with a compression ratio close to gzip.
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         return self.to_list_of_dicts().write_json(path, encoding=encoding, **kwargs)
@@ -2033,6 +2037,8 @@ class DataFrame(dict):
         Write data frame to Pickle file `path`.
 
         Will automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        Zstandard (``.zst``, requires Python 3.14) is recommended as it's
+        much faster than the others with a compression ratio close to gzip.
         """
         util.makedirs_for_file(path)
         with util.xopen(path, "wb") as f:
