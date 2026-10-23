@@ -51,6 +51,20 @@ def _apply(function, string, dtype=object, na_value=None, dedup=True):
     out[~na] = apply(string)
     return out.view(Vector)
 
+def contains(pattern, string, flags=0):
+    r"""
+    Return whether `pattern` matches anywhere in `string`.
+
+    Missing values give ``False``. For a plain substring without regular
+    expression syntax, ``Vector.str.contains`` is faster.
+
+    >>> x = di.Vector(["Toy Story (1995)", "Jumanji (1995)", "No year"])
+    >>> regex.contains(r"\(\d{4}\)", x)
+    """
+    p = re.compile(pattern, flags)
+    f = lambda x: p.search(x) is not None
+    return _apply(f, string, bool, False)
+
 def extract(pattern, string, group=0, flags=0):
     r"""
     Return `group` of the first match of `pattern` in `string`.

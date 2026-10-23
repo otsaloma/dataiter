@@ -28,6 +28,17 @@ from dataiter import Vector
 
 class TestRegex:
 
+    def test_contains(self):
+        pattern = r"\(\d{4}\)"
+        string = Vector(["Toy Story (1995)", "No year", ""])
+        result = regex.contains(pattern, string)
+        assert result.is_boolean()
+        assert result.tolist() == [True, False, False]
+        assert regex.contains(r"^$", string).tolist() == [False, False, False]
+        assert regex.contains(r"story", string, flags=re.IGNORECASE).tolist() == [True, False, False]
+        assert regex.contains(pattern, string[0]) is True
+        assert string.re.contains(pattern).tolist() == [True, False, False]
+
     def test_extract(self):
         pattern = r"\((\d{4})\)|(none)"
         string = Vector(["Toy Story (1995)", "none", "Unknown", ""])

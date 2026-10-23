@@ -35,6 +35,7 @@ New:
 - `NEXT`, `PREVIOUS`: New sentinels for `replace_na` to fill missing values backward or forward
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
 - `prod`: New aggregation function
+- `regex.contains`: New function to check whether a pattern matches
 - `regex.extract`: New function to extract a group of the first match
 - `Vector`: Datetimes can now be compared to strings, e.g. `x >= "2026-10-21"`
 - `Vector.as_date`, `Vector.as_datetime`: Add `errors` argument for values that can't be converted

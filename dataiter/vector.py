@@ -147,6 +147,7 @@ class ReProxy:
     def __init__(self, vector):
         self._vector = vector
 
+    contains = re_method("contains")
     extract = re_method("extract")
     findall = re_method("findall")
     fullmatch = re_method("fullmatch")

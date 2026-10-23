@@ -9,6 +9,7 @@ operations, similar to ``numpy.strings`` for string operations. This is a
 convenience wrapper around Python's standard library ``re`` module, not any
 efficient reimplementation.
 
+:func:`~dataiter.regex.contains`
 :func:`~dataiter.regex.extract`
 :func:`~dataiter.regex.findall`
 :func:`~dataiter.regex.fullmatch`
