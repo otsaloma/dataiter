@@ -55,6 +55,7 @@ Breaking changes:
 
 Fixes:
 - `count_unique`: Count all missing values as one
+- `DataFrame.rbind`: Treat all-missing float columns, e.g. from `read_csv` for blank columns, like missing columns
 - `DataFrame.sort`: Fix to sort missing values always last
 - `Vector`: Convert fixed-width string arrays, e.g. from `np.where`, to StringDType
 - `Vector.as_boolean`: Raise `ValueError` for missing values

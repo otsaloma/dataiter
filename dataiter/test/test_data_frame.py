@@ -1015,6 +1015,19 @@ class TestDataFrame:
         with pytest.raises(TypeError, match="'x'.*float64, string"):
             a.rbind(b)
 
+    def test_rbind_ignore_blank_float(self):
+        a = DataFrame(s=[np.nan], b=[np.nan], d=[np.nan], f=[np.nan])
+        b = DataFrame(s=["x"], b=[True], d=[np.datetime64("2020-01-01")], f=[1.5])
+        data = a.rbind(b)
+        assert data.s.tolist() == [None, "x"]
+        assert data.b.tolist() == [None, True]
+        assert data.d.tolist() == [None, datetime.date(2020, 1, 1)]
+        assert data.f.tolist() == [None, 1.5]
+        assert data.s.is_string()
+        assert data.d.is_datetime()
+        assert a.rbind(a).s.is_float()
+        assert b.rbind(a, b).s.tolist() == ["x", None, "x"]
+
     def test_rbind_onto_empty(self):
         data = DataFrame().rbind(DataFrame(a=[1, 2]))
         assert data.a.is_integer()

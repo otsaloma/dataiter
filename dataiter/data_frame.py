@@ -1407,6 +1407,10 @@ class DataFrame(dict):
         """
         Return data frame with rows from `others` added.
 
+        Float columns with only missing values, such as :meth:`read_csv`
+        gives for blank columns, are treated like missing columns, i.e.
+        they take the data type of the column in other data frames.
+
         >>> data = di.read_csv("data/listings.csv")
         >>> data.rbind(data)
         """
@@ -1427,6 +1431,15 @@ class DataFrame(dict):
             return np.concatenate(parts).view(DataFrameColumn)
         for colname in colnames:
             parts = [get_part(x, colname) for x in nonempty if colname in x or x.nrow > 0]
+            if len({x.dtype for x in parts}) > 1:
+                # Data types of all-missing float columns are often guesses
+                # as well, e.g. from read_csv for blank columns, so treat
+                # them like missing columns.
+                blank = [x.is_float() and x.is_na().all() for x in parts]
+                ref = next((x for x, b in zip(parts, blank) if not b), None)
+                if ref is not None:
+                    parts = [Vector.fast([ref.na_value], ref.na_dtype).repeat(len(x)) if b else x
+                             for x, b in zip(parts, blank)]
             try:
                 # Check types upfront, as errors in threads would
                 # surface only when collecting the results.
