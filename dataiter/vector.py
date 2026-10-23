@@ -948,13 +948,42 @@ class Vector(np.ndarray):
         """
         Return vector with missing values replaced with `value`.
 
-        >>> vector = di.Vector([1, 2, 3, None])
+        `value` can also be :attr:`dataiter.PREVIOUS` or :attr:`dataiter.NEXT`
+        to replace missing values with the previous or next non-missing value,
+        i.e. to fill forward or backward. Missing values without such a value
+        remain missing, chain both to fill those as well.
+
+        >>> vector = di.Vector([None, 1, None, 3, None])
         >>> vector.replace_na(0)
+        >>> vector.replace_na(di.PREVIOUS)
+        >>> vector.replace_na(di.PREVIOUS).replace_na(di.NEXT)
         """
+        if value is dataiter.PREVIOUS or value is dataiter.NEXT:
+            return self._replace_na_adjacent(value, np.arange(self.length), np.zeros(1, int))
         vector = self.copy()
         na = vector.is_na()
         if na.any():
             vector[na] = value
+        return vector
+
+    def _replace_na_adjacent(self, value, order, starts):
+        # Groups are given as element indices in group order and starts of
+        # groups in that order. Missing elements point to the start or end of
+        # their group, which loses to any non-missing element before or after
+        # in the same group, but always wins over elements of other groups.
+        na = self.is_na()
+        if not na.any():
+            return self.copy()
+        sizes = np.diff(starts, append=self.length)
+        positions = np.arange(self.length)
+        if value is dataiter.PREVIOUS:
+            bounds = np.repeat(starts, sizes)
+            indices = np.maximum.accumulate(np.where(na[order], bounds, positions))
+        else:
+            bounds = np.repeat(starts + sizes - 1, sizes)
+            indices = np.minimum.accumulate(np.where(na[order], bounds, positions)[::-1])[::-1]
+        vector = self.copy()
+        vector[order] = self[order[indices]]
         return vector
 
     def round(self, decimals=0, out=None):

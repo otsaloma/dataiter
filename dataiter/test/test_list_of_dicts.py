@@ -26,6 +26,8 @@ import pytest
 
 from attd import AttributeDict
 from dataiter import ListOfDicts
+from dataiter import NEXT
+from dataiter import PREVIOUS
 from dataiter import test
 from dataiter import Vector
 from unittest.mock import patch
@@ -695,6 +697,17 @@ class TestListOfDicts:
         assert data.pluck("a") == [1, 0]
         assert data.pluck("b") == [-1, 2]
         assert orig._obsolete
+
+    def test_replace_na_grouped(self):
+        def orig():
+            return ListOfDicts([{"g": 1}, {"g": 2, "a": 1}, {"g": 1, "a": 2},
+                                {"g": 2, "a": None}, {"g": 1}, {"g": 2, "a": 3}])
+        data = orig().group_by("g").replace_na(a=PREVIOUS)
+        assert data.pluck("a") == [None, 1, 2, 1, 2, 3]
+        assert "a" not in data[0]
+        data = orig().group_by("g").replace_na(a=NEXT)
+        assert data.pluck("a") == [2, 1, 2, 3, None, 3]
+        assert data.pluck("g") == [1, 2, 1, 2, 1, 2]
 
     def test_reverse(self):
         orig = test.list_of_dicts("downloads.json")

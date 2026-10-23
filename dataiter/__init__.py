@@ -94,3 +94,15 @@ from dataiter.io import read_geojson
 from dataiter.io import read_json
 from dataiter.io import read_npz
 from dataiter.io import read_parquet
+
+from dataiter import util
+
+#: Special value to refer to the next element/item.
+#: Used by ``replace_na`` to replace missing values with
+#: the next non-missing value, i.e. to fill backward.
+NEXT = util.Sentinel("NEXT")
+
+#: Special value to refer to the previous element/item.
+#: Used by ``replace_na`` to replace missing values with
+#: the previous non-missing value, i.e. to fill forward.
+PREVIOUS = util.Sentinel("PREVIOUS")

@@ -29,6 +29,8 @@ import pytest
 
 from dataiter import DataFrame
 from dataiter import DataFrameColumn
+from dataiter import NEXT
+from dataiter import PREVIOUS
 from dataiter import test
 from dataiter import Vector
 from unittest.mock import patch
@@ -1328,6 +1330,14 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.b.tolist() == ["-", "x"]
         assert data.c.tolist() == [None, 2]
         assert orig.a.tolist() == [1, None]
+
+    def test_replace_na_grouped(self):
+        orig = DataFrame(g=[1, 2, 1, 2, 1, 2], a=[None, 1, 2, None, None, 3])
+        data = orig.group_by("g").replace_na(a=PREVIOUS)
+        assert data.a.tolist() == [None, 1, 2, 1, 2, 3]
+        data = orig.group_by("g").replace_na(a=NEXT)
+        assert data.a.tolist() == [2, 1, 2, 3, None, 3]
+        assert data.g.tolist() == orig.g.tolist()
 
     def test_sample(self):
         data = test.data_frame("vehicles.csv")

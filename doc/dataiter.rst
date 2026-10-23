@@ -42,6 +42,12 @@ The following function returns a predicate for use with
 
 :func:`~dataiter.of_type`
 
+The following sentinels can be used as values in ``replace_na`` to fill missing
+values forward or backward.
+
+:attr:`dataiter.NEXT`
+:attr:`dataiter.PREVIOUS`
+
 The following constants can be used to customize certain defaults, such as
 formatting and limits for printing.
 
@@ -80,6 +86,8 @@ formatting and limits for printing.
              std,
              sum,
              var,
+             NEXT,
+             PREVIOUS,
              DEFAULT_PEEK_ELEMENTS,
              DEFAULT_PEEK_ITEMS,
              DEFAULT_PEEK_ROWS,

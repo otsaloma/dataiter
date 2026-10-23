@@ -40,6 +40,12 @@ from concurrent.futures import Future
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+class Sentinel:
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return f"dataiter.{self.name}"
+
 def count_digits(value):
     if np.isnan(value): return 0, 0
     if math.isinf(value): return 0, 0

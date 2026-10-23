@@ -964,6 +964,7 @@ class DataFrame(dict):
         * :meth:`filter_out`
         * :meth:`head`
         * :meth:`modify`
+        * :meth:`replace_na`
         * :meth:`tail`
         """
         data = self.copy()
@@ -1593,10 +1594,16 @@ class DataFrame(dict):
         Return data frame with missing values replaced.
 
         In `colname_value_pairs`, missing values in column `colname` are
-        replaced with `value`.
+        replaced with `value`. `value` can also be :attr:`dataiter.PREVIOUS` or
+        :attr:`dataiter.NEXT` to replace missing values with the previous or
+        next non-missing value, i.e. to fill forward or backward, see also
+        :meth:`Vector.replace_na`. If the data frame is grouped, these take
+        values only from the same group.
 
         >>> data = di.read_csv("data/listings.csv")
         >>> data.replace_na(sqft=0)
+        >>> data = di.DataFrame(id=[1, 1, 1, 2, 2], value=[1, None, 3, None, 5])
+        >>> data.group_by("id").replace_na(value=di.PREVIOUS)
         """
         for colname, column in self.items():
             # Replaced columns are yielded uncopied
@@ -1605,8 +1612,12 @@ class DataFrame(dict):
                 yield colname, column
             else:
                 yield colname, util.submit(np.ndarray.copy, column)
+        groups = self._get_groups(*self._group_colnames) if self._group_colnames else None
         for colname, value in colname_value_pairs.items():
-            yield colname, util.submit(Vector.replace_na, self[colname], value)
+            if groups and (value is dataiter.PREVIOUS or value is dataiter.NEXT):
+                yield colname, util.submit(Vector._replace_na_adjacent, self[colname], value, *groups)
+            else:
+                yield colname, util.submit(Vector.replace_na, self[colname], value)
 
     def sample(self, n=None):
         """

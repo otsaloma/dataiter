@@ -27,7 +27,9 @@ import operator
 import pytest
 import weakref
 
+from dataiter import NEXT
 from dataiter import of_type
+from dataiter import PREVIOUS
 from dataiter import Vector
 from numpy.dtypes import StringDType
 
@@ -755,6 +757,27 @@ class TestVector:
     def test_replace_na_no_missing(self):
         a = Vector([1, 2, 3])
         assert a.replace_na("").tolist() == [1, 2, 3]
+
+    def test_replace_na_next(self):
+        a = Vector([None, 1, None, None, 4, None])
+        assert a.replace_na(NEXT).tolist() == [1, 1, 4, 4, 4, None]
+
+    def test_replace_na_previous(self):
+        a = Vector([None, 1, None, None, 4, None])
+        assert a.replace_na(PREVIOUS).tolist() == [None, 1, 1, 1, 4, 4]
+        assert a.replace_na(PREVIOUS).replace_na(NEXT).tolist() == [1, 1, 1, 1, 4, 4]
+
+    @pytest.mark.parametrize("values", [
+        ["a", None, "c"],
+        [True, None, False],
+        [datetime.date(2026, 1, 1), None, datetime.date(2026, 1, 3)],
+        [datetime.timedelta(1), None, datetime.timedelta(3)],
+    ])
+    def test_replace_na_previous_types(self, values):
+        a = Vector(values)
+        b = a.replace_na(PREVIOUS)
+        assert b.dtype == a.dtype
+        assert b.tolist() == [values[0], values[0], values[2]]
 
     def test_round(self):
         a = Vector([1.234, 15.0, NaN])

@@ -454,6 +454,7 @@ class ListOfDicts(list):
 
         * :meth:`aggregate`
         * :meth:`head`
+        * :meth:`replace_na`
         * :meth:`tail`
         """
         data = self.copy()
@@ -829,18 +830,35 @@ class ListOfDicts(list):
         Return list with missing values replaced.
 
         In `key_value_pairs`, missing values of `key`, i.e. ``None`` or
-        missing keys, are replaced with `value`. See also
+        missing keys, are replaced with `value`. `value` can also be
+        :attr:`dataiter.PREVIOUS` or :attr:`dataiter.NEXT` to replace missing
+        values with the previous or next non-missing value, i.e. to fill
+        forward or backward. Missing values without such a value remain
+        missing, chain both to fill those as well. If the list is grouped,
+        these take values only from the same group. See also
         :meth:`fill_missing_keys`.
 
         >>> data = di.read_json("data/listings.json")
         >>> data.replace_na(sqft=0)
+        >>> data = di.ListOfDicts([{"id": 1, "value": 1}, {"id": 1}, {"id": 2}, {"id": 2, "value": 5}])
+        >>> data.group_by("id").replace_na(value=di.PREVIOUS)
         """
-        key_value_pairs = key_value_pairs.items()
-        for item in self:
-            for key, value in key_value_pairs:
-                if item.get(key, None) is None:
-                    item[key] = value
-            yield item
+        groups = self._group_items() if self._group_keys else [self]
+        for key, value in key_value_pairs.items():
+            if value is dataiter.PREVIOUS or value is dataiter.NEXT:
+                for group in groups:
+                    found = None
+                    for item in (group if value is dataiter.PREVIOUS else reversed(group)):
+                        if item.get(key, None) is None:
+                            if found is not None:
+                                item[key] = found
+                        else:
+                            found = item[key]
+            else:
+                for item in self:
+                    if item.get(key, None) is None:
+                        item[key] = value
+        yield from self
 
     @deco.new_from_generator
     def reverse(self):

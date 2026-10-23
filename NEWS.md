@@ -4,7 +4,7 @@ Highlights:
 - Major speed-up across most operations, overall around 3–5x
 - Use parallel threads where applicable (limited by `OMP_THREAD_LIMIT`)
 - Huge amount of bug-fixes for various corner cases
-- Support group-wise operation in `filter`, `filter_out`, `head` and `tail`
+- Support group-wise operation in `filter`, `filter_out`, `head`, `tail` and `replace_na`
 - Support Zstandard compression (requires Python ≥ 3.14)
 - Add Markdown documentation pages for coding agents
 - Add `llms.txt` and `llms-full.txt` (~50k tokens) for coding agents
@@ -32,6 +32,7 @@ New:
 - `ListOfDicts.replace_na`: New method to replace missing values
 - `ListOfDicts.select`, `ListOfDicts.unselect`: Support glob patterns, e.g. `select("id", "price_*")`
 - `mean`: Add `weights` argument for a weighted mean aggregation
+- `NEXT`, `PREVIOUS`: New sentinels for `replace_na` to fill missing values backward or forward
 - `PRINT_MAX_ROWS`: Lower default from 100 to 20
 - `prod`: New aggregation function
 - `regex.extract`: New function to extract a group of the first match
