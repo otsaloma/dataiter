@@ -865,6 +865,11 @@ class TestVector:
         assert a.str.contains("df").tolist() == [True, False]
         assert a.str.contains("").tolist() == [True, True]
 
+    def test_str_contains_vector(self):
+        a = Vector(["asdf", "1234"])
+        assert a.str.contains(Vector(["sd", "23"])).tolist() == [True, True]
+        assert a.str.contains(Vector(["23", "sd"])).tolist() == [False, False]
+
     def test_str_contains_unicode(self):
         a = Vector(["café", "café", "北京", "a\x00"])
         assert a.str.contains("é").tolist() == [True, False, False, False]

@@ -207,7 +207,7 @@ class StrProxy:
     zfill = str_method("zfill")
 
     def contains(self, x):
-        if not self._vector.is_string():
+        if not self._vector.is_string() or not isinstance(x, str):
             return self.find(x) > -1
         # np.strings.find is slow for long strings, as it counts characters
         # to return an index. Arrow matches bytes, with the same results,
