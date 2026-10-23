@@ -824,6 +824,9 @@ class DataFrame(dict):
                 column[na] = column[~na].max(initial=0) + 1
             columns.append(column)
         key = self._get_codes(columns)
+        if key.max(initial=0) < 2**16:
+            # Stable sort of 16-bit integers is a radix sort, much faster.
+            key = key.astype(np.uint16)
         order = np.argsort(key, stable=True)
         key = key[order]
         change = np.ones(self.nrow, bool)
