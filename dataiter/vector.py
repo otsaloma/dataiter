@@ -960,6 +960,8 @@ class Vector(np.ndarray):
         """
         if value is dataiter.PREVIOUS or value is dataiter.NEXT:
             return self._replace_na_adjacent(value, np.arange(self.length), np.zeros(1, int))
+        if callable(value) or np.ndim(value) > 0:
+            raise TypeError(f"Expected a scalar value, got {type(value).__name__}")
         vector = self.copy()
         na = vector.is_na()
         if na.any():

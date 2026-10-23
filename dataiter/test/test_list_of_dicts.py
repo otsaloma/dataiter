@@ -709,6 +709,11 @@ class TestListOfDicts:
         assert data.pluck("a") == [2, 1, 2, 3, None, 3]
         assert data.pluck("g") == [1, 2, 1, 2, 1, 2]
 
+    def test_replace_na_function(self):
+        data = ListOfDicts([{"a": None, "b": 1}])
+        with pytest.raises(TypeError):
+            data.replace_na(a=lambda x: x.b)
+
     def test_reverse(self):
         orig = test.list_of_dicts("downloads.json")
         data = orig.reverse()

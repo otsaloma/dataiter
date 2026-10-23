@@ -1339,6 +1339,13 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.a.tolist() == [2, 1, 2, 3, None, 3]
         assert data.g.tolist() == orig.g.tolist()
 
+    def test_replace_na_non_scalar(self):
+        data = DataFrame(a=["", "x"], b=["y", "z"])
+        with pytest.raises(TypeError):
+            data.replace_na(a=lambda x: x.b)
+        with pytest.raises(TypeError):
+            data.replace_na(a=data.b)
+
     def test_sample(self):
         data = test.data_frame("vehicles.csv")
         assert data.sample(10).nrow == 10

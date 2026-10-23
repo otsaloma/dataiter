@@ -754,6 +754,13 @@ class TestVector:
         a = Vector([1, 2, 3, None])
         assert a.replace_na(0).tolist() == [1, 2, 3, 0]
 
+    def test_replace_na_non_scalar(self):
+        a = Vector([1, None])
+        with pytest.raises(TypeError):
+            a.replace_na(lambda x: 0)
+        with pytest.raises(TypeError):
+            a.replace_na(Vector([3, 4]))
+
     def test_replace_na_no_missing(self):
         a = Vector([1, 2, 3])
         assert a.replace_na("").tolist() == [1, 2, 3]

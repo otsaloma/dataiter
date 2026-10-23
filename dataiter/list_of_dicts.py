@@ -845,6 +845,8 @@ class ListOfDicts(list):
         """
         groups = self._group_items() if self._group_keys else [self]
         for key, value in key_value_pairs.items():
+            if callable(value):
+                raise TypeError(f"Expected a value, got {type(value).__name__}")
             if value is dataiter.PREVIOUS or value is dataiter.NEXT:
                 for group in groups:
                     found = None
