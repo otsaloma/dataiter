@@ -1106,6 +1106,14 @@ class TestDataFrame:
         with pytest.raises(KeyError, match="zip"):
             DataFrame.read_csv(path, header=False, dtypes={"zip": str})
 
+    def test_read_csv_dtypes_datetime_not_iso(self, tmp_path):
+        path = tmp_path / "test.csv"
+        path.write_text("date\n19941222\n\n", "utf-8")
+        with pytest.raises(ValueError, match="dt.from_string"):
+            DataFrame.read_csv(path, dtypes={"date": "datetime64[D]"})
+        with pytest.raises(ValueError, match="dt.from_string"):
+            DataFrame.read_csv(path, dtypes={"date": "datetime64[us]"})
+
     def test_read_csv_fractional_seconds(self, tmp_path):
         path = tmp_path / "test.csv"
         path.write_text("time\n2026-01-02 05:36:24.539\n", "utf-8")

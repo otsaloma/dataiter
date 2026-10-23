@@ -1521,6 +1521,14 @@ class DataFrame(dict):
             indices = [int(x[1:]) for x in table.column_names]
             names = util.generate_colnames(max(indices, default=-1) + 1)
             table = table.rename_columns([names[i] for i in indices])
+        for name in table.column_names:
+            # Non-ISO dates, e.g. YYYYMMDD, are parsed as numbers,
+            # which NumPy would cast to datetimes as offsets from epoch.
+            if (name in dtypes and
+                Vector.fast([], dtypes[name]).is_datetime() and
+                (pa.types.is_integer(table[name].type) or pa.types.is_floating(table[name].type))):
+                raise ValueError(f"Can't convert {name!r} to {np.dtype(dtypes[name])}, expected ISO 8601 text, "
+                                 "read as string and use dt.from_string with a format, e.g. '%Y%m%d'")
         for i, column in enumerate(table.columns):
             if na and (pa.types.is_string(column.type) or pa.types.is_large_string(column.type)):
                 # pyarrow's strings_can_be_null would apply also the default
