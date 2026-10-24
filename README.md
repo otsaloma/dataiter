@@ -8,8 +8,9 @@ Dataiter's **`DataFrame`** is a class for tabular data similar to R's
 is under the hood a dictionary of NumPy arrays and thus capable of fast
 vectorized operations. You can consider it to be a light-weight
 alternative to Pandas with a simple and consistent API. Performance-wise
-Dataiter relies on NumPy and PyArrow and is likely to be at best
-comparable to Pandas.
+Dataiter relies on NumPy and PyArrow and is close to the level of
+Pandas. Currently the notable slow part is string data and operations
+(Dataiter's NumPy StringDType being slower than Pandas' Arrow strings).
 
 ## Installation
 
@@ -53,6 +54,8 @@ comparison table in the documentation will give you a quick overview of
 the differences and similarities in common operations.
 
 https://dataiter.readthedocs.io/en/stable/comparison.html
+
+### For Coding Agents
 
 Dataiter's API is small enough that the complete documentation fits in
 about 50k tokens. Coding agents can read all of it in one go and know

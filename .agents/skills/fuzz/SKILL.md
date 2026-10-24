@@ -14,8 +14,8 @@ calculating dashboard-type figures from raw data, not isolated little
 operations. Download some suitable data from the internet. Keep a record
 of any API surprises, broken functionality, complicated operations and
 slow operations. Then write your findings as numbered items into
-ISSUES.md and present them to me, and we'll see if there's something in
-dataiter that we should fix.
+`ISSUES.md` and present them to me, and we'll see if there's something
+in dataiter that we should fix.
 
 Regarding API surprises, note that Pandas is a pile of shit and our goal
 is not to clone Pandas. Compare broadly across data frame
@@ -68,15 +68,16 @@ tabular data and the `DataFrame` class.
 - JHU CSSE COVID-19 time series (US county and global confirmed and deaths, UID/ISO/FIPS lookup table)
 - Lichess puzzle database
 - MBTA GTFS schedule
-- MovieLens 25M
 - mledoze/countries (country names, regions and currencies)
+- MovieLens 25M
 - MTA subway hourly ridership (data.ny.gov) and subway stations
-- NHTSA vehicle safety complaints, recalls (pre- and post-2010 flat files) and defect investigations
 - nflverse NFL play-by-play (1999–2024 Parquet, 2022 CSV), games, players, rosters and participation
+- NHTSA vehicle safety complaints, recalls (pre- and post-2010 flat files) and defect investigations
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
 - NYC Citywide Payroll
 - NYC DOF parking violations issued (fiscal year), parking violation codes and Open Parking and Camera Violations (payments)
+- NYC motor vehicle collisions (full crashes and vehicles, 20,000-person sample)
 - NYC taxi
 - Ookla open data fixed broadband performance tiles
 - Open-Meteo hourly weather
@@ -87,9 +88,9 @@ tabular data and the `DataFrame` class.
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
 - SSA baby names (national and state counts, Social Security card-holder totals)
 - Stanford Open Policing Project traffic stops (Nashville, New Orleans, San Diego)
-- UCI Online Retail II (two-year retail transactions)
-- UCI Individual Household Electric Power Consumption (minute readings, 2006–2010)
 - UCI Gas Sensor Array Temperature Modulation (13 measurement runs)
+- UCI Individual Household Electric Power Consumption (minute readings, 2006–2010)
+- UCI Online Retail II (two-year retail transactions)
 - UCI PAMAP2 Physical Activity Monitoring (protocol and optional sessions)
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
