@@ -1495,6 +1495,7 @@ class DataFrame(dict):
                                        # Unlike skip_rows, this counts parsed rows,
                                        # handling line breaks in quoted names.
                                        skip_rows_after_names=int(header and bool(colnames)))
+
         parse_options = csv.ParseOptions(delimiter=sep, quote_char=quote or False, newlines_in_values=True)
         if select:
             names = colnames
