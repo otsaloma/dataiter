@@ -757,9 +757,13 @@ class ListOfDicts(list):
         na = {na} if isinstance(na, str) else set(na)
         quoting = csv.QUOTE_MINIMAL if quote else csv.QUOTE_NONE
         with util.xopen(path, "rt", encoding=encoding) as f:
-            rows = list(csv.reader(f, dialect="unix", delimiter=sep, quotechar=quote or None, quoting=quoting))
-            if not rows: return cls([])
-            names = rows.pop(0) if header else util.generate_colnames(len(rows[0]))
+            # Process row by row to not hold all fields of all rows in memory.
+            rows = csv.reader(f, dialect="unix", delimiter=sep, quotechar=quote or None, quoting=quoting)
+            first = next(rows, None)
+            if first is None: return cls([])
+            names = first if header else util.generate_colnames(len(first))
+            if not header:
+                rows = itertools.chain([first], rows)
             if colnames:
                 if len(colnames) != len(names):
                     raise ValueError(f"Expected {len(colnames)} columns, got {len(names)}")
@@ -767,10 +771,10 @@ class ListOfDicts(list):
             if select:
                 select = util.glob_all(select, names)
                 indices = [names.index(x) for x in select]
-                rows = [[row[i] for i in indices] for row in rows]
+                rows = ([row[i] for i in indices] for row in rows)
                 names = select
             if na:
-                rows = [[None if x in na else x for x in row] for row in rows]
+                rows = ([None if x in na else x for x in row] for row in rows)
             for key in types:
                 if key not in names:
                     raise KeyError(key)
