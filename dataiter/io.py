@@ -57,8 +57,8 @@ def read_jsonl(path, *, encoding="utf-8", select=[], types={}, **kwargs):
                                   types=types,
                                   **kwargs)
 
-def read_npz(path, *, allow_pickle=True):
-    return DataFrame.read_npz(path, allow_pickle=allow_pickle)
+def read_npz(path, *, select=[], allow_pickle=True):
+    return DataFrame.read_npz(path, select=select, allow_pickle=allow_pickle)
 
 def read_parquet(path, *, select=[], dtypes={}, timezone="keep"):
     return DataFrame.read_parquet(path, select=select, dtypes=dtypes, timezone=timezone)

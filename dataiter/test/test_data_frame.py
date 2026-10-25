@@ -1327,6 +1327,17 @@ NULL,2.5,"test",TRUE,2025-01-01
         orig.write_npz(path)
         DataFrame.read_npz(path)
 
+    def test_read_npz_select(self, tmp_path):
+        orig = test.data_frame("vehicles.csv")
+        path = str(tmp_path / "test.npz")
+        orig.write_npz(path)
+        data = DataFrame.read_npz(path, select=["model", "make"])
+        assert data == orig.select("model", "make")
+        data = DataFrame.read_npz(path, select=["c*"])
+        assert data.colnames == ["class", "cyl", "cty"]
+        with pytest.raises(KeyError, match="x_"):
+            DataFrame.read_npz(path, select=["x_*"])
+
     def test_read_parquet(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
         path = str(tmp_path / "test.parquet")

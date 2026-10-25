@@ -1571,15 +1571,18 @@ class DataFrame(dict):
         return cls.from_json(data, select=select, dtypes=dtypes)
 
     @classmethod
-    def read_npz(cls, path, *, allow_pickle=True):
+    def read_npz(cls, path, *, select=[], allow_pickle=True):
         """
         Return a new data frame from NumPy file `path`.
 
-        See `numpy.load` for an explanation of `allow_pickle`:
+        `select` is an optional list of columns or glob patterns to limit to,
+        as in :meth:`.DataFrame.select`. See `numpy.load` for an explanation
+        of `allow_pickle`:
         https://numpy.org/doc/stable/reference/generated/numpy.load.html
         """
         with np.load(path, allow_pickle=allow_pickle) as data:
-            return cls(**data)
+            names = util.glob_all(select, data.files) if select else data.files
+            return cls(**{x: data[x] for x in names})
 
     @classmethod
     def read_parquet(cls, path, *, select=[], dtypes={}, timezone="keep"):
