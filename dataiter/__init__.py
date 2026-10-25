@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__version__ = "1.4"
+__version__ = "2.0"
 
 #: Default amount of elements to return from :meth:`Vector.head`,
 #: :meth:`Vector.sample` and :meth:`Vector.tail`.

@@ -1,5 +1,5 @@
 #!/bin/sh
-uv run --no-project --with "dataiter==1.4" python3.14 -i -c "
+uv run --no-project --python ">=3.12,<3.16" --with "dataiter==2.0" python -i -c "
 import dataiter as di
 import os
 import sys

@@ -1,4 +1,4 @@
-# PENDING: Dataiter 2.0
+# 2026-10-25: Dataiter 2.0
 
 Highlights:
 - Major speed-up across most operations, overall around 5x
