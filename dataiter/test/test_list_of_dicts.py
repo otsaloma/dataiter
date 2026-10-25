@@ -670,6 +670,9 @@ class TestListOfDicts:
         data = ListOfDicts.read_jsonl(path, select=["a"], types={"a": float})
         assert data == [{"a": 1.0}, {"a": 2.0}]
         assert isinstance(data[0].a, float)
+        data = ListOfDicts.read_jsonl(path, select=["b*", "a"])
+        assert data == [{"b": "x", "a": 1}, {"a": 2}]
+        assert list(data[0].keys()) == ["b", "a"]
 
     def test_read_pickle(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")

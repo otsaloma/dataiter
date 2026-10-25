@@ -27,6 +27,7 @@ import fnmatch
 import functools
 import gzip
 import itertools
+import json
 import lzma
 import math
 import numpy as np
@@ -176,6 +177,18 @@ def makedirs_for_file(path):
 
 def quote(value):
     return '"{}"'.format(str(value).replace('"', r'\"'))
+
+def read_jsonl(path, *, encoding="utf-8", select=[], **kwargs):
+    # Drop unselected keys line by line to not hold them all in memory.
+    # This keeps a superset of matches, from_json does the final select.
+    @functools.cache
+    def keep(key):
+        return any(key == x or fnmatch.fnmatchcase(key, x) for x in select)
+    with xopen(path, "rt", encoding=encoding) as f:
+        if not select:
+            return [json.loads(line, **kwargs) for line in f if line.strip()]
+        return [{k: v for k, v in json.loads(line, **kwargs).items() if keep(k)}
+                for line in f if line.strip()]
 
 def result(value):
     # Return the result of a future from submit, other values as is.

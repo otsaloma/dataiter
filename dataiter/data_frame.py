@@ -1567,8 +1567,7 @@ class DataFrame(dict):
         column names to NumPy datatypes. `kwargs` are passed to
         ``json.loads``.
         """
-        with util.xopen(path, "rt", encoding=encoding) as f:
-            data = [json.loads(line, **kwargs) for line in f if line.strip()]
+        data = util.read_jsonl(path, encoding=encoding, select=select, **kwargs)
         return cls.from_json(data, select=select, dtypes=dtypes)
 
     @classmethod

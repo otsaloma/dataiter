@@ -1309,6 +1309,10 @@ NULL,2.5,"test",TRUE,2025-01-01
         path.write_text('{"a": 1, "b": "x"}\n{"a": 2}\n', "utf-8")
         data = DataFrame.read_jsonl(path, select=["b"])
         assert data.colnames == ["b"]
+        data = DataFrame.read_jsonl(path, select=["b*", "a"])
+        assert data.colnames == ["b", "a"]
+        with pytest.raises(KeyError, match="x_"):
+            DataFrame.read_jsonl(path, select=["x_*"])
 
     def test_read_npz(self, tmp_path):
         orig = test.data_frame("vehicles.csv")

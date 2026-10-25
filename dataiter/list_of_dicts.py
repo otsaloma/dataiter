@@ -805,8 +805,7 @@ class ListOfDicts(list):
         in :meth:`.ListOfDicts.select`. `types` is an optional dict mapping
         keys to datatypes. `kwargs` are passed to ``json.loads``.
         """
-        with util.xopen(path, "rt", encoding=encoding) as f:
-            data = [json.loads(line, **kwargs) for line in f if line.strip()]
+        data = util.read_jsonl(path, encoding=encoding, select=select, **kwargs)
         return cls.from_json(data, select=select, types=types)
 
     @classmethod
