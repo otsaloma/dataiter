@@ -35,6 +35,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.print_na_counts`
 :meth:`~dataiter.ListOfDicts.read_csv`
 :meth:`~dataiter.ListOfDicts.read_json`
+:meth:`~dataiter.ListOfDicts.read_jsonl`
 :meth:`~dataiter.ListOfDicts.read_pickle`
 :meth:`~dataiter.ListOfDicts.rename`
 :meth:`~dataiter.ListOfDicts.replace_na`
@@ -53,6 +54,7 @@ dataiter.ListOfDicts
 :meth:`~dataiter.ListOfDicts.unselect`
 :meth:`~dataiter.ListOfDicts.write_csv`
 :meth:`~dataiter.ListOfDicts.write_json`
+:meth:`~dataiter.ListOfDicts.write_jsonl`
 :meth:`~dataiter.ListOfDicts.write_pickle`
 
 .. autoclass:: dataiter.ListOfDicts

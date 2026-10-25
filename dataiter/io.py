@@ -50,6 +50,13 @@ def read_json(path, *, encoding="utf-8", select=[], types={}, **kwargs):
                                  types=types,
                                  **kwargs)
 
+def read_jsonl(path, *, encoding="utf-8", select=[], types={}, **kwargs):
+    return ListOfDicts.read_jsonl(path,
+                                  encoding=encoding,
+                                  select=select,
+                                  types=types,
+                                  **kwargs)
+
 def read_npz(path, *, allow_pickle=True):
     return DataFrame.read_npz(path, allow_pickle=allow_pickle)
 
@@ -59,5 +66,6 @@ def read_parquet(path, *, select=[], dtypes={}, timezone="keep"):
 read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)
 read_geojson.__doc__ = util.format_alias_doc(read_geojson, GeoJSON.read)
 read_json.__doc__ = util.format_alias_doc(read_json, ListOfDicts.read_json)
+read_jsonl.__doc__ = util.format_alias_doc(read_jsonl, ListOfDicts.read_jsonl)
 read_npz.__doc__ = util.format_alias_doc(read_npz, DataFrame.read_npz)
 read_parquet.__doc__ = util.format_alias_doc(read_parquet, DataFrame.read_parquet)

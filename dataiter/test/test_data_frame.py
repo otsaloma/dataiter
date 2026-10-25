@@ -1297,6 +1297,19 @@ NULL,2.5,"test",TRUE,2025-01-01
     def test_read_json_path(self):
         DataFrame.read_json(test.get_data_path("vehicles.json"))
 
+    def test_read_jsonl(self, tmp_path):
+        path = tmp_path / "test.jsonl"
+        path.write_text('{"a": 1, "b": "x"}\n\n{"a": 2}\n', "utf-8")
+        data = DataFrame.read_jsonl(path)
+        assert data.a.tolist() == [1, 2]
+        assert data.b.tolist() == ["x", None]
+
+    def test_read_jsonl_select(self, tmp_path):
+        path = tmp_path / "test.jsonl"
+        path.write_text('{"a": 1, "b": "x"}\n{"a": 2}\n', "utf-8")
+        data = DataFrame.read_jsonl(path, select=["b"])
+        assert data.colnames == ["b"]
+
     def test_read_npz(self, tmp_path):
         orig = test.data_frame("vehicles.csv")
         path = str(tmp_path / "test.npz")
@@ -1739,6 +1752,14 @@ NULL,2.5,"test",TRUE,2025-01-01
         orig = test.data_frame("downloads.json")
         path = tmp_path / "test.json"
         orig.write_json(path)
+
+    def test_write_jsonl(self, tmp_path):
+        orig = test.data_frame("downloads.json")
+        path = tmp_path / "test.jsonl"
+        orig.write_jsonl(path)
+        assert len(path.read_text("utf-8").splitlines()) == orig.nrow
+        data = DataFrame.read_jsonl(path)
+        assert data == orig
 
     def test_write_npz(self, tmp_path):
         orig = test.data_frame("vehicles.csv")

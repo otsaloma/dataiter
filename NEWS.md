@@ -1,11 +1,12 @@
 # PENDING: Dataiter 2.0
 
 Highlights:
-- Major speed-up across most operations, overall around 3–5x
+- Major speed-up across most operations, overall around 5x
 - Use parallel threads where applicable (limited by `OMP_THREAD_LIMIT`)
 - Huge amount of bug-fixes for various corner cases
 - Support group-wise operation in `filter`, `filter_out`, `head`, `tail` and `replace_na`
 - Support Zstandard compression (requires Python ≥ 3.14)
+- Support reading and writing JSON Lines (NDJSON)
 - Add Markdown documentation pages for coding agents
 - Add `llms.txt` and `llms-full.txt` (~50k tokens) for coding agents
 

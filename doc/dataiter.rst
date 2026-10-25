@@ -30,6 +30,7 @@ Convenience aliases for reading data
     :func:`~dataiter.read_csv`
     :func:`~dataiter.read_geojson`
     :func:`~dataiter.read_json`
+    :func:`~dataiter.read_jsonl`
     :func:`~dataiter.read_npz`
     :func:`~dataiter.read_parquet`
 
@@ -75,6 +76,7 @@ Customization for printing and formatting
              read_csv,
              read_geojson,
              read_json,
+             read_jsonl,
              read_npz,
              read_parquet,
              std,

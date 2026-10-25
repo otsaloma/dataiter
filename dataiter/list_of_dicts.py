@@ -376,7 +376,9 @@ class ListOfDicts(list):
         in :meth:`.ListOfDicts.select`. `types` is an optional dict mapping
         keys to datatypes. `kwargs` are passed to ``json.load``.
         """
-        data = json.loads(string, **kwargs)
+        data = string
+        if isinstance(data, str):
+            data = json.loads(data, **kwargs)
         if not isinstance(data, list):
             raise TypeError("Not a list")
         keys = util.unique_keys(itertools.chain(*data)) if select or types else []
@@ -793,6 +795,21 @@ class ListOfDicts(list):
             return cls.from_json(f.read(), select=select, types=types, **kwargs)
 
     @classmethod
+    def read_jsonl(cls, path, *, encoding="utf-8", select=[], types={}, **kwargs):
+        """
+        Return a new list from JSON Lines file `path`.
+
+        JSON Lines, also known as NDJSON, has one object per line. Will
+        automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        `select` is an optional list of keys or glob patterns to limit to, as
+        in :meth:`.ListOfDicts.select`. `types` is an optional dict mapping
+        keys to datatypes. `kwargs` are passed to ``json.loads``.
+        """
+        with util.xopen(path, "rt", encoding=encoding) as f:
+            data = [json.loads(line, **kwargs) for line in f if line.strip()]
+        return cls.from_json(data, select=select, types=types)
+
+    @classmethod
     def read_pickle(cls, path):
         """
         Return a new list from Pickle file `path`.
@@ -1125,6 +1142,25 @@ class ListOfDicts(list):
             for chunk in encoder.iterencode(self):
                 f.write(chunk)
             f.write("\n")
+
+    def write_jsonl(self, path, *, encoding="utf-8", **kwargs):
+        """
+        Write list to JSON Lines file `path`.
+
+        JSON Lines, also known as NDJSON, has one object per line. Will
+        automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        Zstandard (``.zst``, requires Python 3.14) is recommended as it's
+        much faster than the others with a compression ratio close to gzip.
+        `kwargs` are passed to ``json.JSONEncoder``.
+        """
+        kwargs.setdefault("default", str)
+        kwargs.setdefault("ensure_ascii", False)
+        util.makedirs_for_file(path)
+        with util.xopen(path, "wt", encoding=encoding) as f:
+            encoder = json.JSONEncoder(**kwargs)
+            for item in self:
+                f.write(encoder.encode(item))
+                f.write("\n")
 
     def write_pickle(self, path):
         """

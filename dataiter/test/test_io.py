@@ -44,6 +44,11 @@ class TestIO:
         s2 = inspect.signature(ListOfDicts.read_json)
         assert s1 == s2
 
+    def test_read_jsonl(self):
+        s1 = inspect.signature(io.read_jsonl)
+        s2 = inspect.signature(ListOfDicts.read_jsonl)
+        assert s1 == s2
+
     def test_read_npz(self):
         s1 = inspect.signature(io.read_npz)
         s2 = inspect.signature(DataFrame.read_npz)

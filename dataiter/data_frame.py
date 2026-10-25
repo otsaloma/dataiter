@@ -1556,6 +1556,22 @@ class DataFrame(dict):
             return cls.from_json(f.read(), select=select, dtypes=dtypes, **kwargs)
 
     @classmethod
+    def read_jsonl(cls, path, *, encoding="utf-8", select=[], dtypes={}, **kwargs):
+        """
+        Return a new data frame from JSON Lines file `path`.
+
+        JSON Lines, also known as NDJSON, has one object per line. Will
+        automatically decompress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        `select` is an optional list of columns or glob patterns to limit to,
+        as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
+        column names to NumPy datatypes. `kwargs` are passed to
+        ``json.loads``.
+        """
+        with util.xopen(path, "rt", encoding=encoding) as f:
+            data = [json.loads(line, **kwargs) for line in f if line.strip()]
+        return cls.from_json(data, select=select, dtypes=dtypes)
+
+    @classmethod
     def read_npz(cls, path, *, allow_pickle=True):
         """
         Return a new data frame from NumPy file `path`.
@@ -2039,6 +2055,18 @@ class DataFrame(dict):
         `kwargs` are passed to ``json.JSONEncoder``.
         """
         return self.to_list_of_dicts().write_json(path, encoding=encoding, **kwargs)
+
+    def write_jsonl(self, path, *, encoding="utf-8", **kwargs):
+        """
+        Write data frame to JSON Lines file `path`.
+
+        JSON Lines, also known as NDJSON, has one object per line. Will
+        automatically compress if `path` ends in ``.bz2|.gz|.xz|.zst``.
+        Zstandard (``.zst``, requires Python 3.14) is recommended as it's
+        much faster than the others with a compression ratio close to gzip.
+        `kwargs` are passed to ``json.JSONEncoder``.
+        """
+        return self.to_list_of_dicts().write_jsonl(path, encoding=encoding, **kwargs)
 
     def write_npz(self, path, *, compress=False):
         """

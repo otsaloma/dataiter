@@ -92,6 +92,7 @@ from dataiter.aggregate import var
 from dataiter.io import read_csv
 from dataiter.io import read_geojson
 from dataiter.io import read_json
+from dataiter.io import read_jsonl
 from dataiter.io import read_npz
 from dataiter.io import read_parquet
 

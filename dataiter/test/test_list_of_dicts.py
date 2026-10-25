@@ -658,6 +658,19 @@ class TestListOfDicts:
         assert isinstance(data[100].date, datetime.date)
         assert isinstance(data[100].downloads, int)
 
+    def test_read_jsonl(self, tmp_path):
+        path = tmp_path / "test.jsonl"
+        path.write_text('{"a": 1, "b": "x"}\n\n{"a": 2}\n', "utf-8")
+        data = ListOfDicts.read_jsonl(path)
+        assert data == [{"a": 1, "b": "x"}, {"a": 2}]
+
+    def test_read_jsonl_select_types(self, tmp_path):
+        path = tmp_path / "test.jsonl"
+        path.write_text('{"a": 1, "b": "x"}\n{"a": 2}\n', "utf-8")
+        data = ListOfDicts.read_jsonl(path, select=["a"], types={"a": float})
+        assert data == [{"a": 1.0}, {"a": 2.0}]
+        assert isinstance(data[0].a, float)
+
     def test_read_pickle(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
         path = str(tmp_path / "test.pkl")
@@ -946,6 +959,14 @@ class TestListOfDicts:
         orig = test.list_of_dicts("downloads.json")
         path = tmp_path / "test.json"
         orig.write_json(path)
+
+    def test_write_jsonl(self, tmp_path):
+        orig = test.list_of_dicts("downloads.json")
+        path = tmp_path / "test.jsonl"
+        orig.write_jsonl(path)
+        assert len(path.read_text("utf-8").splitlines()) == len(orig)
+        data = ListOfDicts.read_jsonl(path)
+        assert data == orig
 
     def test_write_pickle(self, tmp_path):
         orig = test.list_of_dicts("downloads.json")
