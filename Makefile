@@ -64,7 +64,7 @@ release:
 	$(EDITOR) NEWS.md
 	sudo $(MAKE) install clean
 	$(MAKE) test-installed
-	tools/release
+	tools/release.sh
 
 test:
 	pytest .

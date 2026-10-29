@@ -1,6 +1,6 @@
 #!/bin/sh
 # Benchmark the working tree against a release, by default the latest.
-# Usage: tools/benchmark-versions [RELEASE] [BENCHMARK ARGUMENTS...]
+# Usage: tools/benchmark-versions.sh [RELEASE] [BENCHMARK ARGUMENTS...]
 
 set -e
 cd "$(dirname "$0")/.."
@@ -16,9 +16,9 @@ trap 'git worktree remove --force "$WORKTREE"' EXIT
 trap 'exit 1' INT TERM
 git worktree add -q --detach "$WORKTREE" "$RELEASE"
 printf "\n$RELEASE:\n"
-PYTHONPATH="$WORKTREE" uv run python tools/benchmark -o "$WORKTREE/release.csv" --version="$RELEASE" "$@"
+PYTHONPATH="$WORKTREE" uv run python tools/benchmark.py -o "$WORKTREE/release.csv" --version="$RELEASE" "$@"
 printf "\n$CURRENT:\n"
-uv run python tools/benchmark -o "$WORKTREE/current.csv" --version="$CURRENT" "$@"
+uv run python tools/benchmark.py -o "$WORKTREE/current.csv" --version="$CURRENT" "$@"
 uv run python - "$WORKTREE/release.csv" "$WORKTREE/current.csv" "$OUT_FILE" <<EOF
 import dataiter as di, sys
 release, current = (di.read_csv(x, dtypes={"version": str}) for x in sys.argv[1:3])
