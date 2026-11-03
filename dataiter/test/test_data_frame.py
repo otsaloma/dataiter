@@ -22,6 +22,7 @@
 
 import dataiter as di
 import datetime
+import itertools
 import json
 import numpy as np
 import pyarrow as pa
@@ -1535,6 +1536,21 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert (data1.year == data2.year).all()
         assert (data1.make == data2.make).all()
         assert (data1.model == data2.model).all()
+
+    def test_sort_combined(self):
+        rng = np.random.default_rng(1)
+        n = 1000
+        data = DataFrame(a=rng.integers(-3, 3, n),
+                         b=rng.integers(0, 10, n).astype("datetime64[D]"),
+                         c=rng.choice(["x", "y", ""], n),
+                         d=rng.random(n) < 0.5,
+                         i=np.arange(n),
+                         z=np.zeros(n))
+        data.b[rng.random(n) < 0.1] = np.datetime64("NaT", "D")
+        for dirs in itertools.product([1, -1], repeat=4):
+            pairs = dict(zip("abcd", dirs))
+            # A float key is never combined, sorting by it uses chained argsorts.
+            assert data.sort(**pairs).i.tolist() == data.sort(**pairs, z=1).i.tolist()
 
     def test_sort_descending_unsigned(self):
         data = DataFrame(x=np.array([0, 3, 1], np.uint8))

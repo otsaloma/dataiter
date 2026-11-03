@@ -1812,7 +1812,7 @@ class DataFrame(dict):
         >>> data = di.read_csv("data/listings.csv")
         >>> data.sort(hood=1, zipcode=1)
         """
-        def sort_keys(colname, dir):
+        def sort_key(colname, dir):
             if dir not in [1, -1]:
                 raise ValueError("dir should be 1 or -1")
             column = self[colname]
@@ -1821,21 +1821,48 @@ class DataFrame(dict):
                 column = util.sorted_codes(column)
             elif column.is_object():
                 column = column.rank(method="min")
-            yield column, dir
+            return np.asarray(column), dir, na
+
+        def combine(keys):
+            # Return one key combining integer keys, with missing values last,
+            # or None for floats or on overflow. Unlike chained argsorts, one
+            # argsort is fast for partly sorted data, e.g. rbinded sorted data.
+            combined, size = np.zeros(self.nrow, np.int64), 1
+            for key, dir, na in keys:
+                if key.dtype.kind not in "biumM" or key.dtype == np.uint64:
+                    return None
+                key = key.astype(np.int64)
+                has_na = bool(na.any())
+                valid = key[~na] if has_na else key
+                lo, hi = (int(valid.min()), int(valid.max())) if len(valid) else (0, 0)
+                n = hi - lo + 1 + has_na
+                if size * n >= 2**62:
+                    return None
+                key = key - lo if dir > 0 else hi - key
+                key[na] = n - 1
+                combined, size = combined * n + key, size * n
+            # Stable sort of 16-bit integers is a radix sort, much faster.
+            return combined.astype(np.uint16) if size <= 2**16 else combined
+
+        def chain_keys(key, dir, na):
+            yield key, dir
             # Keys are sorted by least significant first,
             # so yielding na after the values takes precedence.
             if na.any(): yield na, 1
-        # Chained stable argsorts give the same result as np.lexsort,
-        # but are faster, especially for strings.
-        indices = None
-        for key, dir in itertools.chain.from_iterable(
-                sort_keys(*x) for x in reversed(colname_dir_pairs.items())):
-            if indices is not None:
-                key = key[indices]
-            order = util.argsort(key, descending=dir < 0)
-            indices = order if indices is None else indices[order]
-        if indices is None:
-            indices = np.arange(self.nrow)
+
+        keys = [sort_key(*x) for x in colname_dir_pairs.items()]
+        combined = combine(keys)
+        if combined is not None:
+            indices = util.argsort(combined)
+        else:
+            # Chained stable argsorts give the same result as np.lexsort,
+            # but are faster, especially for strings.
+            indices = None
+            for key, dir in itertools.chain.from_iterable(chain_keys(*x) for x in reversed(keys)):
+                if indices is not None:
+                    key = key[indices]
+                order = util.argsort(key, descending=dir < 0)
+                indices = order if indices is None else indices[order]
         for colname, column in self.items():
             yield colname, util.submit(np.take, column, indices)
 
