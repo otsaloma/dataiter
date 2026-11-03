@@ -1988,7 +1988,16 @@ class DataFrame(dict):
                 rows, codes, column = rows[~single], codes[~single], column[~single]
                 column, n = DataFrame._encode(column, dense=True, ordered=False)
             codes, size = codes * n + column, size * n
-        first = util.unique_codes(codes)[1]
+        if size <= len(codes):
+            # Codes small enough to index an array of first occurrences
+            # are faster to process that way than via hashing.
+            first = np.full(size, len(codes))
+            np.minimum.at(first, codes, np.arange(len(codes)))
+            is_first = np.zeros(len(codes) + 1, bool)
+            is_first[first] = True
+            first = np.flatnonzero(is_first[:-1])
+        else:
+            first = util.unique_codes(codes)[1]
         if len(rows) == nrow:
             return first
         keep[rows[first]] = True

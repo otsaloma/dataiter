@@ -1,6 +1,7 @@
 # PENDING: Dataiter 2.1
 
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
+- `DataFrame.unique`: Speed up for integer-like keys
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
 - Speed up sorting large numeric data using parallel threads
 
