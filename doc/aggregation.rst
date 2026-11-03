@@ -22,7 +22,6 @@ the name of the column for that summary in the output. The return value is a
 regular data frame. See the following sections for what kinds of aggregation
 functions you can use.
 
->>> import dataiter as di
 >>> data = di.read_csv("data/listings.csv")
 >>> data.group_by("hood").aggregate(n=di.count(), price=di.mean("price"))
 .
@@ -84,7 +83,6 @@ with a data frame that has a large amount of groups (around 100,000 or more),
 you'll notice that it gets a bit slow, but for more common sizes of input, it
 should be well usable.
 
->>> import dataiter as di
 >>> data = di.read_csv("data/listings.csv")
 >>> data.group_by("hood").aggregate(n=lambda x: x.nrow, price=lambda x: x.price.mean())
 .
@@ -104,7 +102,6 @@ A common reason to reach for lambda functions is calculating summaries of rows
 that match a condition, such as the count or share of listings priced over 200
 dollars.
 
->>> import dataiter as di
 >>> data = di.read_csv("data/listings.csv")
 >>> data.group_by("hood").aggregate(n=di.count(),
 ...                                 n_expensive=lambda x: (x.price > 200).sum(),

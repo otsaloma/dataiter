@@ -1612,15 +1612,8 @@ class DataFrame(dict):
         usually around 1–10M depending on your data and system. See
         :meth:`read_parquet` for an explanation of the other arguments.
 
-        There's currently no ``read_*_chunked`` for other file formats, as
-        they can't be efficiently read in chunks. For e.g. a huge CSV file,
-        convert it to Parquet first, e.g. with DuckDB:
-        ``duckdb -c "COPY (FROM 'data.csv') TO 'data.parquet'"``.
-
-        >>> # Filter down to the latest order per customer.
-        >>> # latest = di.DataFrame()
-        >>> # for chunk in di.read_parquet_chunked("sales.parquet", 1_000_000):
-        ... #     latest = latest.rbind(chunk).sort(ts=-1).unique("customer_id")
+        See the guide on :doc:`out-of-memory data </out-of-memory>` for
+        an explanation and examples of chunked processing.
         """
         # With pre-buffering, the reader keeps all data read so far
         # in memory until closed, i.e. eventually the whole file.

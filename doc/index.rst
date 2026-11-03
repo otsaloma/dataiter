@@ -23,6 +23,7 @@ frame.
    quick-start
    comparison
    aggregation
+   out-of-memory
 
 .. toctree::
    :maxdepth: 1

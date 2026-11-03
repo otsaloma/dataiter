@@ -5,6 +5,7 @@
 - `DataFrame.unique`: Speed up for integer-like keys
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
 - Speed up sorting large numeric data using parallel threads
+- Add documentation on dealing with out-of-memory data
 
 # 2026-10-25: Dataiter 2.0
 
