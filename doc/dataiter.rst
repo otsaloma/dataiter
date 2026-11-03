@@ -33,6 +33,7 @@ Convenience aliases for reading data
     :func:`~dataiter.read_jsonl`
     :func:`~dataiter.read_npz`
     :func:`~dataiter.read_parquet`
+    :func:`~dataiter.read_parquet_chunked`
 
 Miscellaneous functions
     :func:`~dataiter.of_type`
@@ -79,6 +80,7 @@ Customization for printing and formatting
              read_jsonl,
              read_npz,
              read_parquet,
+             read_parquet_chunked,
              std,
              sum,
              var,

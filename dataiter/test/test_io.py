@@ -58,3 +58,8 @@ class TestIO:
         s1 = inspect.signature(io.read_parquet)
         s2 = inspect.signature(DataFrame.read_parquet)
         assert s1 == s2
+
+    def test_read_parquet_chunked(self):
+        s1 = inspect.signature(io.read_parquet_chunked)
+        s2 = inspect.signature(DataFrame.read_parquet_chunked)
+        assert s1 == s2

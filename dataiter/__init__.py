@@ -95,6 +95,7 @@ from dataiter.io import read_json
 from dataiter.io import read_jsonl
 from dataiter.io import read_npz
 from dataiter.io import read_parquet
+from dataiter.io import read_parquet_chunked
 
 from dataiter import util
 

@@ -1,3 +1,8 @@
+# PENDING: Dataiter 2.1
+
+- `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
+- `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
+
 # 2026-10-25: Dataiter 2.0
 
 Highlights:

@@ -25,6 +25,7 @@ import datetime
 import json
 import numpy as np
 import pyarrow as pa
+import pyarrow.parquet as pq
 import pytest
 
 from dataiter import DataFrame
@@ -1352,6 +1353,23 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.colnames == ["price_x", "price_y", "a"]
         with pytest.raises(KeyError, match="x_"):
             DataFrame.read_parquet(path, select=["x_*"])
+
+    def test_read_parquet_chunked(self, tmp_path):
+        orig = test.data_frame("vehicles.csv")
+        path = str(tmp_path / "test.parquet")
+        pq.write_table(orig.to_arrow(), path, row_group_size=7)
+        chunks = list(DataFrame.read_parquet_chunked(path, 10))
+        assert [x.nrow for x in chunks[:-1]] == [10] * (len(chunks) - 1)
+        assert 0 < chunks[-1].nrow <= 10
+        assert DataFrame().rbind(*chunks) == orig
+
+    def test_read_parquet_chunked_select_glob(self, tmp_path):
+        path = str(tmp_path / "test.parquet")
+        DataFrame(a=[1], price_x=[2], price_y=[3]).write_parquet(path)
+        data, = DataFrame.read_parquet_chunked(path, 10, select=["price_*", "a"])
+        assert data.colnames == ["price_x", "price_y", "a"]
+        with pytest.raises(KeyError, match="x_"):
+            next(DataFrame.read_parquet_chunked(path, 10, select=["x_*"]))
 
     def test_read_pickle(self, tmp_path):
         orig = test.data_frame("vehicles.csv")

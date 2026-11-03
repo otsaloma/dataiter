@@ -42,6 +42,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.read_jsonl`
 :meth:`~dataiter.DataFrame.read_npz`
 :meth:`~dataiter.DataFrame.read_parquet`
+:meth:`~dataiter.DataFrame.read_parquet_chunked`
 :meth:`~dataiter.DataFrame.read_pickle`
 :meth:`~dataiter.DataFrame.rename`
 :meth:`~dataiter.DataFrame.replace_na`
