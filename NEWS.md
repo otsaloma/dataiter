@@ -2,6 +2,7 @@
 
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
+- Speed up sorting large numeric data using parallel threads
 
 # 2026-10-25: Dataiter 2.0
 

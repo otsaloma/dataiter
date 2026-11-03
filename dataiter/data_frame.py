@@ -834,7 +834,7 @@ class DataFrame(dict):
         if key.max(initial=0) < 2**16:
             # Stable sort of 16-bit integers is a radix sort, much faster.
             key = key.astype(np.uint16)
-        order = np.argsort(key, stable=True)
+        order = util.argsort(key)
         key = key[order]
         change = np.ones(self.nrow, bool)
         change[1:] = key[1:] != key[:-1]
@@ -962,7 +962,7 @@ class DataFrame(dict):
         # as positions in order, the stable sort order of b. Codes -1 never
         # match: they are left out of order and get an empty range.
         order = np.flatnonzero(b > -1)
-        order = order[np.argsort(b[order], stable=True)]
+        order = order[util.argsort(b[order])]
         left = np.searchsorted(b[order], a, "left")
         right = np.searchsorted(b[order], a, "right")
         return left, right, order
@@ -1832,7 +1832,7 @@ class DataFrame(dict):
                 sort_keys(*x) for x in reversed(colname_dir_pairs.items())):
             if indices is not None:
                 key = key[indices]
-            order = np.argsort(key, stable=True, descending=dir < 0)
+            order = util.argsort(key, descending=dir < 0)
             indices = order if indices is None else indices[order]
         if indices is None:
             indices = np.arange(self.nrow)

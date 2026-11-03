@@ -943,7 +943,7 @@ class Vector(np.ndarray):
             # except for strings with values that repeat.
             direct = dir > 0 and not (self.is_string() and util.is_repetitive(self))
             keys = self[~na] if direct else codes()
-            indices = keys.argsort(stable=True)
+            indices = util.argsort(keys)
             rank = np.zeros_like(indices)
             rank[indices] = np.arange(len(indices)) + 1
             out[~na] = rank

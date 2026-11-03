@@ -30,6 +30,16 @@ from dataiter import util
 
 class TestUtil:
 
+    @pytest.mark.parametrize("descending", [False, True])
+    def test_argsort(self, descending):
+        rng = np.random.default_rng(1)
+        for x in [rng.integers(0, 100, 100_000),
+                  rng.integers(0, 100, 100_000, dtype=np.int16),
+                  np.where(rng.random(100_000) < 0.1, np.nan, rng.random(100_000)),
+                  rng.integers(0, 2**34, 100_000).astype("datetime64[ms]")]:
+            expected = np.argsort(x, stable=True, descending=descending)
+            assert np.array_equal(util.argsort(x, descending=descending), expected)
+
     def test_count_digits(self):
         assert util.count_digits(0) == (0, 0)
         assert util.count_digits(0.1) == (0, 1)

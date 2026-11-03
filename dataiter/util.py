@@ -47,6 +47,22 @@ class Sentinel:
     def __repr__(self):
         return f"dataiter.{self.name}"
 
+def argsort(x, *, descending=False):
+    # Return np.argsort(x, stable=True), for large numeric data faster by
+    # sorting slices in parallel threads and then all at once: NumPy's
+    # stable sort detects the sorted slices as runs and only merges them.
+    # Strings don't benefit and 8- and 16-bit integers get a radix sort.
+    if (len(x) < 50_000 or
+        pa.cpu_count() == 1 or
+        x.dtype.kind not in "iufmM" or
+        x.dtype.kind in "iu" and x.dtype.itemsize <= 2):
+        return np.argsort(x, stable=True, descending=descending)
+    bounds = np.linspace(0, len(x), pa.cpu_count() + 1).astype(np.int64)
+    futures = [get_executor().submit(np.argsort, x[lo:hi], stable=True, descending=descending)
+               for lo, hi in zip(bounds[:-1], bounds[1:])]
+    indices = np.concatenate([lo + f.result() for lo, f in zip(bounds, futures)])
+    return indices[np.argsort(x[indices], stable=True, descending=descending)]
+
 def count_digits(value):
     if np.isnan(value): return 0, 0
     if math.isinf(value): return 0, 0
