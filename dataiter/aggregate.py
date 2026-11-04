@@ -123,6 +123,8 @@ def count(x="", *, drop_na=False):
             return np.diff(starts, append=data.nrow)
         aggregate.group_aware = True
         return aggregate
+    if not isinstance(x, (Vector, str)):
+        raise TypeError("Expected Vector or str")
     return dispatch(count_groups, x)
 
 @composite

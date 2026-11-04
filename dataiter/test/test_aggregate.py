@@ -241,6 +241,8 @@ class TestAggregate:
         assert count(Vector([1, 2])) == 2
         assert count(Vector([1, 2, NaN])) == 3
         assert count(Vector([1, 2, NaN]), drop_na=True) == 2
+        with pytest.raises(TypeError):
+            count(DataFrame(x=[1]))
 
     def test_count_unique(self):
         assert count_unique(EMPTY_VECTOR) == 0
