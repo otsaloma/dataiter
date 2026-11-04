@@ -746,7 +746,7 @@ class DataFrame(dict):
         """
         b = other.modify(_bid_=np.arange(other.nrow))
         ab = self.left_join(b, *by, multiple=multiple)
-        b = b.anti_join(ab, "_bid_").unselect("_bid_")
+        b = other.slice_off(ab._bid_.drop_na().astype(int))
         ab = ab.unselect("_bid_")
         if b.nrow == 0:
             return ab
