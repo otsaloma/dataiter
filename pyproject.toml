@@ -15,6 +15,7 @@ dependencies = ["attd>=0.3", "numpy>=2.5.0,<3.0", "pyarrow>=26.0", "wcwidth>=0.3
 [dependency-groups]
 dev = [
     "click",
+    "duckdb",
     "flake8",
     "pandas",
     "pytest",

@@ -1272,6 +1272,23 @@ NULL,2.5,"test",TRUE,2025-01-01
             assert column.is_na().sum() == 1
             assert column.is_na()[i]
 
+    def test_read_duckdb(self, tmp_path):
+        orig = test.data_frame("vehicles.csv")
+        path = tmp_path / "test.parquet"
+        orig.write_parquet(path)
+        data = DataFrame.read_duckdb(f"SELECT * FROM '{path}' WHERE year = 2000 ORDER BY id")
+        assert data == orig.filter(year=2000).sort(id=1)
+
+    def test_read_duckdb_params(self, tmp_path):
+        orig = DataFrame(name=["O'Brien", "Smith"], x=[1, 2])
+        path = tmp_path / "test.parquet"
+        orig.write_parquet(path)
+        query = "SELECT * FROM read_parquet($path) WHERE name = $name"
+        data = DataFrame.read_duckdb(query, params={"path": str(path), "name": "O'Brien"})
+        assert data == orig.head(1)
+        data = DataFrame.read_duckdb(f"SELECT * FROM '{path}' WHERE x > ?", params=[1])
+        assert data == orig.tail(1)
+
     def test_read_json(self):
         path = str(test.get_data_path("downloads.json"))
         data = DataFrame.read_json(path)

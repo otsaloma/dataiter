@@ -36,6 +36,9 @@ def read_csv(path, *, encoding="utf-8", sep=",", quote='"', header=True, colname
                               select=select,
                               dtypes=dtypes)
 
+def read_duckdb(query, *, params=None):
+    return DataFrame.read_duckdb(query, params=params)
+
 def read_geojson(path, *, encoding="utf-8", select=[], dtypes={}, **kwargs):
     return GeoJSON.read(path,
                         encoding=encoding,
@@ -67,6 +70,7 @@ def read_parquet_chunked(path, chunk_nrow, *, select=[], dtypes={}, timezone="ke
     return DataFrame.read_parquet_chunked(path, chunk_nrow, select=select, dtypes=dtypes, timezone=timezone)
 
 read_csv.__doc__ = util.format_alias_doc(read_csv, DataFrame.read_csv)
+read_duckdb.__doc__ = util.format_alias_doc(read_duckdb, DataFrame.read_duckdb)
 read_geojson.__doc__ = util.format_alias_doc(read_geojson, GeoJSON.read)
 read_json.__doc__ = util.format_alias_doc(read_json, ListOfDicts.read_json)
 read_jsonl.__doc__ = util.format_alias_doc(read_jsonl, ListOfDicts.read_jsonl)

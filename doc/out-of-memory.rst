@@ -67,18 +67,16 @@ e.g. with DuckDB: ``duckdb -c "COPY (FROM 'data.csv') TO 'data.parquet'"``.
 Combining DuckDB and Dataiter
 -----------------------------
 
-DuckDB can query Parquet and CSV files directly with SQL, reading only what the
-query needs, in parallel and within a memory limit. You can use DuckDB's Python
-package to reduce data to a size that fits in memory, convert the result to a
-Dataiter data frame via Arrow and continue from there with Dataiter.
+DuckDB can query Parquet, CSV and JSON files directly with SQL, reading only
+what the query needs, in parallel and within a memory limit. You can use
+:func:`.read_duckdb` to reduce data to a size that fits in memory, get the
+result as a Dataiter data frame and continue from there with Dataiter. This
+requires the ``duckdb`` package.
 
 .. code-block:: python
 
-    data = di.DataFrame.from_arrow(duckdb.sql("""
+    data = di.read_duckdb("""
         SELECT customer_id, ts, qty, price
         FROM 'sales.parquet'
         WHERE ts >= '2026-09-01' AND status = 'completed'
-    """).to_arrow_table())
-
-Use ``to_arrow_table``, as ``arrow`` returns a reader of record batches, which
-:meth:`.DataFrame.from_arrow` doesn't handle.
+    """)

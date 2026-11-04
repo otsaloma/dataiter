@@ -1,8 +1,10 @@
 # PENDING: Dataiter 2.1
 
+- `DataFrame.read_duckdb`: New classmethod to read the result of a DuckDB SQL query
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `DataFrame.sort`: Speed up for multiple integer-like keys
 - `DataFrame.unique`: Speed up for integer-like keys
+- `read_duckdb`: New alias for `DataFrame.read_duckdb`
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
 - Speed up sorting large numeric data using parallel threads
 - Add documentation on dealing with out-of-memory data

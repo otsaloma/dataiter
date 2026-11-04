@@ -1543,6 +1543,35 @@ class DataFrame(dict):
         return cls.from_arrow(table, dtypes=dtypes)
 
     @classmethod
+    def read_duckdb(cls, query, *, params=None):
+        """
+        Return a new data frame from the result of SQL `query` run in DuckDB.
+
+        DuckDB can query Parquet, CSV and JSON files directly, reading only
+        what the query needs, e.g. to read a subset of data too large to fit in
+        memory. Requires the ``duckdb`` package. The query is run on DuckDB's
+        default connection, so you can change settings beforehand, e.g.
+        ``duckdb.sql("SET memory_limit = '4GB'")``. See the guide on
+        :doc:`out-of-memory data </out-of-memory>`.
+
+        `params` is an optional list of values for ``?`` placeholders or dict
+        of values for ``$name`` placeholders in `query`. You can use regular
+        string formatting into `query` as well, but that can break with at
+        least quotes within values. Placeholders work where SQL accepts a
+        value, so for a file name, use e.g. ``read_parquet($path)``.
+
+        **References**
+
+        * https://duckdb.org/docs/2.0/guides/python/execute_sql
+
+        >>> di.read_duckdb("SELECT hood, count(*) AS n FROM 'data/listings.csv' GROUP BY hood ORDER BY hood")
+        """
+        import duckdb
+        relation = duckdb.sql(query, params=params)
+        table = relation.to_arrow_table()
+        return cls.from_arrow(table)
+
+    @classmethod
     def read_json(cls, path, *, encoding="utf-8", select=[], dtypes={}, **kwargs):
         """
         Return a new data frame from JSON file `path`.

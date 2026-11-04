@@ -38,6 +38,7 @@ dataiter.DataFrame
 :meth:`~dataiter.DataFrame.print_na_counts`
 :meth:`~dataiter.DataFrame.rbind`
 :meth:`~dataiter.DataFrame.read_csv`
+:meth:`~dataiter.DataFrame.read_duckdb`
 :meth:`~dataiter.DataFrame.read_json`
 :meth:`~dataiter.DataFrame.read_jsonl`
 :meth:`~dataiter.DataFrame.read_npz`

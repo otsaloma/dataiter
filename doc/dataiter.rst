@@ -28,6 +28,7 @@ Aggregation functions
 
 Convenience aliases for reading data
     :func:`~dataiter.read_csv`
+    :func:`~dataiter.read_duckdb`
     :func:`~dataiter.read_geojson`
     :func:`~dataiter.read_json`
     :func:`~dataiter.read_jsonl`
@@ -75,6 +76,7 @@ Customization for printing and formatting
              prod,
              quantile,
              read_csv,
+             read_duckdb,
              read_geojson,
              read_json,
              read_jsonl,

@@ -90,6 +90,7 @@ from dataiter.aggregate import sum
 from dataiter.aggregate import var
 
 from dataiter.io import read_csv
+from dataiter.io import read_duckdb
 from dataiter.io import read_geojson
 from dataiter.io import read_json
 from dataiter.io import read_jsonl

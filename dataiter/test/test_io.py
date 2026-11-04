@@ -34,6 +34,11 @@ class TestIO:
         s2 = inspect.signature(DataFrame.read_csv)
         assert s1 == s2
 
+    def test_read_duckdb(self):
+        s1 = inspect.signature(io.read_duckdb)
+        s2 = inspect.signature(DataFrame.read_duckdb)
+        assert s1 == s2
+
     def test_read_geojson(self):
         s1 = inspect.signature(io.read_geojson)
         s2 = inspect.signature(GeoJSON.read)
