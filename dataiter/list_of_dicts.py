@@ -989,6 +989,9 @@ class ListOfDicts(list):
         return list(indices_by_group.values())
 
     def _split_join_by(self, *by):
+        for x in by:
+            if isinstance(x, str) or (isinstance(x, tuple) and len(x) == 2): continue
+            raise TypeError(f"Expected key or tuple of two keys, got {x!r}")
         by1 = [x if isinstance(x, str) else x[0] for x in by]
         by2 = [x if isinstance(x, str) else x[1] for x in by]
         return by1, by2

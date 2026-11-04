@@ -1902,6 +1902,9 @@ class DataFrame(dict):
         return np.split(Vector.fast(order), starts[1:]) if len(starts) > 0 else []
 
     def _split_join_by(self, *by):
+        for x in by:
+            if isinstance(x, str) or (isinstance(x, tuple) and len(x) == 2): continue
+            raise TypeError(f"Expected column name or tuple of two column names, got {x!r}")
         by1 = [x if isinstance(x, str) else x[0] for x in by]
         by2 = [x if isinstance(x, str) else x[1] for x in by]
         return by1, by2
