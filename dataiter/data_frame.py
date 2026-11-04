@@ -935,8 +935,25 @@ class DataFrame(dict):
                 raise TypeError(f"Can't join {colname1!r} with {colname2!r} due to incompatible "
                                 f"types: {a.dtype_label} vs. {b.dtype_label}")
         a, b = self._get_join_codes(other, by1, by2)
+        src = self._get_join_lookup(a, b)
+        if src is not None:
+            return np.arange(len(a)), src
         left, right, order = self._get_join_ranges(a, b)
         return self._get_join_matches(left, right, order, multiple)
+
+    @staticmethod
+    def _get_join_lookup(a, b):
+        # If codes are dense and unique in b, return for each code in a
+        # its row in b or -1, via a lookup table, which is much faster than
+        # sorting b and searching. Otherwise return None.
+        size = int(max(a.max(initial=-1), b.max(initial=-1))) + 1
+        if size > 2 * (len(a) + len(b)): return None
+        valid = np.flatnonzero(b > -1)
+        if np.bincount(b[valid], minlength=size).max(initial=0) > 1: return None
+        table = np.full(size + 1, -1)
+        table[b[valid]] = valid
+        # Codes -1 in a index the extra last element, i.e. no match.
+        return table[a]
 
     @staticmethod
     def _get_join_matches(left, right, order, multiple):

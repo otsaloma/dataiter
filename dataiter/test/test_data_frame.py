@@ -746,6 +746,14 @@ class TestDataFrame:
         assert a.left_join(b, "s", "t").y.tolist() == [2, 1, None]
         assert b.left_join(a, "s", "t").x.tolist() == [2, 1, None, None, None]
 
+    @pytest.mark.parametrize("multiple", ["first", "last", "all"])
+    def test_left_join_unique_dense_codes(self, multiple):
+        a = DataFrame(s=["a", "", "b", "c", "a"], x=[1, 2, 3, 4, 5])
+        b = DataFrame(s=["c", "", "a", "d"], y=[1, 2, 3, 4])
+        data = a.left_join(b, "s", multiple=multiple)
+        assert data.x.tolist() == [1, 2, 3, 4, 5]
+        assert data.y.tolist() == [3, None, None, 1, 3]
+
     def test_left_join_by_columns_objects(self):
         a = DataFrame(o=Vector([1, "a", None], object), k=[1, 1, 1])
         b = DataFrame(o=Vector(["a", 1, None], object), k=[1, 1, 1], y=[1, 2, 3])
