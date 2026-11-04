@@ -53,6 +53,7 @@ tabular data and the `DataFrame` class.
 - BLS QCEW employment and wages (annual and quarterly single files, area, industry, ownership and aggregation level titles)
 - CFPB HMDA loan/application register (Washington 2018–2023, data browser API) and filers (lender names)
 - Chicago crimes
+- CMS Medicare Physician & Other Practitioners (by provider, service and geography)
 - Citi Bike GBFS station feeds
 - Citi Bike trips
 - Complete Journey retail purchases, promotions, products, household demographics, campaigns and coupons (completejourney R data)
