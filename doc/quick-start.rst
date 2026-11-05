@@ -35,7 +35,7 @@ DataFrame
 1 42384530 Manhattan   10036      2     nan     0             0.0
 2 18835820 Manhattan   10021      2     nan    10             5.0
 3 20171179 Manhattan   10027      2     nan    10             5.0
-4 14858544 Manhattan     nan      2     nan    15             7.5
+4 14858544 Manhattan              2     nan    15             7.5
 5 31397084 Manhattan   10002      2     nan    19             9.5
 6 22289683 Manhattan   10031      2     nan    20            10.0
 7  7760204 Manhattan   10040      2     nan    22            11.0

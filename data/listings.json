@@ -1786,7 +1786,7 @@
   {
     "id": 62468,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 170
@@ -2258,7 +2258,7 @@
   {
     "id": 74240,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 169
@@ -2754,7 +2754,7 @@
   {
     "id": 113092,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 90
@@ -5458,7 +5458,7 @@
   {
     "id": 270139,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 45
@@ -9466,7 +9466,7 @@
   {
     "id": 589089,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 96
@@ -9490,7 +9490,7 @@
   {
     "id": 591565,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 229
@@ -10074,7 +10074,7 @@
   {
     "id": 640899,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 110
@@ -10082,7 +10082,7 @@
   {
     "id": 640901,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -10090,7 +10090,7 @@
   {
     "id": 640908,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 150
@@ -11730,7 +11730,7 @@
   {
     "id": 752366,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 89
@@ -11930,7 +11930,7 @@
   {
     "id": 765203,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 65
@@ -14586,7 +14586,7 @@
   {
     "id": 923979,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 77
@@ -15338,7 +15338,7 @@
   {
     "id": 997404,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 145
@@ -15482,7 +15482,7 @@
   {
     "id": 1016352,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 550
@@ -15602,7 +15602,7 @@
   {
     "id": 1025786,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 69
@@ -17954,7 +17954,7 @@
   {
     "id": 1312228,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 55
@@ -18250,7 +18250,7 @@
   {
     "id": 1337148,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 125
@@ -19114,7 +19114,7 @@
   {
     "id": 1469895,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -19258,7 +19258,7 @@
   {
     "id": 1486099,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 149
@@ -20434,7 +20434,7 @@
   {
     "id": 1693711,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 39
@@ -22610,7 +22610,7 @@
   {
     "id": 1944155,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -23322,7 +23322,7 @@
   {
     "id": 2017397,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 150
@@ -23410,7 +23410,7 @@
   {
     "id": 2025709,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 142
@@ -23970,7 +23970,7 @@
   {
     "id": 2071839,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 60
@@ -23994,7 +23994,7 @@
   {
     "id": 2074653,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -24226,7 +24226,7 @@
   {
     "id": 2089745,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 220
@@ -24794,7 +24794,7 @@
   {
     "id": 2136293,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 65
@@ -24946,7 +24946,7 @@
   {
     "id": 2149954,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 99
@@ -26450,7 +26450,7 @@
   {
     "id": 2291507,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 73
@@ -26810,7 +26810,7 @@
   {
     "id": 2339096,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -27522,7 +27522,7 @@
   {
     "id": 2465333,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 132
@@ -28882,7 +28882,7 @@
   {
     "id": 2669366,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 42
@@ -29714,7 +29714,7 @@
   {
     "id": 2803013,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 189
@@ -29778,7 +29778,7 @@
   {
     "id": 2807939,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -31122,7 +31122,7 @@
   {
     "id": 3059273,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 110
@@ -31826,7 +31826,7 @@
   {
     "id": 3171234,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 425
@@ -32010,7 +32010,7 @@
   {
     "id": 3200198,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 175
@@ -32290,7 +32290,7 @@
   {
     "id": 3236385,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 100
@@ -32570,7 +32570,7 @@
   {
     "id": 3265409,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 90
@@ -33130,7 +33130,7 @@
   {
     "id": 3351584,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 80
@@ -34594,7 +34594,7 @@
   {
     "id": 3544899,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 85
@@ -34794,7 +34794,7 @@
   {
     "id": 3562903,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 16
@@ -34858,7 +34858,7 @@
   {
     "id": 3578158,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 138
@@ -36714,7 +36714,7 @@
   {
     "id": 3785438,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 110
@@ -38114,7 +38114,7 @@
   {
     "id": 3944233,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 130
@@ -39138,7 +39138,7 @@
   {
     "id": 4059794,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 120
@@ -39194,7 +39194,7 @@
   {
     "id": 4069681,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 75
@@ -39322,7 +39322,7 @@
   {
     "id": 4085544,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 450
@@ -39730,7 +39730,7 @@
   {
     "id": 4130266,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 88
@@ -39802,7 +39802,7 @@
   {
     "id": 4137680,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 419
@@ -39834,7 +39834,7 @@
   {
     "id": 4140622,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -40746,7 +40746,7 @@
   {
     "id": 4244174,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 80
@@ -41306,7 +41306,7 @@
   {
     "id": 4302293,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 58
@@ -42890,7 +42890,7 @@
   {
     "id": 4472978,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 195
@@ -44818,7 +44818,7 @@
   {
     "id": 4641291,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 99
@@ -46538,7 +46538,7 @@
   {
     "id": 4777166,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 31
@@ -47066,7 +47066,7 @@
   {
     "id": 4813140,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 12,
     "sqft": null,
     "price": 320
@@ -48514,7 +48514,7 @@
   {
     "id": 4925050,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -49762,7 +49762,7 @@
   {
     "id": 5093352,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 115
@@ -50002,7 +50002,7 @@
   {
     "id": 5136833,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 79
@@ -50082,7 +50082,7 @@
   {
     "id": 5150206,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 110
@@ -50882,7 +50882,7 @@
   {
     "id": 5295884,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 190
@@ -50994,7 +50994,7 @@
   {
     "id": 5315796,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 176
@@ -52226,7 +52226,7 @@
   {
     "id": 5523654,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 80
@@ -53458,7 +53458,7 @@
   {
     "id": 5718494,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -54042,7 +54042,7 @@
   {
     "id": 5804170,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 37
@@ -55890,7 +55890,7 @@
   {
     "id": 6099485,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 68
@@ -57818,7 +57818,7 @@
   {
     "id": 6336738,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 125
@@ -58250,7 +58250,7 @@
   {
     "id": 6376487,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 122
@@ -58370,7 +58370,7 @@
   {
     "id": 6387739,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 39
@@ -59594,7 +59594,7 @@
   {
     "id": 6523409,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 99
@@ -60242,7 +60242,7 @@
   {
     "id": 6601194,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 80
@@ -60994,7 +60994,7 @@
   {
     "id": 6660816,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -64498,7 +64498,7 @@
   {
     "id": 7018619,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 52
@@ -66730,7 +66730,7 @@
   {
     "id": 7271876,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 75
@@ -67322,7 +67322,7 @@
   {
     "id": 7347350,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 35
@@ -68682,7 +68682,7 @@
   {
     "id": 7501154,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 119
@@ -70994,7 +70994,7 @@
   {
     "id": 7741113,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 49
@@ -71010,7 +71010,7 @@
   {
     "id": 7742486,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 145
@@ -72218,7 +72218,7 @@
   {
     "id": 7858541,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 225
@@ -73146,7 +73146,7 @@
   {
     "id": 7967922,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 52
@@ -74242,7 +74242,7 @@
   {
     "id": 8114639,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 50
@@ -74554,7 +74554,7 @@
   {
     "id": 8161540,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 90
@@ -76042,7 +76042,7 @@
   {
     "id": 8328900,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 40
@@ -77002,7 +77002,7 @@
   {
     "id": 8467950,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -77106,7 +77106,7 @@
   {
     "id": 8479799,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 135
@@ -77434,7 +77434,7 @@
   {
     "id": 8519400,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -77530,7 +77530,7 @@
   {
     "id": 8525292,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 105
@@ -77666,7 +77666,7 @@
   {
     "id": 8538077,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 250
@@ -80090,7 +80090,7 @@
   {
     "id": 8855930,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 125
@@ -80322,7 +80322,7 @@
   {
     "id": 8887748,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 42
@@ -81898,7 +81898,7 @@
   {
     "id": 9074963,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 48
@@ -82010,7 +82010,7 @@
   {
     "id": 9090351,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -82178,7 +82178,7 @@
   {
     "id": 9106756,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -82554,7 +82554,7 @@
   {
     "id": 9137941,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 200
@@ -82722,7 +82722,7 @@
   {
     "id": 9153256,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 150
@@ -83242,7 +83242,7 @@
   {
     "id": 9218051,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 95
@@ -83298,7 +83298,7 @@
   {
     "id": 9230523,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -83882,7 +83882,7 @@
   {
     "id": 9297852,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 99
@@ -84706,7 +84706,7 @@
   {
     "id": 9371045,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -85954,7 +85954,7 @@
   {
     "id": 9478370,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 115
@@ -86450,7 +86450,7 @@
   {
     "id": 9514805,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 180
@@ -86594,7 +86594,7 @@
   {
     "id": 9528798,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 75
@@ -86650,7 +86650,7 @@
   {
     "id": 9532048,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 40
@@ -86858,7 +86858,7 @@
   {
     "id": 9550171,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 228
@@ -86874,7 +86874,7 @@
   {
     "id": 9550714,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 120
@@ -87186,7 +87186,7 @@
   {
     "id": 9585339,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -88346,7 +88346,7 @@
   {
     "id": 9692205,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -88514,7 +88514,7 @@
   {
     "id": 9705958,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 65
@@ -88970,7 +88970,7 @@
   {
     "id": 9733227,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 159
@@ -89386,7 +89386,7 @@
   {
     "id": 9758041,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 125
@@ -89730,7 +89730,7 @@
   {
     "id": 9778978,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -89858,7 +89858,7 @@
   {
     "id": 9790462,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 50
@@ -90226,7 +90226,7 @@
   {
     "id": 9808151,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 112
@@ -90306,7 +90306,7 @@
   {
     "id": 9813220,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 135
@@ -91322,7 +91322,7 @@
   {
     "id": 9883197,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -93682,7 +93682,7 @@
   {
     "id": 10040717,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 169
@@ -94210,7 +94210,7 @@
   {
     "id": 10083881,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -94802,7 +94802,7 @@
   {
     "id": 10133534,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 110
@@ -95090,7 +95090,7 @@
   {
     "id": 10161361,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 46
@@ -96762,7 +96762,7 @@
   {
     "id": 10417282,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 60
@@ -97114,7 +97114,7 @@
   {
     "id": 10489896,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 46
@@ -97546,7 +97546,7 @@
   {
     "id": 10546729,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 120
@@ -98042,7 +98042,7 @@
   {
     "id": 10658564,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 100
@@ -98426,7 +98426,7 @@
   {
     "id": 10730086,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 45
@@ -99090,7 +99090,7 @@
   {
     "id": 10857181,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 285
@@ -99210,7 +99210,7 @@
   {
     "id": 10886372,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 60
@@ -99810,7 +99810,7 @@
   {
     "id": 11035889,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 100
@@ -100074,7 +100074,7 @@
   {
     "id": 11098018,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -101058,7 +101058,7 @@
   {
     "id": 11313271,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 140
@@ -101658,7 +101658,7 @@
   {
     "id": 11414971,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -101714,7 +101714,7 @@
   {
     "id": 11431526,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 125
@@ -101770,7 +101770,7 @@
   {
     "id": 11437634,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 90
@@ -102322,7 +102322,7 @@
   {
     "id": 11514862,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 55
@@ -103146,7 +103146,7 @@
   {
     "id": 11621524,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -103690,7 +103690,7 @@
   {
     "id": 11712888,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 95
@@ -104386,7 +104386,7 @@
   {
     "id": 11829419,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 35
@@ -104970,7 +104970,7 @@
   {
     "id": 11927032,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 150
@@ -105226,7 +105226,7 @@
   {
     "id": 11969727,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 500
@@ -105674,7 +105674,7 @@
   {
     "id": 12050280,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -105762,7 +105762,7 @@
   {
     "id": 12055540,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 80
@@ -105914,7 +105914,7 @@
   {
     "id": 12081327,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -106178,7 +106178,7 @@
   {
     "id": 12113494,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 160
@@ -106538,7 +106538,7 @@
   {
     "id": 12171619,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 500
@@ -106778,7 +106778,7 @@
   {
     "id": 12209944,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 265
@@ -107826,7 +107826,7 @@
   {
     "id": 12355067,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 200
@@ -107834,7 +107834,7 @@
   {
     "id": 12356709,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 120
@@ -108170,7 +108170,7 @@
   {
     "id": 12387961,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 80
@@ -109442,7 +109442,7 @@
   {
     "id": 12602408,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 50
@@ -110434,7 +110434,7 @@
   {
     "id": 12757639,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -111138,7 +111138,7 @@
   {
     "id": 12836808,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 220
@@ -111298,7 +111298,7 @@
   {
     "id": 12853330,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 60
@@ -111522,7 +111522,7 @@
   {
     "id": 12873930,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 180
@@ -111754,7 +111754,7 @@
   {
     "id": 12912510,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 325
@@ -112290,7 +112290,7 @@
   {
     "id": 12971882,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 77
@@ -112602,7 +112602,7 @@
   {
     "id": 13004961,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 150
@@ -114130,7 +114130,7 @@
   {
     "id": 13125552,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 175
@@ -114722,7 +114722,7 @@
   {
     "id": 13171614,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 300
@@ -115122,7 +115122,7 @@
   {
     "id": 13209380,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 250
@@ -115538,7 +115538,7 @@
   {
     "id": 13239693,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 133
@@ -115634,7 +115634,7 @@
   {
     "id": 13247565,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 155
@@ -116346,7 +116346,7 @@
   {
     "id": 13309409,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 250
@@ -116410,7 +116410,7 @@
   {
     "id": 13314442,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 55
@@ -117058,7 +117058,7 @@
   {
     "id": 13377443,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 60
@@ -117442,7 +117442,7 @@
   {
     "id": 13398406,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 35
@@ -117610,7 +117610,7 @@
   {
     "id": 13413386,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 75
@@ -117722,7 +117722,7 @@
   {
     "id": 13419864,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 154
@@ -117922,7 +117922,7 @@
   {
     "id": 13432549,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 125
@@ -118042,7 +118042,7 @@
   {
     "id": 13443722,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 160
@@ -118122,7 +118122,7 @@
   {
     "id": 13446580,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 225
@@ -118274,7 +118274,7 @@
   {
     "id": 13461718,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 85
@@ -118522,7 +118522,7 @@
   {
     "id": 13487852,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 69
@@ -118754,7 +118754,7 @@
   {
     "id": 13496176,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 160
@@ -118842,7 +118842,7 @@
   {
     "id": 13508285,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 140
@@ -119346,7 +119346,7 @@
   {
     "id": 13540829,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 79
@@ -119706,7 +119706,7 @@
   {
     "id": 13564134,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 200
@@ -119770,7 +119770,7 @@
   {
     "id": 13571350,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -120042,7 +120042,7 @@
   {
     "id": 13595786,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 152
@@ -120098,7 +120098,7 @@
   {
     "id": 13603093,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 72
@@ -120130,7 +120130,7 @@
   {
     "id": 13604794,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -120194,7 +120194,7 @@
   {
     "id": 13613052,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 70
@@ -120354,7 +120354,7 @@
   {
     "id": 13623361,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 273
@@ -120498,7 +120498,7 @@
   {
     "id": 13633468,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 85
@@ -120666,7 +120666,7 @@
   {
     "id": 13643488,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 72
@@ -121074,7 +121074,7 @@
   {
     "id": 13669613,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 177
@@ -121122,7 +121122,7 @@
   {
     "id": 13671936,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 50
@@ -121962,7 +121962,7 @@
   {
     "id": 13733733,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 55
@@ -122034,7 +122034,7 @@
   {
     "id": 13743061,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 153
@@ -122378,7 +122378,7 @@
   {
     "id": 13766690,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 82
@@ -122810,7 +122810,7 @@
   {
     "id": 13811008,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 101
@@ -122994,7 +122994,7 @@
   {
     "id": 13838042,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 80
@@ -123042,7 +123042,7 @@
   {
     "id": 13843270,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 130
@@ -123098,7 +123098,7 @@
   {
     "id": 13848005,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -123202,7 +123202,7 @@
   {
     "id": 13859196,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 30
@@ -123322,7 +123322,7 @@
   {
     "id": 13867104,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 155
@@ -123338,7 +123338,7 @@
   {
     "id": 13868137,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 25
@@ -123554,7 +123554,7 @@
   {
     "id": 13883303,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 40
@@ -123842,7 +123842,7 @@
   {
     "id": 13907872,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 120
@@ -124010,7 +124010,7 @@
   {
     "id": 13920697,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 125
@@ -124194,7 +124194,7 @@
   {
     "id": 13935511,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 60
@@ -124666,7 +124666,7 @@
   {
     "id": 13974584,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -124714,7 +124714,7 @@
   {
     "id": 13980280,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 115
@@ -125506,7 +125506,7 @@
   {
     "id": 14056307,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 250
@@ -125586,7 +125586,7 @@
   {
     "id": 14066228,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 110
@@ -126050,7 +126050,7 @@
   {
     "id": 14109893,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 110
@@ -126258,7 +126258,7 @@
   {
     "id": 14135904,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 75
@@ -126410,7 +126410,7 @@
   {
     "id": 14152775,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 175
@@ -127042,7 +127042,7 @@
   {
     "id": 14217692,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 90
@@ -128114,7 +128114,7 @@
   {
     "id": 14385616,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -128146,7 +128146,7 @@
   {
     "id": 14387471,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 45
@@ -128730,7 +128730,7 @@
   {
     "id": 14483469,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 800
@@ -129330,7 +129330,7 @@
   {
     "id": 14582793,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 110
@@ -129866,7 +129866,7 @@
   {
     "id": 14696542,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 60
@@ -131146,7 +131146,7 @@
   {
     "id": 14858544,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 15
@@ -131554,7 +131554,7 @@
   {
     "id": 14933893,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 75
@@ -132474,7 +132474,7 @@
   {
     "id": 15068067,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 750
@@ -132634,7 +132634,7 @@
   {
     "id": 15099669,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 225
@@ -133202,7 +133202,7 @@
   {
     "id": 15190865,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 170
@@ -133818,7 +133818,7 @@
   {
     "id": 15282717,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 80
@@ -135554,7 +135554,7 @@
   {
     "id": 15529336,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 120
@@ -136602,7 +136602,7 @@
   {
     "id": 15709537,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 160
@@ -136714,7 +136714,7 @@
   {
     "id": 15721685,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 100
@@ -138282,7 +138282,7 @@
   {
     "id": 15939056,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 105
@@ -141034,7 +141034,7 @@
   {
     "id": 16244634,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 40
@@ -141042,7 +141042,7 @@
   {
     "id": 16244843,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 85
@@ -141106,7 +141106,7 @@
   {
     "id": 16253465,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 128
@@ -141346,7 +141346,7 @@
   {
     "id": 16272419,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -143050,7 +143050,7 @@
   {
     "id": 16392514,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 100
@@ -144306,7 +144306,7 @@
   {
     "id": 16489175,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 57
@@ -144778,7 +144778,7 @@
   {
     "id": 16542009,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 90
@@ -144962,7 +144962,7 @@
   {
     "id": 16561213,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -145050,7 +145050,7 @@
   {
     "id": 16570490,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 68
@@ -145362,7 +145362,7 @@
   {
     "id": 16613993,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -147570,7 +147570,7 @@
   {
     "id": 16943101,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 10,
     "sqft": null,
     "price": 240
@@ -147594,7 +147594,7 @@
   {
     "id": 16945093,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -147666,7 +147666,7 @@
   {
     "id": 16963544,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 73
@@ -147746,7 +147746,7 @@
   {
     "id": 16974611,
     "hood": "Staten Island",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 43
@@ -147962,7 +147962,7 @@
   {
     "id": 17023591,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 40
@@ -148338,7 +148338,7 @@
   {
     "id": 17108395,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 125
@@ -149690,7 +149690,7 @@
   {
     "id": 17347938,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 180
@@ -149994,7 +149994,7 @@
   {
     "id": 17411672,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 98
@@ -151522,7 +151522,7 @@
   {
     "id": 17640413,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 60
@@ -152866,7 +152866,7 @@
   {
     "id": 17828289,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 47
@@ -154706,7 +154706,7 @@
   {
     "id": 18108648,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 100
@@ -154986,7 +154986,7 @@
   {
     "id": 18158353,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 60
@@ -155026,7 +155026,7 @@
   {
     "id": 18167242,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 169
@@ -155450,7 +155450,7 @@
   {
     "id": 18213280,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 7,
     "sqft": null,
     "price": 330
@@ -155762,7 +155762,7 @@
   {
     "id": 18254225,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 250
@@ -156322,7 +156322,7 @@
   {
     "id": 18329545,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 180
@@ -156506,7 +156506,7 @@
   {
     "id": 18356914,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 0
@@ -156850,7 +156850,7 @@
   {
     "id": 18399865,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 190
@@ -157490,7 +157490,7 @@
   {
     "id": 18485487,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 37
@@ -157754,7 +157754,7 @@
   {
     "id": 18516103,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -158578,7 +158578,7 @@
   {
     "id": 18616575,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 49
@@ -158642,7 +158642,7 @@
   {
     "id": 18626606,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -162250,7 +162250,7 @@
   {
     "id": 19054757,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 140
@@ -163290,7 +163290,7 @@
   {
     "id": 19160371,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 100
@@ -163786,7 +163786,7 @@
   {
     "id": 19197983,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 69
@@ -166882,7 +166882,7 @@
   {
     "id": 19531174,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -167298,7 +167298,7 @@
   {
     "id": 19571034,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 175
@@ -169682,7 +169682,7 @@
   {
     "id": 19806972,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 90
@@ -173378,7 +173378,7 @@
   {
     "id": 20176000,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 45
@@ -173970,7 +173970,7 @@
   {
     "id": 20228284,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 147
@@ -174234,7 +174234,7 @@
   {
     "id": 20257297,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 300
@@ -174418,7 +174418,7 @@
   {
     "id": 20283488,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 160
@@ -175042,7 +175042,7 @@
   {
     "id": 20379446,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 85
@@ -175354,7 +175354,7 @@
   {
     "id": 20417878,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 38
@@ -175698,7 +175698,7 @@
   {
     "id": 20459381,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -175970,7 +175970,7 @@
   {
     "id": 20497853,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 250
@@ -177114,7 +177114,7 @@
   {
     "id": 20624427,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -177482,7 +177482,7 @@
   {
     "id": 20663839,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 110
@@ -177722,7 +177722,7 @@
   {
     "id": 20685952,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 12,
     "sqft": null,
     "price": 450
@@ -180634,7 +180634,7 @@
   {
     "id": 20991704,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 79
@@ -181362,7 +181362,7 @@
   {
     "id": 21057693,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 97
@@ -181666,7 +181666,7 @@
   {
     "id": 21098719,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -182986,7 +182986,7 @@
   {
     "id": 21219137,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 85
@@ -184386,7 +184386,7 @@
   {
     "id": 21325362,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -187658,7 +187658,7 @@
   {
     "id": 21624775,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 385
@@ -188034,7 +188034,7 @@
   {
     "id": 21649044,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 99
@@ -189370,7 +189370,7 @@
   {
     "id": 21748242,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -189458,7 +189458,7 @@
   {
     "id": 21754221,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 187
@@ -191866,7 +191866,7 @@
   {
     "id": 21927300,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 100
@@ -192098,7 +192098,7 @@
   {
     "id": 21936033,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 120
@@ -193434,7 +193434,7 @@
   {
     "id": 22009620,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 85
@@ -193850,7 +193850,7 @@
   {
     "id": 22038383,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 23
@@ -196434,7 +196434,7 @@
   {
     "id": 22214583,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 42
@@ -196802,7 +196802,7 @@
   {
     "id": 22246770,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -196978,7 +196978,7 @@
   {
     "id": 22252628,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -197042,7 +197042,7 @@
   {
     "id": 22260546,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -198386,7 +198386,7 @@
   {
     "id": 22345271,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 375
@@ -199154,7 +199154,7 @@
   {
     "id": 22409073,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 280
@@ -199818,7 +199818,7 @@
   {
     "id": 22472801,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 80
@@ -199962,7 +199962,7 @@
   {
     "id": 22485639,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 85
@@ -200450,7 +200450,7 @@
   {
     "id": 22553501,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -200466,7 +200466,7 @@
   {
     "id": 22561496,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 155
@@ -201034,7 +201034,7 @@
   {
     "id": 22635815,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 38
@@ -201386,7 +201386,7 @@
   {
     "id": 22683927,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 125
@@ -201618,7 +201618,7 @@
   {
     "id": 22704069,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 800
@@ -201826,7 +201826,7 @@
   {
     "id": 22733147,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -201834,7 +201834,7 @@
   {
     "id": 22734359,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 59
@@ -202666,7 +202666,7 @@
   {
     "id": 22863817,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 45
@@ -203026,7 +203026,7 @@
   {
     "id": 22928943,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 55
@@ -204418,7 +204418,7 @@
   {
     "id": 23106106,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -205330,7 +205330,7 @@
   {
     "id": 23258602,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 50
@@ -205578,7 +205578,7 @@
   {
     "id": 23293946,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 160
@@ -206178,7 +206178,7 @@
   {
     "id": 23392375,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 30
@@ -209850,7 +209850,7 @@
   {
     "id": 23901118,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -210330,7 +210330,7 @@
   {
     "id": 23979192,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 77
@@ -211298,7 +211298,7 @@
   {
     "id": 24132058,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 365
@@ -214098,7 +214098,7 @@
   {
     "id": 24596296,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 46
@@ -214330,7 +214330,7 @@
   {
     "id": 24630272,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 90
@@ -214594,7 +214594,7 @@
   {
     "id": 24676594,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 350
@@ -214898,7 +214898,7 @@
   {
     "id": 24729169,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 130
@@ -215130,7 +215130,7 @@
   {
     "id": 24756445,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 75
@@ -215338,7 +215338,7 @@
   {
     "id": 24783060,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 140
@@ -215922,7 +215922,7 @@
   {
     "id": 24872721,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 150
@@ -216986,7 +216986,7 @@
   {
     "id": 25025092,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 100
@@ -217658,7 +217658,7 @@
   {
     "id": 25134311,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 250
@@ -217722,7 +217722,7 @@
   {
     "id": 25137152,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 140
@@ -218034,7 +218034,7 @@
   {
     "id": 25187986,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 190
@@ -218266,7 +218266,7 @@
   {
     "id": 25225344,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 130
@@ -218378,7 +218378,7 @@
   {
     "id": 25236926,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 199
@@ -218474,7 +218474,7 @@
   {
     "id": 25263729,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 44
@@ -219186,7 +219186,7 @@
   {
     "id": 25356696,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -219418,7 +219418,7 @@
   {
     "id": 25422338,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 236
@@ -219562,7 +219562,7 @@
   {
     "id": 25454559,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 46
@@ -219746,7 +219746,7 @@
   {
     "id": 25482581,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 169
@@ -220370,7 +220370,7 @@
   {
     "id": 25606562,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 225
@@ -220778,7 +220778,7 @@
   {
     "id": 25734212,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 525
@@ -222034,7 +222034,7 @@
   {
     "id": 25939748,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 85
@@ -222050,7 +222050,7 @@
   {
     "id": 25941089,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 80
@@ -223466,7 +223466,7 @@
   {
     "id": 26137379,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 40
@@ -224418,7 +224418,7 @@
   {
     "id": 26278372,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 120
@@ -224778,7 +224778,7 @@
   {
     "id": 26337439,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 7,
     "sqft": null,
     "price": 350
@@ -225426,7 +225426,7 @@
   {
     "id": 26443119,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 90
@@ -226866,7 +226866,7 @@
   {
     "id": 26688805,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 50
@@ -227202,7 +227202,7 @@
   {
     "id": 26749932,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 130
@@ -228218,7 +228218,7 @@
   {
     "id": 26869417,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 82
@@ -229666,7 +229666,7 @@
   {
     "id": 27079178,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 65
@@ -230042,7 +230042,7 @@
   {
     "id": 27139685,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 39
@@ -230514,7 +230514,7 @@
   {
     "id": 27205234,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 52
@@ -231282,7 +231282,7 @@
   {
     "id": 27333579,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 120
@@ -231386,7 +231386,7 @@
   {
     "id": 27356337,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 180
@@ -232138,7 +232138,7 @@
   {
     "id": 27453970,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 80
@@ -233290,7 +233290,7 @@
   {
     "id": 27579598,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 170
@@ -233434,7 +233434,7 @@
   {
     "id": 27593369,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 150
@@ -233530,7 +233530,7 @@
   {
     "id": 27603936,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 185
@@ -234322,7 +234322,7 @@
   {
     "id": 27705293,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 85
@@ -236562,7 +236562,7 @@
   {
     "id": 28032779,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 101
@@ -236938,7 +236938,7 @@
   {
     "id": 28082095,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 130
@@ -237162,7 +237162,7 @@
   {
     "id": 28109855,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -237386,7 +237386,7 @@
   {
     "id": 28132785,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 300
@@ -237586,7 +237586,7 @@
   {
     "id": 28158237,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 109
@@ -237986,7 +237986,7 @@
   {
     "id": 28218710,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 75
@@ -238818,7 +238818,7 @@
   {
     "id": 28340698,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 135
@@ -239074,7 +239074,7 @@
   {
     "id": 28368234,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -239698,7 +239698,7 @@
   {
     "id": 28464743,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -240898,7 +240898,7 @@
   {
     "id": 28663593,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -241242,7 +241242,7 @@
   {
     "id": 28717758,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 75
@@ -241250,7 +241250,7 @@
   {
     "id": 28718812,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 275
@@ -241338,7 +241338,7 @@
   {
     "id": 28734328,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 190
@@ -241634,7 +241634,7 @@
   {
     "id": 28777497,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 25
@@ -242106,7 +242106,7 @@
   {
     "id": 28867268,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 50
@@ -242122,7 +242122,7 @@
   {
     "id": 28867326,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 31
@@ -242378,7 +242378,7 @@
   {
     "id": 28910248,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 95
@@ -242394,7 +242394,7 @@
   {
     "id": 28911697,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 57
@@ -242450,7 +242450,7 @@
   {
     "id": 28913606,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 175
@@ -242586,7 +242586,7 @@
   {
     "id": 28933403,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 200
@@ -242634,7 +242634,7 @@
   {
     "id": 28937584,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 57
@@ -242642,7 +242642,7 @@
   {
     "id": 28938342,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -242850,7 +242850,7 @@
   {
     "id": 28960497,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 64
@@ -243098,7 +243098,7 @@
   {
     "id": 28987503,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100
@@ -243130,7 +243130,7 @@
   {
     "id": 28990717,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -243538,7 +243538,7 @@
   {
     "id": 29061711,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 575
@@ -243938,7 +243938,7 @@
   {
     "id": 29123516,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 68
@@ -243986,7 +243986,7 @@
   {
     "id": 29126779,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 230
@@ -244154,7 +244154,7 @@
   {
     "id": 29151631,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 40
@@ -244314,7 +244314,7 @@
   {
     "id": 29174021,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 41
@@ -244370,7 +244370,7 @@
   {
     "id": 29181504,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 150
@@ -244762,7 +244762,7 @@
   {
     "id": 29241662,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 90
@@ -245162,7 +245162,7 @@
   {
     "id": 29306127,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -245434,7 +245434,7 @@
   {
     "id": 29338399,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 129
@@ -245754,7 +245754,7 @@
   {
     "id": 29388858,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 275
@@ -245770,7 +245770,7 @@
   {
     "id": 29391531,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 200
@@ -246466,7 +246466,7 @@
   {
     "id": 29493590,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 320
@@ -247610,7 +247610,7 @@
   {
     "id": 29652274,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 120
@@ -248002,7 +248002,7 @@
   {
     "id": 29688392,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -248874,7 +248874,7 @@
   {
     "id": 29801645,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 48
@@ -249426,7 +249426,7 @@
   {
     "id": 29870750,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 55
@@ -249722,7 +249722,7 @@
   {
     "id": 29899434,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 100
@@ -249978,7 +249978,7 @@
   {
     "id": 29922930,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 175
@@ -249994,7 +249994,7 @@
   {
     "id": 29923198,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 175
@@ -250186,7 +250186,7 @@
   {
     "id": 29933241,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 199
@@ -250650,7 +250650,7 @@
   {
     "id": 29968356,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 199
@@ -252234,7 +252234,7 @@
   {
     "id": 30123494,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 210
@@ -252402,7 +252402,7 @@
   {
     "id": 30131676,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 165
@@ -252882,7 +252882,7 @@
   {
     "id": 30179242,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 400
@@ -257898,7 +257898,7 @@
   {
     "id": 30552204,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 10,
     "sqft": null,
     "price": 392
@@ -257914,7 +257914,7 @@
   {
     "id": 30553357,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 7,
     "sqft": null,
     "price": 389
@@ -265898,7 +265898,7 @@
   {
     "id": 31460579,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 500
@@ -270546,7 +270546,7 @@
   {
     "id": 32242139,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 200
@@ -281562,7 +281562,7 @@
   {
     "id": 33836115,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 99
@@ -284826,7 +284826,7 @@
   {
     "id": 34259388,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 70
@@ -284874,7 +284874,7 @@
   {
     "id": 34274020,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 65
@@ -291258,7 +291258,7 @@
   {
     "id": 34946870,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 210
@@ -293610,7 +293610,7 @@
   {
     "id": 35190467,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 110
@@ -295762,7 +295762,7 @@
   {
     "id": 35455445,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 175
@@ -299202,7 +299202,7 @@
   {
     "id": 35803121,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 52
@@ -307762,7 +307762,7 @@
   {
     "id": 36882914,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 16,
     "sqft": null,
     "price": 450
@@ -311130,7 +311130,7 @@
   {
     "id": 37306472,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 150
@@ -315138,7 +315138,7 @@
   {
     "id": 37779458,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 80
@@ -316362,7 +316362,7 @@
   {
     "id": 37929467,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 250
@@ -329298,7 +329298,7 @@
   {
     "id": 39170000,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 58
@@ -330162,7 +330162,7 @@
   {
     "id": 39242516,
     "hood": "Bronx",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 50
@@ -330258,7 +330258,7 @@
   {
     "id": 39246597,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 12,
     "sqft": null,
     "price": 999
@@ -332210,7 +332210,7 @@
   {
     "id": 39390945,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 129
@@ -333234,7 +333234,7 @@
   {
     "id": 39469608,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 139
@@ -335074,7 +335074,7 @@
   {
     "id": 39608907,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 80
@@ -344114,7 +344114,7 @@
   {
     "id": 40315720,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 8,
     "sqft": null,
     "price": 569
@@ -348154,7 +348154,7 @@
   {
     "id": 40593226,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 10
@@ -349946,7 +349946,7 @@
   {
     "id": 40722848,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 1,
     "sqft": null,
     "price": 35
@@ -355090,7 +355090,7 @@
   {
     "id": 41033943,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 5,
     "sqft": null,
     "price": 175
@@ -361706,7 +361706,7 @@
   {
     "id": 41656896,
     "hood": "Brooklyn",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 89
@@ -364146,7 +364146,7 @@
   {
     "id": 41853911,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 3,
     "sqft": null,
     "price": 95
@@ -365962,7 +365962,7 @@
   {
     "id": 41990825,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 12,
     "sqft": null,
     "price": 395
@@ -373578,7 +373578,7 @@
   {
     "id": 42533258,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 139
@@ -374202,7 +374202,7 @@
   {
     "id": 42567610,
     "hood": "Queens",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 4,
     "sqft": null,
     "price": 150
@@ -390770,7 +390770,7 @@
   {
     "id": 43422891,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 6,
     "sqft": null,
     "price": 212
@@ -391298,7 +391298,7 @@
   {
     "id": 43444346,
     "hood": "Manhattan",
-    "zipcode": "nan",
+    "zipcode": null,
     "guests": 2,
     "sqft": null,
     "price": 100

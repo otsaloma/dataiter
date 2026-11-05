@@ -222,7 +222,7 @@ id,hood,zipcode,guests,sqft,price
 62430,Brooklyn,11221,3,,99
 62452,Staten Island,10301,2,150.0,38
 62461,Staten Island,10301,2,,38
-62468,Manhattan,nan,2,,170
+62468,Manhattan,,2,,170
 62787,Staten Island,10301,2,125.0,37
 62891,Manhattan,10009,3,,175
 62903,Manhattan,10011,2,,205
@@ -281,7 +281,7 @@ id,hood,zipcode,guests,sqft,price
 72190,Manhattan,10023,2,,110
 73246,Manhattan,10025,2,84.0,60
 74073,Brooklyn,11211,4,600.0,195
-74240,Brooklyn,nan,2,,169
+74240,Brooklyn,,2,,169
 74333,Manhattan,10035,3,,113
 74680,Queens,11102,3,350.0,115
 74821,Manhattan,10027,5,,149
@@ -343,7 +343,7 @@ id,hood,zipcode,guests,sqft,price
 112304,Manhattan,10026,2,,90
 112359,Manhattan,10128,5,,225
 112435,Brooklyn,11205,2,,95
-113092,Brooklyn,nan,1,,90
+113092,Brooklyn,,1,,90
 113265,Brooklyn,11216,2,,55
 113945,Manhattan,10036,1,,95
 114229,Manhattan,10002,7,800.0,211
@@ -681,7 +681,7 @@ id,hood,zipcode,guests,sqft,price
 269283,Brooklyn,11213,2,,50
 269404,Queens,11103,2,,119
 269889,Queens,11101,2,,95
-270139,Brooklyn,nan,2,,45
+270139,Brooklyn,,2,,45
 270231,Queens,11377,2,,85
 270315,Brooklyn,11221,1,,40
 270345,Manhattan,10003,4,,250
@@ -1182,10 +1182,10 @@ id,hood,zipcode,guests,sqft,price
 587698,Brooklyn,11223,2,,72
 587740,Manhattan,10013,2,,199
 588677,Brooklyn,11211,4,,250
-589089,Brooklyn,nan,1,,96
+589089,Brooklyn,,1,,96
 590903,Manhattan,10027,2,,75
 591135,Manhattan,10012,1,,90
-591565,Manhattan,nan,4,,229
+591565,Manhattan,,4,,229
 591710,Brooklyn,11201,3,,200
 592282,Manhattan,10038,2,,165
 592785,Brooklyn,11238,3,,140
@@ -1258,9 +1258,9 @@ id,hood,zipcode,guests,sqft,price
 639781,Manhattan,10003,3,,200
 640589,Manhattan,10014,2,,700
 640691,Brooklyn,11201,2,,120
-640899,Brooklyn,nan,1,,110
-640901,Brooklyn,nan,2,,150
-640908,Brooklyn,nan,3,,150
+640899,Brooklyn,,1,,110
+640901,Brooklyn,,2,,150
+640908,Brooklyn,,3,,150
 640990,Manhattan,10029,3,,65
 643591,Manhattan,10024,3,,150
 643877,Brooklyn,11230,4,,200
@@ -1465,7 +1465,7 @@ id,hood,zipcode,guests,sqft,price
 751851,Brooklyn,11215,6,,250
 752202,Brooklyn,11216,2,,100
 752289,Manhattan,10012,2,,200
-752366,Queens,nan,3,,89
+752366,Queens,,3,,89
 752616,Manhattan,10002,5,1200.0,400
 752783,Brooklyn,11218,3,1050.0,149
 753622,Manhattan,10003,1,,95
@@ -1490,7 +1490,7 @@ id,hood,zipcode,guests,sqft,price
 762145,Manhattan,10023,4,,600
 763600,Brooklyn,11206,2,,75
 764753,Brooklyn,11213,6,,82
-765203,Brooklyn,nan,1,,65
+765203,Brooklyn,,1,,65
 765315,Brooklyn,11211,2,,115
 765569,Brooklyn,11201,4,,175
 766542,Brooklyn,11211,2,,100
@@ -1822,7 +1822,7 @@ id,hood,zipcode,guests,sqft,price
 923566,Manhattan,10024,4,,200
 923725,Manhattan,10038,2,,75
 923729,Manhattan,10038,1,,79
-923979,Queens,nan,2,,77
+923979,Queens,,2,,77
 924600,Brooklyn,11221,1,,35
 924658,Brooklyn,11221,1,,30
 925240,Manhattan,10003,2,,295
@@ -1916,7 +1916,7 @@ id,hood,zipcode,guests,sqft,price
 995215,Manhattan,10024,4,,99
 995367,Manhattan,10011,1,,334
 995469,Manhattan,10021,1,,60
-997404,Brooklyn,nan,4,,145
+997404,Brooklyn,,4,,145
 998423,Queens,11103,2,,75
 999977,Manhattan,10023,2,,195
 999984,Manhattan,10014,3,,300
@@ -1934,7 +1934,7 @@ id,hood,zipcode,guests,sqft,price
 1013648,Brooklyn,11215,5,,225
 1016004,Queens,11103,2,,38
 1016105,Brooklyn,11205,6,,200
-1016352,Manhattan,nan,2,,550
+1016352,Manhattan,,2,,550
 1016819,Brooklyn,11238,4,,225
 1018181,Brooklyn,11225,2,,69
 1018529,Brooklyn,11222,4,,243
@@ -1949,7 +1949,7 @@ id,hood,zipcode,guests,sqft,price
 1023754,Brooklyn,11206,1,,40
 1024113,Brooklyn,11211,1,100.0,73
 1025001,Queens,11385,3,,75
-1025786,Queens,nan,1,,69
+1025786,Queens,,1,,69
 1025847,Manhattan,10009,1,,165
 1026683,Bronx,10451,2,,85
 1027808,Manhattan,10009,5,,499
@@ -2243,7 +2243,7 @@ id,hood,zipcode,guests,sqft,price
 1308155,Brooklyn,11206,4,,133
 1309148,Brooklyn,11238,1,,48
 1310672,Brooklyn,11221,2,,75
-1312228,Brooklyn,nan,1,,55
+1312228,Brooklyn,,1,,55
 1312945,Brooklyn,11218,4,,90
 1313340,Brooklyn,11213,4,,75
 1313593,Manhattan,10002,5,,465
@@ -2280,7 +2280,7 @@ id,hood,zipcode,guests,sqft,price
 1336223,Manhattan,10001,2,,69
 1336230,Manhattan,10001,2,,79
 1336390,Manhattan,10011,2,,159
-1337148,Manhattan,nan,2,,125
+1337148,Manhattan,,2,,125
 1338362,Manhattan,10019,4,,125
 1340982,Manhattan,10021,2,,180
 1342507,Brooklyn,11206,4,,150
@@ -2388,7 +2388,7 @@ id,hood,zipcode,guests,sqft,price
 1466688,Brooklyn,11211,2,,120
 1467106,Brooklyn,11221,3,,90
 1467618,Brooklyn,11211,2,,190
-1469895,Manhattan,nan,2,,150
+1469895,Manhattan,,2,,150
 1470069,Brooklyn,11205,3,900.0,120
 1474752,Brooklyn,11211,1,,110
 1474980,Manhattan,10009,2,300.0,73
@@ -2406,7 +2406,7 @@ id,hood,zipcode,guests,sqft,price
 1483688,Brooklyn,11238,2,,150
 1484031,Manhattan,10026,1,,95
 1484310,Manhattan,10002,2,,120
-1486099,Brooklyn,nan,4,,149
+1486099,Brooklyn,,4,,149
 1487222,Brooklyn,11238,4,,145
 1489426,Manhattan,10005,6,,390
 1491991,Brooklyn,11215,4,,190
@@ -2553,7 +2553,7 @@ id,hood,zipcode,guests,sqft,price
 1691188,Queens,11378,7,,200
 1691798,Manhattan,10002,4,,249
 1693028,Bronx,10467,2,,50
-1693711,Brooklyn,nan,1,,39
+1693711,Brooklyn,,1,,39
 1695731,Manhattan,10016,1,,55
 1696050,Manhattan,10026,2,,71
 1696381,Manhattan,10035,2,,75
@@ -2825,7 +2825,7 @@ id,hood,zipcode,guests,sqft,price
 1941435,Brooklyn,11233,1,,45
 1941439,Manhattan,10026,2,,85
 1942935,Brooklyn,11215,4,,150
-1944155,Brooklyn,nan,2,,65
+1944155,Brooklyn,,2,,65
 1944891,Brooklyn,11206,2,,49
 1945115,Manhattan,10026,1,,90
 1945437,Manhattan,10025,2,,125
@@ -2914,7 +2914,7 @@ id,hood,zipcode,guests,sqft,price
 2015168,Brooklyn,11205,5,,190
 2016579,Brooklyn,11237,2,,79
 2017012,Manhattan,10014,3,,850
-2017397,Brooklyn,nan,4,,150
+2017397,Brooklyn,,4,,150
 2019755,Brooklyn,11205,2,,100
 2019927,Manhattan,10040,6,,115
 2020881,Manhattan,10003,5,,300
@@ -2925,7 +2925,7 @@ id,hood,zipcode,guests,sqft,price
 2022958,Manhattan,10019,2,,250
 2023357,Manhattan,10029,4,,120
 2023577,Manhattan,10025,1,,105
-2025709,Manhattan,nan,2,,142
+2025709,Manhattan,,2,,142
 2025779,Manhattan,10003,2,,175
 2026434,Brooklyn,11211,6,,500
 2026869,Manhattan,10009,2,,120
@@ -2995,10 +2995,10 @@ id,hood,zipcode,guests,sqft,price
 2071275,Brooklyn,11201,2,,135
 2071420,Manhattan,10011,2,,199
 2071464,Brooklyn,11217,5,,150
-2071839,Brooklyn,nan,1,,60
+2071839,Brooklyn,,1,,60
 2071873,Manhattan,10016,1,,175
 2071941,Brooklyn,11222,3,,200
-2074653,Manhattan,nan,2,,100
+2074653,Manhattan,,2,,100
 2075377,Manhattan,10010,3,,175
 2075453,Brooklyn,11222,6,,199
 2075471,Brooklyn,11222,1,,54
@@ -3027,7 +3027,7 @@ id,hood,zipcode,guests,sqft,price
 2089273,Brooklyn,11237,4,,180
 2089492,Brooklyn,11249,4,,225
 2089712,Manhattan,10018,2,,119
-2089745,Manhattan,nan,3,,220
+2089745,Manhattan,,3,,220
 2091204,Brooklyn,11225,2,,150
 2091483,Brooklyn,11238,1,,75
 2092588,Brooklyn,11222,1,,51
@@ -3098,7 +3098,7 @@ id,hood,zipcode,guests,sqft,price
 2135489,Brooklyn,11231,3,,170
 2135754,Manhattan,10012,3,,210
 2135766,Manhattan,10025,4,,900
-2136293,Queens,nan,3,,65
+2136293,Queens,,3,,65
 2136511,Brooklyn,11233,1,,45
 2137111,Manhattan,10024,2,,225
 2137714,Brooklyn,11207,4,,200
@@ -3117,7 +3117,7 @@ id,hood,zipcode,guests,sqft,price
 2148025,Brooklyn,11237,6,1010.0,225
 2149184,Manhattan,10012,4,,900
 2149854,Manhattan,10036,3,,215
-2149954,Brooklyn,nan,2,,99
+2149954,Brooklyn,,2,,99
 2150727,Manhattan,10003,6,,2000
 2150750,Queens,11104,1,,60
 2150818,Manhattan,10065,3,,140
@@ -3305,7 +3305,7 @@ id,hood,zipcode,guests,sqft,price
 2288762,Manhattan,10016,3,,152
 2289119,Brooklyn,11249,4,,250
 2289612,Manhattan,10016,2,,110
-2291507,Brooklyn,nan,2,,73
+2291507,Brooklyn,,2,,73
 2291943,Manhattan,10028,3,,1000
 2292366,Manhattan,10128,2,,75
 2294594,Manhattan,10019,2,,600
@@ -3350,7 +3350,7 @@ id,hood,zipcode,guests,sqft,price
 2333141,Brooklyn,11213,4,,80
 2334411,Manhattan,10037,4,,95
 2338974,Brooklyn,11206,1,,66
-2339096,Manhattan,nan,2,,70
+2339096,Manhattan,,2,,70
 2339446,Brooklyn,11236,4,,69
 2345266,Brooklyn,11211,1,,55
 2346089,Brooklyn,11221,2,,60
@@ -3439,7 +3439,7 @@ id,hood,zipcode,guests,sqft,price
 2461540,Queens,11101,2,,75
 2464673,Brooklyn,11206,2,,100
 2464679,Manhattan,10003,2,,99
-2465333,Brooklyn,nan,4,,132
+2465333,Brooklyn,,4,,132
 2465699,Manhattan,10026,1,,92
 2465962,Queens,11103,4,,125
 2466687,Brooklyn,11211,2,,102
@@ -3610,7 +3610,7 @@ id,hood,zipcode,guests,sqft,price
 2665579,Manhattan,10019,2,,84
 2668311,Brooklyn,11209,1,,54
 2669352,Manhattan,10025,2,,425
-2669366,Bronx,nan,2,,42
+2669366,Bronx,,2,,42
 2670522,Brooklyn,11206,1,,50
 2671402,Brooklyn,11211,2,,150
 2671576,Brooklyn,11236,4,,46
@@ -3714,7 +3714,7 @@ id,hood,zipcode,guests,sqft,price
 2799360,Manhattan,10024,2,,75
 2801214,Brooklyn,11216,8,,395
 2801300,Queens,11355,3,,75
-2803013,Manhattan,nan,2,,189
+2803013,Manhattan,,2,,189
 2803944,Queens,11377,2,,55
 2803981,Brooklyn,11249,2,,80
 2804065,Brooklyn,11206,2,,69
@@ -3722,7 +3722,7 @@ id,hood,zipcode,guests,sqft,price
 2805293,Manhattan,10012,2,,150
 2806791,Manhattan,10032,2,,60
 2807615,Manhattan,10024,4,,179
-2807939,Brooklyn,nan,2,,100
+2807939,Brooklyn,,2,,100
 2814076,Queens,11106,4,,130
 2814359,Manhattan,10016,3,,265
 2814931,Bronx,10454,3,,120
@@ -3890,7 +3890,7 @@ id,hood,zipcode,guests,sqft,price
 3052904,Manhattan,10028,2,,55
 3056451,Manhattan,10014,2,,120
 3058087,Manhattan,10032,2,,40
-3059273,Manhattan,nan,2,,110
+3059273,Manhattan,,2,,110
 3060297,Manhattan,10001,2,,69
 3060745,Manhattan,10029,1,,37
 3061093,Brooklyn,11211,2,,240
@@ -3978,7 +3978,7 @@ id,hood,zipcode,guests,sqft,price
 3166540,Brooklyn,11217,5,,270
 3167768,Brooklyn,11238,6,,275
 3168120,Manhattan,10009,2,,171
-3171234,Brooklyn,nan,8,,425
+3171234,Brooklyn,,8,,425
 3171480,Manhattan,10014,3,,200
 3172778,Brooklyn,11211,4,,170
 3173148,Brooklyn,11211,2,,100
@@ -4001,7 +4001,7 @@ id,hood,zipcode,guests,sqft,price
 3198365,Manhattan,10026,2,,200
 3198824,Manhattan,10025,2,,195
 3199681,Queens,11375,2,,50
-3200198,Manhattan,nan,4,,175
+3200198,Manhattan,,4,,175
 3200522,Brooklyn,11233,3,,120
 3200728,Brooklyn,11218,2,,54
 3201696,Manhattan,10031,11,,345
@@ -4036,7 +4036,7 @@ id,hood,zipcode,guests,sqft,price
 3227002,Brooklyn,11238,4,,200
 3230053,Brooklyn,11222,2,,111
 3231460,Brooklyn,11217,2,,175
-3236385,Brooklyn,nan,3,,100
+3236385,Brooklyn,,3,,100
 3236977,Brooklyn,11231,6,,425
 3237160,Manhattan,10009,2,,175
 3237602,Brooklyn,11249,6,,270
@@ -4071,7 +4071,7 @@ id,hood,zipcode,guests,sqft,price
 3264684,Brooklyn,11231,3,,160
 3265275,Manhattan,10024,5,,200
 3265407,Brooklyn,11238,1,,57
-3265409,Manhattan,nan,1,,90
+3265409,Manhattan,,1,,90
 3265982,Brooklyn,11217,2,,90
 3268008,Manhattan,10014,2,,200
 3270009,Brooklyn,11233,4,,68
@@ -4141,7 +4141,7 @@ id,hood,zipcode,guests,sqft,price
 3349699,Brooklyn,11211,2,,150
 3350417,Brooklyn,11225,2,,52
 3350583,Brooklyn,11226,5,,120
-3351584,Manhattan,nan,1,,80
+3351584,Manhattan,,1,,80
 3352030,Brooklyn,11217,2,,120
 3352608,Brooklyn,11235,6,,300
 3354458,Queens,11101,3,,75
@@ -4324,7 +4324,7 @@ id,hood,zipcode,guests,sqft,price
 3544273,Brooklyn,11238,6,,150
 3544828,Brooklyn,11221,2,,56
 3544858,Brooklyn,11222,2,,60
-3544899,Brooklyn,nan,2,,85
+3544899,Brooklyn,,2,,85
 3548257,Brooklyn,11215,3,,250
 3548691,Brooklyn,11215,4,,220
 3549074,Brooklyn,11237,2,,54
@@ -4349,7 +4349,7 @@ id,hood,zipcode,guests,sqft,price
 3559695,Manhattan,10012,2,,270
 3561828,Brooklyn,11238,2,,150
 3562245,Manhattan,10003,4,,365
-3562903,Manhattan,nan,4,,16
+3562903,Manhattan,,4,,16
 3563271,Brooklyn,11238,4,,99
 3567258,Manhattan,10003,2,,220
 3569374,Brooklyn,11215,2,,230
@@ -4357,7 +4357,7 @@ id,hood,zipcode,guests,sqft,price
 3575859,Manhattan,10012,1,,120
 3575918,Brooklyn,11226,1,,45
 3576160,Manhattan,10035,2,,100
-3578158,Manhattan,nan,2,,138
+3578158,Manhattan,,2,,138
 3580577,Brooklyn,11215,4,,100
 3581153,Manhattan,10001,4,,230
 3581652,Manhattan,10026,6,,225
@@ -4589,7 +4589,7 @@ id,hood,zipcode,guests,sqft,price
 3783016,Manhattan,10024,3,,79
 3783021,Manhattan,10024,3,,79
 3783639,Manhattan,10039,2,,85
-3785438,Brooklyn,nan,2,,110
+3785438,Brooklyn,,2,,110
 3787867,Manhattan,10002,3,,400
 3789265,Manhattan,10040,1,,100
 3789758,Brooklyn,11222,2,,115
@@ -4764,7 +4764,7 @@ id,hood,zipcode,guests,sqft,price
 3943630,Brooklyn,11207,2,,80
 3943879,Brooklyn,11211,2,,175
 3944200,Manhattan,10029,4,,195
-3944233,Manhattan,nan,1,,130
+3944233,Manhattan,,1,,130
 3944499,Brooklyn,11225,2,,96
 3944625,Brooklyn,11201,2,,129
 3944627,Manhattan,10010,4,,200
@@ -4892,14 +4892,14 @@ id,hood,zipcode,guests,sqft,price
 4058701,Manhattan,10025,1,,170
 4059037,Brooklyn,11206,2,,100
 4059620,Manhattan,10012,2,,199
-4059794,Manhattan,nan,4,,120
+4059794,Manhattan,,4,,120
 4060446,Manhattan,10034,2,,99
 4060993,Queens,11385,4,,60
 4066224,Brooklyn,11211,6,,200
 4067861,Brooklyn,11226,1,,65
 4069228,Brooklyn,11226,2,,115
 4069341,Manhattan,10027,5,,145
-4069681,Brooklyn,nan,4,,75
+4069681,Brooklyn,,4,,75
 4070025,Brooklyn,11201,3,,250
 4071007,Manhattan,10013,2,,120
 4074248,Brooklyn,11211,1,,500
@@ -4915,7 +4915,7 @@ id,hood,zipcode,guests,sqft,price
 4082357,Brooklyn,11222,2,,66
 4083049,Brooklyn,11233,5,,350
 4084603,Manhattan,10003,4,,200
-4085544,Manhattan,nan,3,,450
+4085544,Manhattan,,3,,450
 4085647,Brooklyn,11207,3,,110
 4089102,Brooklyn,11216,6,,152
 4089189,Brooklyn,11205,4,,145
@@ -4966,7 +4966,7 @@ id,hood,zipcode,guests,sqft,price
 4129541,Brooklyn,11221,2,,77
 4129909,Brooklyn,11221,3,,80
 4129992,Brooklyn,11230,2,,85
-4130266,Brooklyn,nan,2,,88
+4130266,Brooklyn,,2,,88
 4134035,Brooklyn,11201,2,,150
 4135674,Brooklyn,11217,4,,300
 4135848,Manhattan,10039,2,,90
@@ -4975,11 +4975,11 @@ id,hood,zipcode,guests,sqft,price
 4136832,Brooklyn,11221,1,,50
 4137414,Manhattan,10003,2,,135
 4137645,Brooklyn,11211,2,,60
-4137680,Manhattan,nan,6,,419
+4137680,Manhattan,,6,,419
 4137756,Queens,11385,2,,130
 4137789,Brooklyn,11218,6,,180
 4137979,Brooklyn,11222,2,,125
-4140622,Brooklyn,nan,2,,100
+4140622,Brooklyn,,2,,100
 4140776,Queens,11375,3,,65
 4141868,Manhattan,10002,2,,200
 4142125,Brooklyn,11232,2,,140
@@ -5093,7 +5093,7 @@ id,hood,zipcode,guests,sqft,price
 4241028,Queens,11436,2,,89
 4241486,Manhattan,10003,4,,280
 4243533,Queens,11377,1,,100
-4244174,Brooklyn,nan,1,,80
+4244174,Brooklyn,,1,,80
 4244242,Brooklyn,11206,2,,70
 4244476,Brooklyn,11222,2,,75
 4244528,Brooklyn,11211,2,,80
@@ -5163,7 +5163,7 @@ id,hood,zipcode,guests,sqft,price
 4296956,Brooklyn,11236,6,,210
 4297952,Manhattan,10001,2,,199
 4299536,Brooklyn,11238,4,,189
-4302293,Queens,nan,2,,58
+4302293,Queens,,2,,58
 4303600,Brooklyn,11216,1,,64
 4303825,Queens,11101,5,,190
 4305170,Brooklyn,11238,2,,145
@@ -5361,7 +5361,7 @@ id,hood,zipcode,guests,sqft,price
 4469650,Manhattan,10027,13,,495
 4469679,Manhattan,10002,3,,325
 4471513,Manhattan,10036,6,,699
-4472978,Manhattan,nan,2,,195
+4472978,Manhattan,,2,,195
 4473156,Manhattan,10035,4,,165
 4475128,Manhattan,10029,1,,65
 4475696,Manhattan,10002,5,,360
@@ -5602,7 +5602,7 @@ id,hood,zipcode,guests,sqft,price
 4639451,Brooklyn,11222,1,,55
 4639746,Brooklyn,11231,2,,100
 4640515,Manhattan,10039,2,,65
-4641291,Queens,nan,2,,99
+4641291,Queens,,2,,99
 4641406,Manhattan,10026,2,,100
 4642539,Manhattan,10036,2,,225
 4642913,Brooklyn,11218,3,,120
@@ -5817,7 +5817,7 @@ id,hood,zipcode,guests,sqft,price
 4776045,Brooklyn,11205,2,,65
 4776107,Manhattan,10009,3,,400
 4777063,Brooklyn,11206,2,,60
-4777166,Queens,nan,1,,31
+4777166,Queens,,1,,31
 4777269,Manhattan,10023,2,,250
 4777597,Manhattan,10011,4,,215
 4777745,Manhattan,10022,4,,235
@@ -5883,7 +5883,7 @@ id,hood,zipcode,guests,sqft,price
 4809056,Brooklyn,11237,2,,95
 4809337,Brooklyn,11216,1,,50
 4809346,Brooklyn,11238,2,,80
-4813140,Brooklyn,nan,12,,320
+4813140,Brooklyn,,12,,320
 4813236,Brooklyn,11207,1,,37
 4813342,Manhattan,10019,2,,95
 4813696,Manhattan,10014,3,,200
@@ -6064,7 +6064,7 @@ id,hood,zipcode,guests,sqft,price
 4920912,Manhattan,10011,2,,175
 4921548,Manhattan,10023,5,,205
 4924590,Queens,11377,2,,90
-4925050,Brooklyn,nan,2,,100
+4925050,Brooklyn,,2,,100
 4925368,Brooklyn,11221,2,,60
 4925414,Brooklyn,11221,6,,250
 4925517,Manhattan,10019,2,,99
@@ -6220,7 +6220,7 @@ id,hood,zipcode,guests,sqft,price
 5084095,Manhattan,10075,4,,250
 5085803,Manhattan,10128,3,,99
 5093174,Brooklyn,11206,3,,140
-5093352,Manhattan,nan,2,,115
+5093352,Manhattan,,2,,115
 5094593,Queens,11360,1,,99
 5100436,Brooklyn,11226,2,,135
 5102006,Brooklyn,11201,3,,160
@@ -6250,7 +6250,7 @@ id,hood,zipcode,guests,sqft,price
 5133942,Brooklyn,11216,4,,150
 5135121,Brooklyn,11225,2,,80
 5136673,Brooklyn,11221,2,,40
-5136833,Manhattan,nan,2,,79
+5136833,Manhattan,,2,,79
 5137531,Manhattan,10027,4,,140
 5141379,Manhattan,10011,2,,198
 5143959,Brooklyn,11225,3,,65
@@ -6260,7 +6260,7 @@ id,hood,zipcode,guests,sqft,price
 5146173,Manhattan,10014,3,,510
 5148878,Brooklyn,11249,4,,125
 5149368,Manhattan,10004,2,,170
-5150206,Manhattan,nan,1,,110
+5150206,Manhattan,,1,,110
 5152230,Manhattan,10031,2,,65
 5159567,Brooklyn,11222,4,,197
 5159722,Manhattan,10003,1,,30
@@ -6360,7 +6360,7 @@ id,hood,zipcode,guests,sqft,price
 5288376,Manhattan,10038,2,,59
 5288942,Queens,11385,1,,40
 5293662,Brooklyn,11205,2,,70
-5295884,Manhattan,nan,3,,190
+5295884,Manhattan,,3,,190
 5297292,Brooklyn,11233,6,,150
 5298299,Manhattan,10011,2,,109
 5298458,Manhattan,10040,4,,37
@@ -6374,7 +6374,7 @@ id,hood,zipcode,guests,sqft,price
 5309810,Manhattan,10026,2,,65
 5309959,Queens,11418,1,,50
 5313584,Brooklyn,11238,2,,52
-5315796,Manhattan,nan,2,,176
+5315796,Manhattan,,2,,176
 5315798,Brooklyn,11211,2,,90
 5316158,Brooklyn,11238,4,,175
 5316266,Manhattan,10037,2,,125
@@ -6528,7 +6528,7 @@ id,hood,zipcode,guests,sqft,price
 5520934,Brooklyn,11211,2,,200
 5521107,Brooklyn,11213,2,,69
 5522518,Manhattan,10014,3,,145
-5523654,Manhattan,nan,6,,80
+5523654,Manhattan,,6,,80
 5523876,Manhattan,10031,4,,300
 5525206,Manhattan,10023,2,,180
 5525510,Manhattan,10013,1,,62
@@ -6682,7 +6682,7 @@ id,hood,zipcode,guests,sqft,price
 5715049,Brooklyn,11215,2,,181
 5717355,Brooklyn,11206,2,,90
 5717674,Brooklyn,11218,2,,70
-5718494,Manhattan,nan,2,,150
+5718494,Manhattan,,2,,150
 5718603,Manhattan,10011,1,,150
 5718935,Manhattan,10025,2,,225
 5719742,Manhattan,10023,3,,230
@@ -6755,7 +6755,7 @@ id,hood,zipcode,guests,sqft,price
 5792453,Manhattan,10003,3,,185
 5796405,Manhattan,10017,4,,299
 5803068,Bronx,10469,1,,45
-5804170,Queens,nan,2,,37
+5804170,Queens,,2,,37
 5804184,Brooklyn,11206,1,,45
 5804451,Brooklyn,11216,2,,85
 5805232,Queens,11105,2,,150
@@ -6986,7 +6986,7 @@ id,hood,zipcode,guests,sqft,price
 6093459,Brooklyn,11249,2,,89
 6094046,Manhattan,10036,1,,90
 6094708,Manhattan,10002,2,,85
-6099485,Brooklyn,nan,2,,68
+6099485,Brooklyn,,2,,68
 6100514,Manhattan,10036,2,,200
 6101104,Manhattan,10028,2,,170
 6102494,Manhattan,10017,2,,140
@@ -7227,7 +7227,7 @@ id,hood,zipcode,guests,sqft,price
 6334236,Brooklyn,11233,2,,99
 6334808,Manhattan,10003,2,,170
 6335490,Manhattan,10003,4,,194
-6336738,Brooklyn,nan,6,,125
+6336738,Brooklyn,,6,,125
 6336834,Brooklyn,11211,2,,84
 6337725,Manhattan,10027,3,,140
 6342741,Manhattan,10007,2,,89
@@ -7281,7 +7281,7 @@ id,hood,zipcode,guests,sqft,price
 6374545,Manhattan,10024,2,,200
 6375124,Brooklyn,11217,5,,276
 6375331,Manhattan,10009,2,,130
-6376487,Queens,nan,4,,122
+6376487,Queens,,4,,122
 6377161,Manhattan,10003,2,,399
 6377384,Manhattan,10014,4,,495
 6377624,Brooklyn,11238,2,,145
@@ -7296,7 +7296,7 @@ id,hood,zipcode,guests,sqft,price
 6385039,Brooklyn,11216,2,,64
 6385364,Manhattan,10002,1,,100
 6385547,Brooklyn,11222,7,,350
-6387739,Brooklyn,nan,2,,39
+6387739,Brooklyn,,2,,39
 6388315,Manhattan,10023,2,,120
 6388721,Manhattan,10014,3,,239
 6389441,Manhattan,10019,4,,300
@@ -7449,7 +7449,7 @@ id,hood,zipcode,guests,sqft,price
 6519873,Queens,11692,2,,125
 6520350,Queens,11692,10,,635
 6522849,Brooklyn,11223,1,,45
-6523409,Brooklyn,nan,2,,99
+6523409,Brooklyn,,2,,99
 6524806,Queens,11101,2,,52
 6525622,Manhattan,10009,2,,125
 6525765,Queens,11368,2,,150
@@ -7530,7 +7530,7 @@ id,hood,zipcode,guests,sqft,price
 6599689,Manhattan,10033,2,,75
 6599950,Manhattan,10011,2,,700
 6601120,Brooklyn,11249,2,,165
-6601194,Brooklyn,nan,2,,80
+6601194,Brooklyn,,2,,80
 6601284,Brooklyn,11215,3,,145
 6601606,Manhattan,10002,2,,125
 6601683,Brooklyn,11237,2,,45
@@ -7624,7 +7624,7 @@ id,hood,zipcode,guests,sqft,price
 6660330,Manhattan,10014,6,,300
 6660511,Manhattan,10003,3,,280
 6660518,Queens,11415,2,,63
-6660816,Brooklyn,nan,2,,100
+6660816,Brooklyn,,2,,100
 6661923,Manhattan,10036,4,,150
 6662241,Manhattan,10011,6,,400
 6662422,Brooklyn,11217,4,,250
@@ -8062,7 +8062,7 @@ id,hood,zipcode,guests,sqft,price
 7011234,Manhattan,10014,2,,167
 7015831,Brooklyn,11221,1,,35
 7017768,Brooklyn,11221,2,,75
-7018619,Manhattan,nan,2,,52
+7018619,Manhattan,,2,,52
 7019122,Brooklyn,11237,2,,165
 7019534,Brooklyn,11211,2,,100
 7020266,Brooklyn,11211,2,,95
@@ -8341,7 +8341,7 @@ id,hood,zipcode,guests,sqft,price
 7265249,Brooklyn,11215,3,,125
 7265253,Manhattan,10005,1,,47
 7265331,Manhattan,10040,2,,60
-7271876,Brooklyn,nan,2,,75
+7271876,Brooklyn,,2,,75
 7272453,Manhattan,10003,2,,90
 7272530,Brooklyn,11206,2,,65
 7272680,Brooklyn,11206,2,,63
@@ -8415,7 +8415,7 @@ id,hood,zipcode,guests,sqft,price
 7345333,Brooklyn,11211,1,,125
 7345443,Brooklyn,11215,4,,166
 7346434,Manhattan,10025,1,,64
-7347350,Brooklyn,nan,1,,35
+7347350,Brooklyn,,1,,35
 7347733,Manhattan,10027,2,,120
 7348008,Brooklyn,11217,1,,60
 7348509,Brooklyn,11249,2,,215
@@ -8585,7 +8585,7 @@ id,hood,zipcode,guests,sqft,price
 7500390,Manhattan,10012,1,,125
 7500571,Brooklyn,11221,5,,120
 7500903,Brooklyn,11220,2,,40
-7501154,Brooklyn,nan,2,,119
+7501154,Brooklyn,,2,,119
 7501292,Brooklyn,11221,2,,101
 7501668,Brooklyn,11237,2,,65
 7501694,Bronx,10474,3,0.0,45
@@ -8874,9 +8874,9 @@ id,hood,zipcode,guests,sqft,price
 7734670,Bronx,10474,1,,40
 7734995,Manhattan,10003,2,,140
 7740527,Manhattan,10027,2,,60
-7741113,Brooklyn,nan,1,,49
+7741113,Brooklyn,,1,,49
 7742287,Queens,11365,2,,55
-7742486,Brooklyn,nan,2,,145
+7742486,Brooklyn,,2,,145
 7742889,Manhattan,10040,2,,48
 7743287,Brooklyn,11233,2,,75
 7744239,Brooklyn,11231,3,,200
@@ -9027,7 +9027,7 @@ id,hood,zipcode,guests,sqft,price
 7858023,Manhattan,10009,4,,400
 7858096,Manhattan,10010,2,,87
 7858468,Manhattan,10019,2,,99
-7858541,Manhattan,nan,2,,225
+7858541,Manhattan,,2,,225
 7858741,Manhattan,10014,2,,250
 7858824,Manhattan,10022,5,,299
 7859630,Brooklyn,11221,2,,40
@@ -9143,7 +9143,7 @@ id,hood,zipcode,guests,sqft,price
 7966447,Manhattan,10013,1,,50
 7966943,Manhattan,10009,3,,400
 7967829,Brooklyn,11206,1,,70
-7967922,Queens,nan,2,,52
+7967922,Queens,,2,,52
 7967942,Manhattan,10014,5,,385
 7968283,Brooklyn,11221,1,,45
 7968983,Brooklyn,11207,7,,275
@@ -9280,7 +9280,7 @@ id,hood,zipcode,guests,sqft,price
 8111321,Queens,11102,2,,70
 8113156,Brooklyn,11249,2,,60
 8114144,Brooklyn,11237,3,,120
-8114639,Brooklyn,nan,1,,50
+8114639,Brooklyn,,1,,50
 8115321,Queens,11368,2,,75
 8115423,Queens,11368,2,,75
 8117209,Queens,11101,1,,37
@@ -9319,7 +9319,7 @@ id,hood,zipcode,guests,sqft,price
 8153235,Manhattan,10012,2,,72
 8153240,Manhattan,10002,8,,250
 8155028,Manhattan,10280,2,,165
-8161540,Brooklyn,nan,2,,90
+8161540,Brooklyn,,2,,90
 8162214,Manhattan,10002,1,,90
 8162587,Manhattan,10017,3,,120
 8163660,Manhattan,10002,2,,100
@@ -9505,7 +9505,7 @@ id,hood,zipcode,guests,sqft,price
 8326753,Manhattan,10036,2,,150
 8327302,Brooklyn,11226,2,,62
 8327773,Brooklyn,11233,4,,155
-8328900,Brooklyn,nan,1,,40
+8328900,Brooklyn,,1,,40
 8330254,Brooklyn,11217,4,,200
 8335539,Brooklyn,11237,5,,50
 8335547,Manhattan,10003,4,,250
@@ -9625,7 +9625,7 @@ id,hood,zipcode,guests,sqft,price
 8459744,Queens,11370,4,,89
 8460304,Manhattan,10016,4,,285
 8467862,Manhattan,10013,2,,127
-8467950,Manhattan,nan,2,,150
+8467950,Manhattan,,2,,150
 8468662,Manhattan,10025,4,,150
 8470281,Manhattan,10031,1,,60
 8470974,Manhattan,10011,2,,275
@@ -9638,7 +9638,7 @@ id,hood,zipcode,guests,sqft,price
 8474260,Manhattan,10027,1,,40
 8474806,Manhattan,10031,2,,68
 8474859,Brooklyn,11231,4,,130
-8479799,Manhattan,nan,2,,135
+8479799,Manhattan,,2,,135
 8480087,Manhattan,10023,2,,165
 8481074,Manhattan,10009,4,,250
 8482952,Manhattan,10011,2,,170
@@ -9679,7 +9679,7 @@ id,hood,zipcode,guests,sqft,price
 8518051,Bronx,10473,2,,100
 8518280,Brooklyn,11211,4,,100
 8518878,Brooklyn,11206,3,,125
-8519400,Manhattan,nan,2,,200
+8519400,Manhattan,,2,,200
 8520094,Manhattan,10003,3,,199
 8520667,Brooklyn,11207,4,,50
 8520836,Manhattan,10011,6,,300
@@ -9691,7 +9691,7 @@ id,hood,zipcode,guests,sqft,price
 8523742,Manhattan,10031,2,,99
 8523910,Manhattan,10009,6,,250
 8525172,Manhattan,10128,2,,62
-8525292,Brooklyn,nan,4,,105
+8525292,Brooklyn,,4,,105
 8525477,Queens,11418,1,,55
 8530517,Brooklyn,11215,4,,97
 8531441,Manhattan,10022,2,,100
@@ -9708,7 +9708,7 @@ id,hood,zipcode,guests,sqft,price
 8536270,Manhattan,10016,2,,190
 8536679,Manhattan,10009,2,,100
 8537400,Manhattan,10036,2,,135
-8538077,Brooklyn,nan,2,,250
+8538077,Brooklyn,,2,,250
 8538668,Manhattan,10016,2,,125
 8539830,Brooklyn,11222,4,,228
 8540941,Queens,11377,2,,37
@@ -10011,7 +10011,7 @@ id,hood,zipcode,guests,sqft,price
 8847577,Brooklyn,11231,8,,1000
 8849684,Brooklyn,11238,3,,70
 8849758,Brooklyn,11233,2,,45
-8855930,Manhattan,nan,2,,125
+8855930,Manhattan,,2,,125
 8857546,Queens,11413,2,,38
 8857842,Brooklyn,11205,2,,100
 8860277,Brooklyn,11238,3,,140
@@ -10040,7 +10040,7 @@ id,hood,zipcode,guests,sqft,price
 8883032,Brooklyn,11225,2,,70
 8883074,Brooklyn,11237,1,,41
 8884004,Brooklyn,11221,1,,60
-8887748,Brooklyn,nan,1,,42
+8887748,Brooklyn,,1,,42
 8888689,Manhattan,10025,4,,170
 8889423,Manhattan,10024,2,,150
 8889664,Manhattan,10009,2,,77
@@ -10237,7 +10237,7 @@ id,hood,zipcode,guests,sqft,price
 9064714,Queens,11101,2,,80
 9066389,Manhattan,10002,4,,190
 9074921,Brooklyn,11211,4,,150
-9074963,Brooklyn,nan,2,,48
+9074963,Brooklyn,,2,,48
 9075249,Brooklyn,11205,1,,50
 9077858,Brooklyn,11226,4,,27
 9078066,Queens,11102,2,,145
@@ -10251,7 +10251,7 @@ id,hood,zipcode,guests,sqft,price
 9087285,Manhattan,10021,2,,145
 9089306,Manhattan,10003,4,,135
 9089397,Queens,11103,1,,50
-9090351,Manhattan,nan,2,,100
+9090351,Manhattan,,2,,100
 9091373,Brooklyn,11205,1,,100
 9091710,Manhattan,10009,2,,130
 9092024,Manhattan,10012,2,,145
@@ -10272,7 +10272,7 @@ id,hood,zipcode,guests,sqft,price
 9105751,Brooklyn,11222,2,,25
 9105853,Brooklyn,11237,2,,55
 9106735,Manhattan,10014,4,,195
-9106756,Brooklyn,nan,2,,150
+9106756,Brooklyn,,2,,150
 9107046,Manhattan,10003,2,,95
 9107118,Brooklyn,11206,1,,45
 9107450,Manhattan,10128,4,,210
@@ -10319,7 +10319,7 @@ id,hood,zipcode,guests,sqft,price
 9136814,Manhattan,10036,3,,185
 9137194,Manhattan,10003,3,,225
 9137533,Brooklyn,11238,4,,150
-9137941,Manhattan,nan,3,,200
+9137941,Manhattan,,3,,200
 9138319,Brooklyn,11225,6,,150
 9140055,Brooklyn,11221,1,,35
 9144999,Manhattan,10011,2,,140
@@ -10340,7 +10340,7 @@ id,hood,zipcode,guests,sqft,price
 9152795,Brooklyn,11211,2,,120
 9152932,Brooklyn,11206,5,,200
 9152965,Brooklyn,11206,5,,200
-9153256,Manhattan,nan,3,,150
+9153256,Manhattan,,3,,150
 9155206,Brooklyn,11216,6,,165
 9155212,Manhattan,10009,1,,85
 9155475,Manhattan,10011,4,,130
@@ -10405,14 +10405,14 @@ id,hood,zipcode,guests,sqft,price
 9217707,Queens,11374,2,,125
 9217745,Brooklyn,11206,2,,50
 9217837,Brooklyn,11215,3,,150
-9218051,Manhattan,nan,2,,95
+9218051,Manhattan,,2,,95
 9218893,Brooklyn,11213,2,,70
 9219049,Queens,11367,2,,89
 9219569,Brooklyn,11221,3,,125
 9219588,Queens,11103,4,,120
 9227929,Manhattan,10031,6,,201
 9228974,Manhattan,10003,3,,80
-9230523,Brooklyn,nan,2,,50
+9230523,Brooklyn,,2,,50
 9230690,Brooklyn,11211,1,,49
 9230738,Manhattan,10023,2,,185
 9231257,Brooklyn,11226,2,,89
@@ -10485,7 +10485,7 @@ id,hood,zipcode,guests,sqft,price
 9296089,Manhattan,10024,4,,200
 9296598,Manhattan,10023,1,,40
 9296742,Brooklyn,11218,1,,55
-9297852,Brooklyn,nan,2,,99
+9297852,Brooklyn,,2,,99
 9297960,Brooklyn,11206,2,,82
 9298825,Brooklyn,11201,3,,185
 9298895,Manhattan,10009,1,,45
@@ -10588,7 +10588,7 @@ id,hood,zipcode,guests,sqft,price
 9370538,Manhattan,10002,4,,250
 9370896,Brooklyn,11221,8,,140
 9371009,Manhattan,10028,4,,110
-9371045,Manhattan,nan,2,,200
+9371045,Manhattan,,2,,200
 9371173,Brooklyn,11222,2,,120
 9372859,Brooklyn,11211,2,,155
 9373167,Manhattan,10009,1,,110
@@ -10744,7 +10744,7 @@ id,hood,zipcode,guests,sqft,price
 9477489,Manhattan,10002,3,,145
 9477988,Brooklyn,11238,5,,175
 9478196,Manhattan,10014,5,,275
-9478370,Queens,nan,2,,115
+9478370,Queens,,2,,115
 9479084,Manhattan,10002,2,,175
 9479324,Brooklyn,11205,1,,65
 9479348,Manhattan,10027,6,,395
@@ -10806,7 +10806,7 @@ id,hood,zipcode,guests,sqft,price
 9513511,Bronx,10462,1,,75
 9514730,Manhattan,10024,3,,150
 9514772,Brooklyn,11222,2,,50
-9514805,Brooklyn,nan,2,,180
+9514805,Brooklyn,,2,,180
 9514860,Manhattan,10019,4,,299
 9514935,Brooklyn,11206,1,,66
 9515597,Brooklyn,11217,4,,410
@@ -10824,14 +10824,14 @@ id,hood,zipcode,guests,sqft,price
 9525335,Manhattan,10027,1,,55
 9525490,Manhattan,10003,7,,325
 9527971,Manhattan,10065,2,,450
-9528798,Brooklyn,nan,2,,75
+9528798,Brooklyn,,2,,75
 9528920,Manhattan,10002,2,,9999
 9529332,Brooklyn,11205,6,,191
 9529607,Manhattan,10012,2,,150
 9530079,Manhattan,10025,4,,290
 9530293,Manhattan,10040,3,,43
 9531437,Manhattan,10038,2,,100
-9532048,Brooklyn,nan,2,,40
+9532048,Brooklyn,,2,,40
 9532665,Manhattan,10024,3,,129
 9533058,Brooklyn,11222,2,,130
 9534327,Brooklyn,11233,3,,165
@@ -10857,9 +10857,9 @@ id,hood,zipcode,guests,sqft,price
 9548756,Manhattan,10017,4,,200
 9549544,Manhattan,10019,5,,350
 9549937,Manhattan,10013,4,,265
-9550171,Manhattan,nan,2,,228
+9550171,Manhattan,,2,,228
 9550485,Manhattan,10012,2,,90
-9550714,Brooklyn,nan,2,,120
+9550714,Brooklyn,,2,,120
 9550807,Manhattan,10032,2,,65
 9555648,Queens,11105,2,,103
 9556028,Manhattan,10003,5,,500
@@ -10898,7 +10898,7 @@ id,hood,zipcode,guests,sqft,price
 9580218,Manhattan,10010,1,,80
 9584126,Brooklyn,11206,2,,87
 9585027,Manhattan,10016,2,,80
-9585339,Manhattan,nan,2,,100
+9585339,Manhattan,,2,,100
 9586086,Brooklyn,11218,5,,225
 9586258,Brooklyn,11238,3,,60
 9587933,Manhattan,10028,2,,166
@@ -11043,7 +11043,7 @@ id,hood,zipcode,guests,sqft,price
 9691842,Brooklyn,11211,3,,90
 9692074,Manhattan,10025,3,,200
 9692090,Manhattan,10002,1,,58
-9692205,Manhattan,nan,2,,70
+9692205,Manhattan,,2,,70
 9692740,Manhattan,10025,1,,50
 9693080,Queens,11104,2,,85
 9693821,Manhattan,10029,6,,200
@@ -11064,7 +11064,7 @@ id,hood,zipcode,guests,sqft,price
 9699559,Manhattan,10016,4,,150
 9703075,Brooklyn,11221,3,,107
 9705782,Brooklyn,11216,8,,300
-9705958,Brooklyn,nan,3,,65
+9705958,Brooklyn,,3,,65
 9706724,Brooklyn,11225,1,,55
 9707469,Brooklyn,11201,2,,150
 9707498,Brooklyn,11215,4,,120
@@ -11121,7 +11121,7 @@ id,hood,zipcode,guests,sqft,price
 9732612,Manhattan,10013,3,,250
 9732834,Brooklyn,11222,1,,70
 9733138,Brooklyn,11211,4,,140
-9733227,Brooklyn,nan,2,,159
+9733227,Brooklyn,,2,,159
 9733280,Manhattan,10003,2,,149
 9734068,Manhattan,10029,5,,110
 9735503,Queens,11102,4,,100
@@ -11173,7 +11173,7 @@ id,hood,zipcode,guests,sqft,price
 9757351,Manhattan,10128,4,,200
 9757762,Brooklyn,11211,2,,180
 9757875,Queens,11415,4,,61
-9758041,Brooklyn,nan,4,,125
+9758041,Brooklyn,,4,,125
 9758320,Manhattan,10031,4,,125
 9758378,Brooklyn,11238,4,,250
 9758735,Brooklyn,11226,2,,70
@@ -11216,7 +11216,7 @@ id,hood,zipcode,guests,sqft,price
 9778579,Manhattan,10002,1,,45
 9778583,Brooklyn,11221,2,,75
 9778855,Brooklyn,11207,1,,65
-9778978,Manhattan,nan,2,,50
+9778978,Manhattan,,2,,50
 9779136,Brooklyn,11238,2,,50
 9779228,Manhattan,10003,1,,86
 9785516,Manhattan,10025,6,,372
@@ -11232,7 +11232,7 @@ id,hood,zipcode,guests,sqft,price
 9789350,Manhattan,10028,2,,139
 9790098,Manhattan,10026,4,,200
 9790355,Manhattan,10014,2,,300
-9790462,Brooklyn,nan,1,,50
+9790462,Brooklyn,,1,,50
 9790995,Manhattan,10003,2,,120
 9791355,Manhattan,10010,1,,110
 9791362,Brooklyn,11249,1,,50
@@ -11278,7 +11278,7 @@ id,hood,zipcode,guests,sqft,price
 9806606,Manhattan,10009,1,,154
 9806634,Manhattan,10009,1,,72
 9807059,Manhattan,10027,1,,63
-9808151,Manhattan,nan,2,,112
+9808151,Manhattan,,2,,112
 9808637,Brooklyn,11211,2,,119
 9809458,Brooklyn,11211,2,,170
 9809784,Brooklyn,11238,6,,995
@@ -11288,7 +11288,7 @@ id,hood,zipcode,guests,sqft,price
 9810506,Manhattan,10282,2,,150
 9810696,Manhattan,10036,3,,199
 9811274,Brooklyn,11222,2,,80
-9813220,Queens,nan,1,,135
+9813220,Queens,,1,,135
 9813364,Manhattan,10026,1,,60
 9818465,Manhattan,10027,2,,125
 9819018,Manhattan,10002,1,,62
@@ -11415,7 +11415,7 @@ id,hood,zipcode,guests,sqft,price
 9882147,Brooklyn,11206,1,,40
 9882198,Brooklyn,11222,2,,60
 9882254,Staten Island,10301,3,,52
-9883197,Manhattan,nan,2,,100
+9883197,Manhattan,,2,,100
 9884175,Manhattan,10002,1,,150
 9884237,Manhattan,10019,2,,400
 9884516,Queens,11101,4,,66
@@ -11710,7 +11710,7 @@ id,hood,zipcode,guests,sqft,price
 10039579,Manhattan,10037,8,,226
 10039992,Brooklyn,11211,2,,79
 10040649,Brooklyn,11211,2,,80
-10040717,Manhattan,nan,2,,169
+10040717,Manhattan,,2,,169
 10041002,Brooklyn,11238,4,,100
 10041376,Manhattan,10019,2,,98
 10041589,Queens,11101,2,,65
@@ -11776,7 +11776,7 @@ id,hood,zipcode,guests,sqft,price
 10080979,Manhattan,10003,4,,140
 10082057,Brooklyn,11230,2,,115
 10083580,Brooklyn,11206,2,,58
-10083881,Manhattan,nan,2,,100
+10083881,Manhattan,,2,,100
 10083973,Brooklyn,11211,2,,119
 10084380,Brooklyn,11249,4,,139
 10085269,Brooklyn,11225,4,,140
@@ -11850,7 +11850,7 @@ id,hood,zipcode,guests,sqft,price
 10131082,Manhattan,10026,2,,149
 10132356,Manhattan,10027,6,,150
 10133195,Queens,11373,3,,65
-10133534,Manhattan,nan,2,,110
+10133534,Manhattan,,2,,110
 10133691,Manhattan,10012,1,,69
 10134285,Manhattan,10002,2,,99
 10134298,Manhattan,10003,2,,85
@@ -11886,7 +11886,7 @@ id,hood,zipcode,guests,sqft,price
 10157256,Manhattan,10010,2,,250
 10157977,Manhattan,10002,5,,299
 10160215,Brooklyn,11223,4,,79
-10161361,Queens,nan,1,,46
+10161361,Queens,,1,,46
 10162752,Brooklyn,11237,2,,110
 10163240,Manhattan,10025,2,,70
 10163617,Brooklyn,11221,5,,150
@@ -12095,7 +12095,7 @@ id,hood,zipcode,guests,sqft,price
 10413492,Manhattan,10036,3,,120
 10413576,Staten Island,10301,2,,50
 10414065,Manhattan,10002,1,,100
-10417282,Queens,nan,1,,60
+10417282,Queens,,1,,60
 10422987,Manhattan,10012,1,,69
 10423846,Brooklyn,11217,2,,175
 10429094,Brooklyn,11211,2,,90
@@ -12139,7 +12139,7 @@ id,hood,zipcode,guests,sqft,price
 10488146,Brooklyn,11222,1,,80
 10488505,Manhattan,10025,6,,275
 10489240,Queens,11379,6,,125
-10489896,Manhattan,nan,1,,46
+10489896,Manhattan,,1,,46
 10489923,Manhattan,10044,4,,65
 10490073,Brooklyn,11226,3,,58
 10491207,Queens,11237,1,,60
@@ -12193,7 +12193,7 @@ id,hood,zipcode,guests,sqft,price
 10546254,Brooklyn,11238,2,,150
 10546363,Manhattan,10003,2,,63
 10546568,Manhattan,10014,2,,120
-10546729,Brooklyn,nan,2,,120
+10546729,Brooklyn,,2,,120
 10548768,Manhattan,10031,2,,125
 10548910,Manhattan,10016,6,,450
 10549650,Manhattan,10013,6,,1250
@@ -12255,7 +12255,7 @@ id,hood,zipcode,guests,sqft,price
 10650510,Brooklyn,11225,1,,50
 10656360,Manhattan,10028,1,,199
 10657080,Manhattan,10012,4,,99
-10658564,Manhattan,nan,3,,100
+10658564,Manhattan,,3,,100
 10658613,Queens,11103,3,,130
 10659825,Brooklyn,11230,2,,60
 10660249,Manhattan,10018,3,,200
@@ -12303,7 +12303,7 @@ id,hood,zipcode,guests,sqft,price
 10726217,Manhattan,10012,2,,175
 10729454,Manhattan,10021,1,,50
 10729951,Brooklyn,11206,4,,105
-10730086,Brooklyn,nan,2,,45
+10730086,Brooklyn,,2,,45
 10731035,Manhattan,10036,1,,83
 10731317,Manhattan,10075,1,,40
 10731618,Manhattan,10010,2,,85
@@ -12386,7 +12386,7 @@ id,hood,zipcode,guests,sqft,price
 10851925,Queens,11385,2,,40
 10853313,Brooklyn,11238,4,,155
 10853955,Queens,11377,2,,50
-10857181,Manhattan,nan,2,,285
+10857181,Manhattan,,2,,285
 10859700,Queens,11370,4,,155
 10861389,Manhattan,10025,4,,92
 10863225,Manhattan,10023,4,,199
@@ -12401,7 +12401,7 @@ id,hood,zipcode,guests,sqft,price
 10881719,Manhattan,10013,2,,105
 10882066,Brooklyn,11211,2,,185
 10885211,Manhattan,10022,2,,135
-10886372,Brooklyn,nan,2,,60
+10886372,Brooklyn,,2,,60
 10886532,Brooklyn,11206,4,,120
 10886628,Brooklyn,11222,1,,34
 10886971,Brooklyn,11216,2,,45
@@ -12476,7 +12476,7 @@ id,hood,zipcode,guests,sqft,price
 11032957,Brooklyn,11238,2,,190
 11033476,Brooklyn,11215,2,,50
 11033590,Manhattan,10014,4,,814
-11035889,Manhattan,nan,1,,100
+11035889,Manhattan,,1,,100
 11037023,Brooklyn,11211,2,,90
 11037105,Brooklyn,11211,7,,250
 11039706,Queens,11104,6,,115
@@ -12509,7 +12509,7 @@ id,hood,zipcode,guests,sqft,price
 11095719,Brooklyn,11205,4,,200
 11096801,Brooklyn,11233,2,,49
 11096888,Brooklyn,11218,2,,45
-11098018,Brooklyn,nan,2,,70
+11098018,Brooklyn,,2,,70
 11100490,Manhattan,10003,8,,500
 11100541,Brooklyn,11231,4,,180
 11102591,Brooklyn,11211,1,,60
@@ -12632,7 +12632,7 @@ id,hood,zipcode,guests,sqft,price
 11305815,Manhattan,10040,4,,140
 11309973,Manhattan,10003,5,,278
 11311470,Manhattan,10003,6,,285
-11313271,Manhattan,nan,2,,140
+11313271,Manhattan,,2,,140
 11315999,Queens,11103,2,,60
 11316570,Brooklyn,11206,1,,30
 11317209,Brooklyn,11206,2,,65
@@ -12707,21 +12707,21 @@ id,hood,zipcode,guests,sqft,price
 11411839,Brooklyn,11206,1,,75
 11412169,Manhattan,10017,6,,499
 11412980,Brooklyn,11201,2,,175
-11414971,Queens,nan,2,,100
+11414971,Queens,,2,,100
 11415455,Manhattan,10003,1,,175
 11419133,Manhattan,10001,1,,80
 11420840,Queens,11372,4,,65
 11421477,Manhattan,10011,3,,159
 11421994,Queens,11385,3,,118
 11422056,Queens,11377,6,,120
-11431526,Brooklyn,nan,3,,125
+11431526,Brooklyn,,3,,125
 11431871,Brooklyn,11216,1,,55
 11433561,Manhattan,10003,4,,175
 11434339,Manhattan,10039,1,,100
 11434570,Manhattan,10025,2,,145
 11434848,Manhattan,10026,1,,55
 11435529,Brooklyn,11215,2,,40
-11437634,Queens,nan,2,,90
+11437634,Queens,,2,,90
 11437792,Brooklyn,11211,2,,50
 11438189,Brooklyn,11233,5,,135
 11439208,Brooklyn,11211,1,,60
@@ -12790,7 +12790,7 @@ id,hood,zipcode,guests,sqft,price
 11513480,Brooklyn,11213,2,,40
 11514023,Manhattan,10025,2,,60
 11514756,Manhattan,10022,4,,250
-11514862,Brooklyn,nan,1,,55
+11514862,Brooklyn,,1,,55
 11521447,Manhattan,10002,4,,199
 11522815,Brooklyn,11222,2,,130
 11524437,Manhattan,10029,1,,44
@@ -12893,7 +12893,7 @@ id,hood,zipcode,guests,sqft,price
 11620062,Manhattan,10016,2,,142
 11620118,Brooklyn,11215,2,,62
 11620821,Queens,11377,2,,35
-11621524,Brooklyn,nan,2,,50
+11621524,Brooklyn,,2,,50
 11624287,Brooklyn,11201,2,,55
 11627123,Manhattan,10032,1,,32
 11627443,Manhattan,10021,2,,80
@@ -12961,7 +12961,7 @@ id,hood,zipcode,guests,sqft,price
 11698352,Brooklyn,11211,2,,46
 11699080,Brooklyn,11237,2,,50
 11700121,Brooklyn,11233,2,,150
-11712888,Manhattan,nan,1,,95
+11712888,Manhattan,,1,,95
 11713899,Manhattan,10003,2,,110
 11714137,Brooklyn,11215,4,,250
 11715256,Manhattan,10016,4,,159
@@ -13048,7 +13048,7 @@ id,hood,zipcode,guests,sqft,price
 11827175,Manhattan,10031,2,,100
 11827224,Manhattan,10010,4,,130
 11827451,Brooklyn,11225,2,,139
-11829419,Brooklyn,nan,2,,35
+11829419,Brooklyn,,2,,35
 11830682,Brooklyn,11201,3,,195
 11833497,Brooklyn,11215,2,,100
 11837681,Manhattan,10029,2,,60
@@ -13121,7 +13121,7 @@ id,hood,zipcode,guests,sqft,price
 11923881,Brooklyn,11217,2,,150
 11924652,Manhattan,10069,2,,160
 11926941,Brooklyn,11226,3,,99
-11927032,Brooklyn,nan,5,,150
+11927032,Brooklyn,,5,,150
 11927300,Queens,11385,1,,35
 11927624,Brooklyn,11201,4,,170
 11928097,Manhattan,10035,2,,65
@@ -13153,7 +13153,7 @@ id,hood,zipcode,guests,sqft,price
 11968539,Manhattan,10065,2,,110
 11968680,Manhattan,10128,3,,117
 11968958,Queens,11105,2,,78
-11969727,Manhattan,nan,8,,500
+11969727,Manhattan,,8,,500
 11971174,Brooklyn,11221,2,,45
 11971334,Queens,11373,2,,34
 11971580,Manhattan,10031,2,,90
@@ -13209,7 +13209,7 @@ id,hood,zipcode,guests,sqft,price
 12037967,Brooklyn,11211,2,,59
 12039579,Queens,11415,2,,73
 12039894,Queens,11415,10,,249
-12050280,Manhattan,nan,2,,150
+12050280,Manhattan,,2,,150
 12050885,Queens,11373,2,,52
 12050932,Brooklyn,11225,2,,90
 12051116,Manhattan,10025,2,,150
@@ -13220,7 +13220,7 @@ id,hood,zipcode,guests,sqft,price
 12054286,Manhattan,10024,1,,75
 12054516,Brooklyn,11213,3,,120
 12054723,Manhattan,10027,2,,72
-12055540,Brooklyn,nan,1,,80
+12055540,Brooklyn,,1,,80
 12056517,Manhattan,10128,2,,175
 12063562,Manhattan,10036,1,,200
 12064283,Manhattan,10003,6,,999
@@ -13239,7 +13239,7 @@ id,hood,zipcode,guests,sqft,price
 12079099,Manhattan,10002,1,,38
 12079993,Manhattan,10025,4,,380
 12081254,Brooklyn,11216,2,,35
-12081327,Brooklyn,nan,2,,100
+12081327,Brooklyn,,2,,100
 12082737,Brooklyn,11206,1,,51
 12083016,Manhattan,10009,4,,200
 12084009,Manhattan,10128,4,,140
@@ -13272,7 +13272,7 @@ id,hood,zipcode,guests,sqft,price
 12112565,Manhattan,10032,2,,55
 12113015,Manhattan,10001,3,,99
 12113045,Brooklyn,11211,2,,78
-12113494,Manhattan,nan,3,,160
+12113494,Manhattan,,3,,160
 12114017,Bronx,10454,5,,125
 12114040,Manhattan,10016,2,,99
 12114228,Manhattan,10021,1,,75
@@ -13317,7 +13317,7 @@ id,hood,zipcode,guests,sqft,price
 12169847,Manhattan,10025,1,,120
 12170307,Brooklyn,11211,2,,95
 12170991,Manhattan,10025,2,,63
-12171619,Manhattan,nan,5,,500
+12171619,Manhattan,,5,,500
 12171671,Manhattan,10001,1,,85
 12172457,Manhattan,10016,8,,150
 12173205,Queens,11385,2,,80
@@ -13347,7 +13347,7 @@ id,hood,zipcode,guests,sqft,price
 12205604,Queens,11692,3,,95
 12206029,Brooklyn,11233,1,,49
 12206323,Manhattan,10029,3,,155
-12209944,Brooklyn,nan,6,,265
+12209944,Brooklyn,,6,,265
 12210323,Brooklyn,11226,6,,180
 12210448,Queens,11385,2,,120
 12210730,Brooklyn,11221,1,,54
@@ -13478,8 +13478,8 @@ id,hood,zipcode,guests,sqft,price
 12345786,Manhattan,10003,2,,80
 12346131,Bronx,10469,16,,550
 12353119,Manhattan,10032,10,,359
-12355067,Manhattan,nan,1,,200
-12356709,Manhattan,nan,2,,120
+12355067,Manhattan,,1,,200
+12356709,Manhattan,,2,,120
 12356873,Manhattan,10028,3,,140
 12358117,Brooklyn,11230,14,,436
 12358120,Manhattan,10011,2,,249
@@ -13521,7 +13521,7 @@ id,hood,zipcode,guests,sqft,price
 12386579,Manhattan,10034,1,,50
 12387018,Manhattan,10002,3,,120
 12387215,Manhattan,10002,1,,125
-12387961,Brooklyn,nan,2,,80
+12387961,Brooklyn,,2,,80
 12388091,Manhattan,10025,1,,56
 12388494,Manhattan,10019,5,,197
 12388768,Brooklyn,11221,3,,62
@@ -13680,7 +13680,7 @@ id,hood,zipcode,guests,sqft,price
 12601807,Manhattan,10035,2,,85
 12601900,Brooklyn,11213,4,,70
 12602212,Brooklyn,11233,2,,60
-12602408,Brooklyn,nan,1,,50
+12602408,Brooklyn,,1,,50
 12604187,Manhattan,10022,2,,218
 12609695,Queens,11103,1,,55
 12610244,Manhattan,10027,2,,105
@@ -13804,7 +13804,7 @@ id,hood,zipcode,guests,sqft,price
 12753144,Brooklyn,11226,2,,85
 12753434,Manhattan,10018,2,,175
 12754199,Queens,11364,2,,60
-12757639,Manhattan,nan,2,,100
+12757639,Manhattan,,2,,100
 12757980,Manhattan,10003,3,,140
 12758216,Manhattan,10024,2,,120
 12759453,Queens,11411,2,,79
@@ -13892,7 +13892,7 @@ id,hood,zipcode,guests,sqft,price
 12834386,Brooklyn,11226,1,,35
 12834748,Brooklyn,11217,2,,100
 12835123,Brooklyn,11211,3,,99
-12836808,Manhattan,nan,4,,220
+12836808,Manhattan,,4,,220
 12836932,Manhattan,10025,4,,92
 12844709,Brooklyn,11211,1,,42
 12845943,Queens,11105,1,,40
@@ -13912,7 +13912,7 @@ id,hood,zipcode,guests,sqft,price
 12852083,Brooklyn,11217,4,,150
 12852935,Manhattan,10019,2,,150
 12853281,Manhattan,10022,3,,125
-12853330,Manhattan,nan,2,,60
+12853330,Manhattan,,2,,60
 12854022,Brooklyn,11221,2,,95
 12854069,Manhattan,10017,2,,350
 12854724,Manhattan,10011,2,,75
@@ -13940,7 +13940,7 @@ id,hood,zipcode,guests,sqft,price
 12871039,Manhattan,10019,7,,399
 12871310,Brooklyn,11221,2,,52
 12871708,Manhattan,10033,2,,95
-12873930,Manhattan,nan,3,,180
+12873930,Manhattan,,3,,180
 12876883,Brooklyn,11219,1,,70
 12881611,Brooklyn,11222,1,,70
 12882914,Manhattan,10010,3,,310
@@ -13969,7 +13969,7 @@ id,hood,zipcode,guests,sqft,price
 12904840,Brooklyn,11209,1,,35
 12905314,Manhattan,10032,1,,45
 12905446,Brooklyn,11215,4,,195
-12912510,Brooklyn,nan,4,,325
+12912510,Brooklyn,,4,,325
 12913007,Brooklyn,11238,2,,90
 12914082,Manhattan,10013,1,,135
 12914239,Staten Island,10301,1,,40
@@ -14036,7 +14036,7 @@ id,hood,zipcode,guests,sqft,price
 12966771,Manhattan,10019,3,,220
 12966974,Manhattan,10011,2,,225
 12967227,Manhattan,10024,2,,2000
-12971882,Brooklyn,nan,2,,77
+12971882,Brooklyn,,2,,77
 12972040,Manhattan,10016,1,,110
 12972292,Queens,11378,2,,58
 12972783,Queens,11378,2,,58
@@ -14075,7 +14075,7 @@ id,hood,zipcode,guests,sqft,price
 13003264,Manhattan,10013,3,,120
 13003338,Manhattan,10016,1,,125
 13004741,Manhattan,10033,2,,49
-13004961,Manhattan,nan,3,,150
+13004961,Manhattan,,3,,150
 13004967,Manhattan,10027,2,,165
 13004996,Queens,11693,2,,75
 13006002,Brooklyn,11205,2,,70
@@ -14266,7 +14266,7 @@ id,hood,zipcode,guests,sqft,price
 13123883,Manhattan,10038,1,,100
 13124637,Manhattan,10025,2,,60
 13125150,Manhattan,10014,2,,215
-13125552,Brooklyn,nan,2,,175
+13125552,Brooklyn,,2,,175
 13126457,Queens,11101,4,,151
 13126582,Manhattan,10019,3,,250
 13127582,Queens,11105,2,,100
@@ -14340,7 +14340,7 @@ id,hood,zipcode,guests,sqft,price
 13170687,Queens,11360,2,,75
 13170825,Brooklyn,11216,2,,75
 13170860,Manhattan,10017,4,,135
-13171614,Brooklyn,nan,5,,300
+13171614,Brooklyn,,5,,300
 13171703,Manhattan,10016,2,,199
 13171746,Manhattan,10016,2,,99
 13173415,Manhattan,10036,1,,100
@@ -14390,7 +14390,7 @@ id,hood,zipcode,guests,sqft,price
 13208373,Manhattan,10010,2,,350
 13208685,Manhattan,10019,2,,131
 13208952,Manhattan,10021,3,,99
-13209380,Manhattan,nan,3,,250
+13209380,Manhattan,,3,,250
 13209482,Manhattan,10009,3,,250
 13209493,Brooklyn,11215,4,,150
 13209514,Manhattan,10005,2,,150
@@ -14442,7 +14442,7 @@ id,hood,zipcode,guests,sqft,price
 13238321,Manhattan,10031,2,,69
 13238778,Brooklyn,11237,2,,55
 13239181,Queens,11385,2,,60
-13239693,Brooklyn,nan,4,,133
+13239693,Brooklyn,,4,,133
 13240737,Manhattan,10036,1,,79
 13243615,Brooklyn,11235,2,,79
 13243946,Manhattan,10026,2,,160
@@ -14454,7 +14454,7 @@ id,hood,zipcode,guests,sqft,price
 13246278,Manhattan,10002,6,,200
 13246804,Manhattan,10022,1,,80
 13246949,Brooklyn,11211,1,,75
-13247565,Manhattan,nan,4,,155
+13247565,Manhattan,,4,,155
 13248480,Manhattan,10128,2,,125
 13248565,Bronx,10457,3,,68
 13248583,Manhattan,10026,2,,65
@@ -14543,7 +14543,7 @@ id,hood,zipcode,guests,sqft,price
 13308629,Manhattan,10002,2,,75
 13309188,Manhattan,10044,2,,195
 13309259,Brooklyn,11216,2,,80
-13309409,Manhattan,nan,2,,250
+13309409,Manhattan,,2,,250
 13309614,Manhattan,10019,4,,300
 13309667,Manhattan,10014,2,,225
 13311896,Brooklyn,11213,2,,80
@@ -14551,7 +14551,7 @@ id,hood,zipcode,guests,sqft,price
 13312968,Brooklyn,11222,2,,79
 13313576,Manhattan,10002,4,,172
 13314206,Manhattan,10032,3,,110
-13314442,Brooklyn,nan,2,,55
+13314442,Brooklyn,,2,,55
 13314752,Queens,11106,2,,78
 13315551,Brooklyn,11230,2,,115
 13315940,Manhattan,10027,4,,180
@@ -14632,7 +14632,7 @@ id,hood,zipcode,guests,sqft,price
 13376886,Manhattan,10029,2,,91
 13376891,Brooklyn,11217,3,,150
 13376968,Manhattan,10003,2,,80
-13377443,Brooklyn,nan,1,,60
+13377443,Brooklyn,,1,,60
 13377893,Brooklyn,11221,2,,55
 13378096,Brooklyn,11206,1,,65
 13378177,Brooklyn,11225,4,,163
@@ -14680,7 +14680,7 @@ id,hood,zipcode,guests,sqft,price
 13398011,Manhattan,10003,6,,300
 13398340,Brooklyn,11221,4,,99
 13398348,Brooklyn,11211,4,,165
-13398406,Brooklyn,nan,1,,35
+13398406,Brooklyn,,1,,35
 13398837,Manhattan,10002,2,,80
 13399051,Manhattan,10002,2,,150
 13400181,Brooklyn,11221,2,,90
@@ -14701,7 +14701,7 @@ id,hood,zipcode,guests,sqft,price
 13411711,Manhattan,10026,5,,125
 13411759,Brooklyn,11215,2,,130
 13412918,Manhattan,10463,3,,88
-13413386,Brooklyn,nan,2,,75
+13413386,Brooklyn,,2,,75
 13413420,Brooklyn,11221,1,,38
 13414523,Manhattan,10025,2,,64
 13415100,Manhattan,10016,6,,185
@@ -14715,7 +14715,7 @@ id,hood,zipcode,guests,sqft,price
 13417410,Brooklyn,11212,2,,45
 13417723,Bronx,10456,8,,90
 13418942,Manhattan,10031,1,,80
-13419864,Manhattan,nan,2,,154
+13419864,Manhattan,,2,,154
 13422992,Manhattan,10002,2,,175
 13424027,Brooklyn,11238,2,,175
 13424903,Manhattan,10002,1,,50
@@ -14740,7 +14740,7 @@ id,hood,zipcode,guests,sqft,price
 13431793,Manhattan,10036,3,,129
 13432348,Manhattan,10036,3,,99
 13432434,Manhattan,10035,4,,107
-13432549,Manhattan,nan,2,,125
+13432549,Manhattan,,2,,125
 13432828,Manhattan,10023,3,,230
 13433027,Queens,11420,5,,100
 13433684,Brooklyn,11206,2,,55
@@ -14755,7 +14755,7 @@ id,hood,zipcode,guests,sqft,price
 13441680,Manhattan,10034,2,,52
 13442932,Brooklyn,11222,3,,150
 13443640,Manhattan,10017,6,,1100
-13443722,Manhattan,nan,2,,160
+13443722,Manhattan,,2,,160
 13443794,Brooklyn,11207,1,,45
 13444818,Queens,11373,4,,138
 13444902,Manhattan,10030,2,,70
@@ -14765,7 +14765,7 @@ id,hood,zipcode,guests,sqft,price
 13445935,Brooklyn,11222,2,,175
 13446050,Manhattan,10025,2,,125
 13446124,Manhattan,10027,4,,57
-13446580,Brooklyn,nan,5,,225
+13446580,Brooklyn,,5,,225
 13446921,Brooklyn,11218,2,,65
 13449748,Brooklyn,11237,2,,70
 13449844,Manhattan,10024,2,,240
@@ -14784,7 +14784,7 @@ id,hood,zipcode,guests,sqft,price
 13460498,Brooklyn,11216,3,,130
 13461123,Brooklyn,11206,3,,100
 13461289,Manhattan,10001,2,,288
-13461718,Brooklyn,nan,1,,85
+13461718,Brooklyn,,1,,85
 13463768,Brooklyn,11226,2,,75
 13464667,Manhattan,10016,2,,79
 13465546,Manhattan,10003,4,,200
@@ -14815,7 +14815,7 @@ id,hood,zipcode,guests,sqft,price
 13481935,Brooklyn,11216,1,,40
 13485786,Brooklyn,11249,2,,150
 13486730,Manhattan,10014,1,,101
-13487852,Manhattan,nan,2,,69
+13487852,Manhattan,,2,,69
 13488308,Manhattan,10010,2,,199
 13488659,Queens,11385,2,,40
 13489132,Brooklyn,11249,2,,175
@@ -14844,7 +14844,7 @@ id,hood,zipcode,guests,sqft,price
 13495499,Manhattan,10014,3,,450
 13495558,Manhattan,10014,4,,360
 13496129,Brooklyn,11216,3,,65
-13496176,Brooklyn,nan,6,,160
+13496176,Brooklyn,,6,,160
 13496318,Brooklyn,11217,7,,500
 13496448,Manhattan,10002,1,,75
 13497362,Brooklyn,11201,2,,203
@@ -14855,7 +14855,7 @@ id,hood,zipcode,guests,sqft,price
 13506967,Brooklyn,11231,4,,142
 13507377,Brooklyn,11215,4,,190
 13507677,Bronx,10456,11,,199
-13508285,Manhattan,nan,3,,140
+13508285,Manhattan,,3,,140
 13508567,Bronx,10468,2,,120
 13508766,Manhattan,10014,2,,372
 13509320,Queens,11385,1,,65
@@ -14918,7 +14918,7 @@ id,hood,zipcode,guests,sqft,price
 13539571,Brooklyn,11206,2,,80
 13540233,Manhattan,10012,2,,161
 13540817,Manhattan,10022,3,,260
-13540829,Queens,nan,2,,79
+13540829,Queens,,2,,79
 13541505,Brooklyn,11211,1,,43
 13542287,Brooklyn,11206,2,,60
 13542521,Manhattan,10019,1,,100
@@ -14963,7 +14963,7 @@ id,hood,zipcode,guests,sqft,price
 13563766,Brooklyn,11238,2,,70
 13563835,Brooklyn,11211,3,,89
 13563973,Brooklyn,11226,3,,115
-13564134,Manhattan,nan,6,,200
+13564134,Manhattan,,6,,200
 13564490,Manhattan,10040,6,,100
 13564911,Manhattan,10002,2,,175
 13565060,Brooklyn,11206,2,,58
@@ -14971,7 +14971,7 @@ id,hood,zipcode,guests,sqft,price
 13567393,Manhattan,10023,1,,95
 13569725,Manhattan,10002,2,,150
 13571116,Manhattan,10031,2,,40
-13571350,Manhattan,nan,2,,150
+13571350,Manhattan,,2,,150
 13572291,Manhattan,10003,1,,99
 13572767,Brooklyn,11211,5,,250
 13573101,Manhattan,10013,1,,69
@@ -15005,18 +15005,18 @@ id,hood,zipcode,guests,sqft,price
 13590391,Manhattan,10025,4,,145
 13591017,Brooklyn,11249,3,,145
 13591611,Manhattan,10009,2,,100
-13595786,Brooklyn,nan,4,,152
+13595786,Brooklyn,,4,,152
 13596286,Brooklyn,11215,2,,99
 13596544,Manhattan,10009,3,,110
 13597896,Brooklyn,11230,2,,40
 13599973,Manhattan,10012,1,,115
 13600398,Brooklyn,11206,5,,158
 13601777,Brooklyn,11216,16,,1000
-13603093,Brooklyn,nan,2,,72
+13603093,Brooklyn,,2,,72
 13603364,Queens,11103,2,,40
 13603951,Manhattan,10022,4,,175
 13604485,Brooklyn,11216,3,,90
-13604794,Manhattan,nan,2,,65
+13604794,Manhattan,,2,,65
 13604994,Brooklyn,11209,2,,55
 13605171,Manhattan,10024,2,,79
 13605192,Brooklyn,11203,9,,350
@@ -15024,7 +15024,7 @@ id,hood,zipcode,guests,sqft,price
 13606337,Manhattan,10025,2,,50
 13607904,Brooklyn,11206,2,,49
 13612094,Brooklyn,11233,1,,60
-13613052,Manhattan,nan,1,,70
+13613052,Manhattan,,1,,70
 13613919,Brooklyn,11231,5,,140
 13614714,Manhattan,10031,4,,89
 13614923,Manhattan,10013,3,,259
@@ -15044,7 +15044,7 @@ id,hood,zipcode,guests,sqft,price
 13622777,Brooklyn,11233,2,,44
 13623182,Brooklyn,11211,2,,100
 13623275,Brooklyn,11222,2,,120
-13623361,Manhattan,nan,4,,273
+13623361,Manhattan,,4,,273
 13623452,Brooklyn,11226,2,,85
 13623618,Queens,11106,2,,80
 13623747,Queens,11102,3,,125
@@ -15062,7 +15062,7 @@ id,hood,zipcode,guests,sqft,price
 13632841,Manhattan,10003,2,,128
 13633299,Brooklyn,11226,2,,60
 13633400,Brooklyn,11201,6,,170
-13633468,Manhattan,nan,1,,85
+13633468,Manhattan,,1,,85
 13634292,Queens,11377,1,,60
 13634496,Manhattan,10002,1,,75
 13634685,Manhattan,10024,5,,349
@@ -15083,7 +15083,7 @@ id,hood,zipcode,guests,sqft,price
 13642568,Brooklyn,11211,2,,105
 13642631,Manhattan,10011,2,,150
 13643063,Brooklyn,11217,6,,200
-13643488,Manhattan,nan,2,,72
+13643488,Manhattan,,2,,72
 13649713,Manhattan,10025,3,,165
 13649833,Manhattan,10027,4,,75
 13650177,Brooklyn,11213,6,,104
@@ -15134,13 +15134,13 @@ id,hood,zipcode,guests,sqft,price
 13669064,Manhattan,10010,3,,130
 13669161,Manhattan,10002,2,,99
 13669423,Manhattan,10010,3,,185
-13669613,Manhattan,nan,4,,177
+13669613,Manhattan,,4,,177
 13669942,Brooklyn,11231,2,,100
 13670094,Manhattan,10029,3,,102
 13670109,Manhattan,10003,2,,120
 13670376,Manhattan,10016,4,,155
 13671558,Manhattan,10026,2,,67
-13671936,Brooklyn,nan,1,,50
+13671936,Brooklyn,,1,,50
 13672890,Manhattan,10065,1,,55
 13673242,Staten Island,10303,4,,125
 13673459,Manhattan,10029,2,,125
@@ -15245,7 +15245,7 @@ id,hood,zipcode,guests,sqft,price
 13732215,Brooklyn,11236,4,,80
 13733036,Manhattan,10013,3,,124
 13733309,Manhattan,10025,2,,85
-13733733,Brooklyn,nan,2,,55
+13733733,Brooklyn,,2,,55
 13733926,Manhattan,10029,4,,150
 13734035,Manhattan,10009,3,,250
 13734814,Brooklyn,11218,4,,150
@@ -15254,7 +15254,7 @@ id,hood,zipcode,guests,sqft,price
 13740419,Manhattan,10036,2,,115
 13740704,Brooklyn,11234,2,,45
 13740793,Manhattan,10025,2,,65
-13743061,Manhattan,nan,3,,153
+13743061,Manhattan,,3,,153
 13743350,Manhattan,10029,4,,175
 13743786,Staten Island,10304,8,,120
 13744371,Brooklyn,11206,2,,49
@@ -15297,7 +15297,7 @@ id,hood,zipcode,guests,sqft,price
 13765146,Manhattan,10026,2,,70
 13765644,Brooklyn,11217,3,,140
 13765949,Manhattan,10028,2,,120
-13766690,Bronx,nan,2,,82
+13766690,Bronx,,2,,82
 13767238,Manhattan,10012,3,,200
 13767337,Brooklyn,11229,4,,225
 13767853,Brooklyn,11222,2,,75
@@ -15351,7 +15351,7 @@ id,hood,zipcode,guests,sqft,price
 13805038,Brooklyn,11206,5,,250
 13808262,Brooklyn,11225,2,,33
 13810048,Brooklyn,11221,2,,46
-13811008,Queens,nan,2,,101
+13811008,Queens,,2,,101
 13811490,Brooklyn,11226,4,,76
 13811866,Manhattan,10010,1,,70
 13812310,Brooklyn,11207,3,,129
@@ -15374,20 +15374,20 @@ id,hood,zipcode,guests,sqft,price
 13829927,Queens,11377,2,,50
 13830415,Manhattan,10031,5,,100
 13830463,Manhattan,10003,2,,100
-13838042,Manhattan,nan,3,,80
+13838042,Manhattan,,3,,80
 13839238,Brooklyn,11221,2,,60
 13841200,Brooklyn,11215,8,,400
 13841569,Brooklyn,11224,2,,75
 13841625,Brooklyn,11216,2,,45
 13842204,Manhattan,10026,4,,123
-13843270,Manhattan,nan,2,,130
+13843270,Manhattan,,2,,130
 13843286,Manhattan,10014,3,,325
 13843681,Manhattan,10032,4,,95
 13844921,Queens,11101,2,,90
 13845597,Brooklyn,11206,2,,150
 13846934,Manhattan,10026,4,,165
 13847244,Manhattan,10019,1,,250
-13848005,Manhattan,nan,2,,200
+13848005,Manhattan,,2,,200
 13848199,Manhattan,10039,2,,70
 13854483,Brooklyn,11237,2,,105
 13855164,Brooklyn,11205,4,,150
@@ -15400,7 +15400,7 @@ id,hood,zipcode,guests,sqft,price
 13857521,Manhattan,10031,2,,140
 13858187,Manhattan,10014,2,,300
 13859134,Queens,11375,2,,90
-13859196,Queens,nan,2,,30
+13859196,Queens,,2,,30
 13859473,Brooklyn,11221,2,,109
 13859896,Brooklyn,11249,4,,146
 13862377,Brooklyn,11233,2,,120
@@ -15415,9 +15415,9 @@ id,hood,zipcode,guests,sqft,price
 13865843,Manhattan,10017,2,,200
 13866112,Manhattan,10003,2,,165
 13866269,Brooklyn,11216,2,,75
-13867104,Brooklyn,nan,2,,155
+13867104,Brooklyn,,2,,155
 13867110,Brooklyn,11211,3,,144
-13868137,Brooklyn,nan,1,,25
+13868137,Brooklyn,,1,,25
 13873028,Manhattan,10019,4,,500
 13876681,Manhattan,10036,2,,150
 13876809,Brooklyn,11236,2,,65
@@ -15444,7 +15444,7 @@ id,hood,zipcode,guests,sqft,price
 13883020,Brooklyn,11211,5,,370
 13883029,Brooklyn,11211,1,,55
 13883249,Manhattan,10011,2,,147
-13883303,Brooklyn,nan,1,,40
+13883303,Brooklyn,,1,,40
 13883481,Brooklyn,11216,2,,65
 13884253,Brooklyn,11218,2,,46
 13884628,Manhattan,10027,2,,110
@@ -15480,7 +15480,7 @@ id,hood,zipcode,guests,sqft,price
 13905835,Brooklyn,11221,3,,90
 13906636,Brooklyn,11216,3,,138
 13907229,Queens,11693,2,,85
-13907872,Brooklyn,nan,2,,120
+13907872,Brooklyn,,2,,120
 13910111,Brooklyn,11221,2,,41
 13910919,Queens,11434,1,,159
 13911123,Brooklyn,11221,1,,35
@@ -15501,7 +15501,7 @@ id,hood,zipcode,guests,sqft,price
 13916105,Manhattan,10012,2,,150
 13917029,Brooklyn,11206,1,,42
 13920551,Bronx,10452,1,,22
-13920697,Brooklyn,nan,2,,125
+13920697,Brooklyn,,2,,125
 13920801,Manhattan,10026,2,,99
 13921462,Brooklyn,11222,2,,60
 13921768,Manhattan,10032,2,,45
@@ -15524,7 +15524,7 @@ id,hood,zipcode,guests,sqft,price
 13934790,Brooklyn,11216,5,,150
 13934894,Manhattan,10007,1,,100
 13935360,Manhattan,10031,5,,100
-13935511,Brooklyn,nan,2,,60
+13935511,Brooklyn,,2,,60
 13936824,Brooklyn,11222,4,,120
 13937701,Manhattan,10032,2,,140
 13937820,Brooklyn,11206,2,,55
@@ -15583,13 +15583,13 @@ id,hood,zipcode,guests,sqft,price
 13970217,Manhattan,10022,4,,129
 13971471,Manhattan,10012,1,,70
 13974200,Brooklyn,11226,4,,65
-13974584,Brooklyn,nan,2,,50
+13974584,Brooklyn,,2,,50
 13975292,Brooklyn,11217,2,,85
 13978036,Brooklyn,11221,2,,100
 13978084,Brooklyn,11213,8,,57
 13978228,Brooklyn,11222,2,,104
 13979519,Brooklyn,11206,2,,53
-13980280,Brooklyn,nan,2,,115
+13980280,Brooklyn,,2,,115
 13980502,Bronx,10463,1,,56
 13980828,Brooklyn,11216,5,,139
 13980860,Brooklyn,11225,7,,130
@@ -15688,7 +15688,7 @@ id,hood,zipcode,guests,sqft,price
 14052740,Manhattan,10024,4,,250
 14053273,Brooklyn,11237,2,,54
 14055238,Brooklyn,11215,6,,240
-14056307,Manhattan,nan,2,,250
+14056307,Manhattan,,2,,250
 14057678,Manhattan,10011,2,,125
 14057802,Brooklyn,11211,2,,55
 14058251,Brooklyn,11226,2,,80
@@ -15698,7 +15698,7 @@ id,hood,zipcode,guests,sqft,price
 14064701,Manhattan,10009,1,,170
 14065007,Brooklyn,11238,5,,140
 14065198,Brooklyn,11211,2,,199
-14066228,Manhattan,nan,2,,110
+14066228,Manhattan,,2,,110
 14066397,Manhattan,10033,3,,115
 14066702,Manhattan,10032,2,,70
 14068646,Manhattan,10003,6,,200
@@ -15756,7 +15756,7 @@ id,hood,zipcode,guests,sqft,price
 14109494,Brooklyn,11205,2,,58
 14109521,Brooklyn,11237,1,,50
 14109544,Manhattan,10026,4,,49
-14109893,Brooklyn,nan,2,,110
+14109893,Brooklyn,,2,,110
 14110144,Manhattan,10027,4,,190
 14110407,Queens,11692,8,,450
 14111390,Manhattan,10001,7,,400
@@ -15782,7 +15782,7 @@ id,hood,zipcode,guests,sqft,price
 14131597,Brooklyn,11226,2,,43
 14134105,Brooklyn,11205,1,,39
 14135050,Brooklyn,11221,2,,70
-14135904,Manhattan,nan,2,,75
+14135904,Manhattan,,2,,75
 14137017,Brooklyn,11211,3,,130
 14137639,Brooklyn,11221,2,,85
 14138066,Queens,11372,1,,23
@@ -15801,7 +15801,7 @@ id,hood,zipcode,guests,sqft,price
 14148988,Manhattan,10017,2,,153
 14149046,Queens,11420,1,,60
 14149127,Manhattan,10028,2,,150
-14152775,Queens,nan,4,,175
+14152775,Queens,,4,,175
 14152806,Brooklyn,11249,3,,249
 14153081,Brooklyn,11207,4,,111
 14153255,Brooklyn,11203,2,,79
@@ -15880,7 +15880,7 @@ id,hood,zipcode,guests,sqft,price
 14214403,Brooklyn,11207,5,,149
 14215652,Manhattan,10014,5,,310
 14215681,Manhattan,10029,1,,70
-14217692,Brooklyn,nan,2,,90
+14217692,Brooklyn,,2,,90
 14218173,Manhattan,10024,2,,150
 14218548,Manhattan,10009,3,,100
 14218795,Manhattan,10038,4,,238
@@ -16014,11 +16014,11 @@ id,hood,zipcode,guests,sqft,price
 14382631,Brooklyn,11249,2,,147
 14383742,Brooklyn,11221,1,,50
 14383928,Brooklyn,11217,4,,154
-14385616,Brooklyn,nan,2,,150
+14385616,Brooklyn,,2,,150
 14386245,Brooklyn,11216,2,,65
 14386712,Manhattan,10013,6,,77
 14386892,Brooklyn,11215,2,,99
-14387471,Brooklyn,nan,1,,45
+14387471,Brooklyn,,1,,45
 14387862,Brooklyn,11211,2,,40
 14388889,Brooklyn,11221,2,,45
 14389886,Manhattan,10010,4,,180
@@ -16091,7 +16091,7 @@ id,hood,zipcode,guests,sqft,price
 14480430,Brooklyn,11221,2,,55
 14481668,Brooklyn,11209,2,,65
 14482700,Queens,11435,2,,55
-14483469,Manhattan,nan,8,,800
+14483469,Manhattan,,8,,800
 14483613,Queens,11370,4,,100
 14485082,Brooklyn,11229,4,,73
 14485372,Manhattan,10128,6,,289
@@ -16166,7 +16166,7 @@ id,hood,zipcode,guests,sqft,price
 14575253,Brooklyn,11221,2,,81
 14576763,Manhattan,10036,2,,75
 14577455,Manhattan,10025,1,,80
-14582793,Brooklyn,nan,4,,110
+14582793,Brooklyn,,4,,110
 14586448,Manhattan,10004,4,,279
 14587044,Manhattan,10031,2,,94
 14587950,Brooklyn,11238,4,,130
@@ -16233,7 +16233,7 @@ id,hood,zipcode,guests,sqft,price
 14694588,Queens,11355,4,,40
 14695540,Brooklyn,11220,2,,47
 14696215,Manhattan,10010,1,,200
-14696542,Brooklyn,nan,1,,60
+14696542,Brooklyn,,1,,60
 14698446,Queens,11355,2,,50
 14699186,Brooklyn,11218,2,,100
 14705110,Manhattan,10036,2,,125
@@ -16393,7 +16393,7 @@ id,hood,zipcode,guests,sqft,price
 14856799,Queens,11355,2,,50
 14858190,Manhattan,10009,2,,295
 14858485,Brooklyn,11205,2,,65
-14858544,Manhattan,nan,2,,15
+14858544,Manhattan,,2,,15
 14858777,Manhattan,10027,2,,71
 14865705,Queens,11355,2,,40
 14867152,Brooklyn,11221,2,,50
@@ -16444,7 +16444,7 @@ id,hood,zipcode,guests,sqft,price
 14932887,Manhattan,10036,3,,99
 14933388,Brooklyn,11216,2,,80
 14933521,Manhattan,10030,2,,129
-14933893,Manhattan,nan,1,,75
+14933893,Manhattan,,1,,75
 14935151,Bronx,10472,1,,49
 14935281,Staten Island,10304,2,,45
 14936181,Brooklyn,11238,2,,215
@@ -16559,7 +16559,7 @@ id,hood,zipcode,guests,sqft,price
 15066466,Manhattan,10012,2,,225
 15066761,Queens,11106,2,,90
 15067291,Manhattan,10027,2,,64
-15068067,Manhattan,nan,5,,750
+15068067,Manhattan,,5,,750
 15069259,Brooklyn,11206,2,,59
 15071519,Brooklyn,11213,2,,105
 15074005,Brooklyn,11216,2,,54
@@ -16579,7 +16579,7 @@ id,hood,zipcode,guests,sqft,price
 15097126,Queens,11378,2,,65
 15098153,Brooklyn,11222,2,,200
 15098355,Manhattan,10036,3,,250
-15099669,Manhattan,nan,3,,225
+15099669,Manhattan,,3,,225
 15101577,Brooklyn,11205,3,,100
 15102026,Brooklyn,11216,2,,55
 15106603,Manhattan,10025,2,,185
@@ -16650,7 +16650,7 @@ id,hood,zipcode,guests,sqft,price
 15188621,Brooklyn,11238,2,,125
 15188738,Queens,11412,4,,85
 15189639,Brooklyn,11238,2,,150
-15190865,Brooklyn,nan,6,,170
+15190865,Brooklyn,,6,,170
 15190958,Manhattan,10011,3,,193
 15191179,Brooklyn,11214,2,,85
 15191225,Manhattan,10017,4,,462
@@ -16727,7 +16727,7 @@ id,hood,zipcode,guests,sqft,price
 15273936,Bronx,10467,3,,68
 15274032,Manhattan,10014,2,,100
 15282411,Manhattan,10001,2,,120
-15282717,Brooklyn,nan,2,,80
+15282717,Brooklyn,,2,,80
 15284819,Manhattan,10017,2,,125
 15286645,Queens,11377,4,,110
 15287016,Manhattan,10012,2,,85
@@ -16944,7 +16944,7 @@ id,hood,zipcode,guests,sqft,price
 15527416,Queens,11373,2,,51
 15528972,Manhattan,10025,5,,345
 15529123,Brooklyn,11215,3,,198
-15529336,Manhattan,nan,2,,120
+15529336,Manhattan,,2,,120
 15529937,Brooklyn,11229,2,,39
 15531089,Manhattan,10003,1,,51
 15531352,Queens,11385,4,,87
@@ -17075,7 +17075,7 @@ id,hood,zipcode,guests,sqft,price
 15704213,Manhattan,10013,1,,95
 15706724,Manhattan,10128,6,,218
 15706863,Brooklyn,11221,8,,176
-15709537,Manhattan,nan,2,,160
+15709537,Manhattan,,2,,160
 15713028,Brooklyn,11216,1,,89
 15715221,Manhattan,10026,4,,70
 15715485,Brooklyn,11217,2,,100
@@ -17089,7 +17089,7 @@ id,hood,zipcode,guests,sqft,price
 15721022,Brooklyn,11221,2,,105
 15721376,Manhattan,10025,2,,175
 15721683,Manhattan,10029,2,,100
-15721685,Brooklyn,nan,4,,100
+15721685,Brooklyn,,4,,100
 15721847,Brooklyn,11211,1,,49
 15725732,Brooklyn,11209,8,,116
 15726990,Manhattan,10011,6,,265
@@ -17285,7 +17285,7 @@ id,hood,zipcode,guests,sqft,price
 15936959,Brooklyn,11217,2,,110
 15937310,Queens,11420,1,,75
 15938836,Queens,11427,3,,105
-15939056,Queens,nan,3,,105
+15939056,Queens,,3,,105
 15940176,Brooklyn,11249,2,,65
 15940328,Queens,11102,4,,100
 15941474,Queens,11432,2,,120
@@ -17629,8 +17629,8 @@ id,hood,zipcode,guests,sqft,price
 16243941,Manhattan,10002,2,,210
 16244096,Brooklyn,11220,2,,50
 16244553,Queens,11692,2,,85
-16244634,Brooklyn,nan,1,,40
-16244843,Manhattan,nan,2,,85
+16244634,Brooklyn,,1,,40
+16244843,Manhattan,,2,,85
 16244878,Manhattan,10013,4,,390
 16245005,Brooklyn,11221,2,,75
 16248277,Queens,11369,6,,141
@@ -17638,7 +17638,7 @@ id,hood,zipcode,guests,sqft,price
 16252761,Brooklyn,11203,2,,80
 16253053,Manhattan,10014,2,,90
 16253413,Queens,11692,2,,76
-16253465,Manhattan,nan,2,,128
+16253465,Manhattan,,2,,128
 16254609,Queens,11692,7,,230
 16254965,Brooklyn,11211,4,,140
 16256074,Brooklyn,11211,1,,35
@@ -17668,7 +17668,7 @@ id,hood,zipcode,guests,sqft,price
 16271281,Manhattan,10002,2,,90
 16271447,Brooklyn,11217,2,,84
 16271818,Manhattan,10013,2,,225
-16272419,Manhattan,nan,2,,100
+16272419,Manhattan,,2,,100
 16273058,Brooklyn,11211,2,,100
 16273143,Manhattan,10019,4,,250
 16273510,Manhattan,10036,3,,98
@@ -17881,7 +17881,7 @@ id,hood,zipcode,guests,sqft,price
 16391487,Manhattan,10009,2,,70
 16391952,Brooklyn,11201,1,,60
 16392085,Brooklyn,11211,7,,264
-16392514,Manhattan,nan,3,,100
+16392514,Manhattan,,3,,100
 16392756,Manhattan,10011,2,,135
 16393191,Manhattan,10001,1,,85
 16393395,Manhattan,10001,1,,85
@@ -18038,7 +18038,7 @@ id,hood,zipcode,guests,sqft,price
 16488277,Manhattan,10013,4,,375
 16488787,Brooklyn,11220,6,,90
 16489149,Manhattan,10017,6,,999
-16489175,Queens,nan,2,,57
+16489175,Queens,,2,,57
 16490449,Brooklyn,11206,2,,22
 16490625,Manhattan,10016,3,,200
 16490732,Brooklyn,11215,4,,260
@@ -18097,7 +18097,7 @@ id,hood,zipcode,guests,sqft,price
 16534588,Manhattan,10017,2,,185
 16540563,Brooklyn,11221,2,,35
 16541635,Manhattan,10025,1,,100
-16542009,Brooklyn,nan,1,,90
+16542009,Brooklyn,,1,,90
 16542661,Brooklyn,11231,3,,159
 16543563,Manhattan,10003,2,,95
 16544473,Brooklyn,11211,4,,122
@@ -18120,7 +18120,7 @@ id,hood,zipcode,guests,sqft,price
 16559012,Queens,11377,2,,60
 16559061,Manhattan,10030,3,,85
 16560739,Brooklyn,11205,3,,130
-16561213,Manhattan,nan,2,,100
+16561213,Manhattan,,2,,100
 16561990,Manhattan,10028,2,,91
 16565202,Brooklyn,11215,2,,75
 16567425,Brooklyn,11225,2,,56
@@ -18131,7 +18131,7 @@ id,hood,zipcode,guests,sqft,price
 16568275,Manhattan,10003,2,,69
 16569426,Brooklyn,11203,2,,75
 16569554,Brooklyn,11249,2,,69
-16570490,Brooklyn,nan,2,,68
+16570490,Brooklyn,,2,,68
 16570631,Brooklyn,11207,2,,80
 16575174,Brooklyn,11201,2,,185
 16575852,Queens,11423,2,,16
@@ -18170,7 +18170,7 @@ id,hood,zipcode,guests,sqft,price
 16613219,Brooklyn,11233,5,,175
 16613394,Queens,11104,4,,100
 16613747,Brooklyn,11237,1,,65
-16613993,Manhattan,nan,2,,70
+16613993,Manhattan,,2,,70
 16614389,Queens,11385,2,,73
 16614713,Brooklyn,11215,2,,80
 16616410,Queens,11103,2,,69
@@ -18446,10 +18446,10 @@ id,hood,zipcode,guests,sqft,price
 16936036,Brooklyn,11222,2,,65
 16937801,Manhattan,10031,3,,85
 16940597,Queens,11372,2,,60
-16943101,Brooklyn,nan,10,,240
+16943101,Brooklyn,,10,,240
 16944182,Brooklyn,11213,2,,49
 16944820,Bronx,10451,2,,60
-16945093,Manhattan,nan,2,,150
+16945093,Manhattan,,2,,150
 16947113,Brooklyn,11211,2,,99
 16954330,Manhattan,10027,2,,105
 16959759,Brooklyn,11213,1,,82
@@ -18458,7 +18458,7 @@ id,hood,zipcode,guests,sqft,price
 16961126,Brooklyn,11211,1,,50
 16962471,Manhattan,10026,2,,111
 16962830,Manhattan,10013,3,,150
-16963544,Manhattan,nan,2,,73
+16963544,Manhattan,,2,,73
 16964141,Staten Island,10302,1,,100
 16965072,Brooklyn,11221,5,,139
 16965094,Queens,11373,2,,55
@@ -18468,7 +18468,7 @@ id,hood,zipcode,guests,sqft,price
 16969156,Manhattan,10022,2,,175
 16972627,Manhattan,10023,3,,243
 16973662,Brooklyn,11211,1,,98
-16974611,Staten Island,nan,2,,43
+16974611,Staten Island,,2,,43
 16976026,Queens,11422,2,,45
 16976215,Manhattan,10011,2,,125
 16976267,Queens,11374,4,,30
@@ -18495,7 +18495,7 @@ id,hood,zipcode,guests,sqft,price
 17018418,Manhattan,10031,1,,50
 17020317,Brooklyn,11238,4,,199
 17023406,Queens,11102,1,,34
-17023591,Queens,nan,2,,40
+17023591,Queens,,2,,40
 17025831,Manhattan,10023,4,,200
 17026435,Brooklyn,11237,2,,30
 17027226,Brooklyn,11209,4,,87
@@ -18542,7 +18542,7 @@ id,hood,zipcode,guests,sqft,price
 17107385,Queens,11104,3,,75
 17107608,Brooklyn,11207,1,,35
 17107656,Manhattan,10003,3,,125
-17108395,Queens,nan,5,,125
+17108395,Queens,,5,,125
 17109623,Manhattan,10009,2,,105
 17111449,Manhattan,10037,3,,70
 17112036,Manhattan,10037,2,,65
@@ -18711,7 +18711,7 @@ id,hood,zipcode,guests,sqft,price
 17345621,Brooklyn,11213,3,,100
 17345954,Manhattan,10002,2,,138
 17346379,Manhattan,10032,2,,73
-17347938,Queens,nan,6,,180
+17347938,Queens,,6,,180
 17349377,Manhattan,10032,2,,79
 17360353,Manhattan,10011,2,,100
 17364659,Brooklyn,11211,2,,125
@@ -18749,7 +18749,7 @@ id,hood,zipcode,guests,sqft,price
 17400624,Manhattan,10128,2,,85
 17405175,Queens,11420,1,,50
 17405812,Manhattan,10025,2,,110
-17411672,Brooklyn,nan,3,,98
+17411672,Brooklyn,,3,,98
 17415890,Brooklyn,11211,2,,289
 17417002,Manhattan,10128,3,,125
 17417619,Brooklyn,11218,2,,45
@@ -18940,7 +18940,7 @@ id,hood,zipcode,guests,sqft,price
 17635569,Brooklyn,11201,2,,70
 17637673,Manhattan,10010,2,,186
 17638709,Brooklyn,11215,3,,60
-17640413,Brooklyn,nan,2,,60
+17640413,Brooklyn,,2,,60
 17641480,Brooklyn,11216,2,,82
 17641625,Manhattan,10009,1,,158
 17642625,Brooklyn,11206,4,,125
@@ -19108,7 +19108,7 @@ id,hood,zipcode,guests,sqft,price
 17825100,Brooklyn,11205,4,,107
 17826827,Brooklyn,11222,3,,116
 17827910,Manhattan,10036,3,,150
-17828289,Brooklyn,nan,1,,47
+17828289,Brooklyn,,1,,47
 17828438,Manhattan,10003,2,,100
 17829947,Brooklyn,11211,2,,160
 17830470,Brooklyn,11216,6,,250
@@ -19338,7 +19338,7 @@ id,hood,zipcode,guests,sqft,price
 18105293,Manhattan,10005,3,,270
 18108134,Brooklyn,11221,2,,51
 18108590,Brooklyn,11238,2,,65
-18108648,Queens,nan,6,,100
+18108648,Queens,,6,,100
 18108849,Queens,11103,1,,49
 18109817,Manhattan,10036,3,,115
 18109852,Brooklyn,11237,1,,65
@@ -19373,12 +19373,12 @@ id,hood,zipcode,guests,sqft,price
 18155063,Manhattan,10036,1,,120
 18155865,Brooklyn,11206,2,,100
 18156961,Manhattan,10009,1,,50
-18158353,Brooklyn,nan,2,,60
+18158353,Brooklyn,,2,,60
 18158523,Manhattan,10031,1,,44
 18159825,Queens,11105,4,,99
 18160364,Manhattan,10024,4,,136
 18161036,Manhattan,10028,2,,120
-18167242,Manhattan,nan,2,,169
+18167242,Manhattan,,2,,169
 18169166,Manhattan,10024,3,,115
 18170615,Manhattan,10025,2,,99
 18171814,Brooklyn,11237,2,,60
@@ -19431,7 +19431,7 @@ id,hood,zipcode,guests,sqft,price
 18210425,Brooklyn,11217,2,,64
 18210950,Manhattan,10017,6,,134
 18211851,Manhattan,10027,4,,170
-18213280,Manhattan,nan,7,,330
+18213280,Manhattan,,7,,330
 18215065,Queens,11355,2,,65
 18221090,Queens,11372,1,,75
 18221864,Manhattan,10024,4,,148
@@ -19470,7 +19470,7 @@ id,hood,zipcode,guests,sqft,price
 18253324,Brooklyn,11225,1,,46
 18253827,Brooklyn,11237,2,,65
 18253938,Manhattan,10034,2,,70
-18254225,Manhattan,nan,4,,250
+18254225,Manhattan,,4,,250
 18254314,Manhattan,10003,1,,140
 18254317,Manhattan,10024,2,,150
 18255124,Manhattan,10010,4,,168
@@ -19540,7 +19540,7 @@ id,hood,zipcode,guests,sqft,price
 18327453,Brooklyn,11217,2,,90
 18327630,Manhattan,10019,4,,325
 18329309,Queens,11385,2,,79
-18329545,Manhattan,nan,2,,180
+18329545,Manhattan,,2,,180
 18329982,Brooklyn,11222,2,,129
 18330221,Brooklyn,11211,2,,125
 18331097,Queens,11355,2,,100
@@ -19563,7 +19563,7 @@ id,hood,zipcode,guests,sqft,price
 18354821,Queens,11103,1,,50
 18355480,Brooklyn,11211,2,,250
 18356695,Manhattan,10027,4,,120
-18356914,Manhattan,nan,3,,0
+18356914,Manhattan,,3,,0
 18357504,Brooklyn,11216,2,,54
 18358343,Manhattan,10012,1,,95
 18358470,Brooklyn,11222,4,,199
@@ -19606,7 +19606,7 @@ id,hood,zipcode,guests,sqft,price
 18396197,Brooklyn,11201,5,,175
 18396281,Manhattan,10031,2,,75
 18397006,Queens,11358,1,,180
-18399865,Manhattan,nan,6,,190
+18399865,Manhattan,,6,,190
 18402330,Bronx,10472,2,,60
 18402568,Bronx,10472,1,,45
 18404373,Brooklyn,11232,16,,650
@@ -19686,7 +19686,7 @@ id,hood,zipcode,guests,sqft,price
 18482700,Manhattan,10016,4,,105
 18484597,Manhattan,10027,1,,50
 18485393,Manhattan,10035,2,,185
-18485487,Manhattan,nan,2,,37
+18485487,Manhattan,,2,,37
 18486698,Brooklyn,11237,2,,50
 18486868,Brooklyn,11225,2,,60
 18487817,Brooklyn,11207,1,,40
@@ -19719,7 +19719,7 @@ id,hood,zipcode,guests,sqft,price
 18508959,Brooklyn,11211,4,,250
 18515889,Brooklyn,11206,2,,70
 18516072,Manhattan,10025,2,,139
-18516103,Manhattan,nan,2,,100
+18516103,Manhattan,,2,,100
 18517584,Brooklyn,11222,2,,137
 18519818,Brooklyn,11226,2,,40
 18520516,Brooklyn,11249,3,,300
@@ -19822,7 +19822,7 @@ id,hood,zipcode,guests,sqft,price
 18615903,Brooklyn,11206,2,,95
 18615964,Brooklyn,11206,2,,90
 18616234,Manhattan,10029,2,,70
-18616575,Queens,nan,2,,49
+18616575,Queens,,2,,49
 18616809,Brooklyn,11249,4,,169
 18617060,Brooklyn,11221,1,,30
 18617195,Brooklyn,11249,2,,120
@@ -19830,7 +19830,7 @@ id,hood,zipcode,guests,sqft,price
 18619857,Queens,11436,2,,30
 18624243,Brooklyn,11217,2,,130
 18625919,Brooklyn,11207,2,,95
-18626606,Manhattan,nan,2,,200
+18626606,Manhattan,,2,,200
 18628912,Manhattan,10028,5,,170
 18629154,Staten Island,10304,2,,75
 18629326,Brooklyn,11218,4,,110
@@ -20281,7 +20281,7 @@ id,hood,zipcode,guests,sqft,price
 19054163,Brooklyn,11221,5,,80
 19054653,Manhattan,10025,4,,150
 19054683,Bronx,10470,2,,28
-19054757,Manhattan,nan,2,,140
+19054757,Manhattan,,2,,140
 19055136,Brooklyn,11236,2,,47
 19055226,Brooklyn,11216,4,,101
 19056160,Brooklyn,11237,1,,58
@@ -20411,7 +20411,7 @@ id,hood,zipcode,guests,sqft,price
 19155616,Queens,11377,2,,59
 19155632,Brooklyn,11218,3,,115
 19158672,Manhattan,10019,5,,274
-19160371,Brooklyn,nan,5,,100
+19160371,Brooklyn,,5,,100
 19160504,Brooklyn,11237,2,,50
 19160912,Manhattan,10032,2,,70
 19161316,Brooklyn,11211,2,,219
@@ -20473,7 +20473,7 @@ id,hood,zipcode,guests,sqft,price
 19195474,Brooklyn,11205,4,,240
 19196146,Manhattan,10002,1,,100
 19197277,Manhattan,10036,2,,290
-19197983,Queens,nan,2,,69
+19197983,Queens,,2,,69
 19200270,Brooklyn,11214,4,,110
 19203963,Manhattan,10012,2,,250
 19206035,Manhattan,10025,1,,70
@@ -20860,7 +20860,7 @@ id,hood,zipcode,guests,sqft,price
 19530271,Queens,11105,4,,119
 19530652,Brooklyn,11237,1,,65
 19530778,Queens,11355,2,,60
-19531174,Brooklyn,nan,2,,50
+19531174,Brooklyn,,2,,50
 19531390,Brooklyn,11222,2,,139
 19531541,Brooklyn,11236,6,,200
 19531601,Brooklyn,11216,1,,40
@@ -20912,7 +20912,7 @@ id,hood,zipcode,guests,sqft,price
 19569411,Brooklyn,11221,2,,70
 19569481,Brooklyn,11211,6,,250
 19570996,Manhattan,10128,1,,104
-19571034,Manhattan,nan,2,,175
+19571034,Manhattan,,2,,175
 19571955,Brooklyn,11238,1,,49
 19572516,Brooklyn,11216,4,,100
 19573709,Manhattan,10014,2,,150
@@ -21210,7 +21210,7 @@ id,hood,zipcode,guests,sqft,price
 19805513,Brooklyn,11221,1,,44
 19805716,Brooklyn,11249,2,,105
 19806088,Brooklyn,11213,3,,100
-19806972,Manhattan,nan,1,,90
+19806972,Manhattan,,1,,90
 19808259,Brooklyn,11249,2,,65
 19808493,Brooklyn,11206,2,,90
 19808508,Queens,11385,1,,50
@@ -21672,7 +21672,7 @@ id,hood,zipcode,guests,sqft,price
 20175117,Manhattan,10075,2,,125
 20175518,Brooklyn,11218,5,,150
 20175751,Brooklyn,11237,1,,40
-20176000,Bronx,nan,2,,45
+20176000,Bronx,,2,,45
 20176191,Manhattan,10025,2,,100
 20176653,Brooklyn,11237,2,,50
 20177584,Brooklyn,11222,2,,72
@@ -21746,7 +21746,7 @@ id,hood,zipcode,guests,sqft,price
 20223927,Brooklyn,11222,1,,92
 20227210,Brooklyn,11238,3,,124
 20227482,Brooklyn,11206,3,,175
-20228284,Manhattan,nan,4,,147
+20228284,Manhattan,,4,,147
 20228476,Brooklyn,11238,3,,75
 20230332,Brooklyn,11203,1,,43
 20230482,Queens,11412,6,,99
@@ -21779,7 +21779,7 @@ id,hood,zipcode,guests,sqft,price
 20255084,Manhattan,10065,3,,149
 20255158,Brooklyn,11238,1,,40
 20256027,Manhattan,10016,2,,69
-20257297,Manhattan,nan,2,,300
+20257297,Manhattan,,2,,300
 20257357,Brooklyn,11201,2,,149
 20257840,Manhattan,10028,2,,115
 20260218,Brooklyn,11221,1,,40
@@ -21802,7 +21802,7 @@ id,hood,zipcode,guests,sqft,price
 20282225,Brooklyn,11221,1,,55
 20282957,Queens,11355,3,,120
 20283433,Brooklyn,11211,2,,55
-20283488,Queens,nan,2,,160
+20283488,Queens,,2,,160
 20284463,Manhattan,10031,2,,65
 20284711,Manhattan,10036,2,,99
 20285167,Manhattan,10019,2,,115
@@ -21880,7 +21880,7 @@ id,hood,zipcode,guests,sqft,price
 20369044,Manhattan,10023,2,,259
 20373836,Manhattan,10016,2,,102
 20376152,Brooklyn,11238,1,,50
-20379446,Brooklyn,nan,2,,85
+20379446,Brooklyn,,2,,85
 20381341,Brooklyn,11237,2,,50
 20382522,Manhattan,10039,2,,86
 20384987,Manhattan,10036,2,,136
@@ -21919,7 +21919,7 @@ id,hood,zipcode,guests,sqft,price
 20412884,Manhattan,10022,6,,409
 20413811,Manhattan,10018,2,,125
 20417560,Queens,11103,8,,600
-20417878,Brooklyn,nan,1,,38
+20417878,Brooklyn,,1,,38
 20418684,Manhattan,10009,2,,185
 20420152,Manhattan,10028,2,,115
 20420499,Brooklyn,11217,2,,75
@@ -21962,7 +21962,7 @@ id,hood,zipcode,guests,sqft,price
 20458607,Brooklyn,11237,2,,80
 20458769,Queens,11434,1,,45
 20459277,Manhattan,10018,2,,100
-20459381,Manhattan,nan,2,,200
+20459381,Manhattan,,2,,200
 20459818,Brooklyn,11206,8,,110
 20460009,Manhattan,10016,5,,350
 20464496,Queens,11435,2,,85
@@ -21996,7 +21996,7 @@ id,hood,zipcode,guests,sqft,price
 20495252,Manhattan,10039,1,,50
 20495736,Brooklyn,11206,2,,66
 20497487,Manhattan,10036,5,,226
-20497853,Manhattan,nan,1,,250
+20497853,Manhattan,,1,,250
 20498261,Manhattan,10009,4,,530
 20498653,Brooklyn,11237,2,,40
 20499229,Brooklyn,11216,3,,140
@@ -22139,7 +22139,7 @@ id,hood,zipcode,guests,sqft,price
 20622825,Brooklyn,11237,2,,90
 20623171,Manhattan,10009,2,,83
 20624287,Brooklyn,11216,2,,37
-20624427,Manhattan,nan,2,,65
+20624427,Manhattan,,2,,65
 20624541,Brooklyn,11206,4,,0
 20624666,Brooklyn,11238,2,,100
 20625087,Manhattan,10065,2,,145
@@ -22185,7 +22185,7 @@ id,hood,zipcode,guests,sqft,price
 20663286,Brooklyn,11221,2,,59
 20663542,Manhattan,10003,2,,149
 20663721,Brooklyn,11233,7,,60
-20663839,Manhattan,nan,2,,110
+20663839,Manhattan,,2,,110
 20663997,Brooklyn,11222,2,,90
 20664275,Manhattan,10010,3,,180
 20664395,Brooklyn,11215,2,,111
@@ -22215,7 +22215,7 @@ id,hood,zipcode,guests,sqft,price
 20682663,Manhattan,10040,5,,175
 20685563,Brooklyn,11207,3,,50
 20685890,Manhattan,10025,5,,173
-20685952,Bronx,nan,12,,450
+20685952,Bronx,,12,,450
 20686965,Brooklyn,11226,4,,160
 20688175,Brooklyn,11216,2,,125
 20688422,Brooklyn,11225,2,,130
@@ -22579,7 +22579,7 @@ id,hood,zipcode,guests,sqft,price
 20990607,Brooklyn,11211,1,,79
 20990770,Brooklyn,11211,1,,54
 20991092,Brooklyn,11206,2,,50
-20991704,Brooklyn,nan,2,,79
+20991704,Brooklyn,,2,,79
 20991910,Brooklyn,11222,2,,165
 20992027,Brooklyn,11215,2,,300
 20992059,Brooklyn,11206,1,,55
@@ -22670,7 +22670,7 @@ id,hood,zipcode,guests,sqft,price
 21056653,Queens,11101,1,,55
 21056691,Queens,11101,1,,58
 21056884,Manhattan,10031,2,,49
-21057693,Brooklyn,nan,2,,97
+21057693,Brooklyn,,2,,97
 21058573,Brooklyn,11207,6,,106
 21062611,Brooklyn,11209,3,,99
 21063162,Manhattan,10036,3,,180
@@ -22708,7 +22708,7 @@ id,hood,zipcode,guests,sqft,price
 21098387,Manhattan,10036,2,,150
 21098555,Manhattan,10016,3,,222
 21098717,Manhattan,10016,4,,175
-21098719,Manhattan,nan,2,,70
+21098719,Manhattan,,2,,70
 21098848,Manhattan,10016,4,,175
 21098980,Manhattan,10016,2,,130
 21104475,Queens,11369,3,,45
@@ -22873,7 +22873,7 @@ id,hood,zipcode,guests,sqft,price
 21217698,Manhattan,10027,1,,50
 21218250,Brooklyn,11221,3,,250
 21218639,Manhattan,10002,4,,95
-21219137,Manhattan,nan,2,,85
+21219137,Manhattan,,2,,85
 21219651,Brooklyn,11216,2,,100
 21219737,Queens,11377,2,,60
 21220573,Manhattan,10017,2,,160
@@ -23048,7 +23048,7 @@ id,hood,zipcode,guests,sqft,price
 21324522,Manhattan,10031,6,,200
 21325114,Brooklyn,11201,2,,119
 21325259,Queens,11105,4,,70
-21325362,Queens,nan,2,,50
+21325362,Queens,,2,,50
 21325658,Manhattan,10016,2,,75
 21326923,Queens,11355,2,,60
 21327327,Manhattan,10033,2,,50
@@ -23457,7 +23457,7 @@ id,hood,zipcode,guests,sqft,price
 21621926,Queens,11377,1,,40
 21622558,Queens,11104,3,,125
 21622909,Manhattan,10010,1,,75
-21624775,Manhattan,nan,3,,385
+21624775,Manhattan,,3,,385
 21624828,Manhattan,10034,2,,47
 21625317,Brooklyn,11238,2,,70
 21627791,Manhattan,10024,3,,60
@@ -23504,7 +23504,7 @@ id,hood,zipcode,guests,sqft,price
 21647932,Queens,11377,1,,29
 21647976,Brooklyn,11249,1,,50
 21648513,Manhattan,10128,3,,150
-21649044,Brooklyn,nan,2,,99
+21649044,Brooklyn,,2,,99
 21649172,Manhattan,10025,1,,250
 21649523,Brooklyn,11216,2,,41
 21649695,Manhattan,10036,3,,140
@@ -23671,7 +23671,7 @@ id,hood,zipcode,guests,sqft,price
 21746100,Brooklyn,11206,4,,150
 21747136,Brooklyn,11249,2,,65
 21747137,Brooklyn,11211,2,,125
-21748242,Manhattan,nan,2,,200
+21748242,Manhattan,,2,,200
 21749210,Manhattan,10035,1,,75
 21750219,Manhattan,10029,6,,275
 21750553,Manhattan,10013,1,,45
@@ -23682,7 +23682,7 @@ id,hood,zipcode,guests,sqft,price
 21752545,Manhattan,10025,2,,150
 21752880,Brooklyn,11222,4,,225
 21753255,Manhattan,10065,3,,220
-21754221,Manhattan,nan,2,,187
+21754221,Manhattan,,2,,187
 21754369,Brooklyn,11207,2,,60
 21754860,Brooklyn,11238,8,,200
 21754946,Manhattan,10065,1,,89
@@ -23983,7 +23983,7 @@ id,hood,zipcode,guests,sqft,price
 21926279,Brooklyn,11226,4,,90
 21926844,Manhattan,10044,1,,40
 21926893,Queens,11106,1,,92
-21927300,Queens,nan,4,,100
+21927300,Queens,,4,,100
 21927538,Manhattan,10013,1,,130
 21929935,Queens,11373,2,,45
 21930306,Queens,11419,2,,35
@@ -24012,7 +24012,7 @@ id,hood,zipcode,guests,sqft,price
 21935608,Manhattan,10003,3,,200
 21935727,Brooklyn,11205,4,,300
 21936014,Manhattan,10016,2,,185
-21936033,Queens,nan,4,,120
+21936033,Queens,,4,,120
 21936073,Manhattan,10014,2,,200
 21936550,Manhattan,10044,2,,70
 21937306,Brooklyn,11222,1,,75
@@ -24179,7 +24179,7 @@ id,hood,zipcode,guests,sqft,price
 22005812,Manhattan,10011,2,,175
 22008646,Manhattan,10036,2,,200
 22009072,Manhattan,10027,2,,69
-22009620,Brooklyn,nan,3,,85
+22009620,Brooklyn,,3,,85
 22010163,Manhattan,10035,4,,120
 22010257,Brooklyn,11226,2,,75
 22010343,Queens,11377,3,,100
@@ -24231,7 +24231,7 @@ id,hood,zipcode,guests,sqft,price
 22035507,Manhattan,10017,2,,90
 22037644,Manhattan,10024,2,,110
 22037715,Queens,11412,14,,250
-22038383,Brooklyn,nan,2,,23
+22038383,Brooklyn,,2,,23
 22041636,Brooklyn,11211,1,,53
 22043565,Manhattan,10024,4,,150
 22043701,Brooklyn,11221,1,,65
@@ -24554,7 +24554,7 @@ id,hood,zipcode,guests,sqft,price
 22214395,Queens,11374,2,,59
 22214408,Brooklyn,11206,2,,74
 22214478,Manhattan,10031,1,,33
-22214583,Manhattan,nan,2,,42
+22214583,Manhattan,,2,,42
 22214594,Manhattan,10025,2,,60
 22214974,Brooklyn,11210,4,,39
 22216259,Brooklyn,10013,3,,100
@@ -24600,7 +24600,7 @@ id,hood,zipcode,guests,sqft,price
 22245492,Brooklyn,11205,2,,100
 22245972,Brooklyn,11225,1,,22
 22246294,Manhattan,10012,5,,720
-22246770,Brooklyn,nan,2,,65
+22246770,Brooklyn,,2,,65
 22246864,Queens,11421,1,,35
 22247316,Brooklyn,11206,2,,50
 22247787,Brooklyn,11206,2,,70
@@ -24622,7 +24622,7 @@ id,hood,zipcode,guests,sqft,price
 22251486,Manhattan,10012,2,,180
 22251884,Manhattan,10013,2,,325
 22252595,Queens,11101,2,,90
-22252628,Manhattan,nan,2,,70
+22252628,Manhattan,,2,,70
 22255089,Manhattan,10010,3,,167
 22258326,Manhattan,10036,5,,230
 22258450,Brooklyn,11207,2,,55
@@ -24630,7 +24630,7 @@ id,hood,zipcode,guests,sqft,price
 22259472,Brooklyn,11237,6,,200
 22259480,Brooklyn,11233,1,,35
 22260331,Brooklyn,11216,2,,48
-22260546,Brooklyn,nan,2,,50
+22260546,Brooklyn,,2,,50
 22261208,Queens,11374,6,,81
 22262408,Manhattan,10009,2,,115
 22262595,Manhattan,10038,2,,118
@@ -24798,7 +24798,7 @@ id,hood,zipcode,guests,sqft,price
 22343909,Brooklyn,11206,2,,110
 22344067,Brooklyn,11235,4,,85
 22344483,Brooklyn,11222,2,,125
-22345271,Manhattan,nan,6,,375
+22345271,Manhattan,,6,,375
 22345676,Brooklyn,11221,4,,104
 22345693,Brooklyn,11237,2,,45
 22346131,Queens,11106,4,,135
@@ -24894,7 +24894,7 @@ id,hood,zipcode,guests,sqft,price
 22407448,Manhattan,10038,2,,240
 22408527,Brooklyn,11220,1,,58
 22408670,Brooklyn,11210,2,,70
-22409073,Brooklyn,nan,2,,280
+22409073,Brooklyn,,2,,280
 22409377,Brooklyn,11207,2,,35
 22409383,Brooklyn,11215,10,,399
 22409448,Manhattan,10027,5,,120
@@ -24977,7 +24977,7 @@ id,hood,zipcode,guests,sqft,price
 22471099,Brooklyn,11238,1,,39
 22471517,Brooklyn,11226,3,,100
 22471620,Manhattan,10027,2,,70
-22472801,Queens,nan,8,,80
+22472801,Queens,,8,,80
 22478609,Manhattan,10022,2,,140
 22479006,Brooklyn,11205,2,,260
 22479926,Brooklyn,11211,2,,80
@@ -24995,7 +24995,7 @@ id,hood,zipcode,guests,sqft,price
 22484006,Queens,11101,2,,44
 22484057,Brooklyn,11218,2,,45
 22484513,Brooklyn,11211,2,,70
-22485639,Manhattan,nan,4,,85
+22485639,Manhattan,,4,,85
 22485685,Manhattan,10065,4,,85
 22485716,Queens,11366,2,,75
 22489858,Manhattan,10065,4,,85
@@ -25056,9 +25056,9 @@ id,hood,zipcode,guests,sqft,price
 22550483,Manhattan,10001,1,,88
 22551923,Brooklyn,11221,4,,60
 22552956,Brooklyn,11221,2,,85
-22553501,Manhattan,nan,2,,70
+22553501,Manhattan,,2,,70
 22556901,Manhattan,10003,4,,161
-22561496,Bronx,nan,5,,155
+22561496,Bronx,,5,,155
 22562364,Queens,11101,1,,38
 22564725,Queens,11106,1,,48
 22567255,Brooklyn,11221,2,,70
@@ -25129,7 +25129,7 @@ id,hood,zipcode,guests,sqft,price
 22632338,Brooklyn,11236,6,,120
 22633159,Brooklyn,11233,8,,249
 22634088,Brooklyn,11223,2,,39
-22635815,Manhattan,nan,2,,38
+22635815,Manhattan,,2,,38
 22635959,Queens,11385,2,,45
 22636145,Queens,11104,4,,60
 22636548,Manhattan,10034,4,,225
@@ -25173,7 +25173,7 @@ id,hood,zipcode,guests,sqft,price
 22682089,Manhattan,10026,1,,45
 22683699,Manhattan,10031,4,,95
 22683799,Brooklyn,11226,1,,22
-22683927,Manhattan,nan,1,,125
+22683927,Manhattan,,1,,125
 22685532,Queens,11417,4,,200
 22686497,Brooklyn,11221,4,,130
 22686751,Manhattan,10032,5,,173
@@ -25202,7 +25202,7 @@ id,hood,zipcode,guests,sqft,price
 22702994,Brooklyn,11218,1,,50
 22703468,Manhattan,10018,2,,300
 22703920,Brooklyn,11236,2,,55
-22704069,Manhattan,nan,6,,800
+22704069,Manhattan,,6,,800
 22704461,Manhattan,10024,4,,170
 22704580,Manhattan,10023,1,,120
 22705115,Brooklyn,11236,3,,90
@@ -25228,8 +25228,8 @@ id,hood,zipcode,guests,sqft,price
 22729984,Manhattan,10027,2,,90
 22730139,Staten Island,10312,4,,185
 22730899,Brooklyn,11222,1,,50
-22733147,Brooklyn,nan,2,,70
-22734359,Brooklyn,nan,5,,59
+22733147,Brooklyn,,2,,70
+22734359,Brooklyn,,5,,59
 22734483,Manhattan,10021,2,,150
 22734514,Queens,11102,2,,80
 22735103,Queens,11377,3,,60
@@ -25333,7 +25333,7 @@ id,hood,zipcode,guests,sqft,price
 22862877,Brooklyn,11230,3,,69
 22862882,Manhattan,10033,4,,110
 22863062,Brooklyn,11211,4,,275
-22863817,Brooklyn,nan,1,,45
+22863817,Brooklyn,,1,,45
 22865818,Brooklyn,11249,1,,125
 22868847,Manhattan,10025,2,,86
 22869025,Brooklyn,11213,1,,50
@@ -25378,7 +25378,7 @@ id,hood,zipcode,guests,sqft,price
 22928216,Manhattan,10028,2,,159
 22928463,Brooklyn,11237,1,,27
 22928803,Brooklyn,11237,1,,50
-22928943,Queens,nan,1,,55
+22928943,Queens,,1,,55
 22929141,Brooklyn,11215,2,,150
 22929942,Brooklyn,11211,2,,140
 22929963,Queens,11106,2,,129
@@ -25552,7 +25552,7 @@ id,hood,zipcode,guests,sqft,price
 23105516,Bronx,10466,1,,29
 23105764,Queens,11369,8,,257
 23106013,Manhattan,10012,4,,295
-23106106,Manhattan,nan,2,,70
+23106106,Manhattan,,2,,70
 23106220,Brooklyn,11205,3,,70
 23106361,Manhattan,10031,2,,65
 23106431,Brooklyn,11205,2,,55
@@ -25666,7 +25666,7 @@ id,hood,zipcode,guests,sqft,price
 23256023,Brooklyn,11217,2,,55
 23256828,Brooklyn,11207,1,,35
 23256946,Brooklyn,11225,2,,75
-23258602,Manhattan,nan,1,,50
+23258602,Manhattan,,1,,50
 23262857,Manhattan,10025,4,,93
 23264421,Manhattan,NY 10016,2,,188
 23265699,Queens,11355,4,,85
@@ -25697,7 +25697,7 @@ id,hood,zipcode,guests,sqft,price
 23292216,Manhattan,10002,5,,300
 23292982,Brooklyn,11207,4,,87
 23293483,Manhattan,10019,2,,500
-23293946,Brooklyn,nan,2,,160
+23293946,Brooklyn,,2,,160
 23294354,Manhattan,10033,3,,145
 23300336,Staten Island,10303,1,,40
 23301706,Brooklyn,11218,1,,50
@@ -25772,7 +25772,7 @@ id,hood,zipcode,guests,sqft,price
 23387463,Manhattan,10031,2,,60
 23388053,Manhattan,10012,2,,125
 23392101,Brooklyn,11209,4,,70
-23392375,Brooklyn,nan,1,,30
+23392375,Brooklyn,,1,,30
 23393043,Brooklyn,11208,6,,126
 23400115,Manhattan,10003,2,,110
 23402559,Manhattan,10002,1,,81
@@ -26231,7 +26231,7 @@ id,hood,zipcode,guests,sqft,price
 23900919,Brooklyn,11218,1,,40
 23900940,Queens,11420,2,,60
 23901030,Manhattan,10017,6,,339
-23901118,Queens,nan,2,,65
+23901118,Queens,,2,,65
 23901252,Manhattan,10017,4,,269
 23901420,Manhattan,10017,4,,269
 23901526,Manhattan,10017,4,,269
@@ -26291,7 +26291,7 @@ id,hood,zipcode,guests,sqft,price
 23973305,Manhattan,10128,2,,120
 23978220,Queens,11427,3,,37
 23978509,Brooklyn,11215,4,,120
-23979192,Brooklyn,nan,3,,77
+23979192,Brooklyn,,3,,77
 23979650,Manhattan,10006,1,,80
 23979686,Brooklyn,11215,4,,150
 23980151,Brooklyn,11206,4,,124
@@ -26412,7 +26412,7 @@ id,hood,zipcode,guests,sqft,price
 24130728,Manhattan,10036,4,,275
 24131817,Manhattan,10009,2,,130
 24131843,Manhattan,10025,2,,55
-24132058,Manhattan,nan,6,,365
+24132058,Manhattan,,6,,365
 24132282,Brooklyn,11206,2,,55
 24133060,Manhattan,10029,1,,30
 24133244,Manhattan,10019,2,,275
@@ -26762,7 +26762,7 @@ id,hood,zipcode,guests,sqft,price
 24594184,Bronx,10454,4,,125
 24594587,Manhattan,10031,2,,60
 24594717,Manhattan,NY 10016,2,,175
-24596296,Brooklyn,nan,2,,46
+24596296,Brooklyn,,2,,46
 24596989,Manhattan,10005,2,,200
 24599215,Brooklyn,11221,10,,240
 24599452,Queens,11412,3,,50
@@ -26791,7 +26791,7 @@ id,hood,zipcode,guests,sqft,price
 24627684,Manhattan,10016,2,,175
 24628788,Brooklyn,11230,2,,85
 24629830,Queens,11105,2,,80
-24630272,Manhattan,nan,2,,90
+24630272,Manhattan,,2,,90
 24630495,Manhattan,10023,2,,180
 24632050,Brooklyn,11225,1,,47
 24632456,Queens,11693,6,,275
@@ -26824,7 +26824,7 @@ id,hood,zipcode,guests,sqft,price
 24670583,Bronx,10473,2,,40
 24670846,Brooklyn,11236,2,,85
 24674269,Brooklyn,11206,2,,48
-24676594,Manhattan,nan,3,,350
+24676594,Manhattan,,3,,350
 24676900,Manhattan,10036,1,,65
 24677673,Manhattan,10037,3,,65
 24677845,Brooklyn,11216,2,,80
@@ -26862,7 +26862,7 @@ id,hood,zipcode,guests,sqft,price
 24725794,Manhattan,10027,3,,92
 24727745,Manhattan,10017,2,,120
 24728012,Brooklyn,11221,2,,42
-24729169,Manhattan,nan,2,,130
+24729169,Manhattan,,2,,130
 24729353,Manhattan,10012,2,,89
 24730560,Brooklyn,11226,1,,45
 24730752,Manhattan,10128,2,,115
@@ -26891,7 +26891,7 @@ id,hood,zipcode,guests,sqft,price
 24754459,Brooklyn,11211,2,,79
 24754942,Brooklyn,11225,2,,80
 24756139,Brooklyn,11226,2,,49
-24756445,Brooklyn,nan,3,,75
+24756445,Brooklyn,,3,,75
 24756679,Brooklyn,11238,2,,128
 24757583,Brooklyn,11205,1,,70
 24757612,Manhattan,10030,4,,122
@@ -26917,7 +26917,7 @@ id,hood,zipcode,guests,sqft,price
 24779271,Manhattan,10009,1,,200
 24779801,Manhattan,10011,2,,147
 24780232,Manhattan,10027,5,,350
-24783060,Brooklyn,nan,8,,140
+24783060,Brooklyn,,8,,140
 24784400,Queens,11370,2,,109
 24792114,Queens,11104,2,,55
 24799437,Brooklyn,11237,2,,46
@@ -26990,7 +26990,7 @@ id,hood,zipcode,guests,sqft,price
 24871506,Manhattan,10013,2,,107
 24871779,Manhattan,10023,4,,112
 24872073,Brooklyn,11221,1,,50
-24872721,Manhattan,nan,6,,150
+24872721,Manhattan,,6,,150
 24873980,Manhattan,10030,1,,75
 24874467,Manhattan,10032,2,,50
 24879207,Queens,11559,4,,250
@@ -27123,7 +27123,7 @@ id,hood,zipcode,guests,sqft,price
 25015511,Manhattan,10030,2,,99
 25018204,Manhattan,10031,13,,2500
 25024676,Manhattan,10024,1,,110
-25025092,Brooklyn,nan,4,,100
+25025092,Brooklyn,,4,,100
 25025533,Manhattan,10018,2,,223
 25029794,Manhattan,10003,5,,206
 25029982,Manhattan,10012,2,,164
@@ -27207,7 +27207,7 @@ id,hood,zipcode,guests,sqft,price
 25130960,Brooklyn,11206,3,,107
 25132598,Manhattan,10025,2,,120
 25132635,Brooklyn,11216,2,,125
-25134311,Manhattan,nan,6,,250
+25134311,Manhattan,,6,,250
 25134727,Brooklyn,11205,6,,217
 25134894,Manhattan,10013,12,,699
 25135206,Brooklyn,11211,5,,475
@@ -27215,7 +27215,7 @@ id,hood,zipcode,guests,sqft,price
 25135694,Brooklyn,11205,2,,150
 25135765,Manhattan,10037,3,,225
 25135772,Manhattan,10025,4,,225
-25137152,Manhattan,nan,2,,140
+25137152,Manhattan,,2,,140
 25137887,Queens,11692,8,,650
 25138149,Manhattan,10029,4,,200
 25138442,Manhattan,10029,4,,112
@@ -27254,7 +27254,7 @@ id,hood,zipcode,guests,sqft,price
 25187314,Manhattan,10026,2,,100
 25187461,Manhattan,10005,6,,400
 25187576,Queens,11420,2,,69
-25187986,Manhattan,nan,3,,190
+25187986,Manhattan,,3,,190
 25188064,Brooklyn,11233,2,,150
 25188424,Brooklyn,11216,2,,75
 25189853,Manhattan,10038,2,,67
@@ -27283,7 +27283,7 @@ id,hood,zipcode,guests,sqft,price
 25222993,Manhattan,10030,3,,150
 25223269,Manhattan,10029,2,,120
 25224320,Brooklyn,11221,2,,85
-25225344,Manhattan,nan,2,,130
+25225344,Manhattan,,2,,130
 25226728,Brooklyn,11222,2,,300
 25226807,Brooklyn,11205,2,,130
 25227326,Brooklyn,11249,2,,125
@@ -27297,7 +27297,7 @@ id,hood,zipcode,guests,sqft,price
 25234555,Brooklyn,11213,2,,40
 25234752,Brooklyn,11226,1,,50
 25235760,Queens,11102,1,,38
-25236926,Manhattan,nan,2,,199
+25236926,Manhattan,,2,,199
 25237818,Manhattan,10029,1,,50
 25245882,Queens,11372,4,,175
 25251220,Manhattan,10024,2,,112
@@ -27309,7 +27309,7 @@ id,hood,zipcode,guests,sqft,price
 25257443,Manhattan,10009,2,,165
 25257884,Manhattan,10027,4,,120
 25262795,Brooklyn,11223,3,,100
-25263729,Manhattan,nan,1,,44
+25263729,Manhattan,,1,,44
 25263845,Manhattan,10033,2,,75
 25264538,Manhattan,10038,4,,299
 25264664,Manhattan,10003,8,,799
@@ -27398,7 +27398,7 @@ id,hood,zipcode,guests,sqft,price
 25355282,Brooklyn,11221,1,,30
 25355807,Queens,11434,2,,92
 25356602,Queens,11434,2,,60
-25356696,Manhattan,nan,2,,150
+25356696,Manhattan,,2,,150
 25365916,Brooklyn,11233,2,,35
 25367421,Manhattan,10009,6,,650
 25369155,Brooklyn,11201,3,,140
@@ -27427,7 +27427,7 @@ id,hood,zipcode,guests,sqft,price
 25420704,Brooklyn,11235,2,,85
 25421109,Brooklyn,11221,4,,120
 25421873,Brooklyn,11211,1,,73
-25422338,Manhattan,nan,6,,236
+25422338,Manhattan,,6,,236
 25424320,Brooklyn,11222,2,,110
 25424961,Manhattan,10012,1,,55
 25425106,Brooklyn,11213,2,,100
@@ -27445,7 +27445,7 @@ id,hood,zipcode,guests,sqft,price
 25448758,Brooklyn,11206,2,,95
 25452119,Brooklyn,11211,2,,120
 25453503,Brooklyn,11206,3,,100
-25454559,Brooklyn,nan,2,,46
+25454559,Brooklyn,,2,,46
 25455986,Brooklyn,11205,4,,125
 25456296,Queens,11423,2,,38
 25456714,Manhattan,10002,4,,1000
@@ -27468,7 +27468,7 @@ id,hood,zipcode,guests,sqft,price
 25477650,Brooklyn,11238,6,,95
 25480207,Manhattan,10012,4,,300
 25480524,Manhattan,10023,2,,120
-25482581,Manhattan,nan,2,,169
+25482581,Manhattan,,2,,169
 25483095,Manhattan,10019,3,,114
 25484150,Brooklyn,11206,2,,80
 25484398,Brooklyn,11222,2,,85
@@ -27546,7 +27546,7 @@ id,hood,zipcode,guests,sqft,price
 25590851,Manhattan,10019,1,,100
 25602541,Manhattan,10010,4,,185
 25606022,Manhattan,10025,4,,150
-25606562,Manhattan,nan,3,,225
+25606562,Manhattan,,3,,225
 25610763,Manhattan,10018,2,,99
 25614818,Manhattan,10026,4,,250
 25615295,Manhattan,10025,4,,150
@@ -27597,7 +27597,7 @@ id,hood,zipcode,guests,sqft,price
 25727611,Brooklyn,11206,1,,88
 25731392,Brooklyn,11213,1,,95
 25734018,Brooklyn,11217,4,,280
-25734212,Brooklyn,nan,6,,525
+25734212,Brooklyn,,6,,525
 25736749,Manhattan,10025,3,,200
 25737165,Manhattan,10005,2,,215
 25739275,Brooklyn,11226,3,,190
@@ -27754,9 +27754,9 @@ id,hood,zipcode,guests,sqft,price
 25937108,Manhattan,10016,4,,200
 25937419,Manhattan,10031,2,,65
 25938492,Manhattan,10029,6,,190
-25939748,Brooklyn,nan,2,,85
+25939748,Brooklyn,,2,,85
 25940097,Manhattan,10027,10,,800
-25941089,Brooklyn,nan,2,,80
+25941089,Brooklyn,,2,,80
 25942651,Manhattan,10032,2,,65
 25943177,Queens,11377,3,,55
 25943635,Queens,11103,1,,60
@@ -27933,7 +27933,7 @@ id,hood,zipcode,guests,sqft,price
 26135711,Queens,11432,2,,52
 26136583,Queens,11377,4,,156
 26136978,Bronx,10472,3,,85
-26137379,Bronx,nan,2,,40
+26137379,Bronx,,2,,40
 26138483,Manhattan,10019,2,,70
 26138542,Brooklyn,11231,2,,130
 26138643,Manhattan,10002,2,,145
@@ -28052,7 +28052,7 @@ id,hood,zipcode,guests,sqft,price
 26275643,Manhattan,10021,3,,220
 26277801,Manhattan,10024,5,,250
 26277872,Manhattan,10128,4,,112
-26278372,Brooklyn,nan,4,,120
+26278372,Brooklyn,,4,,120
 26279108,Manhattan,10034,1,,50
 26280662,Brooklyn,11217,4,,90
 26281187,Brooklyn,11237,2,,45
@@ -28097,7 +28097,7 @@ id,hood,zipcode,guests,sqft,price
 26334886,Brooklyn,11215,6,,275
 26335577,Brooklyn,11211,2,,200
 26335893,Manhattan,10022,3,,200
-26337439,Manhattan,nan,7,,350
+26337439,Manhattan,,7,,350
 26337617,Brooklyn,11234,4,,85
 26338897,Brooklyn,11217,4,,200
 26341895,Brooklyn,11205,5,,125
@@ -28178,7 +28178,7 @@ id,hood,zipcode,guests,sqft,price
 26441519,Brooklyn,11237,2,,53
 26441935,Manhattan,10018,2,,99
 26442966,Brooklyn,11211,2,,250
-26443119,Manhattan,nan,2,,90
+26443119,Manhattan,,2,,90
 26443376,Brooklyn,11237,4,,90
 26446103,Brooklyn,11208,3,,90
 26447297,Manhattan,10034,2,,125
@@ -28358,7 +28358,7 @@ id,hood,zipcode,guests,sqft,price
 26685314,Brooklyn,11211,2,,69
 26687806,Brooklyn,11223,2,,53
 26688045,Queens,11377,1,,39
-26688805,Brooklyn,nan,3,,50
+26688805,Brooklyn,,3,,50
 26689265,Brooklyn,11237,2,,135
 26689797,Manhattan,10035,4,,120
 26690336,Queens,11377,2,,39
@@ -28400,7 +28400,7 @@ id,hood,zipcode,guests,sqft,price
 26748374,Brooklyn,11218,4,,70
 26749031,Brooklyn,11211,2,,69
 26749730,Brooklyn,11211,4,,107
-26749932,Brooklyn,nan,4,,130
+26749932,Brooklyn,,4,,130
 26750461,Queens,11104,1,,79
 26751201,Queens,11106,4,,150
 26751659,Brooklyn,11236,1,,79
@@ -28527,7 +28527,7 @@ id,hood,zipcode,guests,sqft,price
 26867963,Manhattan,10001,4,,200
 26868203,Brooklyn,11221,1,,35
 26868493,Brooklyn,11233,2,,89
-26869417,Manhattan,nan,2,,82
+26869417,Manhattan,,2,,82
 26870969,Brooklyn,11206,2,,45
 26871154,Brooklyn,11215,7,,390
 26871230,Manhattan,10011,2,,300
@@ -28708,7 +28708,7 @@ id,hood,zipcode,guests,sqft,price
 27065834,Manhattan,10014,2,,275
 27067463,Brooklyn,11220,1,,55
 27076007,Manhattan,10031,1,,40
-27079178,Manhattan,nan,1,,65
+27079178,Manhattan,,1,,65
 27079708,Manhattan,10023,2,,225
 27080183,Brooklyn,11249,1,,60
 27082137,Brooklyn,11222,2,,80
@@ -28755,7 +28755,7 @@ id,hood,zipcode,guests,sqft,price
 27137651,Manhattan,10016,2,,155
 27138925,Brooklyn,11226,3,,100
 27139625,Brooklyn,11238,3,,88
-27139685,Manhattan,nan,2,,39
+27139685,Manhattan,,2,,39
 27140359,Queens,11105,1,,45
 27140472,Brooklyn,11218,1,,65
 27141013,Brooklyn,11234,3,,85
@@ -28814,7 +28814,7 @@ id,hood,zipcode,guests,sqft,price
 27203413,Staten Island,10301,4,,115
 27203779,Brooklyn,11213,13,,300
 27204768,Manhattan,10033,2,,75
-27205234,Brooklyn,nan,2,,52
+27205234,Brooklyn,,2,,52
 27205506,Brooklyn,11204,2,,85
 27211525,Brooklyn,11220,1,,50
 27214615,Manhattan,10014,8,,483
@@ -28910,7 +28910,7 @@ id,hood,zipcode,guests,sqft,price
 27329928,Queens,11377,2,,55
 27332332,Brooklyn,11216,2,,65
 27333008,Manhattan,10014,1,,150
-27333579,Manhattan,nan,2,,120
+27333579,Manhattan,,2,,120
 27334148,Queens,11421,4,,170
 27336179,Bronx,10456,1,,35
 27336782,Queens,11365,2,,30
@@ -28923,7 +28923,7 @@ id,hood,zipcode,guests,sqft,price
 27343189,Bronx,10469,2,,75
 27351337,Brooklyn,11215,2,,130
 27351442,Manhattan,10003,2,,98
-27356337,Manhattan,nan,2,,180
+27356337,Manhattan,,2,,180
 27357537,Brooklyn,11249,2,,250
 27359346,Manhattan,10010,3,,199
 27359696,Brooklyn,11208,4,,65
@@ -29017,7 +29017,7 @@ id,hood,zipcode,guests,sqft,price
 27438452,Brooklyn,11210,4,,199
 27439092,Manhattan,10037,2,,125
 27439428,Manhattan,10032,2,,50
-27453970,Manhattan,nan,2,,80
+27453970,Manhattan,,2,,80
 27454904,Manhattan,10027,4,,195
 27455308,Queens,11436,2,,75
 27455707,Queens,11106,3,,150
@@ -29161,7 +29161,7 @@ id,hood,zipcode,guests,sqft,price
 27577076,Manhattan,10035,6,,175
 27578298,Manhattan,10010,2,,150
 27579255,Brooklyn,11237,2,,59
-27579598,Brooklyn,nan,2,,170
+27579598,Brooklyn,,2,,170
 27579698,Manhattan,10017,6,,339
 27579796,Staten Island,10301,2,,100
 27579844,Manhattan,10017,6,,339
@@ -29179,7 +29179,7 @@ id,hood,zipcode,guests,sqft,price
 27585318,Queens,11373,2,,50
 27585912,Brooklyn,11236,2,,65
 27593335,Brooklyn,11231,4,,160
-27593369,Manhattan,nan,4,,150
+27593369,Manhattan,,4,,150
 27596342,Brooklyn,11230,4,,32
 27598172,Queens,11104,2,,79
 27598707,Manhattan,10010,1,,129
@@ -29191,7 +29191,7 @@ id,hood,zipcode,guests,sqft,price
 27602495,Manhattan,10040,1,,60
 27602987,Brooklyn,11222,2,,105
 27603879,Queens,11422,3,,60
-27603936,Manhattan,nan,2,,185
+27603936,Manhattan,,2,,185
 27604258,Queens,11355,2,,75
 27604639,Manhattan,10040,2,,95
 27606552,Brooklyn,11211,4,,54
@@ -29290,7 +29290,7 @@ id,hood,zipcode,guests,sqft,price
 27703865,Brooklyn,11219,4,,120
 27704612,Manhattan,10027,5,,159
 27704712,Manhattan,10002,6,,200
-27705293,Manhattan,nan,2,,85
+27705293,Manhattan,,2,,85
 27706098,Brooklyn,11211,2,,104
 27706786,Bronx,10463,2,,85
 27706929,Brooklyn,11208,6,,125
@@ -29570,7 +29570,7 @@ id,hood,zipcode,guests,sqft,price
 28031322,Staten Island,10301,11,,150
 28031581,Brooklyn,11229,12,,350
 28031654,Brooklyn,11237,2,,65
-28032779,Queens,nan,3,,101
+28032779,Queens,,3,,101
 28033675,Queens,11104,2,,72
 28033814,Queens,11385,3,,75
 28035852,Queens,11434,8,,165
@@ -29617,7 +29617,7 @@ id,hood,zipcode,guests,sqft,price
 28081246,Brooklyn,11221,3,,71
 28081396,Queens,11434,16,,120
 28081782,Queens,11355,2,,85
-28082095,Bronx,nan,4,,130
+28082095,Bronx,,4,,130
 28083637,Brooklyn,11226,3,,80
 28083998,Brooklyn,11238,3,,70
 28084157,Queens,11355,2,,89
@@ -29645,7 +29645,7 @@ id,hood,zipcode,guests,sqft,price
 28108524,Brooklyn,11238,5,,140
 28108959,Brooklyn,11225,2,,100
 28109059,Brooklyn,11213,2,,59
-28109855,Manhattan,nan,2,,100
+28109855,Manhattan,,2,,100
 28121595,Staten Island,10306,4,,150
 28121788,Manhattan,10019,2,,165
 28123818,Manhattan,10036,2,,45
@@ -29673,7 +29673,7 @@ id,hood,zipcode,guests,sqft,price
 28132251,Manhattan,10019,2,,408
 28132293,Manhattan,10019,2,,240
 28132314,Manhattan,10019,2,,384
-28132785,Brooklyn,nan,1,,300
+28132785,Brooklyn,,1,,300
 28133007,Manhattan,10003,1,,200
 28133596,Manhattan,10014,2,,199
 28133914,Brooklyn,11216,2,,85
@@ -29698,7 +29698,7 @@ id,hood,zipcode,guests,sqft,price
 28154635,Manhattan,10024,3,,199
 28155197,Brooklyn,11213,4,,115
 28157869,Brooklyn,11203,2,,50
-28158237,Brooklyn,nan,2,,109
+28158237,Brooklyn,,2,,109
 28159221,Brooklyn,11221,2,,99
 28160047,Brooklyn,11211,2,,76
 28160221,Queens,11413,8,,185
@@ -29748,7 +29748,7 @@ id,hood,zipcode,guests,sqft,price
 28216267,Manhattan,10036,3,,250
 28217921,Brooklyn,11203,2,,99
 28218300,Brooklyn,11238,2,,90
-28218710,Brooklyn,nan,1,,75
+28218710,Brooklyn,,1,,75
 28219460,Brooklyn,11205,4,,140
 28221182,Brooklyn,11237,2,,104
 28221379,Brooklyn,11213,2,,50
@@ -29852,7 +29852,7 @@ id,hood,zipcode,guests,sqft,price
 28340136,Queens,11413,2,,180
 28340434,Queens,11413,2,,180
 28340606,Manhattan,10038,2,,115
-28340698,Manhattan,nan,1,,135
+28340698,Manhattan,,1,,135
 28341280,Brooklyn,11237,2,,70
 28342248,Queens,11385,2,,80
 28343300,Brooklyn,11206,4,,150
@@ -29884,7 +29884,7 @@ id,hood,zipcode,guests,sqft,price
 28366887,Queens,11434,2,,39
 28367520,Queens,11433,2,,50
 28367842,Manhattan,10027,1,,70
-28368234,Manhattan,nan,2,,65
+28368234,Manhattan,,2,,65
 28368282,Brooklyn,11211,2,,140
 28368404,Queens,11432,1,,225
 28368678,Brooklyn,11217,2,,70
@@ -29962,7 +29962,7 @@ id,hood,zipcode,guests,sqft,price
 28462811,Bronx,10451,3,,45
 28463327,Brooklyn,11234,2,,37
 28464119,Manhattan,10036,2,,100
-28464743,Manhattan,nan,2,,100
+28464743,Manhattan,,2,,100
 28464767,Bronx,10472,1,,42
 28464787,Manhattan,10032,3,,65
 28466730,Bronx,10458,2,,50
@@ -30112,7 +30112,7 @@ id,hood,zipcode,guests,sqft,price
 28661866,Brooklyn,11237,1,,53
 28662351,Manhattan,10029,2,,59
 28662766,Brooklyn,11207,3,,37
-28663593,Brooklyn,nan,2,,200
+28663593,Brooklyn,,2,,200
 28664899,Manhattan,10003,2,,185
 28666578,Manhattan,10018,2,,99
 28667823,Brooklyn,11211,2,,60
@@ -30155,8 +30155,8 @@ id,hood,zipcode,guests,sqft,price
 28715589,Manhattan,10001,2,,150
 28715862,Brooklyn,11216,4,,195
 28716187,Queens,11432,1,,50
-28717758,Manhattan,nan,2,,75
-28718812,Manhattan,nan,4,,275
+28717758,Manhattan,,2,,75
+28718812,Manhattan,,4,,275
 28719635,Brooklyn,11210,2,,85
 28721676,Manhattan,10036,2,,150
 28722807,Brooklyn,11215,4,,160
@@ -30167,7 +30167,7 @@ id,hood,zipcode,guests,sqft,price
 28731208,Brooklyn,11226,6,,185
 28731978,Manhattan,10035,1,,59
 28733777,Manhattan,10029,2,,75
-28734328,Brooklyn,nan,2,,190
+28734328,Brooklyn,,2,,190
 28734438,Manhattan,10011,3,,225
 28734646,Brooklyn,11211,5,,325
 28734815,Manhattan,10019,5,,250
@@ -30204,7 +30204,7 @@ id,hood,zipcode,guests,sqft,price
 28763093,Manhattan,10019,2,,175
 28770601,Brooklyn,11233,8,,76
 28775021,Brooklyn,11206,3,,150
-28777497,Queens,nan,3,,25
+28777497,Queens,,3,,25
 28778214,Manhattan,10035,2,,59
 28778379,Brooklyn,11211,6,,250
 28778501,Brooklyn,11211,2,,100
@@ -30263,9 +30263,9 @@ id,hood,zipcode,guests,sqft,price
 28864751,Manhattan,10013,2,,175
 28865218,Manhattan,10010,1,,69
 28865651,Queens,11104,2,,125
-28867268,Brooklyn,nan,1,,50
+28867268,Brooklyn,,1,,50
 28867312,Brooklyn,11216,5,,200
-28867326,Queens,nan,1,,31
+28867326,Queens,,1,,31
 28867389,Brooklyn,11225,2,,59
 28867577,Manhattan,10027,4,,180
 28869774,Brooklyn,11211,2,,160
@@ -30297,16 +30297,16 @@ id,hood,zipcode,guests,sqft,price
 28908658,Queens,11372,1,,29
 28908909,Brooklyn,11217,2,,150
 28909110,Brooklyn,11216,3,,90
-28910248,Brooklyn,nan,2,,95
+28910248,Brooklyn,,2,,95
 28910899,Manhattan,10012,1,,140
-28911697,Brooklyn,nan,2,,57
+28911697,Brooklyn,,2,,57
 28911830,Bronx,10461,10,,299
 28911848,Bronx,10461,4,,125
 28911924,Manhattan,10019,2,,85
 28912358,Manhattan,10065,2,,80
 28912768,Brooklyn,11211,2,,180
 28912811,Brooklyn,11213,2,,65
-28913606,Manhattan,nan,2,,175
+28913606,Manhattan,,2,,175
 28913683,Manhattan,10017,5,,359
 28914077,Manhattan,10028,2,,275
 28916312,Bronx,10458,2,,90
@@ -30323,14 +30323,14 @@ id,hood,zipcode,guests,sqft,price
 28932466,Manhattan,10031,2,,69
 28933107,Manhattan,10009,2,,85
 28933205,Manhattan,10021,1,,250
-28933403,Brooklyn,nan,4,,200
+28933403,Brooklyn,,4,,200
 28933616,Manhattan,10002,2,,250
 28935673,Brooklyn,11237,2,,100
 28936557,Manhattan,10039,2,,80
 28936795,Queens,11377,1,,35
 28937536,Brooklyn,11232,2,,220
-28937584,Manhattan,nan,2,,57
-28938342,Brooklyn,nan,2,,70
+28937584,Manhattan,,2,,57
+28938342,Brooklyn,,2,,70
 28939377,Manhattan,10027,1,,88
 28940025,Bronx,10464,2,,84
 28940279,Brooklyn,11211,2,,250
@@ -30356,7 +30356,7 @@ id,hood,zipcode,guests,sqft,price
 28958526,Manhattan,10013,5,,210
 28959608,Brooklyn,11217,2,,100
 28959854,Bronx,10466,4,,80
-28960497,Queens,nan,2,,64
+28960497,Queens,,2,,64
 28960923,Brooklyn,11216,1,,40
 28961885,Manhattan,10036,3,,144
 28961919,Queens,11423,2,,65
@@ -30387,11 +30387,11 @@ id,hood,zipcode,guests,sqft,price
 28986804,Brooklyn,11221,2,,80
 28986807,Queens,11102,1,,46
 28986906,Queens,11102,1,,46
-28987503,Queens,nan,2,,100
+28987503,Queens,,2,,100
 28988283,Manhattan,10030,4,,150
 28989914,Manhattan,10009,2,,130
 28990673,Brooklyn,11211,2,,55
-28990717,Brooklyn,nan,2,,70
+28990717,Brooklyn,,2,,70
 28991221,Manhattan,10019,2,,140
 28991548,Brooklyn,11211,1,,50
 28992518,Manhattan,10002,3,,175
@@ -30442,7 +30442,7 @@ id,hood,zipcode,guests,sqft,price
 29059768,Manhattan,10003,7,,599
 29059972,Brooklyn,11207,1,,50
 29060392,Brooklyn,11237,2,,76
-29061711,Manhattan,nan,4,,575
+29061711,Manhattan,,4,,575
 29063413,Manhattan,10003,4,,225
 29063485,Brooklyn,11236,4,,86
 29073462,Manhattan,10013,3,,134
@@ -30492,13 +30492,13 @@ id,hood,zipcode,guests,sqft,price
 29117643,Bronx,10453,2,,48
 29119411,Manhattan,10003,2,,125
 29120854,Brooklyn,11385,2,,150
-29123516,Brooklyn,nan,2,,68
+29123516,Brooklyn,,2,,68
 29124172,Queens,11372,2,,49
 29124414,Brooklyn,11225,4,,185
 29124476,Manhattan,10034,2,,50
 29125444,Manhattan,10016,3,,140
 29126674,Brooklyn,11237,2,,120
-29126779,Manhattan,nan,2,,230
+29126779,Manhattan,,2,,230
 29129018,Brooklyn,11211,2,,60
 29130366,Manhattan,10029,6,,240
 29130381,Manhattan,10010,3,,95
@@ -30519,7 +30519,7 @@ id,hood,zipcode,guests,sqft,price
 29149191,Manhattan,10003,2,,180
 29149612,Queens,11103,2,,87
 29150883,Manhattan,10024,2,,215
-29151631,Queens,nan,1,,40
+29151631,Queens,,1,,40
 29152037,Brooklyn,11237,1,,50
 29152320,Brooklyn,11208,4,,89
 29152899,Brooklyn,11206,2,,55
@@ -30539,14 +30539,14 @@ id,hood,zipcode,guests,sqft,price
 29170235,Brooklyn,11203,2,,53
 29170953,Brooklyn,11221,2,,43
 29173351,Manhattan,10009,1,,60
-29174021,Brooklyn,nan,2,,41
+29174021,Brooklyn,,2,,41
 29176205,Manhattan,10017,4,,230
 29176897,Manhattan,10036,2,,69
 29180192,Brooklyn,11221,2,,50
 29180542,Manhattan,10027,4,,269
 29181179,Manhattan,10029,4,,110
 29181449,Brooklyn,11205,1,,75
-29181504,Manhattan,nan,4,,150
+29181504,Manhattan,,4,,150
 29181842,Manhattan,10009,2,,114
 29183581,Manhattan,10013,3,,225
 29184419,Queens,11377,2,,50
@@ -30595,7 +30595,7 @@ id,hood,zipcode,guests,sqft,price
 29237852,Queens,11421,1,,120
 29238286,Brooklyn,11222,2,,150
 29238906,Brooklyn,11205,2,,145
-29241662,Manhattan,nan,2,,90
+29241662,Manhattan,,2,,90
 29242564,Queens,11102,2,,65
 29242599,Manhattan,10128,6,,500
 29243499,Brooklyn,11205,2,,60
@@ -30645,7 +30645,7 @@ id,hood,zipcode,guests,sqft,price
 29304334,Manhattan,10030,2,,85
 29304787,Queens,11413,2,,50
 29305952,Queens,11692,4,,397
-29306127,Brooklyn,nan,2,,70
+29306127,Brooklyn,,2,,70
 29306602,Brooklyn,11213,4,,149
 29307957,Brooklyn,11216,1,,90
 29308138,Manhattan,10022,4,,375
@@ -30679,7 +30679,7 @@ id,hood,zipcode,guests,sqft,price
 29336346,Queens,11103,2,,89
 29336922,Brooklyn,11214,6,,150
 29338253,Brooklyn,11234,2,,45
-29338399,Manhattan,nan,2,,129
+29338399,Manhattan,,2,,129
 29338559,Queens,11102,1,,50
 29338715,Queens,11411,2,,65
 29338760,Brooklyn,11249,2,,160
@@ -30719,9 +30719,9 @@ id,hood,zipcode,guests,sqft,price
 29384622,Manhattan,10011,2,,200
 29385308,Brooklyn,11231,2,,160
 29388803,Brooklyn,11213,2,,80
-29388858,Manhattan,nan,3,,275
+29388858,Manhattan,,3,,275
 29390506,Bronx,10470,3,,50
-29391531,Queens,nan,2,,200
+29391531,Queens,,2,,200
 29391852,Brooklyn,11221,2,,65
 29392426,Queens,11102,3,,110
 29393371,Queens,11368,2,,49
@@ -30808,7 +30808,7 @@ id,hood,zipcode,guests,sqft,price
 29491851,Brooklyn,11230,4,,185
 29492316,Manhattan,10024,4,,140
 29492557,Manhattan,10030,2,,36
-29493590,Manhattan,nan,4,,320
+29493590,Manhattan,,4,,320
 29495273,Manhattan,10012,6,,295
 29495710,Brooklyn,11237,8,,70
 29495933,Manhattan,10019,2,,345
@@ -30951,7 +30951,7 @@ id,hood,zipcode,guests,sqft,price
 29648368,Brooklyn,11211,1,,70
 29650402,Brooklyn,11225,10,,795
 29651529,Manhattan,10009,2,,195
-29652274,Manhattan,nan,1,,120
+29652274,Manhattan,,1,,120
 29653294,Queens,11372,1,,31
 29653480,Queens,11373,1,,42
 29653847,Brooklyn,11225,6,,305
@@ -31000,7 +31000,7 @@ id,hood,zipcode,guests,sqft,price
 29686857,Queens,11385,4,,115
 29687049,Brooklyn,11221,2,,65
 29687597,Manhattan,10003,4,,399
-29688392,Queens,nan,2,,70
+29688392,Queens,,2,,70
 29688903,Manhattan,10025,2,,80
 29689103,Manhattan,10065,4,,140
 29690801,Brooklyn,11204,2,,20
@@ -31109,7 +31109,7 @@ id,hood,zipcode,guests,sqft,price
 29800915,Bronx,10467,4,,150
 29800927,Manhattan,10002,4,,200
 29801175,Bronx,10451,4,,65
-29801645,Brooklyn,nan,3,,48
+29801645,Brooklyn,,3,,48
 29803428,Manhattan,10014,3,,160
 29804246,Manhattan,10027,2,,80
 29804907,Brooklyn,11232,5,,175
@@ -31178,7 +31178,7 @@ id,hood,zipcode,guests,sqft,price
 29860764,Manhattan,10021,2,,120
 29863494,Queens,11377,2,,70
 29869390,Queens,11368,1,,30
-29870750,Brooklyn,nan,2,,55
+29870750,Brooklyn,,2,,55
 29874717,Brooklyn,11237,2,,95
 29874869,Manhattan,10027,2,,67
 29875137,Manhattan,10009,2,,399
@@ -31215,7 +31215,7 @@ id,hood,zipcode,guests,sqft,price
 29897911,Manhattan,10018,3,,179
 29898471,Brooklyn,11211,6,,295
 29898560,Brooklyn,11231,4,,225
-29899434,Manhattan,nan,3,,100
+29899434,Manhattan,,3,,100
 29899574,Manhattan,10005,6,,520
 29900235,Manhattan,10027,1,,45
 29900575,Manhattan,10018,1,,99
@@ -31247,9 +31247,9 @@ id,hood,zipcode,guests,sqft,price
 29921568,Manhattan,10002,1,,64
 29921569,Brooklyn,11211,5,,300
 29922910,Brooklyn,11231,2,,200
-29922930,Manhattan,nan,2,,175
+29922930,Manhattan,,2,,175
 29923182,Manhattan,10002,3,,250
-29923198,Manhattan,nan,2,,175
+29923198,Manhattan,,2,,175
 29923252,Queens,11377,1,,30
 29923522,Manhattan,10019,2,,1000
 29923537,Manhattan,10019,2,,1000
@@ -31273,7 +31273,7 @@ id,hood,zipcode,guests,sqft,price
 29930623,Brooklyn,11221,2,,50
 29930787,Queens,11377,1,,40
 29931976,Manhattan,10018,4,,199
-29933241,Manhattan,nan,2,,199
+29933241,Manhattan,,2,,199
 29935981,Brooklyn,11222,4,,475
 29936587,Bronx,10451,4,,55
 29937451,Brooklyn,11236,1,,50
@@ -31331,7 +31331,7 @@ id,hood,zipcode,guests,sqft,price
 29967433,Manhattan,10032,1,,50
 29967691,Manhattan,10012,2,,250
 29967770,Brooklyn,11201,4,,150
-29968356,Manhattan,nan,2,,199
+29968356,Manhattan,,2,,199
 29968478,Queens,11375,2,,175
 29970723,Brooklyn,11237,2,,42
 29976484,Brooklyn,11226,4,,150
@@ -31529,7 +31529,7 @@ id,hood,zipcode,guests,sqft,price
 30120427,Queens,11102,2,,165
 30122033,Manhattan,10023,4,,375
 30122474,Manhattan,10013,1,,75
-30123494,Brooklyn,nan,4,,210
+30123494,Brooklyn,,4,,210
 30124398,Brooklyn,11216,6,,350
 30124914,Brooklyn,11221,2,,125
 30125523,Manhattan,10016,2,,111
@@ -31550,7 +31550,7 @@ id,hood,zipcode,guests,sqft,price
 30130572,Bronx,10456,2,,75
 30131250,Brooklyn,11221,2,,42
 30131426,Brooklyn,11221,2,,42
-30131676,Manhattan,nan,2,,165
+30131676,Manhattan,,2,,165
 30131807,Queens,11105,2,,90
 30131908,Manhattan,10029,2,,99
 30132238,Brooklyn,11211,3,,100
@@ -31610,7 +31610,7 @@ id,hood,zipcode,guests,sqft,price
 30175779,Manhattan,10009,2,,129
 30177307,Manhattan,10017,6,,500
 30179231,Manhattan,10002,4,,295
-30179242,Manhattan,nan,8,,400
+30179242,Manhattan,,8,,400
 30179704,Manhattan,10033,2,,36
 30180208,Manhattan,10027,2,,70
 30181399,Manhattan,10014,2,,90
@@ -32237,9 +32237,9 @@ id,hood,zipcode,guests,sqft,price
 30546334,Brooklyn,11221,2,,41
 30551020,Brooklyn,11211,4,,250
 30551807,Brooklyn,11211,3,,115
-30552204,Brooklyn,nan,10,,392
+30552204,Brooklyn,,10,,392
 30553339,Brooklyn,11221,1,,50
-30553357,Manhattan,nan,7,,389
+30553357,Manhattan,,7,,389
 30554355,Manhattan,10009,3,,175
 30554660,Brooklyn,11238,1,,45
 30554810,Manhattan,10029,3,,90
@@ -33237,7 +33237,7 @@ id,hood,zipcode,guests,sqft,price
 31458781,Brooklyn,11215,4,,97
 31459245,Brooklyn,11221,3,,100
 31459956,Queens,11421,2,,40
-31460579,Manhattan,nan,6,,500
+31460579,Manhattan,,6,,500
 31462754,Brooklyn,11226,2,,40
 31463005,Brooklyn,11216,2,,65
 31465478,Manhattan,10027,6,,400
@@ -33818,7 +33818,7 @@ id,hood,zipcode,guests,sqft,price
 32238694,Manhattan,10017,6,,419
 32240870,Brooklyn,11218,1,,50
 32241239,Brooklyn,11234,6,,165
-32242139,Brooklyn,nan,4,,200
+32242139,Brooklyn,,4,,200
 32242547,Manhattan,10036,2,,150
 32244500,Brooklyn,11237,2,,65
 32244701,Manhattan,10036,3,,150
@@ -35195,7 +35195,7 @@ id,hood,zipcode,guests,sqft,price
 33834843,Manhattan,10019,2,,110
 33835470,Brooklyn,11233,3,,48
 33835992,Brooklyn,11207,2,,96
-33836115,Manhattan,nan,2,,99
+33836115,Manhattan,,2,,99
 33838752,Manhattan,10019,1,,80
 33845173,Brooklyn,11225,1,,64
 33845393,Brooklyn,11225,1,,65
@@ -35603,13 +35603,13 @@ id,hood,zipcode,guests,sqft,price
 34257868,Brooklyn,11211,2,,140
 34258341,Queens,11375,2,,37
 34258883,Staten Island,10306,1,,33
-34259388,Bronx,nan,2,,70
+34259388,Bronx,,2,,70
 34263343,Manhattan,10035,1,,49
 34271296,Manhattan,10028,6,,299
 34272398,Brooklyn,11233,2,,150
 34272484,Brooklyn,11211,5,,77
 34272580,Brooklyn,11213,6,,250
-34274020,Brooklyn,nan,2,,65
+34274020,Brooklyn,,2,,65
 34274062,Brooklyn,11211,2,,94
 34275040,Brooklyn,11249,4,,300
 34277352,Manhattan,10013,2,,67
@@ -36407,7 +36407,7 @@ id,hood,zipcode,guests,sqft,price
 34945827,Manhattan,10012,1,,37
 34946538,Brooklyn,11206,2,,90
 34946772,Brooklyn,11237,3,,50
-34946870,Manhattan,nan,2,,210
+34946870,Manhattan,,2,,210
 34947418,Brooklyn,11218,2,,65
 34948476,Queens,11369,4,,80
 34948758,Manhattan,10003,2,,190
@@ -36701,7 +36701,7 @@ id,hood,zipcode,guests,sqft,price
 35190108,Brooklyn,11221,2,,42
 35190170,Brooklyn,11225,1,,75
 35190355,Brooklyn,11221,10,,206
-35190467,Queens,nan,1,,110
+35190467,Queens,,1,,110
 35191797,Manhattan,10028,2,,133
 35191909,Manhattan,10026,6,,185
 35192077,Manhattan,10009,2,,115
@@ -36970,7 +36970,7 @@ id,hood,zipcode,guests,sqft,price
 35454095,Manhattan,10065,8,,800
 35454285,Brooklyn,11226,1,,30
 35454756,Queens,11106,5,,223
-35455445,Manhattan,nan,3,,175
+35455445,Manhattan,,3,,175
 35455986,Staten Island,10310,3,,99
 35456208,Manhattan,10026,2,,55
 35456622,Brooklyn,11221,10,,190
@@ -37400,7 +37400,7 @@ id,hood,zipcode,guests,sqft,price
 35797975,Manhattan,10032,2,,90
 35798611,Brooklyn,11201,1,,100
 35798701,Manhattan,10022,4,,190
-35803121,Brooklyn,nan,1,,52
+35803121,Brooklyn,,1,,52
 35803274,Queens,11377,2,,50
 35803621,Queens,11434,2,,62
 35804219,Brooklyn,11216,1,,40
@@ -38470,7 +38470,7 @@ id,hood,zipcode,guests,sqft,price
 36880122,Brooklyn,11222,2,,78
 36880990,Queens,11369,2,,50
 36882448,Manhattan,10030,1,,75
-36882914,Brooklyn,nan,16,,450
+36882914,Brooklyn,,16,,450
 36884277,Manhattan,10002,3,,158
 36885269,Manhattan,10036,4,,275
 36898783,Brooklyn,11228,2,,100
@@ -38891,7 +38891,7 @@ id,hood,zipcode,guests,sqft,price
 37300621,Queens,11106,1,,50
 37300708,Brooklyn,11208,1,,39
 37300828,Queens,11101,2,,150
-37306472,Brooklyn,nan,2,,150
+37306472,Brooklyn,,2,,150
 37313309,Bronx,10462,4,,140
 37314465,Brooklyn,11211,2,,165
 37316797,Brooklyn,11238,7,,225
@@ -39392,7 +39392,7 @@ id,hood,zipcode,guests,sqft,price
 37778820,Manhattan,10012,6,,369
 37778945,Manhattan,10012,1,,81
 37779254,Manhattan,10012,6,,354
-37779458,Brooklyn,nan,1,,80
+37779458,Brooklyn,,1,,80
 37780434,Manhattan,10036,4,,259
 37780491,Brooklyn,11216,2,,90
 37781938,Manhattan,10003,2,,200
@@ -39545,7 +39545,7 @@ id,hood,zipcode,guests,sqft,price
 37921418,Manhattan,10065,2,,95
 37921710,Brooklyn,11237,10,,200
 37926696,Manhattan,10065,12,,2999
-37929467,Manhattan,nan,2,,250
+37929467,Manhattan,,2,,250
 37929872,Manhattan,10032,3,,85
 37931944,Queens,11103,1,,50
 37932566,Brooklyn,11249,4,,200
@@ -41162,7 +41162,7 @@ id,hood,zipcode,guests,sqft,price
 39166284,Manhattan,10026,1,,70
 39166764,Queens,11377,2,,50
 39167684,Brooklyn,11226,7,,120
-39170000,Queens,nan,2,,58
+39170000,Queens,,2,,58
 39170413,Manhattan,10003,4,,149
 39170561,Queens,11378,1,,50
 39170771,Queens,11101,3,,120
@@ -41270,7 +41270,7 @@ id,hood,zipcode,guests,sqft,price
 39233824,Manhattan,10040,3,,84
 39234390,Brooklyn,11221,2,,49
 39242143,Brooklyn,11233,3,,99
-39242516,Bronx,nan,2,,50
+39242516,Bronx,,2,,50
 39242528,Manhattan,10010,2,,119
 39243391,Queens,11105,1,,55
 39243894,Manhattan,NY 10019,2,,231
@@ -41282,7 +41282,7 @@ id,hood,zipcode,guests,sqft,price
 39245085,Brooklyn,11233,2,,52
 39246474,Brooklyn,11221,1,,115
 39246584,Brooklyn,11211,4,,250
-39246597,Manhattan,nan,12,,999
+39246597,Manhattan,,12,,999
 39247788,Manhattan,10010,2,,250
 39249334,Brooklyn,11205,3,,130
 39250260,Queens,11101,2,,125
@@ -41526,7 +41526,7 @@ id,hood,zipcode,guests,sqft,price
 39390463,Manhattan,10017,2,,275
 39390567,Manhattan,10032,4,,120
 39390926,Brooklyn,11221,8,,320
-39390945,Brooklyn,nan,4,,129
+39390945,Brooklyn,,4,,129
 39390961,Manhattan,10026,5,,99
 39391376,Manhattan,10003,10,,384
 39391380,Manhattan,10003,10,,400
@@ -41654,7 +41654,7 @@ id,hood,zipcode,guests,sqft,price
 39468752,Brooklyn,11226,2,,150
 39468781,Brooklyn,11216,1,,20
 39469270,Manhattan,10012,2,,175
-39469608,Manhattan,nan,2,,139
+39469608,Manhattan,,2,,139
 39470138,Manhattan,10009,3,,89
 39471603,Manhattan,10069,2,,143
 39471826,Manhattan,10024,3,,169
@@ -41884,7 +41884,7 @@ id,hood,zipcode,guests,sqft,price
 39608330,Manhattan,10012,1,,104
 39608430,Manhattan,10002,4,,225
 39608450,Manhattan,10002,4,,220
-39608907,Brooklyn,nan,1,,80
+39608907,Brooklyn,,1,,80
 39609187,Brooklyn,11216,1,,55
 39609829,Manhattan,10029,2,,130
 39610571,Bronx,10467,1,,78
@@ -43014,7 +43014,7 @@ id,hood,zipcode,guests,sqft,price
 40311599,Queens,11101,4,,120
 40312099,Manhattan,10002,6,,300
 40314393,Brooklyn,11238,2,,60
-40315720,Manhattan,nan,8,,569
+40315720,Manhattan,,8,,569
 40316335,Brooklyn,11212,2,,60
 40318902,Bronx,10467,1,,80
 40319389,Manhattan,10030,1,,1300
@@ -43519,7 +43519,7 @@ id,hood,zipcode,guests,sqft,price
 40592964,Manhattan,10019,2,,85
 40593033,Manhattan,10036,1,,65
 40593094,Manhattan,10040,2,,33
-40593226,Manhattan,nan,1,,10
+40593226,Manhattan,,1,,10
 40593842,Manhattan,10018,2,,130
 40595038,Brooklyn,11206,4,,140
 40595086,Manhattan,10033,1,,53
@@ -43743,7 +43743,7 @@ id,hood,zipcode,guests,sqft,price
 40721525,Brooklyn,11216,2,,149
 40721922,Manhattan,NY 10007,2,,163
 40722699,Manhattan,10025,1,,39
-40722848,Brooklyn,nan,1,,35
+40722848,Brooklyn,,1,,35
 40723037,Manhattan,10013,2,,170
 40723112,Queens,11101,4,,125
 40723293,Manhattan,10001,4,,65
@@ -44386,7 +44386,7 @@ id,hood,zipcode,guests,sqft,price
 41032108,Manhattan,10128,2,,135
 41032660,Queens,11101,1,,30
 41032999,Brooklyn,11205,2,,70
-41033943,Queens,nan,5,,175
+41033943,Queens,,5,,175
 41034195,Manhattan,10075,4,,190
 41034328,Brooklyn,11207,2,,100
 41034486,Brooklyn,11209,1,,34
@@ -45213,7 +45213,7 @@ id,hood,zipcode,guests,sqft,price
 41646648,Brooklyn,11221,1,,28
 41647484,Brooklyn,11206,6,,129
 41647808,Bronx,10457,2,,44
-41656896,Brooklyn,nan,6,,89
+41656896,Brooklyn,,6,,89
 41657903,Bronx,10471,5,,150
 41659981,Manhattan,10032,4,,50
 41662321,Brooklyn,11225,2,,100
@@ -45518,7 +45518,7 @@ id,hood,zipcode,guests,sqft,price
 41852572,Manhattan,10022,7,,300
 41852927,Manhattan,10022,8,,550
 41852930,Brooklyn,11238,2,,86
-41853911,Manhattan,nan,3,,95
+41853911,Manhattan,,3,,95
 41853923,Brooklyn,11213,12,,249
 41854202,Brooklyn,11238,3,,150
 41854363,Manhattan,10019,1,,85
@@ -45745,7 +45745,7 @@ id,hood,zipcode,guests,sqft,price
 41986091,Queens,11421,2,,50
 41986369,Manhattan,10031,1,,100
 41986381,Manhattan,10019,5,,249
-41990825,Queens,nan,12,,395
+41990825,Queens,,12,,395
 41991055,Brooklyn,11211,2,,90
 41993061,Brooklyn,11222,2,,50
 41993134,Manhattan,10013,6,,450
@@ -46697,7 +46697,7 @@ id,hood,zipcode,guests,sqft,price
 42531829,Manhattan,10024,3,,130
 42532821,Brooklyn,11217,4,,380
 42533080,Manhattan,10038,2,,189
-42533258,Manhattan,nan,2,,139
+42533258,Manhattan,,2,,139
 42533947,Manhattan,10009,4,,113
 42533974,Brooklyn,11213,4,,275
 42533977,Queens,11105,4,,120
@@ -46775,7 +46775,7 @@ id,hood,zipcode,guests,sqft,price
 42565700,Manhattan,10019,4,,120
 42566417,Bronx,10462,4,,50
 42566525,Brooklyn,11226,2,,200
-42567610,Queens,nan,4,,150
+42567610,Queens,,4,,150
 42568289,Brooklyn,11221,4,,180
 42568493,Queens,11436,8,,190
 42568915,Manhattan,10036,5,,280
@@ -48846,7 +48846,7 @@ id,hood,zipcode,guests,sqft,price
 43422411,Brooklyn,11223,6,,140
 43422419,Brooklyn,11249,2,,150
 43422457,Manhattan,10036,4,,250
-43422891,Manhattan,nan,6,,212
+43422891,Manhattan,,6,,212
 43423187,Manhattan,10017,4,,225
 43423498,Brooklyn,11206,14,,410
 43423542,Brooklyn,11201,4,,175
@@ -48912,7 +48912,7 @@ id,hood,zipcode,guests,sqft,price
 43443619,Manhattan,10011,2,,145
 43443976,Manhattan,10012,1,,68
 43444099,Brooklyn,11216,1,,45
-43444346,Manhattan,nan,2,,100
+43444346,Manhattan,,2,,100
 43444982,Brooklyn,11208,3,,74
 43447587,Brooklyn,11201,3,,250
 43448687,Brooklyn,11214,2,,59
