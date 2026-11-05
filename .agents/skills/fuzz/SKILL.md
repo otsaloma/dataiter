@@ -1,7 +1,7 @@
 ---
 name: fuzz
 description: End-to-end fuzzing of dataiter — work independently 30–60
-  minutes doing realistic data analysis on a new 10–50M row dataset,
+  minutes doing realistic data analysis on a new 20–100M row dataset,
   record API surprises, broken functionality, complicated or slow
   operations into ISSUES.md, then work through them one by one. Use
   when asked to fuzz dataiter or repeat the end-to-end exercise.
@@ -46,53 +46,54 @@ If you want to place your working files under this repo, put them under
 sessions until eventually wiped by `make clean`.
 
 Previously you have used the following datasets. Try something different
-this time. Find preferably something with 10–50M rows. Focus primarily on
+this time. Find preferably something with 20–100M rows. Focus primarily on
 tabular data and the `DataFrame` class.
 
+- Amazon Reviews 2023 (Electronics and Cell Phones ratings, metadata)
 - Backblaze hard drive stats (daily SMART snapshots)
-- BLS QCEW employment and wages (annual and quarterly single files, area, industry, ownership and aggregation level titles)
-- CFPB HMDA loan/application register (Washington 2018–2023, data browser API) and filers (lender names)
+- BLS QCEW employment and wages (annual and quarterly files, titles)
+- CFPB HMDA loan/application register (Washington 2018–2023) and filers
 - Chicago crimes
-- CMS Medicare Physician & Other Practitioners (by provider, service and geography)
+- CMS Medicare Physician & Other Practitioners
 - Citi Bike GBFS station feeds
 - Citi Bike trips
-- Complete Journey retail purchases, promotions, products, household demographics, campaigns and coupons (completejourney R data)
+- Complete Journey retail purchases, products, households, campaigns
 - EIA-930 hourly electricity balance and balancing-authority interchange
-- EPA AQS air quality (hourly ozone, daily PM2.5, daily AQI by county, sites, monitors)
-- Eurostat weekly deaths by NUTS region, regional population and GEO codelist
-- FEC campaign finance bulk data (individual and committee contributions, committees, candidates)
-- GHCN-Daily weather station data (1900 and 1920 year files, fixed-width stations, inventory, countries and states)
+- EPA AQS air quality (hourly ozone, daily PM2.5 and AQI, monitors)
+- Eurostat weekly deaths by NUTS region, population and GEO codelist
+- FEC campaign finance bulk data (contributions, committees, candidates)
+- GHCN-Daily weather (1900 and 1920 year files, stations, inventory)
 - Helsinki city bikes
 - IMDb non-commercial datasets
-- Inside Airbnb listings, calendar, reviews and neighbourhoods (Amsterdam, Berlin and Copenhagen, September 2026)
-- Instacart Online Grocery Shopping Dataset 2017 (orders, training basket items, products, aisles and departments)
-- JHU CSSE COVID-19 time series (US county and global confirmed and deaths, UID/ISO/FIPS lookup table)
+- Inside Airbnb listings, calendar and reviews (Amsterdam, Berlin, etc.)
+- Instacart Online Grocery 2017 (orders, baskets, products, departments)
+- JHU CSSE COVID-19 time series (US county and global, UID lookup table)
 - Lichess puzzle database
 - MBTA GTFS schedule
 - mledoze/countries (country names, regions and currencies)
 - MovieLens 25M
 - MTA subway hourly ridership (data.ny.gov) and subway stations
-- nflverse NFL play-by-play (1999–2024 Parquet, 2022 CSV), games, players, rosters and participation
-- NHTSA vehicle safety complaints, recalls (pre- and post-2010 flat files) and defect investigations
+- nflverse NFL play-by-play, games, players, rosters and participation
+- NHTSA vehicle safety complaints, recalls and defect investigations
 - NOAA Storm Events details, fatalities and locations
 - NYC 311 service requests
 - NYC Citywide Payroll
-- NYC DOF parking violations issued (fiscal year), parking violation codes and Open Parking and Camera Violations (payments)
-- NYC motor vehicle collisions (full crashes and vehicles, 20,000-person sample)
+- NYC DOF parking violations, violation codes and camera violations
+- NYC motor vehicle collisions (crashes, vehicles, person sample)
 - NYC taxi
 - Ookla open data fixed broadband performance tiles
 - Open-Meteo hourly weather
 - OpenPowerlifting
-- OpenSky Network flight lists (Zenodo, April 2019 and April 2020) and aircraft database
+- OpenSky Network flight lists (April 2019 and 2020) and aircraft
 - OurAirports airports and countries
-- Seattle Public Library checkouts by title (monthly), physical item checkouts (events) and ILS data dictionary
+- Seattle Public Library checkouts (monthly and events), data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
-- SSA baby names (national and state counts, Social Security card-holder totals)
-- Stanford Open Policing Project traffic stops (Nashville, New Orleans, San Diego)
+- SSA baby names (national and state counts, card-holder totals)
+- Stanford Open Policing traffic stops (Nashville, San Diego, etc.)
 - UCI Gas Sensor Array Temperature Modulation (13 measurement runs)
-- UCI Individual Household Electric Power Consumption (minute readings, 2006–2010)
+- UCI Individual Household Electric Power Consumption (2006–2010)
 - UCI Online Retail II (two-year retail transactions)
-- UCI PAMAP2 Physical Activity Monitoring (protocol and optional sessions)
+- UCI PAMAP2 Physical Activity Monitoring
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
@@ -100,7 +101,7 @@ tabular data and the `DataFrame` class.
 - US Census national county codes (2020)
 - US Census ZCTA gazetteer
 - US flights
-- USGS earthquake catalog (2016–2025 CSV events, magnitude ≥6 GeoJSON, contributor directory)
+- USGS earthquake catalog (2016–2025 events, M6+ GeoJSON, contributors)
 - Wikipedia clickstream
 - World Bank country population (datasets/population on GitHub)
 
