@@ -1103,8 +1103,11 @@ class Vector(np.ndarray):
                (isinstance(x, float) and np.isnan(x))
                else x for x in seq]
         if dtype is not None:
-            if np.issubdtype(dtype, np.integer) and np.nan in seq:
-                # Upcast from integer to float as required.
+            # Upcast from integer to float as required. Missing values were
+            # replaced with na above, so they can be found by identity. In
+            # contrast, np.nan in seq would also compare elements with ==,
+            # which can never match NaN and is very slow for NumPy scalars.
+            if np.issubdtype(dtype, np.integer) and any(x is na for x in seq):
                 dtype = float
             return cls._np_array(seq, dtype)
         # NaT values bring in np.datetime64 or np.timedelta64 to types.

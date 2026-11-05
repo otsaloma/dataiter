@@ -146,6 +146,15 @@ class TestVector:
         assert a.is_float()
         assert a.equal(b)
 
+    def test___new___na_integer_dtype(self):
+        # Should be upcast to float.
+        # Missing values should be NaN.
+        a = Vector([np.int64(1), None, float("nan")], int)
+        b = Vector([1, NaN, NaN])
+        assert a.is_float()
+        assert a.equal(b)
+        assert Vector([np.int64(1), np.int64(2)], int).is_integer()
+
     def test___new___na_integer_mixed_nan(self):
         # Should be upcast to float.
         # Missing values should be NaN.
