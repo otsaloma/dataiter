@@ -372,10 +372,17 @@ class Vector(np.ndarray):
         ``"strict"`` to raise ``ValueError``, ``"replace"`` to replace them
         with missing values.
 
+        `precision` is the unit of the result, e.g. ``"s"``, ``"ms"`` or
+        ``"us"``. Numbers are taken as time since the Unix epoch, 1970-01-01
+        UTC, in units of `precision`, e.g. use ``"ms"`` for Unix
+        milliseconds.
+
         >>> vector = di.Vector(["2020-01-01T12:00:00"])
         >>> vector.as_datetime()
         >>> vector = di.Vector(["2020-01-01T12:00:00", "12:00:00"])
         >>> vector.as_datetime(errors="replace")
+        >>> vector = di.Vector([1577880000000])
+        >>> vector.as_datetime("ms")
         """
         return self._as_datetime64(np.dtype(f"datetime64[{precision}]"), "datetime", errors)
 
