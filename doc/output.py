@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import subprocess
 import sys
 
@@ -25,6 +26,9 @@ def get_output(lines):
             args=[sys.executable, "-c", "\n".join(lines)],
             stderr=subprocess.STDOUT,
             cwd=Path("..").resolve(),
+            # Free-threaded Python warns on importing modules that don't
+            # declare support for running without the GIL, e.g. duckdb.
+            env={**os.environ, "PYTHON_GIL": "1"},
             encoding="utf-8",
             errors="replace",
             timeout=30,
