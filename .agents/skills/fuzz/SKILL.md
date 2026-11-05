@@ -1,7 +1,7 @@
 ---
 name: fuzz
 description: End-to-end fuzzing of dataiter — work independently 30–60
-  minutes doing realistic data analysis on a new 1–10M row dataset,
+  minutes doing realistic data analysis on a new 10–50M row dataset,
   record API surprises, broken functionality, complicated or slow
   operations into ISSUES.md, then work through them one by one. Use
   when asked to fuzz dataiter or repeat the end-to-end exercise.
@@ -46,7 +46,7 @@ If you want to place your working files under this repo, put them under
 sessions until eventually wiped by `make clean`.
 
 Previously you have used the following datasets. Try something different
-this time. Find preferably something with 1–10M rows. Focus primarily on
+this time. Find preferably something with 10–50M rows. Focus primarily on
 tabular data and the `DataFrame` class.
 
 - Backblaze hard drive stats (daily SMART snapshots)
@@ -96,6 +96,7 @@ tabular data and the `DataFrame` class.
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK Land Registry price paid
 - US Census ACS PUMS
+- US Census LEHD LODES (California commuting flows, jobs and crosswalk)
 - US Census national county codes (2020)
 - US Census ZCTA gazetteer
 - US flights
