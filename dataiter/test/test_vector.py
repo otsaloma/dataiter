@@ -35,8 +35,8 @@ from numpy.dtypes import StringDType
 
 NaN = np.nan
 NaT = np.datetime64("NaT", "D")
-DATE = datetime.date.today()
-DATETIME = datetime.datetime.now()
+DATE = datetime.date(2026, 11, 5)
+DATETIME = datetime.datetime(2026, 11, 5, 23, 2, 10, 158123)
 
 class TestVector:
 
