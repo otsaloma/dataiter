@@ -27,6 +27,25 @@ in memory.
 
     data = di.read_parquet("sales.parquet", select=["customer_id", "ts", "price"])
 
+Encode String Identifiers as Integers
+-------------------------------------
+
+Identifiers such as user IDs are often UUIDs or other long strings with mostly
+unique values. These take a lot of memory and make grouping, sorting and joining
+by them slow. For example, one UUID 36 characters long will take 36 bytes of
+memory while an integer will only take 8 bytes and is also much faster to
+compare. If you use such identifiers repeatedly, consider encoding them as
+integers once and keeping a mapping to decode them, e.g. in final results.
+
+.. code-block:: python
+
+    users = data.unique("user_id").select("user_id")
+    users.uid = np.arange(users.nrow)
+    users.write_parquet("users.parquet")
+    data = data.left_join(users, "user_id").unselect("user_id")
+    # Decode user IDs of the ten most active users.
+    data.count("uid").sort(n=-1).head(10).left_join(users, "uid")
+
 Processing in Chunks
 --------------------
 
