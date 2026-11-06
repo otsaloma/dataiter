@@ -1,26 +1,15 @@
 # PENDING: Dataiter 2.1
 
-- `DataFrame.from_arrow`: Fix error with over 2 GiB of data in a string column,
-  affecting also e.g. `read_csv` and `read_parquet`
-- `DataFrame.modify`: Support common aggregation functions, e.g. `di.sum("x")`,
-  giving the group-wise summary repeated on all rows of the group, and new
-  window functions, e.g. `di.cumsum("x")`, much faster than lambda functions
-- `DataFrame.modify`: Speed up grouped modify, e.g. from 0.33 to 0.17 s for
-  3M rows and 8k groups
+- `cummax`, `cummin`, `cumsum`, `rank`, `shift`: New fast window functions
+- `DataFrame.modify`: Support fast group-wise aggregation functions, e.g. `di.sum`
+- `DataFrame.modify`: Support fast group-wise window functions, e.g. `di.cumsum`
+- `DataFrame.read_csv`, `DataFrame.read_parquet`: Fix error with over 2 GiB of string data
 - `DataFrame.read_duckdb`: New classmethod to read the result of a DuckDB SQL query
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
-- `DataFrame.sort`: Speed up for multiple integer-like keys
-- `DataFrame.unique`: Speed up for integer-like keys
-- `Vector.rank`: Speed up for numbers and datetimes, e.g. from 0.42 to 0.27 s
-  for 3M floats
-- `cummax`, `cummin`, `cumsum`, `rank`, `shift`: New window functions for use
-  with `DataFrame.modify`
 - `dt.floor`, `dt.sequence`: Support multiples of units, e.g. "15 minutes"
 - `read_duckdb`: New alias for `DataFrame.read_duckdb`
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
-- Reduce memory use after reading files and operations on large string data,
-  e.g. from 19 to 9 GB after reading 9 GB of data from Parquet
-- Speed up sorting large numeric data using parallel threads
+- Free memory after operations run via PyArrow
 - Add documentation on dealing with out-of-memory data
 
 # 2026-10-25: Dataiter 2.0
