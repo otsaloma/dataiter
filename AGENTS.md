@@ -63,16 +63,6 @@ Do not complain about these or spend too much time investigating.
   (doesn't support `StringDType`) and a categorical type or string
   interning (would need a second string type).
 
-- Grouped `DataFrame.modify` is slow for large data frames, e.g. 0.75 s
-  for 3M rows and 8k groups, as it calls a Python function per group and
-  reorders the columns used and the result between group and original
-  order. Functions get a `LazyDataFrame`, which reorders only the
-  columns they access. Significantly speeding it up further would
-  require vectorized helper functions like those for
-  `DataFrame.aggregate`, which avoid per-group Python calls. That would
-  be a big change, currently not considered worth doing, as grouped
-  modify is not commonly used.
-
 - `DataFrame` methods return new data frames with all columns copied,
   which makes long method chains on large and wide data frames slow,
   e.g. 0.2 s per `modify` for 3.4M rows and 101 columns. This is by

@@ -49,7 +49,8 @@ def all(x, *, drop_na=True):
     Return whether all elements of `x` evaluate to ``True``.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     Equivalent to ``numpy.all``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.all.html
@@ -86,7 +87,8 @@ def any(x, *, drop_na=True):
     Return whether any element of `x` evaluates to ``True``.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     Equivalent to ``numpy.any``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.any.html
@@ -107,10 +109,10 @@ def count(x="", *, drop_na=False):
     Return the amount of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`. Since
-    all columns in a data frame should have the same amount of elements (i.e.
-    rows), you can just leave the x argument at its default blank string, which
-    will give you that row count.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`. Since all columns in a data frame should have the
+    same amount of elements (i.e. rows), you can just leave the x argument at
+    its default blank string, which will give you that row count.
 
     >>> di.count(di.Vector([1, 2, 3]))
     >>> di.count()
@@ -133,7 +135,8 @@ def count_unique(x, *, drop_na=False):
     Return the amount of unique elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.count_unique(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.count_unique("x")
@@ -185,7 +188,8 @@ def first(x, *, drop_na=False):
     Return the first element of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.first(di.Vector([1, 2, 3]))
     >>> di.first("x")
@@ -216,7 +220,8 @@ def last(x, *, drop_na=False):
     Return the last element of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.last(di.Vector([1, 2, 3]))
     >>> di.last("x")
@@ -229,7 +234,8 @@ def max(x, *, drop_na=True):
     Return the maximum of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.max(di.Vector([4, 5, 6]))
     >>> di.max("x")
@@ -242,9 +248,9 @@ def mean(x, *, weights=None, drop_na=True):
     Return the arithmetic mean of `x`, optionally weighted by `weights`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`,
-    weighted by column `weights`, if given. If `x` is a vector, `weights`
-    should be a vector of the same length.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`, weighted by column `weights`, if given. If `x` is
+    a vector, `weights` should be a vector of the same length.
 
     With `drop_na`, rows where either `x` or `weights` is missing are
     dropped. If weights sum to zero, the result is NaN.
@@ -297,7 +303,8 @@ def median(x, *, drop_na=True):
     Return the median of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     Equivalent to ``numpy.median``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.median.html
@@ -333,7 +340,8 @@ def min(x, *, drop_na=True):
     Return the minimum of elements in `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.min(di.Vector([4, 5, 6]))
     >>> di.min("x")
@@ -366,7 +374,8 @@ def mode(x, *, drop_na=True):
     Return the most common value in `x`, the first one if tied.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.mode("x")
@@ -402,7 +411,8 @@ def nth(x, index, *, drop_na=False):
     Return the element of `x` at `index` (zero-based).
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.nth(di.Vector([1, 2, 3]), 1)
     >>> di.nth("x", 1)
@@ -431,7 +441,8 @@ def prod(x, *, drop_na=True):
     Return the product of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.prod(di.Vector([1, 2, 3]))
     >>> di.prod("x")
@@ -444,7 +455,8 @@ def quantile(x, q, *, drop_na=True):
     Return the `qth` quantile of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     Equivalent to ``numpy.quantile``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
@@ -504,7 +516,8 @@ def std(x, *, ddof=0, drop_na=True):
     Return the standard deviation of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     Equivalent to ``numpy.std``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.std.html
@@ -528,7 +541,8 @@ def sum(x, *, drop_na=True):
     Return the sum of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     >>> di.sum(di.Vector([1, 2, 3]))
     >>> di.sum("x")
@@ -564,7 +578,8 @@ def var(x, *, ddof=0, drop_na=True):
     Return the variance of `x`.
 
     If `x` is a string, return a function usable with
-    :meth:`.DataFrame.aggregate` that operates group-wise on column `x`.
+    :meth:`.DataFrame.aggregate` and :meth:`.DataFrame.modify` that operates
+    group-wise on column `x`.
 
     Equivalent to ``numpy.var``, see the NumPy documentation for details:
     https://numpy.org/doc/stable/reference/generated/numpy.var.html

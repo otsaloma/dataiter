@@ -860,6 +860,26 @@ class TestDataFrame:
         data = data.group_by("g").modify(f=lambda x: 1 / x.nrow)
         assert data.f.tolist() == [1, 1/2, 1/2, 1/3, 1/3, 1/3]
 
+    def test_modify_group_wise_aggregate(self):
+        data = DataFrame(g=[1, 3, 3, 3, 2, 2], x=[1, 2, 3, 4, 5, 6])
+        data = data.group_by("g").modify(n=di.count(), s=di.sum("x"), f=di.first("x"))
+        assert data.n.tolist() == [1, 3, 3, 3, 2, 2]
+        assert data.s.tolist() == [1, 9, 9, 9, 11, 11]
+        assert data.f.tolist() == [1, 2, 2, 2, 5, 5]
+
+    def test_modify_group_wise_window(self):
+        data = DataFrame(g=[1, 3, 3, 3, 2, 2], x=[1, 2, 3, 4, 5, 6])
+        data = data.group_by("g").modify(s=di.cumsum("x"), p=di.shift("x"))
+        assert data.s.tolist() == [1, 2, 5, 9, 5, 11]
+        assert data.p.equal(di.Vector([np.nan, np.nan, 2, 3, np.nan, 5]))
+
+    def test_modify_aggregate(self):
+        data = DataFrame(x=[1, 2, 3])
+        data = data.modify(n=di.count(), s=di.sum("x"), f=di.last("x"))
+        assert data.n.tolist() == [3, 3, 3]
+        assert data.s.tolist() == [6, 6, 6]
+        assert data.f.tolist() == [3, 3, 3]
+
     def test_modify_group_wise_unsorted(self):
         data = DataFrame(g=[1, 3, 3, 3, 2, 2])
         data = data.group_by("g").modify(f=lambda x: 1 / x.nrow)

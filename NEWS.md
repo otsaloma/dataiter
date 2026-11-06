@@ -2,10 +2,17 @@
 
 - `DataFrame.from_arrow`: Fix error with over 2 GiB of data in a string column,
   affecting also e.g. `read_csv` and `read_parquet`
+- `DataFrame.modify`: Support common aggregation functions, e.g. `di.sum("x")`,
+  giving the group-wise summary repeated on all rows of the group, and new
+  window functions, e.g. `di.cumsum("x")`, much faster than lambda functions
+- `DataFrame.modify`: Speed up grouped modify, e.g. from 0.33 to 0.17 s for
+  3M rows and 8k groups
 - `DataFrame.read_duckdb`: New classmethod to read the result of a DuckDB SQL query
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `DataFrame.sort`: Speed up for multiple integer-like keys
 - `DataFrame.unique`: Speed up for integer-like keys
+- `cummax`, `cummin`, `cumsum`, `rank`, `shift`: New window functions for use
+  with `DataFrame.modify`
 - `dt.floor`, `dt.sequence`: Support multiples of units, e.g. "15 minutes"
 - `read_duckdb`: New alias for `DataFrame.read_duckdb`
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`

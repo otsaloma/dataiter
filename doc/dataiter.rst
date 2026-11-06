@@ -23,8 +23,17 @@ Aggregation functions
     :func:`~dataiter.sum`
     :func:`~dataiter.var`
 
-    See also :meth:`.DataFrame.aggregate` and the guide on :doc:`aggregation
-    </aggregation>`.
+    See also :meth:`.DataFrame.aggregate`, :meth:`.DataFrame.modify` and the
+    guide on :doc:`aggregation </aggregation>`.
+
+Window functions
+    :func:`~dataiter.cummax`
+    :func:`~dataiter.cummin`
+    :func:`~dataiter.cumsum`
+    :func:`~dataiter.rank`
+    :func:`~dataiter.shift`
+
+    See also :meth:`.DataFrame.modify`.
 
 Convenience aliases for reading data
     :func:`~dataiter.read_csv`
@@ -64,6 +73,9 @@ Customization for printing and formatting
              any,
              count,
              count_unique,
+             cummax,
+             cummin,
+             cumsum,
              first,
              last,
              max,
@@ -75,6 +87,7 @@ Customization for printing and formatting
              of_type,
              prod,
              quantile,
+             rank,
              read_csv,
              read_duckdb,
              read_geojson,
@@ -83,6 +96,7 @@ Customization for printing and formatting
              read_npz,
              read_parquet,
              read_parquet_chunked,
+             shift,
              std,
              sum,
              var,

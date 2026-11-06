@@ -89,6 +89,12 @@ from dataiter.aggregate import std
 from dataiter.aggregate import sum
 from dataiter.aggregate import var
 
+from dataiter.window import cummax
+from dataiter.window import cummin
+from dataiter.window import cumsum
+from dataiter.window import rank
+from dataiter.window import shift
+
 from dataiter.io import read_csv
 from dataiter.io import read_duckdb
 from dataiter.io import read_geojson

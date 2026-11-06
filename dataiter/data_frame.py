@@ -1170,10 +1170,13 @@ class DataFrame(dict):
 
         If the data frame is grouped, then `colname_value_pairs` need to be
         functions, which are applied to group-wise subsets of the data frame.
-        A common use for this is calculating group-wise fractions.
+        Common aggregation and window functions have faster shorthand helpers
+        available under :mod:`dataiter`.
 
-        >>> data = di.DataFrame(g=[1, 2, 2, 3, 3, 3])
-        >>> data.group_by("g").modify(f=lambda x: 1 / x.nrow)
+        >>> data = di.read_csv("data/listings.csv")
+        >>> # The below modifications are identical.
+        >>> data.group_by("hood").modify(n=di.count(), rank=di.rank("price"))
+        >>> data.group_by("hood").modify(n=lambda x: x.nrow, rank=lambda x: x.price.rank())
         """
         for colname, column in self.items():
             # Overwritten columns are yielded uncopied
@@ -1187,29 +1190,46 @@ class DataFrame(dict):
         else:
             data = self.copy()
             for colname, value in colname_value_pairs.items():
-                column = value(data) if callable(value) else value
+                if getattr(value, "group_aware", False):
+                    view = data._view_rows(slice(None))
+                    column = view._call_group_aware(value, np.arange(min(1, data.nrow)))
+                else:
+                    column = value(data) if callable(value) else value
                 data[colname] = column
                 # Unless the column was stored as is, __setitem__ made a copy.
                 yield colname, column.copy() if data[colname] is column else data[colname]
 
+    def _call_group_aware(self, function, starts):
+        # Aggregation functions return a value per group,
+        # broadcast that to rows, window functions a value per row.
+        column = function(self, starts)
+        if len(column) == self.nrow: return column
+        return np.repeat(column, np.diff(starts, append=self.nrow))
+
     def _modify_group_wise(self, **colname_function_pairs):
         order, starts = self._get_groups(*self._group_colnames)
         data = self._view_rows(order)
-        restore_indices = np.argsort(order)
-        ends = np.append(starts[1:], self.nrow)
-        # Contiguous slices make cheap NumPy views instead of copies.
-        # Create them lazily, as holding hundreds of thousands
-        # of views alive at once makes garbage collection slow.
-        slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
-        # Without rows, call functions once with an empty group
-        # to get a column of the correct data type.
-        slices = slices or [slice(0, 0)]
+        # Invert permutation by scatter, much faster than argsort.
+        restore_indices = np.empty_like(order)
+        restore_indices[order] = np.arange(len(order))
+        if not all(getattr(x, "group_aware", False) for x in colname_function_pairs.values()):
+            ends = np.append(starts[1:], self.nrow)
+            # Contiguous slices make cheap NumPy views instead of copies.
+            # Create them lazily, as holding hundreds of thousands
+            # of views alive at once makes garbage collection slow.
+            slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]
+            # Without rows, call functions once with an empty group
+            # to get a column of the correct data type.
+            slices = slices or [slice(0, 0)]
         columns = {}
         for colname, function in colname_function_pairs.items():
             if not callable(function):
                 raise ValueError(f"{colname} argument not callable")
-            column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
-            data[colname] = np.concatenate(column).view(DataFrameColumn)
+            if getattr(function, "group_aware", False):
+                data[colname] = DataFrameColumn.fast(data._call_group_aware(function, starts))
+            else:
+                column = [DataFrameColumn(function(data._view_rows(x)), nrow=x.stop-x.start) for x in slices]
+                data[colname] = np.concatenate(column).view(DataFrameColumn)
             columns[colname] = data[colname][restore_indices]
         return columns
 
