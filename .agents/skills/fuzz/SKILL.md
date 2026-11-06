@@ -1,7 +1,7 @@
 ---
 name: fuzz
 description: End-to-end fuzzing of dataiter — work independently 30–60
-  minutes doing realistic data analysis on a new 20–100M row dataset,
+  minutes doing realistic data analysis on a new 50–100M row dataset,
   record API surprises, broken functionality, complicated or slow
   operations into ISSUES.md, then work through them one by one. Use
   when asked to fuzz dataiter or repeat the end-to-end exercise.
@@ -46,7 +46,7 @@ If you want to place your working files under this repo, put them under
 sessions until eventually wiped by `make clean`.
 
 Previously you have used the following datasets. Try something different
-this time. Find preferably something with 20–100M rows. Focus primarily on
+this time. Find preferably something with 50–100M rows. Focus primarily on
 tabular data and the `DataFrame` class.
 
 - Amazon Reviews 2023 (Electronics and Cell Phones ratings, metadata)
@@ -85,6 +85,7 @@ tabular data and the `DataFrame` class.
 - Open-Meteo hourly weather
 - OpenPowerlifting
 - OpenSky Network flight lists (April 2019 and 2020) and aircraft
+- opentransportdata.swiss Ist-Daten v2 (September 2026), service points
 - OurAirports airports and countries
 - Seattle Public Library checkouts (monthly and events), data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
