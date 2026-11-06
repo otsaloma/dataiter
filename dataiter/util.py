@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 import bz2
+import contextlib
 import dataiter
 import datetime
 import fnmatch
@@ -206,6 +207,20 @@ def read_jsonl(path, *, encoding="utf-8", select=[], **kwargs):
         return [{k: v for k, v in json.loads(line, **kwargs).items() if keep(k)}
                 for line in f if line.strip()]
 
+@contextlib.contextmanager
+def release_arrow_memory():
+    # PyArrow's default memory pool keeps freed memory allocated for reuse by
+    # Arrow, which NumPy can't use, e.g. after reading a file as much as the
+    # data itself. Return it to the OS once Arrow data used within the block
+    # has been freed. Releasing costs ~1 ms, skip it for little allocated.
+    pool = pa.default_memory_pool()
+    start = pool.total_bytes_allocated()
+    try:
+        yield
+    finally:
+        if pool.total_bytes_allocated() - start > 100_000_000:
+            pool.release_unused()
+
 def result(value):
     # Return the result of a future from submit, other values as is.
     return value.result() if isinstance(value, Future) else value
@@ -260,8 +275,9 @@ def unique_codes(x):
     elif x.dtype.kind not in "iuST":
         raise TypeError(f"Expected string, bytes, number or datetime, got {x.dtype}")
     type = pa.large_string() if x.dtype.kind == "T" else None
-    codes = pa.array(np.asarray(y), type=type).dictionary_encode().indices
-    codes = codes.to_numpy().astype(np.int64)
+    with release_arrow_memory():
+        codes = pa.array(np.asarray(y), type=type).dictionary_encode().indices
+        codes = codes.to_numpy().astype(np.int64)
     first = np.ones(len(codes), bool)
     first[1:] = codes[1:] > np.maximum.accumulate(codes)[:-1]
     first = np.flatnonzero(first)

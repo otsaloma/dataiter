@@ -491,6 +491,7 @@ class DataFrame(dict):
             yield name, values if name == colname else util.submit(np.take, column, rows)
 
     @staticmethod
+    @deco.release_arrow_memory
     def _explode_strings(column, sep):
         pieces = pc.split_pattern(pa.array(np.asarray(column), pa.large_string()), sep)
         counts = pc.list_value_length(pieces).to_numpy()
@@ -562,6 +563,7 @@ class DataFrame(dict):
             yield colname, util.submit(np.delete, column, rows)
 
     @classmethod
+    @deco.release_arrow_memory
     @deco.new_from_parallel_generator
     def from_arrow(cls, data, *, dtypes={}, timezone="keep"):
         """
@@ -697,6 +699,7 @@ class DataFrame(dict):
         return cls(**data)
 
     @classmethod
+    @deco.release_arrow_memory
     def from_pandas(cls, data, *, dtypes={}):
         """
         Return a new data frame from ``pandas.DataFrame`` `data`.
@@ -905,6 +908,7 @@ class DataFrame(dict):
         return (large, small) if swap else (small, large)
 
     @staticmethod
+    @deco.release_arrow_memory
     def _get_join_codes_strings(a, b):
         # Return codes for string columns a and b. If one side is much smaller,
         # hash only it and look up the larger side, rows not found getting a
@@ -1484,6 +1488,7 @@ class DataFrame(dict):
             yield colname, util.submit(concatenate, *parts, parallel=parallel)
 
     @classmethod
+    @deco.release_arrow_memory
     def read_csv(cls, path, *, encoding="utf-8", sep=",", quote='"', header=True, colnames=[], na=[], select=[], dtypes={}):
         """
         Return a new data frame from CSV file `path`.
@@ -1563,6 +1568,7 @@ class DataFrame(dict):
         return cls.from_arrow(table, dtypes=dtypes)
 
     @classmethod
+    @deco.release_arrow_memory
     def read_duckdb(cls, query, *, params=None):
         """
         Return a new data frame from the result of SQL `query` run in DuckDB.
@@ -1634,6 +1640,7 @@ class DataFrame(dict):
             return cls(**{x: data[x] for x in names})
 
     @classmethod
+    @deco.release_arrow_memory
     def read_parquet(cls, path, *, select=[], dtypes={}, timezone="keep"):
         """
         Return a new data frame from Parquet file `path`.
@@ -1670,8 +1677,12 @@ class DataFrame(dict):
             if select:
                 select = util.glob_all(select, file.schema_arrow.names)
             for batch in file.iter_batches(batch_size=chunk_nrow, columns=select or None):
-                data = pa.Table.from_batches([batch])
-                yield cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
+                chunk = cls.from_arrow(pa.Table.from_batches([batch]), dtypes=dtypes, timezone=timezone)
+                # As util.release_arrow_memory, but the batch is read before
+                # the loop body could count it. Chunks are meant to be large.
+                del batch
+                pa.default_memory_pool().release_unused()
+                yield chunk
 
     @classmethod
     def read_pickle(cls, path):
@@ -1992,6 +2003,7 @@ class DataFrame(dict):
                 data[i][colname] = value
         return ListOfDicts(data)
 
+    @deco.release_arrow_memory
     def to_pandas(self):
         """
         Return data frame converted to a ``pandas.DataFrame``.
@@ -2129,6 +2141,7 @@ class DataFrame(dict):
     def _view_rows(self, rows):
         return LazyDataFrame.from_rows(self, rows)
 
+    @deco.release_arrow_memory
     def write_csv(self, path, *, encoding="utf-8", header=True, sep=","):
         """
         Write data frame to CSV file `path`.
@@ -2203,6 +2216,7 @@ class DataFrame(dict):
                 with zf.open(f"{name}.npy", "w", force_zip64=True) as f:
                     np.lib.format.write_array(f, column, allow_pickle=True)
 
+    @deco.release_arrow_memory
     def write_parquet(self, path, **kwargs):
         """
         Write data frame to Parquet file `path`.

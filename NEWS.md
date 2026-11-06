@@ -8,6 +8,8 @@
 - `DataFrame.unique`: Speed up for integer-like keys
 - `read_duckdb`: New alias for `DataFrame.read_duckdb`
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
+- Reduce memory use after reading files and operations on large string data,
+  e.g. from 19 to 9 GB after reading 9 GB of data from Parquet
 - Speed up sorting large numeric data using parallel threads
 - Add documentation on dealing with out-of-memory data
 

@@ -32,6 +32,7 @@ import sys
 import warnings
 import wcwidth
 
+from dataiter import deco
 from dataiter import dtypes
 from dataiter import util
 from math import inf
@@ -206,6 +207,7 @@ class StrProxy:
     upper = str_method("upper")
     zfill = str_method("zfill")
 
+    @deco.release_arrow_memory
     def contains(self, x):
         if not self._vector.is_string() or not isinstance(x, str):
             return self.find(x) > -1
@@ -655,6 +657,7 @@ class Vector(np.ndarray):
         """
         return np.issubdtype(self.dtype, np.floating)
 
+    @deco.release_arrow_memory
     def is_in(self, values):
         """
         Return a boolean vector indicating elements found in `values`.

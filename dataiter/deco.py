@@ -65,6 +65,15 @@ def obsoletes(function):
         return value
     return wrapper
 
+def release_arrow_memory(function):
+    # See util.release_arrow_memory. Returning from within the block
+    # frees the locals of function before the release.
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        with util.release_arrow_memory():
+            return function(*args, **kwargs)
+    return wrapper
+
 def tuplefy(function):
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
