@@ -1214,10 +1214,15 @@ class DataFrame(dict):
 
     def _modify_group_wise(self, **colname_function_pairs):
         order, starts = self._get_groups(*self._group_colnames)
+        if (order[1:] > order[:-1]).all():
+            # Data sorted by group, as usual before window functions,
+            # needs no reordering to group order and back.
+            order = restore_indices = slice(None)
+        else:
+            # Invert permutation by scatter, much faster than argsort.
+            restore_indices = np.empty_like(order)
+            restore_indices[order] = np.arange(len(order))
         data = self._view_rows(order)
-        # Invert permutation by scatter, much faster than argsort.
-        restore_indices = np.empty_like(order)
-        restore_indices[order] = np.arange(len(order))
         if not all(getattr(x, "group_aware", False) for x in colname_function_pairs.values()):
             ends = np.append(starts[1:], self.nrow)
             # Contiguous slices make cheap NumPy views instead of copies.

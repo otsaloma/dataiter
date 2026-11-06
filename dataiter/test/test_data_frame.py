@@ -890,6 +890,13 @@ class TestDataFrame:
         assert data.s.tolist() == [1, 2, 5, 9, 5, 11]
         assert data.p.equal(di.Vector([np.nan, np.nan, 2, 3, np.nan, 5]))
 
+    def test_modify_group_wise_window_sorted(self):
+        orig = DataFrame(g=[1, 2, 2, 3, 3, 3], x=[1, 2, 3, 4, 5, 6])
+        data = orig.group_by("g").modify(s=di.cumsum("x"), x=di.shift("x"))
+        assert data.s.tolist() == [1, 2, 5, 4, 9, 15]
+        assert data.x.equal(di.Vector([np.nan, np.nan, 2, np.nan, 4, 5]))
+        assert orig.x.tolist() == [1, 2, 3, 4, 5, 6]
+
     def test_modify_aggregate(self):
         data = DataFrame(x=[1, 2, 3])
         data = data.modify(n=di.count(), s=di.sum("x"), f=di.last("x"))
