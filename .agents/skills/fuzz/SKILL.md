@@ -96,6 +96,7 @@ tabular data and the `DataFrame` class.
 - UCI Online Retail II (two-year retail transactions)
 - UCI PAMAP2 Physical Activity Monitoring
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
+- UK DVSA anonymised MOT tests (2022 results, failure items, lookups)
 - UK Land Registry price paid
 - US Census ACS PUMS
 - US Census LEHD LODES (California commuting flows, jobs and crosswalk)

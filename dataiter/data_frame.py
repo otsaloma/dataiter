@@ -847,11 +847,13 @@ class DataFrame(dict):
         return order, np.flatnonzero(change)
 
     def _get_join_codes(self, other, by1, by2):
-        # Return int64 codes for rows of self and other, equal for equal
+        # Return dense int64 codes for rows of self and other, equal for equal
         # keys and -1 for rows that can't match, i.e. missing values in by.
         # String columns are encoded as codes and other non-numeric columns
         # together via a dict of tuples, the results of which are combined
-        # arithmetically with numeric and datetime columns.
+        # arithmetically with numeric and datetime columns. Sparse codes,
+        # e.g. from random IDs or microsecond datetimes, are made dense by
+        # hashing, for which the matching in _get_join_indices is fast.
         a_na = np.zeros(self.nrow, bool)
         b_na = np.zeros(other.nrow, bool)
         for colname1, colname2 in zip(by1, by2):
@@ -877,6 +879,8 @@ class DataFrame(dict):
         if hashable:
             numeric.append(np.concatenate(self._get_join_codes_hashable(hashable)))
         codes = self._get_codes(numeric, ordered=False)
+        if codes.max(initial=0) > 2 * len(codes):
+            codes = util.unique_codes(codes)[2]
         n = self.nrow - a_na.sum()
         a_codes = np.full(self.nrow, -1)
         b_codes = np.full(other.nrow, -1)
@@ -950,11 +954,10 @@ class DataFrame(dict):
 
     @staticmethod
     def _get_join_lookup(a, b):
-        # If codes are dense and unique in b, return for each code in a
-        # its row in b or -1, via a lookup table, which is much faster than
-        # sorting b and searching. Otherwise return None.
+        # If codes are unique in b, return for each code in a its row in b
+        # or -1, via a lookup table, which is much faster than sorting b.
+        # Otherwise return None.
         size = int(max(a.max(initial=-1), b.max(initial=-1))) + 1
-        if size > 2 * (len(a) + len(b)): return None
         valid = np.flatnonzero(b > -1)
         if np.bincount(b[valid], minlength=size).max(initial=0) > 1: return None
         table = np.full(size + 1, -1)
@@ -984,12 +987,15 @@ class DataFrame(dict):
     def _get_join_ranges(a, b):
         # Return for each code in a the range left:right of equal codes in b,
         # as positions in order, the stable sort order of b. Codes -1 never
-        # match: they are left out of order and get an empty range.
+        # match: they are left out of order and index the extra last count,
+        # which is zero, giving an empty range. Ranges from counts of codes
+        # are much faster than binary search, which is cache-unfriendly.
+        size = int(max(a.max(initial=-1), b.max(initial=-1))) + 1
         order = np.flatnonzero(b > -1)
         order = order[util.argsort(b[order])]
-        left = np.searchsorted(b[order], a, "left")
-        right = np.searchsorted(b[order], a, "right")
-        return left, right, order
+        counts = np.bincount(b[order], minlength=size + 1)
+        left = (np.cumsum(counts) - counts)[a]
+        return left, left + counts[a], order
 
     def group_by(self, *colnames):
         """

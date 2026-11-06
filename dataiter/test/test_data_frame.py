@@ -754,6 +754,14 @@ class TestDataFrame:
         assert data.x.tolist() == [1, 2, 3, 4, 5]
         assert data.y.tolist() == [3, None, None, 1, 3]
 
+    @pytest.mark.parametrize("multiple", ["first", "last", "all"])
+    def test_left_join_unique_sparse_codes(self, multiple):
+        a = DataFrame(k=[10**12, 5, 3 * 10**12, 10**12], x=[1, 2, 3, 4])
+        b = DataFrame(k=[5, 10**12, 7], y=[1, 2, 3])
+        data = a.left_join(b, "k", multiple=multiple)
+        assert data.x.tolist() == [1, 2, 3, 4]
+        assert data.y.tolist() == [2, 1, None, 2]
+
     def test_left_join_by_columns_objects(self):
         a = DataFrame(o=Vector([1, "a", None], object), k=[1, 1, 1])
         b = DataFrame(o=Vector(["a", 1, None], object), k=[1, 1, 1], y=[1, 2, 3])
@@ -796,6 +804,15 @@ class TestDataFrame:
         assert data.x.tolist() == [1, 2, 2, 3, 4]
         assert data.y.tolist() == [2, 1, 3, None, None]
         assert b.left_join(a, "k").x.tolist() == [2, 1, 2, None, None, None]
+
+    def test_left_join_multiple_sparse_codes(self):
+        a = DataFrame(k=[10**12, 5, 3 * 10**12], x=[1, 2, 3])
+        b = DataFrame(k=[5, 10**12, 5, 7], y=[1, 2, 3, 4])
+        assert a.left_join(b, "k", multiple="first").y.tolist() == [2, 1, None]
+        assert a.left_join(b, "k", multiple="last").y.tolist() == [2, 3, None]
+        data = a.left_join(b, "k", multiple="all")
+        assert data.x.tolist() == [1, 2, 2, 3]
+        assert data.y.tolist() == [2, 1, 3, None]
 
     def test_left_join_multiple_empty(self):
         a = DataFrame(k=[1, 2], x=[1, 2])
