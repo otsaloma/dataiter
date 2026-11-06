@@ -72,6 +72,22 @@ class TestDT:
         assert dt.floor(a, "hour").equal(dt.new(["2022-10-15T12:00:00.000", NaT]))
         assert dt.floor(a, "second").equal(dt.new(["2022-10-15T12:34:56.000", NaT]))
 
+    def test_floor_multiple_date(self):
+        a = dt.new(["2022-02-15", "2022-09-30", "1969-12-31", NaT])
+        assert dt.floor(a, "2 years").equal(dt.new(["2022-01-01", "2022-01-01", "1968-01-01", NaT]))
+        assert dt.floor(a, "2 quarters").equal(dt.new(["2022-01-01", "2022-07-01", "1969-07-01", NaT]))
+        assert dt.floor(a, "2 months").equal(dt.new(["2022-01-01", "2022-09-01", "1969-11-01", NaT]))
+        assert dt.floor(a, "10 days").equal(dt.new(["2022-02-11", "2022-09-21", "1969-12-31", NaT]))
+        with pytest.raises(ValueError, match="weeks"):
+            dt.floor(a, "2 weeks")
+
+    def test_floor_multiple_datetime(self):
+        a = dt.new(["2022-10-15T12:34:56", "1969-12-31T23:59:59", NaT])
+        assert dt.floor(a, "2 hours").equal(dt.new(["2022-10-15T12:00:00", "1969-12-31T22:00:00", NaT]))
+        assert dt.floor(a, "15 minutes").equal(dt.new(["2022-10-15T12:30:00", "1969-12-31T23:45:00", NaT]))
+        assert dt.floor(a, "7 minutes").equal(dt.new(["2022-10-15T12:28:00", "1969-12-31T23:56:00", NaT]))
+        assert dt.floor(a, "10 seconds").equal(dt.new(["2022-10-15T12:34:50", "1969-12-31T23:59:50", NaT]))
+
     def test_floor_scalar(self):
         assert dt.floor(dt.new("2022-10-15"), "week") == dt.new("2022-10-10")
 
@@ -87,6 +103,12 @@ class TestDT:
             dt.floor(a, "")
         with pytest.raises(ValueError, match="Bad"):
             dt.floor(a, "dayss")
+        assert dt.floor(a, "15min").equal(dt.floor(a, "15 minutes"))
+        assert dt.floor(a, "1 day").equal(dt.floor(a, "day"))
+        with pytest.raises(ValueError, match="Bad"):
+            dt.floor(a, "0 days")
+        with pytest.raises(ValueError, match="Bad"):
+            dt.floor(a, "15")
 
     def test_from_components_date(self):
         a = dt.from_components(Vector([2022, 2023, np.nan]), 6, 30)
@@ -336,6 +358,14 @@ class TestDT:
         assert a.equal(dt.new(["2024-02-29", "2025-02-28", "2026-02-28"]))
         a = dt.sequence(dt.new("2022-01-31T12:00"), dt.new("2022-03-31"), "month")
         assert a.equal(dt.new(["2022-01-31T12:00", "2022-02-28T12:00"]))
+
+    def test_sequence_multiple(self):
+        a = dt.sequence(dt.new("2022-10-15T12:00"), dt.new("2022-10-15T13:00"), "15 minutes")
+        assert a.equal(dt.new(["2022-10-15T12:00", "2022-10-15T12:15", "2022-10-15T12:30", "2022-10-15T12:45", "2022-10-15T13:00"]))
+        a = dt.sequence(dt.new("2022-10-01"), dt.new("2022-10-31"), "2 weeks")
+        assert a.equal(dt.new(["2022-10-01", "2022-10-15", "2022-10-29"]))
+        a = dt.sequence(dt.new("2022-01-31"), dt.new("2022-06-30"), "2 months")
+        assert a.equal(dt.new(["2022-01-31", "2022-03-31", "2022-05-31"]))
 
     def test_to_string_date(self):
         a = dt.new(["2022-11-14", NaT])

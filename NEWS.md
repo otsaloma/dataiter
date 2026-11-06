@@ -6,6 +6,7 @@
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `DataFrame.sort`: Speed up for multiple integer-like keys
 - `DataFrame.unique`: Speed up for integer-like keys
+- `dt.floor`, `dt.sequence`: Support multiples of units, e.g. "15 minutes"
 - `read_duckdb`: New alias for `DataFrame.read_duckdb`
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
 - Reduce memory use after reading files and operations on large string data,

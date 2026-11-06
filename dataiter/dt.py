@@ -77,20 +77,39 @@ def floor(x, unit):
     prefix, e.g. "mo" for month and "min" for minute. Weeks start on
     Monday, as in ISO 8601. The data type of `x` is retained.
 
+    `unit` can also have a multiple, e.g. "15 minutes" for 15-minute bins.
+    Multiples are counted from the start of the next larger unit, e.g. "7
+    minutes" gives :00, :07, …, :56 within each hour and "2 months" January,
+    March, etc. Multiples of weeks are not supported.
+
     >>> x = dt.new(["2022-10-15", "2022-11-20"])
     >>> dt.floor(x, "month")
     """
-    unit = _parse_unit(unit)
-    if unit == "quarter":
-        out = x.astype("datetime64[M]")
-        out -= (out.astype(int) % 3).astype("timedelta64[M]")
-    elif unit == "week":
+    n, unit = _parse_unit(unit)
+    if unit == "week":
+        if n > 1:
+            raise ValueError(f"Multiples of weeks not supported, got {n}")
         # 1970-01-01 was a Thursday.
         out = x.astype("datetime64[D]")
-        out -= ((out.astype(int) + 3) % 7).astype("timedelta64[D]")
-    else:
-        codes = dict(year="Y", month="M", day="D", hour="h", minute="m", second="s")
-        out = x.astype(f"datetime64[{codes[unit]}]")
+        out -= ((out.astype(np.int64) + 3) % 7).astype("timedelta64[D]")
+        return out.astype(x.dtype).view(Vector)
+    if unit == "quarter":
+        n, unit = 3 * n, "month"
+    code = dict(year="Y", month="M", day="D", hour="h", minute="m", second="s")[unit]
+    out = x.astype(f"datetime64[{code}]")
+    if n > 1:
+        # Integer values count from 1970-01-01T00:00:00, the start of all
+        # larger units, so the position within the next larger unit is
+        # a remainder, except for days of the month and years.
+        i = out.astype(np.int64)
+        if unit == "year":
+            i = i + 1970
+        elif unit == "day":
+            i = i - out.astype("datetime64[M]").astype("datetime64[D]").astype(np.int64)
+        else:
+            i = i % dict(month=12, hour=24, minute=60, second=60)[unit]
+        # NaT minus any timedelta remains NaT.
+        out -= (i % n).astype(f"timedelta64[{code}]")
     return out.astype(x.dtype).view(Vector)
 
 def from_components(year, month=1, day=1, hour=None, minute=None, second=None, microsecond=None, *, errors="strict"):
@@ -325,13 +344,16 @@ def now():
     return np.datetime64(datetime.datetime.now())
 
 def _parse_unit(unit):
+    # Return multiple and full name of unit, e.g. (15, "minute") for "15min".
+    match = re.fullmatch(r"(\d*) *([a-z]*)", unit)
+    n, name = (int(match.group(1) or 1), match.group(2)) if match else (0, "")
     units = ["year", "quarter", "month", "week", "day", "hour", "minute", "second"]
-    found = [x for x in units if f"{x}s".startswith(unit)] if unit else []
+    found = [x for x in units if f"{x}s".startswith(name)] if name else []
     if len(found) > 1:
         raise ValueError(f"Ambiguous {unit=}, could be {' or '.join(found)}")
-    if not found:
+    if not found or n < 1:
         raise ValueError(f"Bad {unit=}")
-    return found[0]
+    return n, found[0]
 
 @_vectorized_datetime
 def _pull_int(x, function):
@@ -404,15 +426,17 @@ def sequence(start, stop, unit):
 
     `unit` is the step: "year", "quarter", "month", "week", "day", "hour",
     "minute" or "second", in singular or plural or abbreviated to any
-    unambiguous prefix, e.g. "mo" for month and "min" for minute. Steps
-    of years, quarters and months keep the day of month of `start`, limited
-    to the last day of shorter months. The data type is that of `start`, or
-    finer if needed for `unit`.
+    unambiguous prefix, e.g. "mo" for month and "min" for minute, and can have
+    a multiple, e.g. "15 minutes". Steps of years, quarters and months keep the
+    day of month of `start`, limited to the last day of shorter months. The
+    data type is that of `start`, or finer if needed for `unit`.
 
     >>> dt.sequence(dt.new("2026-10-19"), dt.new("2026-10-25"), "day")
     """
     steps = dict(year=(12, "M"), quarter=(3, "M"), month=(1, "M"), week=(7, "D"), day=(1, "D"), hour=(1, "h"), minute=(1, "m"), second=(1, "s"))
-    n, code = steps[_parse_unit(unit)]
+    multiple, unit = _parse_unit(unit)
+    n, code = steps[unit]
+    n *= multiple
     start, stop = np.datetime64(start), np.datetime64(stop)
     dtype = np.promote_types(start.dtype, np.dtype(f"datetime64[{code}]"))
     if code == "M":
