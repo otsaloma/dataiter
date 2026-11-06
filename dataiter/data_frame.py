@@ -588,8 +588,11 @@ class DataFrame(dict):
             if len(column) >= 50_000:
                 sample = column
                 if len(column) > 100_000:
+                    # Take concatenates all chunks first, which overflows
+                    # 32-bit string offsets for over 2 GiB of data. Slicing
+                    # doesn't copy or concatenate.
                     starts = np.linspace(0, len(column) - 100, 1000).astype(np.int64)
-                    sample = column.take((starts[:, None] + np.arange(100)).ravel())
+                    sample = pa.chunked_array([chunk for start in starts for chunk in column.slice(start, 100).chunks])
                 if pc.count_distinct(sample).as_py() < 0.9 * len(sample):
                     encoded = pc.dictionary_encode(column).combine_chunks()
                     unique = encoded.dictionary.to_numpy(zero_copy_only=False).astype(dataiter.dtypes.string)

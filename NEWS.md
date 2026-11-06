@@ -1,5 +1,7 @@
 # PENDING: Dataiter 2.1
 
+- `DataFrame.from_arrow`: Fix error with over 2 GiB of data in a string column,
+  affecting also e.g. `read_csv` and `read_parquet`
 - `DataFrame.read_duckdb`: New classmethod to read the result of a DuckDB SQL query
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `DataFrame.sort`: Speed up for multiple integer-like keys
