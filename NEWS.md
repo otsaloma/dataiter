@@ -11,6 +11,8 @@
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `DataFrame.sort`: Speed up for multiple integer-like keys
 - `DataFrame.unique`: Speed up for integer-like keys
+- `Vector.rank`: Speed up for numbers and datetimes, e.g. from 0.42 to 0.27 s
+  for 3M floats
 - `cummax`, `cummin`, `cumsum`, `rank`, `shift`: New window functions for use
   with `DataFrame.modify`
 - `dt.floor`, `dt.sequence`: Support multiples of units, e.g. "15 minutes"

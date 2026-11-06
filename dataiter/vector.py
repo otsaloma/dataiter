@@ -925,10 +925,14 @@ class Vector(np.ndarray):
                 # than np.unique, which sorts all strings.
                 inv = util.sorted_codes(self[~na])
             else:
-                # return_index=True makes np.unique use a stable sort, the default
-                # quicksort can segfault for StringDType (NumPy 2.5.4).
-                # https://github.com/numpy/numpy/issues/33089
-                inv = np.unique(self[~na], return_index=True, return_inverse=True)[2]
+                # Faster than np.unique, which doesn't use util.argsort.
+                x = self[~na]
+                indices = util.argsort(x)
+                x = x[indices]
+                new = np.ones(len(x), bool)
+                new[1:] = x[1:] != x[:-1]
+                inv = np.empty(len(x), np.int64)
+                inv[indices] = np.cumsum(new) - 1
             return inv if dir > 0 else inv.max() - inv
         if method == "min":
             # https://stackoverflow.com/a/14672797/16369038
