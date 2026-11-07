@@ -62,6 +62,7 @@ tabular data and the `DataFrame` class.
 - EPA AQS air quality (hourly ozone, daily PM2.5 and AQI, monitors)
 - Eurostat weekly deaths by NUTS region, population and GEO codelist
 - FEC campaign finance bulk data (contributions, committees, candidates)
+- GDELT daily event exports (2024-01-01 through 2025-03-01)
 - GHCN-Daily weather (1900 and 1920 year files, stations, inventory)
 - Helsinki city bikes
 - IMDb non-commercial datasets
