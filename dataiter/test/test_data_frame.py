@@ -516,6 +516,15 @@ class TestDataFrame:
         with pytest.raises(ValueError, match="'E2'"):
             DataFrame.from_arrow(table, dtypes={"a": float})
 
+    @pytest.mark.parametrize("type", [pa.binary(), pa.large_binary()])
+    def test_from_arrow_numbers_from_bytes(self, type):
+        table = pa.table({"a": pa.array([b"1", b"", None, b"2"], type)})
+        data = DataFrame.from_arrow(table, dtypes={"a": float})
+        assert data.a.tolist() == [1.0, None, None, 2.0]
+        data = DataFrame.from_arrow(table.slice(3), dtypes={"a": int})
+        assert data.a.is_integer()
+        assert data.a.tolist() == [2]
+
     def test_from_arrow_null(self):
         table = pa.table({"a": pa.nulls(2)})
         data = DataFrame.from_arrow(table)

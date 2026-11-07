@@ -623,6 +623,12 @@ class DataFrame(dict):
                 # decimal type, use float instead of an object column of None
                 # or slow decimal.Decimal, as for numbers.
                 column = column.cast(pa.float64())
+            if ((pa.types.is_binary(column.type) or
+                 pa.types.is_large_binary(column.type)) and
+                req_dtype is not None and np.dtype(req_dtype).kind in "iuf"):
+                # Parse numbers stored as binary, as written by e.g. ClickHouse,
+                # as strings to treat blanks as missing.
+                column = column.cast(pa.large_string())
             is_string = (pa.types.is_string(column.type) or
                          pa.types.is_large_string(column.type))
             if (req_dtype is None and
