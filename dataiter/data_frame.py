@@ -211,7 +211,8 @@ class DataFrame(dict):
         stat = self.__class__({x: self[x][rows] for x in group_colnames}, _index_=rows)
         # Reorder columns upon first use to make groups contiguous,
         # so that slices make cheap NumPy views instead of copies.
-        ordered = self._view_rows(order)
+        # Data sorted by group needs no reordering.
+        ordered = self._view_rows(slice(None) if (order[1:] > order[:-1]).all() else order)
         if not all(getattr(x, "group_aware", False) for x in colname_function_pairs.values()):
             ends = np.append(starts[1:], self.nrow)
             slices = [slice(a, b) for a, b in zip(starts.tolist(), ends.tolist())]

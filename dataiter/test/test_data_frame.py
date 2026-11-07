@@ -201,6 +201,15 @@ class TestDataFrame:
         assert stat.x.tolist() == ["[2, 4]", "[1, 3, 5]"]
         assert orig.x.tolist() == [1, 2, 3, 4, 5]
 
+    def test_aggregate_sorted(self):
+        orig = DataFrame(g=["a", "a", "b", "b", "b"], x=[1, 2, 3, 4, 5])
+        stat = orig.group_by("g").aggregate(s=di.sum("x"), f=di.first("x"), u=di.count_unique("x"))
+        assert stat.g.tolist() == ["a", "b"]
+        assert stat.s.tolist() == [3, 12]
+        assert stat.f.tolist() == [1, 3]
+        assert stat.u.tolist() == [2, 3]
+        assert orig.x.tolist() == [1, 2, 3, 4, 5]
+
     def test_aggregate_ungrouped(self):
         data = test.data_frame("downloads.csv")
         stat = data.aggregate(n=di.count(), downloads=lambda x: x.downloads.sum())
