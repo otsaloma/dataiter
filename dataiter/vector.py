@@ -814,20 +814,23 @@ class Vector(np.ndarray):
         Return the corresponding value to use to represent missing data.
 
         Dataiter is built on top of NumPy. NumPy doesn't support a proper
-        missing value ("NA"), only data type specific values: ``np.nan``,
-        ``np.datetime64("NaT")`` and ``np.timedelta64("NaT")``. Dataiter
-        recommends the following values be used and internally supports them to
-        an extent.
+        missing value ("NA"), only data type specific values: ``np.nan`` and
+        ``NaT`` for datetimes and timedeltas. Dataiter recommends the
+        following values be used and internally supports them to an extent.
 
-        ========= ========================
+        ========= ==============================
         bytes     ``b""``
-        datetime  ``np.datetime64("NaT")``
+        datetime  ``np.datetime64("NaT", unit)``
         float     ``np.nan``
         integer   ``np.nan``
         string    ``""``
-        timedelta ``np.timedelta64("NaT")``
+        timedelta ``np.timedelta64("NaT", unit)``
         other     ``None``
-        ========= ========================
+        ========= ==============================
+
+        For datetimes and timedeltas, `unit` should be that of the vector, e.g.
+        ``"us"`` for datetimes or ``"D"`` for dates. This property returns the
+        right value for each vector.
 
         Note that actually using these might require upcasting the vector.
         Integer will need to be upcast to float to contain ``np.nan``. Other,
