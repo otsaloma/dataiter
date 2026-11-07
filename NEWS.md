@@ -5,6 +5,7 @@
 - `DataFrame.modify`: Support fast group-wise window functions, e.g. `di.cumsum`
 - `DataFrame.read_csv`, `DataFrame.read_parquet`: Fix error with over 2 GiB of string data
 - `DataFrame.read_duckdb`: New classmethod to read the result of a DuckDB SQL query
+- `DataFrame.read_parquet`: Support reading a directory or a glob of multiple files
 - `DataFrame.read_parquet_chunked`: New classmethod to read Parquet in chunks
 - `dt.floor`, `dt.sequence`: Support multiples of units, e.g. "15 minutes"
 - `read_duckdb`: New alias for `DataFrame.read_duckdb`

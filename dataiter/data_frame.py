@@ -23,6 +23,7 @@
 import codecs
 import dataiter
 import functools
+import glob
 import itertools
 import json
 import numpy as np
@@ -39,6 +40,7 @@ from dataiter import deco
 from dataiter import util
 from dataiter import Vector
 from math import inf
+from pathlib import Path
 from pyarrow import csv
 
 class DataFrameColumn(Vector):
@@ -1690,16 +1692,25 @@ class DataFrame(dict):
         """
         Return a new data frame from Parquet file `path`.
 
-        `select` is an optional list of columns or glob patterns to limit to,
-        as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
-        column names to NumPy datatypes. `timezone` determines how to handle
-        timestamps with a timezone, which NumPy datetimes can't hold:
-        ``"keep"`` to keep them in the timezone they're stored in, ``"utc"``
-        to convert them to UTC.
+        `path` can also be a directory or a glob pattern, e.g.
+        ``"data/*.parquet"``, to read multiple files into one data frame.
+        Partitions in directory names, e.g. ``date=2024-01-01``, are read as
+        columns. `select` is an optional list of columns or glob patterns to
+        limit to, as in :meth:`.DataFrame.select`. `dtypes` is an optional dict
+        mapping column names to NumPy datatypes. `timezone` determines how to
+        handle timestamps with a timezone, which NumPy datetimes can't hold:
+        ``"keep"`` to keep them in the timezone they're stored in, ``"utc"`` to
+        convert them to UTC.
         """
+        if not Path(path).exists() and any(x in str(path) for x in "*?["):
+            paths = sorted(glob.glob(str(path), recursive=True))
+            if not paths:
+                raise FileNotFoundError(f"No files match {str(path)!r}")
+            path = paths
+        dataset = pq.ParquetDataset(path)
         if select:
-            select = util.glob_all(select, pq.read_schema(path).names)
-        data = pq.read_table(path, columns=select or None)
+            select = util.glob_all(select, dataset.schema.names)
+        data = dataset.read(columns=select or None)
         return cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
 
     @classmethod

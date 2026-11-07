@@ -1451,6 +1451,34 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = DataFrame.read_parquet(path)
         assert data == orig
 
+    def test_read_parquet_directory(self, tmp_path):
+        DataFrame(a=[1, 2], b=["x", "y"]).write_parquet(tmp_path / "1.parquet")
+        DataFrame(a=[3], b=["z"]).write_parquet(tmp_path / "2.parquet")
+        data = DataFrame.read_parquet(tmp_path, select=["a"])
+        assert data.sort(a=1) == DataFrame(a=[1, 2, 3])
+
+    def test_read_parquet_glob(self, tmp_path):
+        DataFrame(a=[1, 2], b=["x", "y"]).write_parquet(tmp_path / "1.parquet")
+        DataFrame(a=[3], b=["z"]).write_parquet(tmp_path / "2.parquet")
+        DataFrame(a=[4], b=["w"]).write_parquet(tmp_path / "3.parq")
+        data = DataFrame.read_parquet(tmp_path / "*.parquet", select=["b"])
+        assert data == DataFrame(b=["x", "y", "z"])
+        with pytest.raises(FileNotFoundError, match="No files match"):
+            DataFrame.read_parquet(tmp_path / "*.csv")
+
+    def test_read_parquet_glob_characters(self, tmp_path):
+        DataFrame(a=[1]).write_parquet(tmp_path / "[1].parquet")
+        data = DataFrame.read_parquet(tmp_path / "[1].parquet")
+        assert data == DataFrame(a=[1])
+
+    def test_read_parquet_partitioned(self, tmp_path):
+        for date, a in [("2024-01-01", [1, 2]), ("2024-01-02", [3])]:
+            (tmp_path / f"date={date}").mkdir()
+            DataFrame(a=a).write_parquet(tmp_path / f"date={date}" / "part.parquet")
+        data = DataFrame.read_parquet(tmp_path).sort(a=1)
+        assert data.a.tolist() == [1, 2, 3]
+        assert data.date.tolist() == ["2024-01-01", "2024-01-01", "2024-01-02"]
+
     def test_read_parquet_select_glob(self, tmp_path):
         path = str(tmp_path / "test.parquet")
         DataFrame(a=[1], price_x=[2], price_y=[3]).write_parquet(path)
