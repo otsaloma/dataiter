@@ -94,8 +94,11 @@ def cumsum(x):
     """
     def cumsum_groups(x, starts):
         check_kind(x, "cumulative sum", "biufcm")
-        if x.is_boolean():
-            x = x.astype(int)
+        # Upcast as np.cumsum does, as the sum can overflow smaller types.
+        if x.dtype.kind in "bi":
+            x = x.astype(np.int64, copy=False)
+        elif x.dtype.kind == "u":
+            x = x.astype(np.uint64, copy=False)
         return accumulate(np.add, x, starts)
     return dispatch(cumsum_groups, x)
 

@@ -65,6 +65,12 @@ class TestWindow:
         data = data.group_by("g").modify(y=cumsum("x"))
         assert data.y.tolist() == [1, 2, 4, 6, 9, 12]
 
+    def test_cumsum_upcast(self):
+        x = Vector(np.full(3, 2**30, np.int32))
+        assert cumsum(x).tolist() == [2**30, 2**31, 3 * 2**30]
+        assert cumsum(x).dtype == np.int64
+        assert cumsum(x.astype(np.uint8)).dtype == np.uint64
+
     def test_cumsum_grouped_large(self):
         # Cover both looping over groups and scanning.
         for n in [10, 1000]:
