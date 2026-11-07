@@ -91,6 +91,7 @@ tabular data and the `DataFrame` class.
 - Seattle Public Library checkouts (monthly and events), data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
 - SSA baby names (national and state counts, card-holder totals)
+- Stack Overflow data dump via ClickHouse S3
 - Stanford Open Policing traffic stops (Nashville, San Diego, etc.)
 - UCI Gas Sensor Array Temperature Modulation (13 measurement runs)
 - UCI Individual Household Electric Power Consumption (2006–2010)
