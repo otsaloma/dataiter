@@ -64,6 +64,7 @@ tabular data and the `DataFrame` class.
 - FEC campaign finance bulk data (contributions, committees, candidates)
 - GDELT daily event exports (2024-01-01 through 2025-03-01)
 - GHCN-Daily weather (1900 and 1920 year files, stations, inventory)
+- GH Archive GitHub events (2024-01-08 through 2024-01-21, hourly files)
 - Helsinki city bikes
 - IMDb non-commercial datasets
 - Inside Airbnb listings, calendar and reviews (Amsterdam, Berlin, etc.)
