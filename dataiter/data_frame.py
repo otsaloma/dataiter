@@ -830,7 +830,13 @@ class DataFrame(dict):
             elif column.is_datetime() or column.is_timedelta():
                 column = column.view(np.int64)
             elif column.is_float():
-                column = np.unique(column, return_inverse=True)[1]
+                # Integer-valued floats, e.g. IDs upcast by missing values,
+                # can be encoded as integers, which avoids slow sorting.
+                valid = column[~na] if na.any() else column
+                if np.all((np.abs(valid) < 2**62) & (valid == np.trunc(valid))):
+                    column = np.where(na, 0, column).astype(np.int64)
+                else:
+                    column = np.unique(column, return_inverse=True)[1]
             column = np.asarray(column)
             if na.any():
                 column = column.astype(np.int64)

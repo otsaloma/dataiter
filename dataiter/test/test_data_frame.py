@@ -168,6 +168,15 @@ class TestDataFrame:
         assert stat.g.tolist() == [b"a", b"b", None]
         assert stat.x.tolist() == [3, 5, 2]
 
+    @pytest.mark.parametrize("values", [[3.0, np.nan, -1.0, 3.0, -0.0, 0.0, 2.0**53],
+                                        [3.5, np.nan, -1.0, 3.5, -0.0, 0.0, np.inf]])
+    def test_aggregate_float(self, values):
+        data = DataFrame(g=values, x=range(len(values)))
+        stat = data.group_by("g").aggregate(x=di.sum("x"))
+        expected = sorted(set(x for x in values if not np.isnan(x)))
+        assert stat.g.tolist() == expected + [None]
+        assert stat.x.tolist() == [sum(i for i, x in enumerate(values) if x == g) for g in expected] + [1]
+
     @pytest.mark.parametrize("by", [("a", "b"), ("b", "a"), ("a", "c"), ("c", "a")])
     def test_aggregate_large_integers_overflowing(self, by):
         rng = np.random.default_rng(0)
