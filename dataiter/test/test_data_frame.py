@@ -572,6 +572,14 @@ class TestDataFrame:
         with pytest.raises(ValueError):
             DataFrame.from_arrow(table, timezone="local")
 
+    @pytest.mark.parametrize("tz", ["UTC", "Etc/UTC", "+00:00"])
+    def test_from_arrow_timezone_utc(self, tz):
+        values = [datetime.datetime(2025, 1, 1, 10), datetime.datetime(2025, 7, 1, 10), None]
+        table = pa.table({"a": pa.array(values, pa.timestamp("us", tz=tz))})
+        data = DataFrame.from_arrow(table)
+        assert data.a.dtype == np.dtype("datetime64[us]")
+        assert data.a.tolist() == values
+
     def test_from_json(self):
         orig = test.data_frame("downloads.json")
         text = orig.to_json()

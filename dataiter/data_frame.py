@@ -604,7 +604,8 @@ class DataFrame(dict):
         def column_from_arrow(column, req_dtype):
             if (timezone == "keep" and
                 pa.types.is_timestamp(column.type) and
-                column.type.tz is not None):
+                # Values are stored in UTC, skip the slow no-op conversion.
+                column.type.tz not in [None, "UTC", "Etc/UTC", "+00:00"]):
                 column = pc.local_timestamp(column)
             if pa.types.is_time(column.type):
                 # NumPy has no time of day type, use strings instead
