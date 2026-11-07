@@ -254,6 +254,16 @@ class TestAggregate:
         assert count_unique(Vector([1, 1, 2, NaN]), drop_na=True) == 2
         assert count_unique(Vector([b"a", b"a", b"b"])) == 2
 
+    def test_count_unique_grouped(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2, 1], a=["a", "b", "a", "", "c", "b"], b=[1, 2, 1, 3, 2, 2])
+        stat = data.group_by("g").aggregate(a=count_unique("a"), b=count_unique("a", drop_na=True), c=max("b"), d=count_unique("b"))
+        assert stat.a.tolist() == [2, 2]
+        assert stat.b.tolist() == [1, 2]
+        assert stat.c.tolist() == [3, 2]
+        assert stat.d.tolist() == [2, 2]
+        data = data.group_by("g").modify(n=count_unique("a", drop_na=True))
+        assert data.n.tolist() == [2, 1, 2, 1, 2, 1]
+
     def test_first(self):
         assert first(Vector([1, 2, 3])) == 1
         assert first(Vector([NaN, 1, 2]), drop_na=True) == 1
@@ -361,6 +371,14 @@ class TestAggregate:
         assert mode(Vector([1, 2, 2, NaN]), drop_na=False) == 2
         assert type(mode(Vector([1.5]))) is float
         assert mode(Vector([b"a", b"b", b"b"])) == b"b"
+
+    def test_mode_grouped(self):
+        data = DataFrame(g=[2, 1, 3, 2, 1, 3, 1, 2, 1], a=["c", "", "y", "a", "", "x", "b", "a", "b"])
+        stat = data.group_by("g").aggregate(a=mode("a"), b=mode("a", drop_na=False))
+        assert stat.a.tolist() == ["b", "a", "y"]
+        assert stat.b.tolist() == [None, "a", "y"]
+        data = data.group_by("g").modify(m=mode("a"))
+        assert data.m.tolist() == ["a", "b", "y", "a", "b", "y", "b", "a", "b"]
 
     def test_mode_nan(self):
         assert np.isnan(mode(EMPTY_VECTOR))

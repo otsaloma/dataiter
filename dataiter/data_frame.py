@@ -2366,6 +2366,19 @@ class LazyDataFrame(DataFrame):
             return self._source._peek(key, rows)
         return self._source[key][rows]
 
+    def _map(self, key, function):
+        # Return function applied to column key, in rows of self, computed
+        # without materializing the column: function receives the source
+        # column in source order and its result, one element per row, is
+        # then taken in rows of self. This pays off when the result is
+        # cheaper to reorder than the column, e.g. integer codes of strings.
+        # Use only with functions whose result doesn't depend on row order,
+        # or only in ways the caller ignores, e.g. labels of value codes.
+        column = dict.__getitem__(self, key)
+        if column is not None or isinstance(self._source, LazyDataFrame):
+            return function(self[key])
+        return function(self._source[key])[self._rows]
+
     def _take_all(self):
         # Materialize all columns not yet taken from source, as __getitem__
         # does for one column, storing them in self. To get only some elements

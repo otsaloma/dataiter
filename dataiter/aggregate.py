@@ -141,16 +141,14 @@ def count_unique(x, *, drop_na=False):
     >>> di.count_unique(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.count_unique("x")
     """
-    def count_unique_groups(x, starts):
-        y, starts = handle_na_groups(x, starts, drop_na)
-        n = np.diff(starts, append=len(y))
+    def count_unique_groups(codes, starts, take):
+        n = np.diff(starts, append=len(codes))
         group = np.repeat(np.arange(len(starts)), n)
-        codes = value_codes(y)
         m = codes.max(initial=0) + 1
         # Count unique pairs of group and value.
         keys = util.unique_codes(group * m + codes)[0]
         return np.bincount(keys // m, minlength=len(starts))
-    return dispatch(count_unique_groups, x)
+    return dispatch_codes(count_unique_groups, x, drop_na)
 
 def datetime_as_float(x):
     if not (x.is_datetime() or x.is_timedelta()): return x
@@ -175,6 +173,34 @@ def dispatch(function, x):
         aggregate.group_aware = True
         return aggregate
     return item(function(x, np.array([0]))[0])
+
+def dispatch_codes(function, x, drop_na):
+    # Like dispatch, but function takes value codes of x instead of x, starts
+    # of their groups and a function returning elements of x at indices of
+    # codes. For a column, codes are computed in source order and reordered
+    # to group order, which is faster than reordering e.g. strings first.
+    # With drop_na, missing values get code -1, hashing only the rest.
+    def get_codes(x):
+        na = x.is_na() if drop_na else None
+        if na is None or not na.any():
+            return value_codes(x)
+        codes = np.full(len(x), -1, np.int64)
+        codes[~na] = value_codes(x[~na])
+        return codes
+    def call(codes, take, starts):
+        valid = codes >= 0
+        if valid.all():
+            return function(codes, starts, take)
+        kept = np.flatnonzero(valid)
+        starts = (np.cumsum(valid) - valid)[starts]
+        return function(codes[kept], starts, lambda i: take(kept[i]))
+    if isinstance(x, str):
+        def aggregate(data, starts):
+            take = functools.partial(data._peek, x)
+            return call(data._map(x, get_codes), take, starts)
+        aggregate.group_aware = True
+        return aggregate
+    return item(call(get_codes(x), x.__getitem__, np.array([0]))[0])
 
 def fill_missing(values, found):
     if found.all(): return values
@@ -380,13 +406,11 @@ def mode(x, *, drop_na=True):
     >>> di.mode(di.Vector([1, 2, 2, 3, 3, 3]))
     >>> di.mode("x")
     """
-    def mode_groups(x, starts):
-        y, starts = handle_na_groups(x, starts, drop_na)
-        n = np.diff(starts, append=len(y))
+    def mode_groups(codes, starts, take):
+        n = np.diff(starts, append=len(codes))
         found = n > 0
         if found.any():
             group = np.repeat(np.arange(len(starts)), n)
-            codes = value_codes(y)
             m = codes.max() + 1
             keys, first, pairs = util.unique_codes(group * m + codes)
             # Unique pairs of group and value are in order of first appearance
@@ -399,11 +423,11 @@ def mode(x, *, drop_na=True):
             most = np.repeat(most, np.diff(pair_starts, append=len(keys)))
             candidates = np.flatnonzero(count == most)
             chosen = candidates[group_starts(pair_group[candidates])]
-            values = y[first[chosen]]
+            values = take(first[chosen])
         else:
-            values = y[:0]
+            values = take(np.array([], np.int64))
         return fill_missing(values, found)
-    return dispatch(mode_groups, x)
+    return dispatch_codes(mode_groups, x, drop_na)
 
 @composite
 def nth(x, index, *, drop_na=False):
