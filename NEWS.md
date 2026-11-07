@@ -9,6 +9,7 @@
 - `dt.floor`, `dt.sequence`: Support multiples of units, e.g. "15 minutes"
 - `read_duckdb`: New alias for `DataFrame.read_duckdb`
 - `read_parquet_chunked`: New alias for `DataFrame.read_parquet_chunked`
+- Speed up aggregation, joins and sorting
 - Free memory after operations run via PyArrow
 - Add documentation on dealing with out-of-memory data
 
