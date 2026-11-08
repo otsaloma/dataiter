@@ -1,4 +1,4 @@
-# PENDING: Dataiter 2.1
+# 2026-11-08: Dataiter 2.1
 
 - `cummax`, `cummin`, `cumsum`, `rank`, `shift`: New fast window functions
 - `DataFrame.modify`: Support fast group-wise aggregation functions, e.g. `di.sum`
