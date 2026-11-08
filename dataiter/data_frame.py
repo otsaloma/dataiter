@@ -2128,9 +2128,10 @@ class DataFrame(dict):
                 rows, codes, column = rows[~single], codes[~single], column[~single]
                 column, n = DataFrame._encode(column, dense=True, ordered=False)
             codes, size = codes * n + column, size * n
-        if size <= len(codes):
+        if size <= 4 * len(codes):
             # Codes small enough to index an array of first occurrences
-            # are faster to process that way than via hashing.
+            # are faster to process that way than via hashing, which is
+            # slow especially when most codes are distinct.
             first = np.full(size, len(codes))
             np.minimum.at(first, codes, np.arange(len(codes)))
             is_first = np.zeros(len(codes) + 1, bool)

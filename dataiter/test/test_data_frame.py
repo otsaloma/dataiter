@@ -1848,6 +1848,11 @@ NULL,2.5,"test",TRUE,2025-01-01
         assert data.c.dtype == np.dtype("timedelta64[m]")
         assert data.c.is_na().tolist() == [False, True, False, False]
 
+    def test_unique_by_sparse_codes(self):
+        orig = DataFrame(i=[3, 0, 3, 1], j=[0, 1, 0, 2], k=[1, 2, 3, 4])
+        data = orig.unique("i", "j")
+        assert data.k.tolist() == [1, 2, 4]
+
     def test_unique_by_object_and_timedelta(self):
         orig = DataFrame(a=[None, None, None, None],
                          b=np.array([0, "NaT", 0, "NaT"], "timedelta64[m]"))
