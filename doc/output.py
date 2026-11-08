@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(".")))
 import dataiter as di
 import json
 import numpy as np
+import traceback
 from dataiter import dt
 from dataiter import regex
 di.PRINT_MAX_ITEMS = 3
@@ -23,7 +24,8 @@ di.PRINT_MAX_WIDTH = 72
 def get_output(lines):
     try:
         return subprocess.check_output(
-            args=[sys.executable, "-c", "\n".join(lines)],
+            # Unbuffered to keep stdout and stderr in order.
+            args=[sys.executable, "-u", "-c", "\n".join(lines)],
             stderr=subprocess.STDOUT,
             cwd=Path("..").resolve(),
             # Free-threaded Python warns on importing modules that don't
@@ -39,26 +41,36 @@ def get_output(lines):
 def on_autodoc_process_docstring(app, what, name, obj, options, lines):
     print(f"Processing {name}...")
     # Intercept all ">>>" lines in docstring, run the corresponding code
+    # in one process, separating the output of each line with a marker,
     # and inject any possible output into the docstring.
+    marker = "--- doc/output.py marker ---"
     code = CODE.strip().splitlines()
-    output = []
+    positions = []
     for i, line in enumerate(lines):
         if not line.startswith(">>>"): continue
         line = line.lstrip("> ")
         if line.startswith("#"): continue
         # Some docstrings will, on purpose, have lines of code that raise
         # errors. Wrap lines in try-except so that all lines will always be
-        # executed and output from only the last line will be used.
-        code.append(f"try: {line}\nexcept Exception: pass")
-        if " = " in line: continue
-        if line.startswith(("from ", "import ")): continue
-        blob = get_output(code[:-1] + [f"print({line})"])
+        # executed. Show tracebacks only for lines that have output.
+        if " = " in line or line.startswith(("from ", "import ")):
+            code.append(f"try: {line}\nexcept Exception: pass")
+            continue
+        code.append(f"print({marker!r})")
+        code.append(f"try:\n    print({line})\nexcept Exception:\n    traceback.print_exc()")
+        positions.append(i + 1)
+    if not positions: return
+    blobs = [[]]
+    for line in get_output(code):
+        if line == marker:
+            blobs.append([])
+        else:
+            blobs[-1].append(line)
+    for i, blob in reversed(list(zip(positions, blobs[1:]))):
         for j in range(len(blob)):
             # Avoid a paragraph change on blank lines.
             if not blob[j].strip():
                 blob[j] = "."
-        output.append((i + 1, blob))
-    for i, blob in reversed(output):
         lines[i:i] = blob
 
 def setup(app):
