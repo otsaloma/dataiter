@@ -1376,6 +1376,12 @@ NULL,2.5,"test",TRUE,2025-01-01
         data = DataFrame.read_duckdb(f"SELECT * FROM '{path}' WHERE x > ?", params=[1])
         assert data == orig.tail(1)
 
+    def test_read_duckdb_timezone(self):
+        import duckdb
+        duckdb.sql("SET TimeZone = 'Asia/Tokyo'")
+        data = DataFrame.read_duckdb("SELECT TIMESTAMPTZ '2024-01-01 12:00:00+00' AS t")
+        assert data.t[0] == np.datetime64("2024-01-01T12:00:00")
+
     def test_read_json(self):
         path = str(test.get_data_path("downloads.json"))
         data = DataFrame.read_json(path)

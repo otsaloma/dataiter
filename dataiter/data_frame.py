@@ -1633,6 +1633,10 @@ class DataFrame(dict):
         least quotes within values. Placeholders work where SQL accepts a
         value, so for a file name, use e.g. ``read_parquet($path)``.
 
+        Timestamps with a time zone (``TIMESTAMPTZ``) are returned in UTC. To
+        get them in another time zone, convert them in `query`, e.g. ``ts AT
+        TIME ZONE 'Europe/Helsinki'``.
+
         **References**
 
         * https://duckdb.org/docs/2.0/guides/python/execute_sql
@@ -1642,6 +1646,13 @@ class DataFrame(dict):
         import duckdb
         relation = duckdb.sql(query, params=params)
         table = relation.to_arrow_table()
+        for i, field in enumerate(table.schema):
+            if pa.types.is_timestamp(field.type) and field.type.tz is not None:
+                # DuckDB labels these with its TimeZone setting, by default
+                # the system time zone, which from_arrow would convert to.
+                # Values are UTC, relabeling doesn't change them.
+                column = table.column(i).cast(pa.timestamp(field.type.unit, "UTC"))
+                table = table.set_column(i, field.name, column)
         return cls.from_arrow(table)
 
     @classmethod
