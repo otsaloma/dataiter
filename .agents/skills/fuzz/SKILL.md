@@ -89,6 +89,7 @@ tabular data and the `DataFrame` class.
 - OpenSky Network flight lists (April 2019 and 2020) and aircraft
 - opentransportdata.swiss Ist-Daten v2 (September 2026), service points
 - OurAirports airports and countries
+- PUDL EPA CEMS hourly emissions (2022–2023), EIA plants, generators, EPA–EIA crosswalk
 - Seattle Public Library checkouts (monthly and events), data dictionary
 - SF Fire Department calls for service and fire incidents (data.sf.gov)
 - SSA baby names (national and state counts, card-holder totals)
