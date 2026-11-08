@@ -80,7 +80,8 @@ def floor(x, unit):
     `unit` can also have a multiple, e.g. "15 minutes" for 15-minute bins.
     Multiples are counted from the start of the next larger unit, e.g. "7
     minutes" gives :00, :07, …, :56 within each hour and "2 months" January,
-    March, etc. Multiples of weeks are not supported.
+    March, etc. Multiples can't exceed the next larger unit, e.g. "90
+    minutes" is not supported. Multiples of weeks are not supported.
 
     >>> x = dt.new(["2022-10-15", "2022-11-20"])
     >>> dt.floor(x, "month")
@@ -93,6 +94,10 @@ def floor(x, unit):
         out = x.astype("datetime64[D]")
         out -= ((out.astype(np.int64) + 3) % 7).astype("timedelta64[D]")
         return out.astype(x.dtype).view(Vector)
+    # Larger multiples would floor to the start of the next larger unit.
+    limit = dict(quarter=4, month=12, day=31, hour=24, minute=60, second=60).get(unit)
+    if limit is not None and n > limit:
+        raise ValueError(f"Multiples of {unit}s can be at most {limit}, got {n}")
     if unit == "quarter":
         n, unit = 3 * n, "month"
     code = dict(year="Y", month="M", day="D", hour="h", minute="m", second="s")[unit]

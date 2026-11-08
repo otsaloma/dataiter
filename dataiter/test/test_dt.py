@@ -80,6 +80,8 @@ class TestDT:
         assert dt.floor(a, "10 days").equal(dt.new(["2022-02-11", "2022-09-21", "1969-12-31", NaT]))
         with pytest.raises(ValueError, match="weeks"):
             dt.floor(a, "2 weeks")
+        with pytest.raises(ValueError, match="at most 31"):
+            dt.floor(a, "45 days")
 
     def test_floor_multiple_datetime(self):
         a = dt.new(["2022-10-15T12:34:56", "1969-12-31T23:59:59", NaT])
@@ -87,6 +89,8 @@ class TestDT:
         assert dt.floor(a, "15 minutes").equal(dt.new(["2022-10-15T12:30:00", "1969-12-31T23:45:00", NaT]))
         assert dt.floor(a, "7 minutes").equal(dt.new(["2022-10-15T12:28:00", "1969-12-31T23:56:00", NaT]))
         assert dt.floor(a, "10 seconds").equal(dt.new(["2022-10-15T12:34:50", "1969-12-31T23:59:50", NaT]))
+        with pytest.raises(ValueError, match="at most 60"):
+            dt.floor(a, "90 minutes")
 
     def test_floor_scalar(self):
         assert dt.floor(dt.new("2022-10-15"), "week") == dt.new("2022-10-10")
