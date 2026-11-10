@@ -66,18 +66,31 @@ class TestUtil:
 
     def test_format_floats_3(self):
         a = [0.123456, 1, 123.456, np.nan]
-        b = ["0.123", "1.000", "123.456", "nan"]
+        b = ["0.123456", "1.000000", "123.456000", "nan"]
         assert util.format_floats(a) == b
 
     def test_format_floats_4(self):
         a = [123.456789, 123456.789, 123456789, np.nan]
-        b = ["123", "123457", "123456789", "nan"]
+        b = ["123.457", "123456.789", "123456789.000", "nan"]
         assert util.format_floats(a) == b
 
     def test_format_floats_4_ksep(self):
         a = [123.456789, 123456.789, 123456789, np.nan]
-        b = ["123", "123,457", "123,456,789", "nan"]
+        b = ["123.457", "123,456.789", "123,456,789.000", "nan"]
         assert util.format_floats(a, ksep=",") == b
+
+    def test_format_floats_large(self):
+        a = [121662.41, 121754.0, 112700.5, np.nan]
+        b = ["121662", "121754", "112700", "nan"]
+        assert util.format_floats(a) == b
+
+    def test_format_floats_mixed_magnitude(self):
+        a = [113708.31, 0.5, 0, np.nan]
+        b = ["113708.3", "0.5", "0.0", "nan"]
+        assert util.format_floats(a) == b
+        a = [113708.31, 2.5631, 0.035927, -0.25]
+        b = ["113708.310000", "2.563100", "0.035927", "-0.250000"]
+        assert util.format_floats(a) == b
 
     def test_format_floats_5(self):
         a = [12345678, 1234567812345678, 123456781234567812345678, np.nan]

@@ -35,7 +35,7 @@ DEFAULT_PEEK_ITEMS = 3
 DEFAULT_PEEK_ROWS = 10
 
 #: Amount of significant digits to print floats with, all values of a
-#: column or vector using the decimals that the largest value gets.
+#: column or vector using the most decimals that any value needs, as in R.
 PRINT_FLOAT_PRECISION = 6
 
 #: Maximum amount of elements to show when printing a :class:`Vector`.

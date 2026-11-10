@@ -86,12 +86,14 @@ def format_floats(seq, ksep=None):
         return [f(x, precision=precision, trim="-") for x in seq]
     if ksep is None:
         ksep = dataiter.PRINT_THOUSAND_SEPARATOR
-    # Format like largest by significant digits.
-    digits = [count_digits(x) for x in seq]
-    n = max(x[0] for x in digits)
-    m = max(x[1] for x in digits)
-    precision = min(m, max(0, precision - n))
-    return [f"{x:,.{precision}f}".replace(",", ksep) for x in seq]
+    # Like R, use for all the most decimals that any value needs
+    # to show its significant digits, without trailing zeros.
+    def count_decimals(x):
+        mantissa, exponent = f"{x:.{precision - 1}e}".split("e")
+        return len(mantissa.lstrip("-").rstrip("0").replace(".", "")) - 1 - int(exponent)
+    decimals = max((count_decimals(x) for x in seq if x != 0 and math.isfinite(x)), default=0)
+    decimals = min(precision, max(0, decimals))
+    return [f"{x:,.{decimals}f}".replace(",", ksep) for x in seq]
 
 def format_timedeltas(x):
     # Format as e.g. "1 day 04:44:39.5", with fractions of seconds
