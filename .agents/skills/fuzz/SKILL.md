@@ -51,6 +51,7 @@ tabular data and the `DataFrame` class.
 
 - Amazon Reviews 2023 (Electronics and Cell Phones ratings, metadata)
 - Backblaze hard drive stats (daily SMART snapshots)
+- Binance spot aggregated trades and 1-minute klines (October 2025)
 - BLS QCEW employment and wages (annual and quarterly files, titles)
 - CFPB HMDA loan/application register (Washington 2018–2023) and filers
 - Chicago crimes
