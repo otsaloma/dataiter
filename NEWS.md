@@ -1,5 +1,6 @@
 # PENDING: Dataiter 2.2
 
+- `row_number`: New window function to number rows within groups
 - Speed up joins of a large data frame with a much smaller one
 
 # 2026-11-08: Dataiter 2.1

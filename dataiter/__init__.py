@@ -93,6 +93,7 @@ from dataiter.window import cummax
 from dataiter.window import cummin
 from dataiter.window import cumsum
 from dataiter.window import rank
+from dataiter.window import row_number
 from dataiter.window import shift
 
 from dataiter.io import read_csv

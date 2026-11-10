@@ -31,6 +31,7 @@ Window functions
     :func:`~dataiter.cummin`
     :func:`~dataiter.cumsum`
     :func:`~dataiter.rank`
+    :func:`~dataiter.row_number`
     :func:`~dataiter.shift`
 
     See also :meth:`.DataFrame.modify`.
@@ -96,6 +97,7 @@ Customization for printing and formatting
              read_npz,
              read_parquet,
              read_parquet_chunked,
+             row_number,
              shift,
              std,
              sum,

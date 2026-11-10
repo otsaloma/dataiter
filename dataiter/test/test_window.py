@@ -29,6 +29,7 @@ from dataiter.window import cummax
 from dataiter.window import cummin
 from dataiter.window import cumsum
 from dataiter.window import rank
+from dataiter.window import row_number
 from dataiter.window import shift
 
 NaN = np.nan
@@ -99,6 +100,22 @@ class TestWindow:
         assert rank(Vector([3, 1, 1, 2])).tolist() == [4, 1, 1, 3]
         with pytest.raises(ValueError):
             DataFrame(g=[1, 2], x=[1, 2]).group_by("g").modify(r=rank("x", method="foo"))
+
+    def test_row_number(self):
+        data = DataFrame(x=[10, 20, 30])
+        data = data.modify(i=row_number())
+        assert data.i.equal(Vector([1, 2, 3]))
+
+    def test_row_number_grouped(self):
+        data = DataFrame(g=[2, 1, 2, 1, 2, 3], x=[1, 2, 3, 4, 5, 6])
+        data = data.group_by("g").modify(i=row_number(), j=row_number(0))
+        assert data.i.equal(Vector([1, 1, 2, 2, 3, 1]))
+        assert data.j.equal(Vector([0, 0, 1, 1, 2, 0]))
+
+    def test_row_number_grouped_empty(self):
+        data = DataFrame(g=[1, 2]).filter_out(g=[1, 2])
+        data = data.group_by("g").modify(i=row_number())
+        assert data.nrow == 0
 
     def test_shift(self):
         assert shift(Vector([1, 2, 3])).equal(Vector([NaN, 1, 2]))

@@ -142,6 +142,22 @@ def rank(x, *, method="min", dir=1):
         return ranks - np.repeat(offsets, lengths)
     return dispatch(rank_groups, x)
 
+def row_number(start=1):
+    """
+    Return row numbers within groups.
+
+    Return a function usable with :meth:`.DataFrame.modify` that operates
+    group-wise. Rows are numbered in the order they're in,
+    :meth:`.DataFrame.sort` first if needed. See :func:`rank` to number by the
+    values of a column instead.
+
+    >>> di.row_number()
+    """
+    def window(data, starts):
+        return positions(starts, data.nrow) + start
+    window.group_aware = True
+    return window
+
 @composite
 def shift(x, n=1):
     """
