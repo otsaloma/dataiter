@@ -895,9 +895,9 @@ class DataFrame(dict):
         if hashable:
             numeric.append(np.concatenate(self._get_join_codes_hashable(hashable)))
         codes = self._get_codes(numeric, ordered=False)
-        if codes.max(initial=0) > 2 * len(codes):
-            codes = util.unique_codes(codes)[2]
         n = self.nrow - a_na.sum()
+        if codes.max(initial=0) > 2 * len(codes):
+            codes = self._get_join_codes_sparse(codes, n)
         a_codes = np.full(self.nrow, -1)
         b_codes = np.full(other.nrow, -1)
         a_codes[~a_na] = codes[:n]
@@ -926,6 +926,25 @@ class DataFrame(dict):
         small = np.fromiter(map(groups.setdefault, small, itertools.count()), np.int64, n_small)
         large = np.fromiter(map(groups.get, large, itertools.repeat(n_small)), np.int64, n_large)
         return (large, small) if swap else (small, large)
+
+    @staticmethod
+    def _get_join_codes_sparse(codes, n):
+        # Return dense codes for sparse integer codes, of which the first n
+        # are of self and the rest of other. If one side is much smaller,
+        # hash only it and look up the larger side, rows not found getting
+        # -1, which can't match. Hashing the larger side too would build a
+        # large hash table, slow for many unique values. Otherwise hashing
+        # both sides together is faster.
+        if 50 * min(n, len(codes) - n) > max(n, len(codes) - n):
+            return util.unique_codes(codes)[2]
+        a, b = codes[:n], codes[n:]
+        swap = len(a) > len(b)
+        small, large = (b, a) if swap else (a, b)
+        unique, _, small = util.unique_codes(small)
+        with util.release_arrow_memory():
+            large = pc.index_in(pa.array(large), value_set=pa.array(unique))
+            large = large.fill_null(-1).to_numpy().astype(np.int64)
+        return np.concatenate([large, small] if swap else [small, large])
 
     @staticmethod
     @deco.release_arrow_memory

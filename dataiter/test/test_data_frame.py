@@ -849,6 +849,30 @@ class TestDataFrame:
         assert data.x.tolist() == [1, 2, 2, 3]
         assert data.y.tolist() == [2, 1, 3, None]
 
+    @pytest.mark.parametrize("multiple", ["first", "last", "all"])
+    def test_join_sparse_codes_small_vs_large(self, multiple):
+        # Test both self much smaller and much larger than other.
+        a = DataFrame(k=np.arange(200) * 10**10, x=np.arange(200))
+        b = DataFrame(k=[5 * 10**10, 7, 199 * 10**10, 5 * 10**10], y=[1, 2, 3, 4])
+        y5 = [4] if multiple == "last" else [1, 4] if multiple == "all" else [1]
+        data = a.left_join(b, "k", multiple=multiple).drop_na("y")
+        assert data.x.tolist() == [5] * len(y5) + [199]
+        assert data.y.tolist() == y5 + [3]
+        assert a.semi_join(b, "k").x.tolist() == [5, 199]
+        assert a.anti_join(b, "k").nrow == 198
+        assert a.inner_join(b, "k", multiple=multiple).y.tolist() == y5 + [3]
+        assert a.full_join(b, "k", multiple=multiple).nrow == 202
+        assert b.left_join(a, "k", multiple=multiple).x.tolist() == [5, None, 199, 5]
+        assert b.semi_join(a, "k").y.tolist() == [1, 3, 4]
+        assert b.anti_join(a, "k").y.tolist() == [2]
+
+    def test_join_sparse_codes_vs_empty(self):
+        a = DataFrame(k=np.arange(200) * 10**10, x=np.arange(200))
+        b = a.head(0).rename(y="x")
+        assert a.left_join(b, "k").y.is_na().all()
+        assert a.semi_join(b, "k").nrow == 0
+        assert b.left_join(a, "k").nrow == 0
+
     def test_left_join_multiple_empty(self):
         a = DataFrame(k=[1, 2], x=[1, 2])
         b = DataFrame(k=[1, 2], y=[1, 2]).head(0)

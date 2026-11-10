@@ -1,3 +1,7 @@
+# PENDING: Dataiter 2.2
+
+- Speed up joins of a large data frame with a much smaller one
+
 # 2026-11-08: Dataiter 2.1
 
 - `cummax`, `cummin`, `cumsum`, `rank`, `shift`: New fast window functions
