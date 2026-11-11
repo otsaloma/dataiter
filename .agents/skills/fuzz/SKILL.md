@@ -55,6 +55,7 @@ tabular data and the `DataFrame` class.
 - BLS QCEW employment and wages (annual and quarterly files, titles)
 - CFPB HMDA loan/application register (Washington 2018–2023) and filers
 - Chicago crimes
+- ClickBench hits web analytics (60 of 100 partitioned Parquet files)
 - CMS Medicare Physician & Other Practitioners
 - Citi Bike GBFS station feeds
 - Citi Bike trips
