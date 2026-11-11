@@ -81,6 +81,21 @@ class TestWindow:
             expected = np.concatenate([np.cumsum(x) for x in np.split(x, n)])
             assert np.allclose(data.y, expected, rtol=1e-14)
 
+    @pytest.mark.parametrize("dtype", [bool, np.int16, np.uint16, np.int64])
+    def test_cumsum_grouped_large_integers(self, dtype):
+        for n in [10, 1000]:
+            g = np.repeat(np.arange(n), 10_000 // n)
+            x = np.random.randint(0, 2, len(g)).astype(dtype)
+            data = DataFrame(g=g, x=x).group_by("g").modify(y=cumsum("x"))
+            expected = np.concatenate([np.cumsum(x) for x in np.split(x, n)])
+            assert data.y.tolist() == expected.tolist()
+
+    def test_cumsum_grouped_overflow(self):
+        # Sum of all overflows, sums within groups don't.
+        data = DataFrame(g=[1, 1, 2, 2], x=[2**62, 2**62, 5, 7])
+        data = data.group_by("g").modify(y=cumsum("x"))
+        assert data.y.tolist() == [2**62, 2**63 - 2**64, 5, 12]
+
     def test_cumsum_grouped_empty(self):
         data = DataFrame(g=[1], x=[1]).head(0)
         data = data.group_by("g").modify(y=cumsum("x"))

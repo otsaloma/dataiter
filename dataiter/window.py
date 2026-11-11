@@ -99,6 +99,15 @@ def cumsum(x):
             x = x.astype(np.int64, copy=False)
         elif x.dtype.kind == "u":
             x = x.astype(np.uint64, copy=False)
+        if x.dtype.kind in "iu":
+            # Subtract the total before each group from a cumulative sum of
+            # all, which is much faster than accumulate for many small groups.
+            # Integer sums are exact, also if they overflow, as wraparound
+            # cancels out in the subtraction.
+            out = np.cumsum(x)
+            before = np.where(starts > 0, out[starts - 1], 0)
+            out -= np.repeat(before, np.diff(starts, append=len(x)))
+            return out
         return accumulate(np.add, x, starts)
     return dispatch(cumsum_groups, x)
 
