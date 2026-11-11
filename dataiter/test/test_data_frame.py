@@ -733,6 +733,27 @@ class TestDataFrame:
         assert data.n.tolist() == [4, 3]
         assert data.f.tolist() == [False, True]
 
+    @pytest.mark.parametrize("nrow", [2, 4])
+    def test_left_join_not_all_found(self, nrow):
+        # Missing values are filled differently depending
+        # on whether other is longer than the result.
+        a = DataFrame(k=[1, 9, 2, 9][:nrow])
+        b = DataFrame(k=[2, 1, 3],
+                      i=[3, 4, 5],
+                      f=[True, False, True],
+                      s=["a", "b", "c"],
+                      d=di.dt.new(["2026-01-01", "2026-01-02", "2026-01-03"]))
+        data = a.left_join(b, "k")
+        assert data.i.is_float()
+        assert data.f.is_object()
+        assert data.s.is_string()
+        assert data.d.is_datetime()
+        assert isinstance(data.i, DataFrameColumn)
+        assert data.i.tolist() == [4, None, 3, None][:nrow]
+        assert data.f.tolist() == [False, None, True, None][:nrow]
+        assert data.s.tolist() == ["b", None, "a", None][:nrow]
+        assert data.d.tolist() == [datetime.date(2026, 1, 2), None, datetime.date(2026, 1, 1), None][:nrow]
+
     def test_left_join_by_tuple(self):
         orig = test.data_frame("downloads.csv")
         holidays = test.data_frame("holidays.csv")

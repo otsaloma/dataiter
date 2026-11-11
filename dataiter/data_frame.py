@@ -1140,6 +1140,12 @@ class DataFrame(dict):
                             if len(rows) > self.nrow else
                             util.submit(np.ndarray.copy, column))
         def take_with_na(column, src, found):
+            if len(column) <= len(src):
+                # src is -1 for rows without a match, which takes the last
+                # element, a missing value appended to column. Appending
+                # copies column, so it's faster only if not longer than src.
+                na = DataFrameColumn(column.na_value, column.na_dtype, 1)
+                return np.take(np.concatenate([column.astype(column.na_dtype), na]), src)
             new = DataFrameColumn(column.na_value, column.na_dtype, len(src))
             new[found] = np.take(column, src[found])
             return new
