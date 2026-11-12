@@ -1704,6 +1704,10 @@ class DataFrame(dict):
         as in :meth:`.DataFrame.select`. `dtypes` is an optional dict mapping
         column names to NumPy datatypes. `kwargs` are passed to
         ``json.loads``.
+
+        Lines are parsed one by one in Python, which can be slow. For large
+        files (about >1M rows), consider using :meth:`read_duckdb` instead,
+        e.g. ``SELECT * FROM 'data.jsonl'``.
         """
         data = util.read_jsonl(path, encoding=encoding, select=select, **kwargs)
         return cls.from_json(data, select=select, dtypes=dtypes)
