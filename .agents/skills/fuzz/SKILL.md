@@ -77,6 +77,7 @@ tabular data and the `DataFrame` class.
 - mledoze/countries (country names, regions and currencies)
 - MovieLens 25M
 - MTA subway hourly ridership (data.ny.gov) and subway stations
+- MTA subway turnstile usage (2018–2022 via ClickHouse S3)
 - nflverse NFL play-by-play, games, players, rosters and participation
 - NHTSA vehicle safety complaints, recalls and defect investigations
 - NOAA Storm Events details, fatalities and locations
