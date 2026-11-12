@@ -3,6 +3,7 @@
 - `dt.isoyear`: New function to extract the ISO 8601 year matching `dt.isoweek`
 - `row_number`: New window function to number rows within groups
 - Speed up joins of a large data frame with a much smaller one
+- Speed up `Vector.map` with a lookup dict when values repeat
 
 # 2026-11-08: Dataiter 2.1
 

@@ -772,6 +772,13 @@ class Vector(np.ndarray):
         >>> vector.map({"a": 1, "b": 2}.get)
         >>> vector.map({"a": 1, "b": 2}.get, 0)
         """
+        if (isinstance(getattr(function, "__self__", None), dict) and
+            function.__name__ == "get" and
+            self.dtype.kind in "biufmMT" and
+            util.is_repetitive(self)):
+            # Looking up only unique values is faster if values repeat.
+            unique, _, codes = util.unique_codes(self)
+            return self.__class__((function(x, *args, **kwargs) for x in unique), dtype)[codes]
         return self.__class__((function(x, *args, **kwargs) for x in self), dtype)
 
     @classmethod

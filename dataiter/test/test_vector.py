@@ -657,6 +657,20 @@ class TestVector:
         assert b.tolist() == ["x", "xb", "xbc"]
         assert b.is_object()
 
+    def test_map_get_repetitive(self):
+        a = Vector(["a", "b", "", "c"] * 1000)
+        b = a.map({"a": 1, "b": 2}.get)
+        assert b.is_float()
+        assert b.equal(Vector([1, 2, np.nan, np.nan] * 1000))
+        b = a.map({"a": "x", "": "y"}.get, "z")
+        assert b.equal(Vector(["x", "z", "y", "z"] * 1000))
+
+    def test_map_get_repetitive_dtype(self):
+        a = Vector([1.5, np.nan, 2.5] * 1000)
+        b = a.map({1.5: 1}.get, 0, dtype=float)
+        assert b.is_float()
+        assert b.equal(Vector([1.0, 0.0, 0.0] * 1000))
+
     def test_of_type(self):
         assert of_type(float)(Vector(np.array([1.5], np.float32)))
         assert of_type(int, float)(Vector([1]))
