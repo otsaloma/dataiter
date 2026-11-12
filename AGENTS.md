@@ -15,6 +15,14 @@ it makes sense there as well.
 
 ## NumPy
 
+Dataiter's simplicity, light-weight and composability means that users
+are expected to be familiar with NumPy and use NumPy together with
+Dataiter. We do not want to reimplement various functions that work fine
+in NumPy (examples: `np.nonzero`, `np.where`). We do reimplement some
+functions/methods but always for some gain: a simpler interface, missing
+value handling, return a copy semantics, method instead of function,
+performance optimization etc. Data types we use from NumPy directly.
+
 Avoid using NumPy's cryptic dtype shorthands, example: instead of
 `np.dtype("M8")` use `np.dtype("datetime64")`. As an exception,
 something like `x.dtype.kind in "biufc"` is acceptable as writing that
