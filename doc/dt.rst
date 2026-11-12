@@ -20,6 +20,7 @@ values repeat, but slow for many unique values.
 :func:`~dataiter.dt.isoformat`
 :func:`~dataiter.dt.isoweek`
 :func:`~dataiter.dt.isoweekday`
+:func:`~dataiter.dt.isoyear`
 :func:`~dataiter.dt.microsecond`
 :func:`~dataiter.dt.minute`
 :func:`~dataiter.dt.month`

@@ -270,15 +270,29 @@ def isoweek(x):
     """
     Extract ISO 8601 week from datetime `x`.
 
+    Days around New Year can belong to a week of the previous or the next
+    year, use :func:`isoyear` instead of :func:`year` to pair with the week.
+
     >>> x = dt.new(["2022-10-15"])
     >>> dt.isoweek(x)
     """
     def f(y):
-        # ISO week is the week of the Thursday of the same Monday-start week.
-        y = y.astype("datetime64[D]")
-        thursday = y - ((y.astype(int) + 3) % 7).astype("timedelta64[D]") + np.timedelta64(3, "D")
+        thursday = _iso_thursday(y)
         return (thursday - thursday.astype("datetime64[Y]").astype("datetime64[D]")).astype(int) // 7 + 1
     return _pull_int(x, f)
+
+def isoyear(x):
+    """
+    Extract ISO 8601 week-numbering year from datetime `x`.
+
+    This is the year that :func:`isoweek` belongs to, which differs from
+    :func:`year` for some days around New Year.
+
+    >>> x = dt.new(["2019-12-30"])
+    >>> dt.year(x)
+    >>> dt.isoyear(x)
+    """
+    return _pull_int(x, lambda y: _iso_thursday(y).astype("datetime64[Y]").astype(int) + 1970)
 
 def isoweekday(x):
     """
@@ -359,6 +373,11 @@ def _parse_unit(unit):
     if not found or n < 1:
         raise ValueError(f"Bad {unit=}")
     return n, found[0]
+
+def _iso_thursday(x):
+    # ISO week and year are those of the Thursday of the same Monday-start week.
+    x = x.astype("datetime64[D]")
+    return x - ((x.astype(int) + 3) % 7).astype("timedelta64[D]") + np.timedelta64(3, "D")
 
 @_vectorized_datetime
 def _pull_int(x, function):

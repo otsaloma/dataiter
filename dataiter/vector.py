@@ -132,6 +132,7 @@ class DtProxy:
     isoformat = dt_method("isoformat")
     isoweek = dt_method("isoweek")
     isoweekday = dt_method("isoweekday")
+    isoyear = dt_method("isoyear")
     microsecond = dt_method("microsecond")
     minute = dt_method("minute")
     month = dt_method("month")

@@ -260,6 +260,15 @@ class TestDT:
         a = dt.new(["2022-10-15", NaT])
         assert dt.isoweekday(a).tolist() == [6, None]
 
+    def test_isoyear(self):
+        a = dt.new(["2019-12-30", "2021-01-01", "2022-10-15", NaT])
+        assert dt.isoyear(a).tolist() == [2020, 2020, 2022, None]
+
+    def test_isoyear_all_dates(self):
+        a = dt.sequence("1999-01-01", "2030-12-31", "day")
+        expected = [x.isocalendar().year for x in a.tolist()]
+        assert dt.isoyear(a).tolist() == expected
+
     def test_microsecond(self):
         a = dt.new(["2022-10-15T12:34:56.789", NaT])
         assert dt.microsecond(a).tolist() == [789_000, None]
