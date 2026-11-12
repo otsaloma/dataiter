@@ -31,6 +31,10 @@ introduce regressions elsewhere. For example, if you find a join slow
 for wide data with multiple integer join keys, test your suggestion also
 for long data, string keys, datetime keys, single keys etc.
 
+Only list findings that your analysis code itself hit, not ones from
+artificial benchmarks or probes written afterwards, and only ones for
+which you recommend a change.
+
 Start by reading `doc/_build/html/llms-full.txt` in full and work based
 on that, since that's what we recommend users point their coding agents
 at. If it doesn't exist, build the documentation first with `uv run make
