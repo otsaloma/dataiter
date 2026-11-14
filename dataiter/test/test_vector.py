@@ -495,6 +495,10 @@ class TestVector:
         a = Vector(["a" * 100, "b" * 100])
         assert a.get_memory_use() > 200
 
+    def test_get_memory_use_string_short(self):
+        a = Vector(["a" * 15, "b" * 15])
+        assert a.get_memory_use() == 32
+
     def test_head(self):
         a = Vector([1, 2, 3, 4, 5])
         assert a.head(3).tolist() == [1, 2, 3]

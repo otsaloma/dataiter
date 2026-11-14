@@ -613,9 +613,12 @@ class Vector(np.ndarray):
         if self.is_object():
             return sum(sys.getsizeof(x) for x in self)
         if self.is_string():
-            # StringDType stores longer strings outside the array, not counted
-            # in nbytes. Adding string lengths gives a rough estimate.
-            return self.nbytes + int(self.str.str_len().sum())
+            # StringDType stores strings of up to 15 bytes inside the 16-byte
+            # array element (NEP 55), counted in nbytes. Longer strings are
+            # stored outside the array, adding their lengths gives a rough
+            # estimate. Lengths are in characters, not UTF-8 bytes.
+            lengths = self.str.str_len()
+            return self.nbytes + int(lengths[lengths > 15].sum())
         return self.nbytes
 
     def head(self, n=None):
