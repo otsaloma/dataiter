@@ -77,7 +77,9 @@ tabular data and the `DataFrame` class.
 - Instacart Online Grocery 2017 (orders, baskets, products, departments)
 - JHU CSSE COVID-19 time series (US county and global, UID lookup table)
 - Lichess puzzle database
+- Low Carbon London smart meter readings (82.7M-row Parquet subset) and 2013 tariffs
 - MBTA GTFS schedule
+- Meteostat Heathrow daily weather (2011–2014)
 - mledoze/countries (country names, regions and currencies)
 - MovieLens 25M
 - MTA subway hourly ridership (data.ny.gov) and subway stations
