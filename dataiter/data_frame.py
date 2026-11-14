@@ -566,8 +566,6 @@ class DataFrame(dict):
             yield colname, util.submit(np.delete, column, rows)
 
     @classmethod
-    @deco.release_arrow_memory
-    @deco.new_from_parallel_generator
     def from_arrow(cls, data, *, dtypes={}, timezone="keep"):
         """
         Return a new data frame from ``pyarrow.Table`` `data`.
@@ -577,10 +575,21 @@ class DataFrame(dict):
         NumPy datetimes can't hold: ``"keep"`` to keep them in the timezone
         they're stored in, ``"utc"`` to convert them to UTC.
         """
+        columns = dict(zip(data.column_names, data.columns))
+        return cls._from_arrow_columns(columns, dtypes=dtypes, timezone=timezone)
+
+    @classmethod
+    @deco.release_arrow_memory
+    @deco.new_from_parallel_generator
+    def _from_arrow_columns(cls, columns, *, dtypes={}, timezone="keep"):
+        # Return a new data frame from a dict of pyarrow.ChunkedArray columns,
+        # popping them as converted to free Arrow memory early, if the caller
+        # doesn't hold the table, as read_parquet doesn't. Holding all of both
+        # Arrow and NumPy data would need memory for over twice the data size.
         if timezone not in ["keep", "utc"]:
             raise ValueError(f"Bad {timezone=}")
         for name in dtypes:
-            if name not in data.column_names:
+            if name not in columns:
                 raise KeyError(name)
 
         def strings_from_arrow(column):
@@ -683,8 +692,8 @@ class DataFrame(dict):
                 column[na] = column.na_value
             return column
 
-        for name, column in zip(data.column_names, data.columns):
-            yield name, column_from_arrow(column, dtypes.get(name))
+        for name in list(columns):
+            yield name, column_from_arrow(columns.pop(name), dtypes.get(name))
 
     @classmethod
     def from_json(cls, string, *, select=[], dtypes={}, **kwargs):
@@ -1748,10 +1757,11 @@ class DataFrame(dict):
                 raise FileNotFoundError(f"No files match {str(path)!r}")
             path = paths
         dataset = pq.ParquetDataset(path)
+        names = dataset.schema.names
         if select:
-            select = util.glob_all(select, dataset.schema.names)
-        data = dataset.read(columns=select or None)
-        return cls.from_arrow(data, dtypes=dtypes, timezone=timezone)
+            names = util.glob_all(select, names)
+        columns = dict(zip(names, dataset.read(columns=names).columns))
+        return cls._from_arrow_columns(columns, dtypes=dtypes, timezone=timezone)
 
     @classmethod
     def read_parquet_chunked(cls, path, chunk_nrow, *, select=[], dtypes={}, timezone="keep"):
