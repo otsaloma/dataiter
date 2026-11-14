@@ -1761,8 +1761,10 @@ class DataFrame(dict):
         The last data frame can have fewer rows. Use this to process data too
         large to fit in memory, e.g. by reducing each chunk and combining the
         result with that of previous chunks. A sensible `chunk_nrow` is
-        usually around 1–10M depending on your data and system. See
-        :meth:`read_parquet` for an explanation of the other arguments.
+        usually around 1–10M depending on your data and system. Unlike
+        :meth:`read_parquet`, `path` must be a single file; to process multiple
+        files, loop over them. See :meth:`read_parquet` for an explanation of
+        the other arguments.
 
         See the guide on :doc:`out-of-memory data </out-of-memory>` for
         an explanation and examples of chunked processing.

@@ -79,6 +79,15 @@ calculate from sums and counts at the end. Generally, processing in chunks works
 when the result can be calculated from the results of chunks and the combined
 result fits in memory.
 
+:meth:`.DataFrame.read_parquet_chunked` reads a single file. If your data is
+split into multiple files, loop over them.
+
+.. code-block:: python
+
+    for path in sorted(glob.glob("sales/*.parquet")):
+        for chunk in di.read_parquet_chunked(path, 10_000_000, select=select):
+            latest = latest.rbind(chunk).sort(ts=-1, order_id=-1).unique("customer_id")
+
 There's no chunked reading for other file formats, as they can't be read in
 chunks efficiently. If you have a huge CSV file, convert it to Parquet first,
 e.g. with DuckDB: ``duckdb -c "COPY (FROM 'data.csv') TO 'data.parquet'"``.
