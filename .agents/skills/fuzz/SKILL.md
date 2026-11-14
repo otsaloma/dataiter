@@ -78,6 +78,7 @@ tabular data and the `DataFrame` class.
 - JHU CSSE COVID-19 time series (US county and global, UID lookup table)
 - Lichess puzzle database
 - Low Carbon London smart meter readings (82.7M-row Parquet subset) and 2013 tariffs
+- MarineCadastre/NOAA AIS vessel positions (US coasts, 2023-07-01 through 2023-07-08)
 - MBTA GTFS schedule
 - Meteostat Heathrow daily weather (2011–2014)
 - mledoze/countries (country names, regions and currencies)
@@ -111,6 +112,7 @@ tabular data and the `DataFrame` class.
 - UK DfT road safety (STATS19) collisions, vehicles and casualties
 - UK DVSA anonymised MOT tests (2022 results, failure items, lookups)
 - UK Land Registry price paid
+- UN/LOCODE code list (datasets/un-locode on GitHub, ports with coordinates)
 - US Census ACS PUMS
 - US Census LEHD LODES (California commuting flows, jobs and crosswalk)
 - US Census national county codes (2020)
